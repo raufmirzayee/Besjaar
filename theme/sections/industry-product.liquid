@@ -1,0 +1,541 @@
+{{ 'besjaar-product-detail.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign selected_media = current_variant.featured_media | default: product.featured_media
+  assign selected_image = selected_media.preview_image | default: product.featured_media.preview_image
+  assign form_id = 'BesjaarProductForm-' | append: section.id
+  assign shipping_threshold_cents = settings.free_shipping_threshold | default: 25 | times: 100
+  assign shipping_threshold_money = shipping_threshold_cents | money_without_trailing_zeros
+  assign returns_days = settings.return_window_days | default: 30
+  assign warranty_months = settings.warranty_months | default: 12
+  assign ui_shipping = 'nova.product.free_shipping_from' | t: amount: shipping_threshold_money
+  assign ui_returns = 'nova.product.returns_days' | t: days: returns_days
+  assign ui_warranty = 'nova.product.warranty_months_dynamic' | t: months: warranty_months
+  capture focused_collection_url
+    render 'shower-store-url'
+  endcapture
+  assign focused_collection_url = focused_collection_url | strip
+  assign ui_decrease = 'Decrease quantity'
+  assign ui_increase = 'Increase quantity'
+  assign ui_quantity = 'Quantity'
+  assign ui_shortcut_reviews = 'Read Reviews'
+  case request.locale.iso_code
+    when 'nl'
+      assign ui_decrease = 'Aantal verlagen'
+      assign ui_increase = 'Aantal verhogen'
+      assign ui_quantity = 'Aantal'
+      assign ui_shortcut_reviews = 'Lees reviews'
+    when 'de'
+      assign ui_decrease = 'Menge verringern'
+      assign ui_increase = 'Menge erhöhen'
+      assign ui_quantity = 'Menge'
+      assign ui_shortcut_reviews = 'Bewertungen lesen'
+    when 'fr'
+      assign ui_decrease = 'Réduire la quantité'
+      assign ui_increase = 'Augmenter la quantité'
+      assign ui_quantity = 'Quantité'
+      assign ui_shortcut_reviews = 'Lire les avis'
+  endcase
+  capture localized_product_title_capture
+    render 'localized-product-title', product: product
+  endcapture
+  assign display_title = localized_product_title_capture | strip
+  if display_title == blank
+    assign display_title = product.title
+  endif
+  assign first_collection = product.collections.first
+  assign locale = request.locale.iso_code | downcase
+  assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  assign connection_size = product.metafields.custom.connection_size.value | default: '½″'
+
+  case locale
+    when 'nl'
+      assign ui_collection = 'Douchekoppen'
+      assign ui_rating = 'beoordelingen'
+      assign ui_in_stock = 'Op voorraad'
+      assign ui_sold_out = 'Uitverkocht'
+      assign ui_low_stock = 'Beperkte voorraad'
+      assign ui_option = 'Kies uitvoering'
+      assign ui_add = 'In winkelwagen'
+      assign ui_buy_now = 'Of reken direct af'
+      assign ui_incl_vat = 'incl. btw'
+      assign ui_save = 'Bespaar'
+      assign ui_desc = 'Omschrijving'
+      assign ui_install = 'Installatie'
+      assign ui_install_body = 'Schroef de oude handdouche los en draai de Besjaar handvast op een standaard doucheslang. Geen speciaal gereedschap nodig.'
+      assign ui_care = 'Pasvorm & onderhoud'
+      assign ui_care_body = 'Controleer de modelspecificaties voor filter, slang en sproeistanden. Spoel het douchevlak regelmatig schoon en droog de afwerking met een zachte doek.'
+      assign ui_gallery = 'Productfoto'
+      assign ui_swipe = 'Veeg om meer foto’s te bekijken'
+      assign ui_secure = 'Veilig afrekenen'
+      assign ui_lede = 'Een premium Besjaar handdouche voor een krachtige, comfortabele dagelijkse douche. Ontworpen voor een standaard ½″ aansluiting, eenvoudige bediening en een verzorgde badkamerlook.'
+    when 'de'
+      assign ui_collection = 'Duschköpfe'
+      assign ui_rating = 'Bewertungen'
+      assign ui_in_stock = 'Auf Lager'
+      assign ui_sold_out = 'Ausverkauft'
+      assign ui_low_stock = 'Nur wenige verfügbar'
+      assign ui_option = 'Ausführung wählen'
+      assign ui_add = 'In den Warenkorb'
+      assign ui_buy_now = 'Oder direkt bezahlen'
+      assign ui_incl_vat = 'inkl. MwSt.'
+      assign ui_save = 'Spare'
+      assign ui_desc = 'Beschreibung'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Alten Handbrausekopf abschrauben und Besjaar handfest auf einen Standard-Duschschlauch drehen. Kein Spezialwerkzeug erforderlich.'
+      assign ui_care = 'Passform & Pflege'
+      assign ui_care_body = 'Modellspezifische Angaben zu Filter, Schlauch und Strahlarten findest du in den Spezifikationen. Brausefläche regelmäßig abspülen und die Oberfläche mit einem weichen Tuch trocknen.'
+      assign ui_gallery = 'Produktbild'
+      assign ui_swipe = 'Wischen, um weitere Bilder anzusehen'
+      assign ui_secure = 'Sicher bezahlen'
+      assign ui_lede = 'Eine hochwertige Besjaar Handbrause für einen kräftigen, angenehmen Duschstrahl im Alltag. Für Standard-½″-Anschlüsse, einfache Bedienung und ein klares Badezimmerdesign.'
+    when 'fr'
+      assign ui_collection = 'Pommeaux de douche'
+      assign ui_rating = 'avis'
+      assign ui_in_stock = 'En stock'
+      assign ui_sold_out = 'Épuisé'
+      assign ui_low_stock = 'Stock limité'
+      assign ui_option = 'Choisir la version'
+      assign ui_add = 'Ajouter au panier'
+      assign ui_buy_now = 'Ou payer directement'
+      assign ui_incl_vat = 'TVA incluse'
+      assign ui_save = 'Économisez'
+      assign ui_desc = 'Description'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Dévissez l’ancienne douchette puis vissez Besjaar à la main sur un flexible de douche standard. Aucun outil spécial n’est nécessaire.'
+      assign ui_care = 'Compatibilité & entretien'
+      assign ui_care_body = 'Consultez les spécifications du modèle pour le filtre, le flexible et les modes de jet. Rincez régulièrement la face du pommeau et séchez la finition avec un chiffon doux.'
+      assign ui_gallery = 'Photo produit'
+      assign ui_swipe = 'Balayez pour voir plus de photos'
+      assign ui_secure = 'Paiement sécurisé'
+      assign ui_lede = 'Une douchette Besjaar haut de gamme conçue pour un jet puissant et confortable au quotidien. Compatible avec un raccord standard ½″, simple à utiliser et facile à intégrer dans la salle de bains.'
+    else
+      assign ui_collection = 'Showerheads'
+      assign ui_rating = 'reviews'
+      assign ui_in_stock = 'In stock'
+      assign ui_sold_out = 'Sold out'
+      assign ui_low_stock = 'Limited stock'
+      assign ui_option = 'Choose an option'
+      assign ui_add = 'Add to cart'
+      assign ui_buy_now = 'Or checkout instantly'
+      assign ui_incl_vat = 'VAT included'
+      assign ui_save = 'Save'
+      assign ui_desc = 'Description'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Unscrew your existing hand shower and hand-tighten Besjaar onto a standard shower hose. No special tools required.'
+      assign ui_care = 'Fit & care'
+      assign ui_care_body = 'Check the model specifications for filter, hose and spray-mode details. Rinse the shower face regularly and dry the finish with a soft cloth.'
+      assign ui_gallery = 'Product image'
+      assign ui_swipe = 'Swipe to explore more images'
+      assign ui_secure = 'Secure checkout'
+      assign ui_lede = 'A premium Besjaar hand shower designed for a strong, comfortable everyday shower. Made for a standard ½″ connection, simple operation and a clean modern bathroom setup.'
+  endcase
+
+  assign inventory_qty = current_variant.inventory_quantity
+  assign show_low_stock = false
+  if current_variant.inventory_management and inventory_qty > 0 and inventory_qty <= 5
+    assign show_low_stock = true
+  endif
+-%}
+
+<section class="ind ind-bj-pd" data-besjaar-product-section="{{ section.id }}" data-product-root data-added-status="{{ 'nova.cart.added' | t | escape }}" data-add-error="{{ 'nova.cart.add_error' | t | escape }}" data-zoom-label="{{ 'nova.product.zoom_image' | t | escape }}" data-close-zoom-label="{{ 'nova.product.close_zoom' | t | escape }}" data-previous-image-label="{{ 'nova.accessibility.previous_product_image' | t | escape }}" data-next-image-label="{{ 'nova.accessibility.next_product_image' | t | escape }}" data-in-stock-label="{{ ui_in_stock | escape }}" data-low-stock-label="{{ ui_low_stock | escape }}" data-sold-out-label="{{ ui_sold_out | escape }}">
+  <div class="ind-shell">
+    {%- if section.settings.show_breadcrumbs -%}
+      <nav class="ind-bj-pd__crumb" aria-label="{{ 'nova.product.breadcrumbs' | t | escape }}">
+        <a href="{{ routes.root_url }}">{{ 'nova.product.home' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ focused_collection_url }}">{{ ui_collection }}</a>
+      </nav>
+    {%- endif -%}
+
+    <div class="ind-bj-pd__grid">
+      <div class="ind-bj-pd__gallery">
+        <div class="ind-bj-pd__stage" id="BesjaarStage-{{ section.id }}">
+          {%- if selected_image -%}
+            <img
+              id="BesjaarMainImage-{{ section.id }}"
+              src="{{ selected_image | image_url: width: 1600 }}"
+              srcset="{{ selected_image | image_url: width: 700 }} 700w, {{ selected_image | image_url: width: 1100 }} 1100w, {{ selected_image | image_url: width: 1600 }} 1600w"
+              sizes="(max-width: 900px) 100vw, 56vw"
+              loading="eager" decoding="async" fetchpriority="high"
+              alt="{{ selected_image.alt | default: display_title | replace: '&amp;', '&' | escape_once }}"
+              width="{{ selected_image.width }}"
+              height="{{ selected_image.height }}">
+          {%- else -%}
+            <img id="BesjaarMainImage-{{ section.id }}" src="{{ 'besjaar-product-front-exact.webp' | asset_url }}" alt="{{ display_title | replace: '&amp;', '&' | escape_once }}" width="1254" height="1254" loading="eager" decoding="async" fetchpriority="high">
+          {%- endif -%}
+          {%- assign savings = current_variant.compare_at_price | minus: current_variant.price -%}
+          <span class="ind-bj-pd__sale" id="BesjaarSale-{{ section.id }}"{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}>{{ ui_save }} {{ savings | money }}</span>
+          {%- if section.settings.enable_image_zoom -%}
+            <button class="ind-bj-pd__zoom" type="button" data-product-zoom aria-label="{{ 'nova.product.zoom_image' | t | escape }}" aria-haspopup="dialog">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"></path></svg>
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- assign image_media_count = 0 -%}
+        {%- for media in product.media -%}{%- if media.preview_image -%}{%- assign image_media_count = image_media_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+        {%- if image_media_count > 1 -%}
+          <div class="ind-bj-pd__thumbs" id="BesjaarThumbs-{{ section.id }}" aria-label="{{ ui_gallery }}">
+            {%- assign thumb_index = 0 -%}
+            {%- for media in product.media limit: 10 -%}
+              {%- if media.preview_image -%}
+                {%- assign thumb_index = thumb_index | plus: 1 -%}
+                <button
+                  type="button"
+                  class="ind-bj-pd__thumb"
+                  aria-current="{% if media.id == selected_media.id or selected_media == blank and thumb_index == 1 %}true{% else %}false{% endif %}"
+                  data-src="{{ media.preview_image | image_url: width: 1600 }}"
+                  data-src-small="{{ media.preview_image | image_url: width: 700 }}"
+                  data-alt="{{ media.preview_image.alt | default: display_title | escape }}"
+                  data-media-id="{{ media.id }}"
+                  aria-label="{{ ui_gallery }} {{ thumb_index }}">
+                  <img src="{{ media.preview_image | image_url: width: 220 }}" alt="" width="110" height="110" loading="lazy" decoding="async">
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <p class="ind-bj-pd__swipe">{{ ui_swipe }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="ind-bj-pd__summary">
+        <div class="ind-bj-pd__topline">
+          <span class="ind-bj-pd__brand">BESJAAR®</span>
+          {%- if current_variant.available -%}
+            <span class="ind-bj-pd__stock {% if show_low_stock %}is-low{% endif %}" data-product-stock><i></i><span data-product-stock-label>{% if show_low_stock %}{{ ui_low_stock }}{% else %}{{ ui_in_stock }}{% endif %}</span></span>
+          {%- else -%}
+            <span class="ind-bj-pd__stock is-out" data-product-stock><i></i><span data-product-stock-label>{{ ui_sold_out }}</span></span>
+          {%- endif -%}
+        </div>
+
+        <h1 class="ind-bj-pd__title">{{ display_title | replace: '&amp;', '&' | escape_once }}</h1>
+
+        {%- if product.metafields.judgeme.badge != blank -%}
+          <a class="ind-bj-pd__rating ind-bj-pd__rating--judgeme" href="#nova-reviews" aria-label="{{ ui_shortcut_reviews | escape }}">
+            <span class="jdgm-widget jdgm-preview-badge" data-id="{{ product.id }}" data-auto-install="false">{{ product.metafields.judgeme.badge }}</span>
+          </a>
+        {%- elsif rating != blank and rating_count != blank -%}
+          <a class="ind-bj-pd__rating" href="#nova-reviews" aria-label="{{ 'nova.reviews.rating_accessible' | t: rating: rating, max: 5, count: rating_count | escape }}">
+            <span aria-hidden="true">★★★★★</span>
+            <strong>{{ rating }}</strong>
+            <em>{{ rating_count }} {{ ui_rating }}</em>
+          </a>
+        {%- endif -%}
+
+        <div class="ind-bj-pd__description-group">
+          <div class="ind-bj-pd__lede">{{ ui_lede }}</div>
+        </div>
+
+        {%- form 'product', product, id: form_id, class: 'ind-bj-pd__form', novalidate: 'novalidate', data-ajax-product-form: '', data-product-form: '' -%}
+          {%- if product.variants.size > 1 -%}
+            <label class="ind-bj-pd__label" for="BesjaarVariant-{{ section.id }}">{{ ui_option }}</label>
+            <div class="ind-bj-pd__select-wrap">
+              <select id="BesjaarVariant-{{ section.id }}" class="ind-bj-pd__select" name="id" data-variant-id>
+                {%- for variant in product.variants -%}
+                  {%- assign variant_savings = variant.compare_at_price | minus: variant.price -%}
+                  {%- assign variant_media = variant.featured_media.preview_image -%}
+                  <option value="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" data-price-cents="{{ variant.price }}" data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}" data-savings="{% if variant.compare_at_price > variant.price %}{{ variant_savings | money | escape }}{% endif %}" data-available="{{ variant.available }}" data-inventory-quantity="{{ variant.inventory_quantity | default: 0 }}" data-inventory-managed="{% if variant.inventory_management %}true{% else %}false{% endif %}"{% if variant_media %} data-image="{{ variant_media | image_url: width: 1600 }}" data-image-small="{{ variant_media | image_url: width: 700 }}" data-image-alt="{{ variant_media.alt | default: display_title | escape }}" data-media-id="{{ variant.featured_media.id }}"{% endif %} {% if variant.id == current_variant.id %}selected{% endif %}>
+                    {{ variant.title | escape }} — {{ variant.price | money }}{% unless variant.available %} — {{ ui_sold_out }}{% endunless %}
+                  </option>
+                {%- endfor -%}
+              </select>
+              <span aria-hidden="true">⌄</span>
+            </div>
+          {%- else -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+          {%- endif -%}
+
+          <div class="ind-bj-pd__price-row">
+            <div>
+              <span class="nova-visually-hidden" data-sale-price-prefix{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}>{{ 'nova.product.sale_price' | t }} </span>
+              <span class="ind-bj-pd__price" id="BesjaarPrice-{{ section.id }}">{{ current_variant.price | money }}</span>
+              <small>{{ ui_incl_vat }}</small>
+            </div>
+            <span class="ind-bj-pd__compare" id="BesjaarCompare-{{ section.id }}"{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}><span class="nova-visually-hidden">{{ 'nova.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
+          </div>
+
+          <div class="ind-bj-pd__purchase">
+            <div class="ind-bj-pd__qty" data-besjaar-qty>
+              <button type="button" data-step="-1" aria-label="{{ ui_decrease | escape }}">−</button>
+              <input type="number" name="quantity" value="1" min="1" inputmode="numeric" enterkeyhint="done" aria-label="{{ ui_quantity | escape }}" data-product-quantity>
+              <button type="button" data-step="1" aria-label="{{ ui_increase | escape }}">+</button>
+            </div>
+            <button id="BesjaarMainAdd-{{ section.id }}" type="submit" class="ind-bj-pd__add" data-product-submit data-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}" {% unless current_variant.available %}disabled{% endunless %}>
+              <span>{% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          {%- if current_variant.available -%}
+            <div class="ind-bj-pd__instant">
+              <span>{{ ui_buy_now }}</span>
+              {{ form | payment_button }}
+            </div>
+          {%- endif -%}
+        {%- endform -%}
+        <div class="nova-product-form-status" role="status" aria-live="polite" aria-atomic="true" data-product-form-status></div>
+
+        <div class="ind-bj-pd__trust">
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm10 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+            <span>{{ ui_shipping }}</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.34-5.66L20 7.68M20 3v5h-5"/></svg>
+            <span>{{ ui_returns }}</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6zM9 12l2 2 4-4"/></svg>
+            <span>{{ ui_warranty }}</span>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2M5 10h14v11H5z"/></svg>
+            <span>{{ ui_secure }}</span>
+          </div>
+        </div>
+
+        {%- comment -%}Besjaar 11.6: concrete "order before {cutoff}, delivered {date}" promise on the live buy box — the module existed but was only rendered in the cart drawer.{%- endcomment -%}
+        {% if settings.show_delivery_estimates %}
+          {% render 'delivery-promise', context: 'product' %}
+        {% endif %}
+
+        {% if template.suffix == 'shower' %}
+          <a class="nova-product-model-finder-link" href="#besjaar-model-finder">
+            <span aria-hidden="true">⌁</span>
+            <span><strong>{{ 'nova.product.find_model_title' | t }}</strong><small>{{ 'nova.product.find_model_copy' | t }}</small></span>
+            <i aria-hidden="true">→</i>
+          </a>
+        {% endif %}
+
+        <div class="ind-bj-pd__details" id="besjaar-product-details">
+          <details open>
+            <summary>{{ ui_desc }}</summary>
+            <div>{{ product.description }}</div>
+          </details>
+          <details id="besjaar-product-installation-{{ section.id }}">
+            <summary>{{ ui_install }}</summary>
+            <div><p>{{ ui_install_body }}</p></div>
+          </details>
+          <details>
+            <summary>{{ ui_care }}</summary>
+            <div><p>{{ ui_care_body }}</p></div>
+          </details>
+          {%- for block in section.blocks -%}
+            <details {{ block.shopify_attributes }}>
+              <summary>{{ block.settings.title | escape }}</summary>
+              <div>{% if block.settings.use_description %}{{ product.description }}{% else %}{{ block.settings.body }}{% endif %}</div>
+            </details>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ind-bj-pd__sticky" id="BesjaarSticky-{{ section.id }}" aria-hidden="true">
+    <div class="ind-bj-pd__sticky-copy">
+      <strong>{{ display_title | replace: '&amp;', '&' | escape_once }}</strong>
+      <span id="BesjaarStickyPrice-{{ section.id }}">{{ current_variant.price | money }}</span>
+    </div>
+    <button type="submit" form="{{ form_id }}" class="ind-bj-pd__sticky-add" data-sticky-submit tabindex="-1" {% unless current_variant.available %}disabled{% endunless %}>
+      {% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}
+    </button>
+  </div>
+</section>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-besjaar-product-section="{{ section.id }}"]');
+  if (!root) return;
+  var mainImage = document.getElementById('BesjaarMainImage-{{ section.id }}');
+  var thumbs = document.getElementById('BesjaarThumbs-{{ section.id }}');
+  if (thumbs && mainImage) {
+    var thumbButtons = Array.prototype.slice.call(thumbs.querySelectorAll('.ind-bj-pd__thumb'));
+    var showThumb = function (btn) {
+      if (!btn) return;
+      mainImage.src = btn.dataset.src;
+      mainImage.srcset = btn.dataset.srcSmall + ' 700w, ' + btn.dataset.src + ' 1600w';
+      mainImage.alt = btn.dataset.alt || '';
+      thumbButtons.forEach(function (item) {
+        item.setAttribute('aria-current', item === btn ? 'true' : 'false');
+      });
+      try {
+        var besjaarReduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        btn.scrollIntoView({ behavior: besjaarReduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+      } catch (e) {}
+    };
+    var moveGallery = function (direction) {
+      if (!thumbButtons.length) return;
+      var current = thumbButtons.findIndex(function (item) { return item.getAttribute('aria-current') === 'true'; });
+      if (current < 0) current = 0;
+      var next = (current + direction + thumbButtons.length) % thumbButtons.length;
+      showThumb(thumbButtons[next]);
+    };
+    thumbs.addEventListener('click', function (event) {
+      var btn = event.target.closest('.ind-bj-pd__thumb');
+      if (!btn) return;
+      showThumb(btn);
+    });
+    thumbs.addEventListener('keydown', function (event) {
+      var btn = event.target.closest('.ind-bj-pd__thumb');
+      if (!btn) return;
+      var current = thumbButtons.indexOf(btn);
+      var next = current;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % thumbButtons.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + thumbButtons.length) % thumbButtons.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = thumbButtons.length - 1;
+      else return;
+      event.preventDefault();
+      showThumb(thumbButtons[next]);
+      thumbButtons[next].focus();
+    });
+
+    var stage = document.getElementById('BesjaarStage-{{ section.id }}');
+    if (stage && thumbButtons.length > 1) {
+      var startX = 0;
+      var startY = 0;
+      var pointerId = null;
+      stage.addEventListener('pointerdown', function (event) {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startY = event.clientY;
+        stage.classList.add('is-dragging');
+        try { stage.setPointerCapture(pointerId); } catch (e) {}
+      });
+      stage.addEventListener('pointerup', function (event) {
+        if (pointerId !== null && event.pointerId !== pointerId) return;
+        var dx = event.clientX - startX;
+        var dy = event.clientY - startY;
+        stage.classList.remove('is-dragging');
+        pointerId = null;
+        if (Math.abs(dx) >= 44 && Math.abs(dx) > Math.abs(dy) * 1.15) moveGallery(dx < 0 ? 1 : -1);
+      });
+      stage.addEventListener('pointercancel', function () {
+        stage.classList.remove('is-dragging');
+        pointerId = null;
+      });
+    }
+  }
+
+  root.querySelectorAll('[data-besjaar-qty]').forEach(function (qty) {
+    qty.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-step]');
+      if (!button) return;
+      var input = qty.querySelector('input');
+      var next = (parseInt(input.value, 10) || 1) + parseInt(button.dataset.step, 10);
+      input.value = Math.max(next, parseInt(input.min, 10) || 1);
+    });
+  });
+
+  var variantSelect = document.getElementById('BesjaarVariant-{{ section.id }}');
+  var price = document.getElementById('BesjaarPrice-{{ section.id }}');
+  var stickyPrice = document.getElementById('BesjaarStickyPrice-{{ section.id }}');
+  var comparePrice = document.getElementById('BesjaarCompare-{{ section.id }}');
+  var sale = document.getElementById('BesjaarSale-{{ section.id }}');
+  var stock = root.querySelector('[data-product-stock]');
+  var stockLabel = root.querySelector('[data-product-stock-label]');
+  var mainAdd = document.getElementById('BesjaarMainAdd-{{ section.id }}');
+  var sticky = document.getElementById('BesjaarSticky-{{ section.id }}');
+  var stickyAdd = sticky ? sticky.querySelector('.ind-bj-pd__sticky-add') : null;
+  var addLabel = {{ ui_add | json }};
+  var soldOutLabel = {{ ui_sold_out | json }};
+  if (variantSelect) {
+    variantSelect.addEventListener('change', function () {
+      var option = variantSelect.options[variantSelect.selectedIndex];
+      var available = option.dataset.available === 'true';
+      var inventory = parseInt(option.dataset.inventoryQuantity || '0', 10);
+      var lowStock = available && option.dataset.inventoryManaged === 'true' && inventory > 0 && inventory <= 5;
+      if (price) price.textContent = option.dataset.price;
+      if (stickyPrice) stickyPrice.textContent = option.dataset.price;
+      if (comparePrice) {
+        var compareValue = comparePrice.querySelector('[data-compare-value]');
+        (compareValue || comparePrice).textContent = option.dataset.comparePrice || '';
+        comparePrice.hidden = !option.dataset.comparePrice;
+      }
+      root.querySelectorAll('[data-sale-price-prefix]').forEach(function (salePrefix) {
+        salePrefix.hidden = !option.dataset.comparePrice;
+      });
+      if (sale) {
+        sale.textContent = option.dataset.savings ? {{ ui_save | append: ' ' | json }} + option.dataset.savings : '';
+        sale.hidden = !option.dataset.savings;
+      }
+      if (stock) {
+        stock.classList.toggle('is-low', lowStock);
+        stock.classList.toggle('is-out', !available);
+      }
+      if (stockLabel) stockLabel.textContent = available ? (lowStock ? root.dataset.lowStockLabel : root.dataset.inStockLabel) : root.dataset.soldOutLabel;
+      if (mainAdd) {
+        mainAdd.disabled = !available;
+        mainAdd.dataset.variantAvailable = available ? 'true' : 'false';
+        var currentMainAddLabel = mainAdd.querySelector('span:first-child');
+        if (currentMainAddLabel) currentMainAddLabel.textContent = available ? addLabel : soldOutLabel;
+      }
+      if (stickyAdd) {
+        stickyAdd.disabled = !available;
+        stickyAdd.textContent = available ? addLabel : soldOutLabel;
+      }
+      if (mainImage && option.dataset.image) {
+        mainImage.src = option.dataset.image;
+        mainImage.srcset = option.dataset.imageSmall + ' 700w, ' + option.dataset.image + ' 1600w';
+        mainImage.alt = option.dataset.imageAlt || mainImage.alt;
+        if (thumbs && option.dataset.mediaId) {
+          var matchingThumb = thumbs.querySelector('[data-media-id="' + option.dataset.mediaId + '"]');
+          if (matchingThumb) showThumb(matchingThumb);
+        }
+      }
+      try {
+        var nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('variant', option.value);
+        window.history.replaceState({}, '', nextUrl.toString());
+      } catch (error) {}
+      /* Besjaar 11.6: keep the back-in-stock module and the Q&A form in sync
+         with the selected variant — the restock form must appear for sold-out
+         variants and always submit the variant the shopper is looking at. */
+      document.querySelectorAll('[data-restock-section]').forEach(function (restockSection) {
+        restockSection.hidden = available;
+      });
+      document.querySelectorAll('[data-restock-variant], [data-qa-variant]').forEach(function (variantField) {
+        variantField.value = option.value;
+      });
+      document.dispatchEvent(new CustomEvent('nova:variant-change', { detail: { id: option.value, variantId: option.value, available: available, price: Number(option.dataset.priceCents || 0) } }));
+    });
+  }
+
+  if (sticky && mainAdd && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      var show = !entries[0].isIntersecting && window.scrollY > 180;
+      sticky.classList.toggle('is-visible', show);
+      sticky.setAttribute('aria-hidden', show ? 'false' : 'true');
+      if (stickyAdd) stickyAdd.tabIndex = show ? 0 : -1;
+    }, { threshold: 0.2 });
+    observer.observe(mainAdd);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Besjaar premium product",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "checkbox", "id": "enable_image_zoom", "label": "Enable product image zoom", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "accordion",
+      "name": "Extra accordion",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "More information" },
+        { "type": "checkbox", "id": "use_description", "label": "Use product description", "default": false },
+        { "type": "richtext", "id": "body", "label": "Content", "default": "<p>Add additional product information here.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Besjaar premium product" }]
+}
+{% endschema %}

@@ -1,0 +1,41 @@
+{%- liquid
+  assign nova_link = link
+  assign nova_title = nova_link.title
+  assign nova_url = nova_link.url | downcase
+  assign nova_title_lc = nova_title | downcase | strip
+
+  if nova_url contains '/collections/'
+    assign nova_collection_handle = nova_url | split: '/collections/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+    if collections[nova_collection_handle] != blank
+      capture nova_title
+        render 'localized-collection-title', collection: collections[nova_collection_handle]
+      endcapture
+      assign nova_title = nova_title | strip
+    elsif nova_collection_handle == 'all'
+      assign nova_title = 'nova.navigation.all_products' | t
+    endif
+  elsif nova_url contains '/pages/'
+    assign nova_page_handle = nova_url | split: '/pages/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+    if pages[nova_page_handle] != blank
+      capture nova_title
+        render 'localized-page-title', page: pages[nova_page_handle]
+      endcapture
+      assign nova_title = nova_title | strip
+    endif
+  endif
+
+  if nova_title_lc == 'bashar' or nova_title_lc == 'beshear' or nova_title_lc == 'besjar' or nova_title_lc == 'besjaar'
+    assign nova_title = 'Besjaar'
+  elsif nova_title_lc == 'assortiment' or nova_title_lc == 'shop' or nova_title_lc == 'catalogus' or nova_title_lc == 'catalog'
+    assign nova_title = 'nova.navigation.shop' | t
+  elsif nova_title_lc contains 'volg uw bestelling' or nova_title_lc contains 'track your order' or nova_title_lc == 'order tracking'
+    assign nova_title = 'nova.navigation.track_order' | t
+  elsif nova_title_lc contains 'veelgestelde vragen' or nova_title_lc contains 'frequently asked' or nova_title_lc == 'faq'
+    assign nova_title = 'nova.navigation.faq' | t
+  elsif nova_title_lc == 'contact' or nova_title_lc == 'contact us'
+    assign nova_title = 'nova.navigation.contact' | t
+  elsif nova_title_lc == 'over ons' or nova_title_lc == 'about us' or nova_title_lc == 'about'
+    assign nova_title = 'nova.navigation.about' | t
+  endif
+  echo nova_title
+-%}

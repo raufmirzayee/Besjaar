@@ -1,0 +1,14 @@
+{%- liquid
+  assign nova_item = product
+  assign nova_filter = false
+  if nova_item != blank
+    if nova_item.metafields.custom.filter_included != blank
+      assign nova_filter = nova_item.metafields.custom.filter_included.value
+    else
+      assign nova_title = nova_item.title | downcase
+      if nova_title contains 'met filter' or nova_title contains 'with filter' or nova_title contains 'filtered shower'
+        assign nova_filter = true
+      endif
+    endif
+  endif
+-%}{{- nova_filter -}}

@@ -1,0 +1,15 @@
+{% if settings.enable_measurement_layer and settings.analytics_debug_mode %}
+<details class="nova-measurement-debug" data-nova-measurement-debug>
+  <summary>{{ 'nova.analytics.debug_title' | t }}</summary>
+  <div class="nova-measurement-debug__body">
+    <div><span>{{ 'nova.analytics.debug_page' | t }}</span><strong data-nova-debug="page">{{ request.page_type }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_analytics' | t }}</span><strong data-nova-debug="analytics">{{ 'nova.analytics.unknown' | t }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_marketing' | t }}</span><strong data-nova-debug="marketing">{{ 'nova.analytics.unknown' | t }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_preferences' | t }}</span><strong data-nova-debug="preferences">{{ 'nova.analytics.unknown' | t }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_attribution' | t }}</span><strong data-nova-debug="attribution">{{ 'nova.analytics.no_campaign' | t }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_pixel_bridge' | t }}</span><strong data-nova-debug="bridge">{{ 'nova.analytics.unknown' | t }}</strong></div>
+    <div><span>{{ 'nova.analytics.debug_last_event' | t }}</span><strong data-nova-debug="event">{{ 'nova.analytics.debug_waiting' | t }}</strong></div>
+    <p>{{ 'nova.analytics.debug_notice' | t }}</p>
+  </div>
+</details>
+{% endif %}

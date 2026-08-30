@@ -1,0 +1,86 @@
+{% liquid
+  assign nova_context = context | default: 'default'
+  assign nova_section_id = section_id | default: 'global'
+  assign nova_supported_language_count = 0
+  for nova_language in localization.available_languages
+    assign nova_language_code = nova_language.iso_code | downcase | split: '-' | first
+    if nova_language_code == 'nl' or nova_language_code == 'en' or nova_language_code == 'de' or nova_language_code == 'fr'
+      assign nova_supported_language_count = nova_supported_language_count | plus: 1
+    endif
+  endfor
+  assign nova_localization_id = 'NovaLocalization-' | append: nova_context | append: '-' | append: nova_section_id
+  assign nova_active_language_code = localization.language.iso_code | downcase | split: '-' | first
+%}
+{% if settings.enable_markets_localization and nova_supported_language_count > 1 %}
+  <details class="nova-localization nova-localization--language-only nova-localization--direct nova-localization--{{ nova_context }}" data-nova-localization>
+    <summary class="nova-localization__trigger" aria-label="{{ 'nova.markets.change_language' | t | escape }}">
+      <span class="nova-localization__language-flag" aria-hidden="true">
+        {% case nova_active_language_code %}
+          {% when 'nl' %}
+            <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h24v5.333H0z" fill="#AE1C28"/><path d="M0 10.667h24V16H0z" fill="#21468B"/>
+            </svg>
+          {% when 'en' %}
+            <svg class="nova-localization__flag-svg" viewBox="0 0 30 18" role="presentation" focusable="false">
+              <defs><clipPath id="nova-gb-active-{{ nova_context }}-{{ nova_section_id }}"><rect width="30" height="18" rx="2"/></clipPath></defs>
+              <g clip-path="url(#nova-gb-active-{{ nova_context }}-{{ nova_section_id }})"><path fill="#012169" d="M0 0h30v18H0z"/><path stroke="#fff" stroke-width="4" d="m0 0 30 18M30 0 0 18"/><path stroke="#C8102E" stroke-width="2" d="m0 0 30 18M30 0 0 18"/><path fill="#fff" d="M12 0h6v18h-6zM0 6h30v6H0z"/><path fill="#C8102E" d="M13 0h4v18h-4zM0 7h30v4H0z"/></g>
+            </svg>
+          {% when 'de' %}
+            <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#FFCE00"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/>
+            </svg>
+          {% when 'fr' %}
+            <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/>
+            </svg>
+          {% else %}
+            <svg class="nova-localization__flag-svg nova-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
+        {% endcase %}
+      </span>
+      <span class="nova-localization__language-code">{{ nova_active_language_code | upcase }}</span>
+      <svg class="nova-localization__chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1.5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </summary>
+
+    <div class="nova-localization__panel" role="group" aria-label="{{ 'nova.markets.change_language' | t | escape }}">
+      <div class="nova-localization__direct-head"><strong>{{ 'nova.markets.language' | t }}</strong></div>
+
+      {% form 'localization', id: nova_localization_id, class: 'nova-localization__direct-form' %}
+        <div class="nova-localization__choices">
+          {% for language in localization.available_languages %}
+            {% liquid
+              assign nova_option_language_code = language.iso_code | downcase | split: '-' | first
+              assign nova_supported_language = false
+              if nova_option_language_code == 'nl' or nova_option_language_code == 'en' or nova_option_language_code == 'de' or nova_option_language_code == 'fr'
+                assign nova_supported_language = true
+              endif
+              assign nova_is_current_language = false
+              if language.iso_code == localization.language.iso_code
+                assign nova_is_current_language = true
+              endif
+            %}
+            {% if nova_supported_language %}
+              <button class="nova-localization__choice{% if nova_is_current_language %} is-active{% endif %}" type="submit" name="language_code" value="{{ language.iso_code }}" lang="{{ language.iso_code }}" {% if nova_is_current_language %}aria-current="true"{% endif %}>
+                <span class="nova-localization__choice-flag" aria-hidden="true">
+                  {% case nova_option_language_code %}
+                    {% when 'nl' %}
+                      <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h24v5.333H0z" fill="#AE1C28"/><path d="M0 10.667h24V16H0z" fill="#21468B"/></svg>
+                    {% when 'en' %}
+                      <svg class="nova-localization__flag-svg" viewBox="0 0 30 18" role="presentation" focusable="false"><defs><clipPath id="nova-gb-choice-{{ nova_context }}-{{ nova_section_id }}-{{ forloop.index }}"><rect width="30" height="18" rx="2"/></clipPath></defs><g clip-path="url(#nova-gb-choice-{{ nova_context }}-{{ nova_section_id }}-{{ forloop.index }})"><path fill="#012169" d="M0 0h30v18H0z"/><path stroke="#fff" stroke-width="4" d="m0 0 30 18M30 0 0 18"/><path stroke="#C8102E" stroke-width="2" d="m0 0 30 18M30 0 0 18"/><path fill="#fff" d="M12 0h6v18h-6zM0 6h30v6H0z"/><path fill="#C8102E" d="M13 0h4v18h-4zM0 7h30v4H0z"/></g></svg>
+                    {% when 'de' %}
+                      <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#FFCE00"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/></svg>
+                    {% when 'fr' %}
+                      <svg class="nova-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/></svg>
+                    {% else %}
+                      <svg class="nova-localization__flag-svg nova-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
+                  {% endcase %}
+                </span>
+                <span class="nova-localization__choice-copy"><strong>{{ language.endonym_name }}</strong><small>{{ nova_option_language_code | upcase }}</small></span>
+                {% if nova_is_current_language %}<span class="nova-localization__choice-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m3.2 8.2 3 3 6.6-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>{% else %}<span class="nova-localization__choice-arrow" aria-hidden="true">→</span>{% endif %}
+              </button>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endform %}
+    </div>
+  </details>
+{% endif %}

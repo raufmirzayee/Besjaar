@@ -1,0 +1,197 @@
+{% liquid
+  assign lifestyle_image = product.metafields.custom.shower_lifestyle_image.value
+  assign spray_image = product.metafields.custom.shower_spray_modes_image.value
+  assign dimensions_image = product.metafields.custom.shower_dimensions_image.value
+  assign filter_image = product.metafields.custom.shower_filter_detail_image.value
+  assign package_image = product.metafields.custom.shower_package_image.value
+  assign installation_image = product.metafields.custom.shower_installation_image.value
+
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+  assign diameter = product.metafields.custom.diameter_mm.value | default: ''
+  assign hose_length = product.metafields.custom.hose_length_cm.value | default: ''
+  assign connection = product.metafields.custom.connection_size.value | default: ''
+
+  capture filter_capture
+    render 'shower-filter-state', product: product
+  endcapture
+  assign filter_capture = filter_capture | strip
+  assign filter_included = false
+  if filter_capture == 'true'
+    assign filter_included = true
+  endif
+  capture hose_capture
+    render 'shower-hose-state', product: product
+  endcapture
+  assign hose_capture = hose_capture | strip
+  assign hose_included = false
+  if hose_capture == 'true'
+    assign hose_included = true
+  endif
+
+  capture nova_visual_product_title
+    render 'localized-product-title', product: product
+  endcapture
+  assign visual_product_title = nova_visual_product_title | strip
+
+  assign fallback_1 = blank
+  assign fallback_2 = blank
+  assign fallback_3 = blank
+  assign fallback_4 = blank
+  assign fallback_5 = blank
+  assign fallback_count = 0
+  for media in product.media
+    if media.media_type == 'image' and media.id != product.featured_media.id
+      assign fallback_count = fallback_count | plus: 1
+      case fallback_count
+        when 1
+          assign fallback_1 = media
+        when 2
+          assign fallback_2 = media
+        when 3
+          assign fallback_3 = media
+        when 4
+          assign fallback_4 = media
+        when 5
+          assign fallback_5 = media
+      endcase
+    endif
+    if fallback_count >= 5
+      break
+    endif
+  endfor
+
+  assign story_hero = lifestyle_image
+  assign story_hero_specific = true
+  if story_hero == blank
+    assign story_hero = fallback_1
+    assign story_hero_specific = false
+  endif
+
+  assign generic_card_1 = fallback_2
+  assign generic_card_2 = fallback_3
+  assign generic_card_3 = fallback_4
+  assign generic_card_4 = fallback_5
+
+  assign demo_video = blank
+  assign demo_video_type = ''
+  for media in product.media
+    if media.media_type == 'video' or media.media_type == 'external_video'
+      assign demo_video = media
+      assign demo_video_type = media.media_type
+      break
+    endif
+  endfor
+
+  assign has_visual_content = false
+  if story_hero != blank or spray_image != blank or dimensions_image != blank or filter_image != blank or package_image != blank or installation_image != blank or generic_card_1 != blank or demo_video != blank
+    assign has_visual_content = true
+  endif
+  capture nova_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign nova_is_focus = nova_focus_capture | strip
+%}
+
+{% if nova_is_focus == 'true' and has_visual_content %}
+<section class="nova-shower-section nova-shower-visual-story" data-reveal data-story-section>
+  <div class="nova-shell">
+    <div class="nova-shower-heading">
+      <p class="nova-kicker">{{ 'nova.shower.visual_eyebrow' | t }}</p>
+      <h2>{{ 'nova.shower.visual_heading' | t }}</h2>
+      <p>{{ 'nova.shower.visual_copy' | t }}</p>
+    </div>
+
+    <div class="nova-shower-story-metrics" aria-label="{{ 'nova.shower.visual_facts_label' | t | escape }}">
+      {% if spray_modes != blank %}<div class="nova-shower-story-metric"><small>{{ 'nova.product.shower_spray_modes' | t }}</small><strong>{{ spray_modes }}</strong></div>{% endif %}
+      {% if diameter != blank %}<div class="nova-shower-story-metric"><small>{{ 'nova.product.shower_diameter' | t }}</small><strong>Ø {{ diameter }} mm</strong></div>{% endif %}
+      {% if hose_included %}<div class="nova-shower-story-metric"><small>{{ 'nova.product.shower_hose' | t }}</small><strong>{% if hose_length != blank %}{{ hose_length }} cm{% else %}{{ 'nova.common.included' | t }}{% endif %}</strong></div>{% endif %}
+      {% if filter_included %}<div class="nova-shower-story-metric"><small>{{ 'nova.product.shower_filter' | t }}</small><strong>{{ 'nova.common.included' | t }}</strong></div>{% endif %}
+      {% if connection != blank %}<div class="nova-shower-story-metric"><small>{{ 'nova.product.shower_connection' | t }}</small><strong>{{ connection }}</strong></div>{% endif %}
+    </div>
+
+    {% if story_hero != blank %}
+      {% assign story_hero_alt = story_hero.alt | default: visual_product_title %}
+      <figure class="nova-shower-visual-hero">
+        {{ story_hero | image_url: width: 2200 | image_tag: loading: 'lazy', widths: '720, 1080, 1440, 1800, 2200', sizes: '(min-width: 1100px) 1200px, 100vw', alt: story_hero_alt }}
+        <figcaption>
+          <span>{% if story_hero_specific %}{{ 'nova.shower.visual_lifestyle_label' | t }}{% else %}{{ 'nova.shower.visual_detail_label' | t }}{% endif %}</span>
+          <strong>{% if story_hero_specific %}{{ visual_product_title }}{% else %}{{ 'nova.shower.visual_detail_heading' | t }}{% endif %}</strong>
+        </figcaption>
+      </figure>
+    {% endif %}
+
+    <div class="nova-shower-visual-grid">
+      {% if spray_image != blank %}
+        {% assign spray_alt = spray_image.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card nova-shower-visual-card--feature">
+          <div class="nova-shower-visual-card__media">{{ spray_image | image_url: width: 1500 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1500', sizes: '(min-width: 900px) 55vw, 100vw', alt: spray_alt }}</div>
+          <figcaption><span>{{ 'nova.shower.visual_spray_label' | t }}</span><strong>{% if spray_modes != blank %}{{ 'nova.shower.spray_modes_title' | t: count: spray_modes }}{% else %}{{ 'nova.shower.visual_spray_heading' | t }}{% endif %}</strong><p>{{ 'nova.shower.visual_spray_copy' | t }}</p></figcaption>
+        </figure>
+      {% elsif generic_card_1 != blank %}
+        {% assign generic_alt_1 = generic_card_1.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card nova-shower-visual-card--feature nova-shower-visual-card--generic">
+          <div class="nova-shower-visual-card__media">{{ generic_card_1 | image_url: width: 1500 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1500', sizes: '(min-width: 900px) 55vw, 100vw', alt: generic_alt_1 }}</div>
+          <figcaption><span>{{ 'nova.shower.visual_detail_label' | t }}</span><strong>{{ 'nova.shower.visual_comfort_heading' | t }}</strong><p>{{ 'nova.shower.visual_comfort_copy' | t }}</p></figcaption>
+        </figure>
+      {% endif %}
+
+      {% if dimensions_image != blank %}
+        {% assign dimensions_alt = dimensions_image.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card">
+          <div class="nova-shower-visual-card__media">{{ dimensions_image | image_url: width: 1500 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1500', sizes: '(min-width: 900px) 33vw, 100vw', alt: dimensions_alt }}</div>
+          <figcaption><span>{{ 'nova.shower.visual_dimensions_label' | t }}</span><strong>{% if diameter != blank %}Ø {{ diameter }} mm{% else %}{{ 'nova.shower.visual_dimensions_heading' | t }}{% endif %}</strong><p>{{ 'nova.shower.visual_dimensions_copy' | t }}</p></figcaption>
+        </figure>
+      {% elsif generic_card_2 != blank %}
+        {% assign generic_alt_2 = generic_card_2.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card nova-shower-visual-card--generic"><div class="nova-shower-visual-card__media">{{ generic_card_2 | image_url: width: 1300 | image_tag: loading: 'lazy', widths: '420, 680, 920, 1300', sizes: '(min-width: 900px) 33vw, 100vw', alt: generic_alt_2 }}</div><figcaption><span>{{ 'nova.shower.visual_gallery_label' | t }}</span><strong>{{ 'nova.shower.visual_finish_heading' | t }}</strong><p>{{ 'nova.shower.visual_finish_copy' | t }}</p></figcaption></figure>
+      {% endif %}
+
+      {% if filter_image != blank and filter_included %}
+        {% assign filter_alt = filter_image.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card">
+          <div class="nova-shower-visual-card__media">{{ filter_image | image_url: width: 1500 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1500', sizes: '(min-width: 900px) 33vw, 100vw', alt: filter_alt }}</div>
+          <figcaption><span>{{ 'nova.shower.visual_filter_label' | t }}</span><strong>{{ 'nova.shower.visual_filter_heading' | t }}</strong><p>{{ 'nova.shower.visual_filter_copy' | t }}</p></figcaption>
+        </figure>
+      {% elsif generic_card_3 != blank %}
+        {% assign generic_alt_3 = generic_card_3.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card nova-shower-visual-card--generic"><div class="nova-shower-visual-card__media">{{ generic_card_3 | image_url: width: 1300 | image_tag: loading: 'lazy', widths: '420, 680, 920, 1300', sizes: '(min-width: 900px) 33vw, 100vw', alt: generic_alt_3 }}</div><figcaption><span>{{ 'nova.shower.visual_gallery_label' | t }}</span><strong>{{ 'nova.shower.visual_everyday_heading' | t }}</strong><p>{{ 'nova.shower.visual_everyday_copy' | t }}</p></figcaption></figure>
+      {% endif %}
+
+      {% if package_image != blank %}
+        {% assign package_alt = package_image.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card">
+          <div class="nova-shower-visual-card__media">{{ package_image | image_url: width: 1500 | image_tag: loading: 'lazy', widths: '480, 720, 960, 1200, 1500', sizes: '(min-width: 900px) 33vw, 100vw', alt: package_alt }}</div>
+          <figcaption><span>{{ 'nova.shower.visual_package_label' | t }}</span><strong>{{ 'nova.shower.visual_package_heading' | t }}</strong><p>{{ 'nova.shower.visual_package_copy' | t }}</p></figcaption>
+        </figure>
+      {% elsif generic_card_4 != blank %}
+        {% assign generic_alt_4 = generic_card_4.alt | default: visual_product_title %}
+        <figure class="nova-shower-visual-card nova-shower-visual-card--generic"><div class="nova-shower-visual-card__media">{{ generic_card_4 | image_url: width: 1300 | image_tag: loading: 'lazy', widths: '420, 680, 920, 1300', sizes: '(min-width: 900px) 33vw, 100vw', alt: generic_alt_4 }}</div><figcaption><span>{{ 'nova.shower.visual_gallery_label' | t }}</span><strong>{{ 'nova.shower.visual_closeup_heading' | t }}</strong><p>{{ 'nova.shower.visual_closeup_copy' | t }}</p></figcaption></figure>
+      {% endif %}
+    </div>
+
+    {% if demo_video != blank %}
+      <div class="nova-shower-demo-video" data-story-video>
+        <div class="nova-shower-demo-video__copy"><p class="nova-kicker">{{ 'nova.shower.visual_video_label' | t }}</p><h3>{{ 'nova.shower.visual_video_heading' | t }}</h3><p>{{ 'nova.shower.visual_video_copy' | t }}</p></div>
+        <div class="nova-shower-demo-video__media">
+          {% if demo_video_type == 'video' %}
+            {{ demo_video | video_tag: controls: true, preload: 'metadata', image_size: '1600x', class: 'nova-shower-demo-video__player' }}
+          {% else %}
+            {{ demo_video | external_video_tag: class: 'nova-shower-demo-video__player' }}
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shower visual story",
+  "settings": [],
+  "presets": [{"name":"Shower visual story"}]
+}
+{% endschema %}

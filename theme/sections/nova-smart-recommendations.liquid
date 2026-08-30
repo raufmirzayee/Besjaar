@@ -1,0 +1,252 @@
+{% liquid
+  assign recommendation_source_product = product
+  assign recommendation_context = section.settings.context | default: 'auto'
+
+  if recommendation_context == 'cart' or recommendation_source_product == blank
+    if cart.item_count > 0
+      assign recommendation_source_product = cart.items.first.product
+      if recommendation_context == 'auto'
+        assign recommendation_context = 'cart'
+      endif
+    endif
+  endif
+
+  if recommendation_context == 'auto'
+    assign recommendation_context = 'product'
+  endif
+
+  assign recommendation_product_id = blank
+  if recommendation_source_product != blank
+    assign recommendation_product_id = recommendation_source_product.id
+  endif
+
+  capture nova_range_capture
+    render 'is-shower-range-product', product: recommendation_source_product
+  endcapture
+  assign nova_is_range = nova_range_capture | strip
+  capture nova_source_head_capture
+    render 'is-shower-head', product: recommendation_source_product
+  endcapture
+  assign nova_source_is_head = nova_source_head_capture | strip
+
+  assign recommendation_heading = section.settings.heading
+  assign recommendation_copy = section.settings.copy
+  assign recommendation_kicker = 'nova.intelligence.smart_kicker' | t
+  assign recommendation_badge = 'nova.intelligence.shopify_powered' | t
+
+  if section.settings.use_localized_copy or recommendation_heading == blank
+    if nova_source_is_head == 'true' and recommendation_context == 'product'
+      assign recommendation_heading = 'nova.shower.recommendations.heading' | t
+      assign recommendation_copy = 'nova.shower.recommendations.copy' | t
+      assign recommendation_kicker = 'nova.shower.recommendations.kicker' | t
+    else
+      assign recommendation_heading = 'nova.intelligence.related_heading' | t
+      assign recommendation_copy = 'nova.intelligence.related_copy' | t
+      assign recommendation_kicker = 'nova.intelligence.related_kicker' | t
+    endif
+  endif
+
+  assign fallback_source = settings.shower_collection
+  if fallback_source == blank
+    assign fallback_source = collections['all']
+  endif
+%}
+
+{% if settings.enable_smart_recommendations and nova_is_range == 'true' %}
+  {% assign focused_rendered = 0 %}
+  {% assign rendered_ids = '|' %}
+  {% capture recommendation_cards %}
+    {% comment %}On a shower-head PDP, show alternative Besjaar shower heads first so the section helps with model choice before cross-selling accessories.{% endcomment %}
+    {% if nova_source_is_head == 'true' and recommendation_context == 'product' %}
+      {% for i in (1..5) %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% assign model_key = 'shower_model_' | append: i %}
+        {% assign alternative_model = settings[model_key] %}
+        {% if alternative_model == blank %}{% continue %}{% endif %}
+        {% if recommendation_source_product != blank and alternative_model.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture alternative_token %}|{{ alternative_model.id }}|{% endcapture %}
+        {% if rendered_ids contains alternative_token %}{% continue %}{% endif %}
+        {% capture alternative_is_head_capture %}{% render 'is-shower-head', product: alternative_model %}{% endcapture %}
+        {% assign alternative_is_head = alternative_is_head_capture | strip %}
+        {% if alternative_is_head == 'true' %}
+          {% render 'product-card', product: alternative_model %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: alternative_model.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+
+      {% if focused_rendered < section.settings.products_to_show and fallback_source != blank %}
+        {% for alternative_model in fallback_source.products limit: 30 %}
+          {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+          {% if recommendation_source_product != blank and alternative_model.id == recommendation_source_product.id %}{% continue %}{% endif %}
+          {% capture alternative_token %}|{{ alternative_model.id }}|{% endcapture %}
+          {% if rendered_ids contains alternative_token %}{% continue %}{% endif %}
+          {% capture alternative_is_head_capture %}{% render 'is-shower-head', product: alternative_model %}{% endcapture %}
+          {% assign alternative_is_head = alternative_is_head_capture | strip %}
+          {% if alternative_is_head == 'true' %}
+            {% render 'product-card', product: alternative_model %}
+            {% assign focused_rendered = focused_rendered | plus: 1 %}
+            {% assign rendered_ids = rendered_ids | append: alternative_model.id | append: '|' %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+
+    {% comment %}Fill remaining slots with relevant shower accessories, then Shopify recommendations and fallback range products.{% endcomment %}
+    {% if focused_rendered < section.settings.products_to_show and fallback_source != blank %}
+      {% for fallback_product in fallback_source.products limit: 50 %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% if recommendation_source_product != blank and fallback_product.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture fallback_token %}|{{ fallback_product.id }}|{% endcapture %}
+        {% if rendered_ids contains fallback_token %}{% continue %}{% endif %}
+        {% capture fallback_is_range_capture %}{% render 'is-shower-range-product', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_range = fallback_is_range_capture | strip %}
+        {% capture fallback_is_head_capture %}{% render 'is-shower-head', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_head = fallback_is_head_capture | strip %}
+        {% if fallback_is_range == 'true' and fallback_is_head != 'true' %}
+          {% render 'product-card', product: fallback_product %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: fallback_product.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if focused_rendered < section.settings.products_to_show and fallback_source.handle != 'all' %}
+      {% for fallback_product in collections['all'].products limit: 50 %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% if recommendation_source_product != blank and fallback_product.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture fallback_token %}|{{ fallback_product.id }}|{% endcapture %}
+        {% if rendered_ids contains fallback_token %}{% continue %}{% endif %}
+        {% capture fallback_is_range_capture %}{% render 'is-shower-range-product', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_range = fallback_is_range_capture | strip %}
+        {% capture fallback_is_head_capture %}{% render 'is-shower-head', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_head = fallback_is_head_capture | strip %}
+        {% if fallback_is_range == 'true' and fallback_is_head != 'true' %}
+          {% render 'product-card', product: fallback_product %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: fallback_product.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if recommendations.performed? and recommendations.products_count > 0 %}
+      {% for recommended_product in recommendations.products %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% capture recommended_is_range_capture %}{% render 'is-shower-range-product', product: recommended_product %}{% endcapture %}
+        {% assign recommended_is_range = recommended_is_range_capture | strip %}
+        {% if recommended_is_range == 'true' and recommended_product.id != recommendation_source_product.id %}
+          {% capture recommended_token %}|{{ recommended_product.id }}|{% endcapture %}
+          {% unless rendered_ids contains recommended_token %}
+            {% render 'product-card', product: recommended_product %}
+            {% assign focused_rendered = focused_rendered | plus: 1 %}
+            {% assign rendered_ids = rendered_ids | append: recommended_product.id | append: '|' %}
+          {% endunless %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if focused_rendered < section.settings.products_to_show and fallback_source != blank %}
+      {% for fallback_product in fallback_source.products limit: 50 %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% if recommendation_source_product != blank and fallback_product.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture fallback_token %}|{{ fallback_product.id }}|{% endcapture %}
+        {% if rendered_ids contains fallback_token %}{% continue %}{% endif %}
+        {% capture fallback_is_head_capture %}{% render 'is-shower-head', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_head = fallback_is_head_capture | strip %}
+        {% if fallback_is_head == 'true' %}
+          {% render 'product-card', product: fallback_product %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: fallback_product.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% comment %}If the chosen collection is incomplete, fill from all published products too.{% endcomment %}
+    {% if focused_rendered < section.settings.products_to_show and fallback_source.handle != 'all' %}
+      {% for fallback_product in collections['all'].products limit: 50 %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% if recommendation_source_product != blank and fallback_product.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture fallback_token %}|{{ fallback_product.id }}|{% endcapture %}
+        {% if rendered_ids contains fallback_token %}{% continue %}{% endif %}
+        {% capture fallback_is_range_capture %}{% render 'is-shower-range-product', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_range = fallback_is_range_capture | strip %}
+        {% capture fallback_is_head_capture %}{% render 'is-shower-head', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_head = fallback_is_head_capture | strip %}
+        {% if fallback_is_range == 'true' and fallback_is_head != 'true' %}
+          {% render 'product-card', product: fallback_product %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: fallback_product.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if focused_rendered < section.settings.products_to_show and fallback_source.handle != 'all' %}
+      {% for fallback_product in collections['all'].products limit: 50 %}
+        {% if focused_rendered >= section.settings.products_to_show %}{% break %}{% endif %}
+        {% if recommendation_source_product != blank and fallback_product.id == recommendation_source_product.id %}{% continue %}{% endif %}
+        {% capture fallback_token %}|{{ fallback_product.id }}|{% endcapture %}
+        {% if rendered_ids contains fallback_token %}{% continue %}{% endif %}
+        {% capture fallback_is_head_capture %}{% render 'is-shower-head', product: fallback_product %}{% endcapture %}
+        {% assign fallback_is_head = fallback_is_head_capture | strip %}
+        {% if fallback_is_head == 'true' %}
+          {% render 'product-card', product: fallback_product %}
+          {% assign focused_rendered = focused_rendered | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: fallback_product.id | append: '|' %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endcapture %}
+
+  {% assign has_results = false %}
+  {% if focused_rendered > 0 %}{% assign has_results = true %}{% endif %}
+
+  {% if recommendation_product_id != blank or has_results %}
+  <section
+    class="nova-smart-recommendations nova-smart-recommendations--related{% if section.settings.layout == 'compact' %} nova-smart-recommendations--compact{% endif %}"
+    id="NovaRecommendations-{{ section.id }}"
+    data-nova-recommendations
+    data-section-key="{{ section.id }}"
+    data-recommendation-intent="related"
+    data-recommendations-loaded="{% if recommendations.performed? or recommendation_product_id == blank %}true{% else %}false{% endif %}"
+    data-has-results="{% if has_results %}true{% else %}false{% endif %}"
+    {% if recommendation_product_id != blank %}{% unless recommendations.performed? %}data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ recommendation_product_id }}&limit={{ section.settings.products_to_show }}&intent=related"{% endunless %}{% endif %}
+  >
+    {% if has_results %}
+      <div class="nova-shell">
+        <div class="nova-smart-recommendations__surface">
+          <div class="nova-smart-recommendations__head">
+            <div>
+              <p class="nova-kicker">{{ recommendation_kicker }}</p>
+              <h2>{{ recommendation_heading }}</h2>
+              {% if recommendation_copy != blank %}<p>{{ recommendation_copy }}</p>{% endif %}
+              {% if nova_source_is_head == 'true' and recommendation_context == 'product' %}<a class="nova-recommendations__finder-link" href="#besjaar-model-finder">{{ 'nova.shower.recommendations.finder_link' | t }} →</a>{% endif %}
+            </div>
+            {% if section.settings.show_data_badge and recommendations.performed? and recommendations.products_count > 0 %}<span class="nova-recommendations__badge">{{ recommendation_badge }}</span>{% endif %}
+          </div>
+          <div class="nova-recommendations__grid nova-recommendations__grid--{{ section.settings.layout }}">
+            {{ recommendation_cards }}
+          </div>
+        </div>
+      </div>
+    {% elsif request.design_mode %}
+      <div class="nova-shell"><div class="nova-editor-note"><strong>{{ 'nova.intelligence.recommendations_editor_heading' | t }}</strong><p>{{ 'nova.intelligence.recommendations_editor_copy' | t }}</p></div></div>
+    {% endif %}
+  </section>
+  {% endif %}
+{% endif %}
+{% schema %}
+{
+  "name":"Shopify recommendations",
+  "settings":[
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"text","id":"heading","label":"Optional custom heading"},
+    {"type":"textarea","id":"copy","label":"Optional custom description"},
+    {"type":"select","id":"context","label":"Recommendation context","default":"auto","options":[{"value":"auto","label":"Automatic"},{"value":"product","label":"Product page"},{"value":"cart","label":"Cart"}]},
+    {"type":"select","id":"layout","label":"Layout","default":"grid","options":[{"value":"grid","label":"Product grid"},{"value":"compact","label":"Compact cross-sell"}]},
+    {"type":"range","id":"products_to_show","label":"Products to show","min":2,"max":6,"step":1,"default":4},
+    {"type":"checkbox","id":"show_data_badge","label":"Show Shopify recommendation badge","default":false},
+    {"type":"paragraph","content":"Shopify related recommendations are used first. If Shopify returns fewer products, Nova automatically fills the remaining slots from the active Besjaar shower range, prioritising accessories such as the shower filter before showing more showerheads."}
+  ],
+  "presets":[{"name":"Shopify recommendations"}]
+}
+{% endschema %}

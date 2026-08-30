@@ -1,0 +1,12 @@
+{% liquid
+  assign nova_focus_match = false
+  if product != blank
+    capture nova_family_capture
+      render 'product-family', product: product
+    endcapture
+    assign nova_family = nova_family_capture | strip
+    if nova_family == 'shower'
+      assign nova_focus_match = true
+    endif
+  endif
+%}{{ nova_focus_match }}

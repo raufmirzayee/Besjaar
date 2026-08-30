@@ -1,0 +1,42 @@
+<section class="nova-section nova-auth-page nova-auth-v41">
+  <div class="nova-shell nova-auth-v41__shell">
+    <div class="nova-auth-v41__intro">
+      <div>
+        <p class="nova-kicker">{{ 'nova.account.customer_space' | t }}</p>
+        <h1>{{ 'nova.account.login_title_v41' | t }}</h1>
+        <p>{{ 'nova.account.login_copy_v41' | t }}</p>
+      </div>
+      <div class="nova-auth-v41__benefits">
+        <div><span aria-hidden="true">01</span><strong>{{ 'nova.account.orders_tracking' | t }}</strong><p>{{ 'nova.account.orders_tracking_copy' | t }}</p></div>
+        <div><span aria-hidden="true">02</span><strong>{{ 'nova.account.delivery_details' | t }}</strong><p>{{ 'nova.account.delivery_details_copy' | t }}</p></div>
+      </div>
+    </div>
+
+    <div class="nova-auth-v41__card">
+      <div class="nova-auth-v41__card-head"><span>{{ 'nova.account.sign_in' | t }}</span><h2>{{ 'nova.account.welcome_back' | t }}</h2><p>{{ 'nova.account.login_copy' | t }}</p></div>
+      {% form 'customer_login' %}
+        <div class="nova-auth-fields">
+          <div><label class="nova-label" for="CustomerEmail">Email</label><input class="nova-input" id="CustomerEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+          <div><label class="nova-label" for="CustomerPassword">{{ 'nova.account.password' | t }}</label><input class="nova-input" id="CustomerPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+          <button class="nova-button nova-button--primary nova-auth-v41__submit" type="submit">{{ 'nova.account.login' | t }}</button>
+        </div>
+        {% if form.errors %}<div class="nova-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+      <div class="nova-auth-v41__join"><span>{{ 'nova.account.new_to_besjaar' | t }}</span><a href="{{ routes.account_register_url }}">{{ 'nova.account.create' | t }} →</a></div>
+      <details class="nova-recovery nova-auth-v41__recovery">
+        <summary>{{ 'nova.account.forgot_password' | t }}</summary>
+        {% form 'recover_customer_password' %}
+          <p>{{ 'nova.account.recovery_copy' | t }}</p>
+          <label class="nova-label" for="RecoverEmail">Email</label>
+          <input class="nova-input" id="RecoverEmail" type="email" name="email" autocomplete="email" required>
+          <button class="nova-button nova-button--ghost" type="submit">{{ 'nova.account.send_recovery' | t }}</button>
+          {% if form.posted_successfully? %}<div class="nova-form-message nova-form-message--success" role="status" aria-live="polite">{{ 'nova.account.recovery_sent' | t }}</div>{% endif %}
+        {% endform %}
+      </details>
+      <p class="nova-auth-v41__guest">{{ 'nova.account.guest_checkout_note' | t }}</p>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Login","settings":[]}
+{% endschema %}

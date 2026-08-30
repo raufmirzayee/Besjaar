@@ -1,0 +1,48 @@
+{%- comment -%}
+  Besjaar 11.6.18 — footer assurance band.
+
+  Was three chunky cards, each a third of a phone screen tall, icon stacked
+  above centred text. Now one quiet band: three columns divided by hairlines,
+  no card chrome, a small sky icon disc per item. Roughly a tenth of the
+  height, and it reads as a reassurance line rather than a feature section.
+
+  Phones: icon above a short label, centred, supporting line small beneath.
+  From 700px: icon to the left of the text, left aligned, larger type.
+
+  Selectors are deliberately specific — the earlier footer rules in the
+  desktop carrier were being outranked here.
+{%- endcomment -%}
+<style id="besjaar-footer-1170">
+body .ind-foot.ind-foot--editorial .ind-foot__assurance{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;margin-bottom:0!important;padding-top:22px!important;padding-bottom:22px!important;border:0!important;border-bottom:1px solid rgba(255,255,255,.08)!important;background:transparent!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-width:0!important;min-height:0!important;margin:0!important;padding:4px 8px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;text-align:center!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item + .ind-foot__assurance-item{border-left:1px solid rgba(255,255,255,.1)!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item>span{flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:30px!important;height:30px!important;margin:0!important;border-radius:50%!important;background:rgba(140,200,236,.12)!important;color:var(--bj-sky,#8CC8EC)!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item>span svg{width:15px!important;height:15px!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item p{display:flex!important;flex-direction:column!important;align-items:center!important;gap:2px!important;margin:0!important;min-width:0!important;text-align:center!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item strong{display:block!important;color:#FFFFFF!important;font-size:.74rem!important;font-weight:600!important;line-height:1.3!important;letter-spacing:-.005em!important;overflow-wrap:anywhere!important}
+body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item small{display:block!important;color:rgba(255,255,255,.52)!important;font-size:.64rem!important;line-height:1.35!important}
+@media (min-width:700px){
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance{padding-top:34px!important;padding-bottom:30px!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item{flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:14px!important;padding:6px 22px!important;text-align:left!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item:first-child{padding-left:0!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item>span{width:38px!important;height:38px!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item>span svg{width:19px!important;height:19px!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item p{align-items:flex-start!important;text-align:left!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item strong{font-size:.95rem!important}
+  body .ind-foot.ind-foot--editorial .ind-foot__assurance .ind-foot__assurance-item small{font-size:.78rem!important}
+}
+</style>
+{% schema %}
+{
+  "name": "Besjaar footer polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: the footer assurance block is one hairline-divided band of three columns instead of three stacked cards — compact on phones, icon-left rows from 700px. Keep in the header group after the desktop section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

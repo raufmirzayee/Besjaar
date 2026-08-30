@@ -1,0 +1,53 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "club": {
+      "type": "nova-club",
+      "blocks": {
+        "b1": {
+          "type": "benefit",
+          "settings": {
+            "icon": "◎",
+            "title": "Your member hub",
+            "text": "Use your account for orders, saved shopping and profile details."
+          }
+        },
+        "b2": {
+          "type": "benefit",
+          "settings": {
+            "icon": "◇",
+            "title": "Real rewards only",
+            "text": "Points, tiers and discounts are shown only when supplied by a connected loyalty provider."
+          }
+        },
+        "b3": {
+          "type": "benefit",
+          "settings": {
+            "icon": "↗",
+            "title": "Referral ready",
+            "text": "A referral program can be connected here without rebuilding the storefront."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3"
+      ],
+      "settings": {
+        "use_localized_copy": true
+      }
+    }
+  },
+  "order": [
+    "club"
+  ]
+}

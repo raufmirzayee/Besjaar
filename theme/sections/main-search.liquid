@@ -1,0 +1,98 @@
+{% liquid
+  assign shower_collection = section.settings.fallback_collection | default: settings.shower_collection
+  assign visible_products = 0
+  if shower_collection == blank
+    assign shower_collection = collections['badkamer-douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['shower']
+  endif
+%}
+<section class="nova-section nova-search-page nova-search-page--five-showers">
+  <div class="nova-shell">
+    <header class="nova-page-head nova-search-page__head">
+      <p class="nova-kicker">{{ 'nova.shower_store.search.kicker' | t }}</p>
+      <h1 class="nova-title">{{ 'nova.search.title' | t }}</h1>
+      <p class="nova-copy">{{ 'nova.shower_store.search.intro' | t }}</p>
+    </header>
+
+    <form class="nova-search-form nova-search-form--hero nova-search-form--predictive" action="{{ routes.search_url }}" method="get" role="search" data-search-capture>
+      <label class="nova-visually-hidden" for="NovaSearchPageInput-{{ section.id }}">{{ 'nova.search.placeholder' | t }}</label>
+      <input class="nova-input" id="NovaSearchPageInput-{{ section.id }}" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'nova.search.placeholder' | t }}" autocomplete="off" role="combobox" aria-haspopup="listbox" aria-autocomplete="list" aria-controls="NovaPredictiveSearchPage-{{ section.id }}" aria-expanded="false" data-predictive-input required>
+      <input name="type" type="hidden" value="product">
+      <input name="options[prefix]" type="hidden" value="last">
+      <button class="nova-button nova-button--primary" type="submit">{{ 'nova.search.button' | t }}</button>
+    </form>
+    <div class="nova-predictive nova-predictive--page" id="NovaPredictiveSearchPage-{{ section.id }}" aria-live="polite" data-predictive-results hidden></div>
+
+    {% if settings.show_search_popular %}
+      <div class="nova-search-discovery nova-search-discovery--page nova-search-discovery--shower-only">
+        <div class="nova-search-discovery__block">
+          <div class="nova-search-discovery__head"><span>{{ 'nova.search.popular' | t }}</span></div>
+          <div class="nova-search-shortcuts">
+            {% assign nova_popular_terms = 'nova.search.popular_terms' | t | split: ',' %}
+            {% for term in nova_popular_terms %}{% assign clean_term = term | strip %}{% if clean_term != blank %}<a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=last&q={{ clean_term | url_encode }}">{{ clean_term }}</a>{% endif %}{% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if search.performed %}
+      <div data-search-performed-term="{{ search.terms | escape }}" hidden></div>
+      <div class="nova-search-results">
+        {% paginate search.results by 50 %}
+          {% assign visible_products = 0 %}
+          {% capture result_cards %}
+            {% for item in search.results %}
+              {% if item.object_type == 'product' %}
+                {% capture is_head_capture %}{% render 'is-focus-showerhead', product: item %}{% endcapture %}
+                {% assign is_head = is_head_capture | strip %}{% if is_head == 'true' %}
+                  {% render 'product-card', product: item %}
+                  {% assign visible_products = visible_products | plus: 1 %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endcapture %}
+
+          {% if visible_products > 0 %}
+            <div class="nova-heading-row nova-search-results__heading">
+              <div><p class="nova-kicker">{{ 'nova.shower_store.search.results' | t }}</p><h2 class="nova-subtitle">“{{ search.terms | escape }}”</h2></div>
+              <span class="nova-search-five-count">{{ visible_products }}</span>
+            </div>
+            <div class="nova-grid nova-grid--4 nova-search-products">{{ result_cards }}</div>
+            {% if paginate.pages > 1 %}<nav class="nova-pagination" aria-label="{{ 'nova.accessibility.pagination' | t | escape }}">{% if paginate.previous %}<a href="{% render 'localized-internal-url', url: paginate.previous.url %}" aria-label="{{ 'nova.accessibility.previous_page' | t | escape }}">←</a>{% endif %}{% for part in paginate.parts %}{% if part.is_link %}<a href="{% render 'localized-internal-url', url: part.url %}">{{ part.title }}</a>{% else %}<span {% if part.title == paginate.current_page %}class="current" aria-current="page"{% endif %}>{{ part.title }}</span>{% endif %}{% endfor %}{% if paginate.next %}<a href="{% render 'localized-internal-url', url: paginate.next.url %}" aria-label="{{ 'nova.accessibility.next_page' | t | escape }}">→</a>{% endif %}</nav>{% endif %}
+          {% else %}
+            <div class="nova-search-zero"><div><p class="nova-kicker">{{ 'nova.shower_store.search.kicker' | t }}</p><h2>{{ 'nova.shower_store.search.no_results' | t }}</h2><p class="nova-copy">{{ 'nova.shower_store.search.no_results_copy' | t }}</p></div></div>
+          {% endif %}
+        {% endpaginate %}
+      </div>
+    {% endif %}
+
+    {% if search.performed == false or visible_products == 0 %}
+      {% if shower_collection != blank %}
+        <div class="nova-search-five-range">
+          {% capture nova_search_shop_url %}{% render 'shower-store-url' %}{% endcapture %}<div class="nova-heading-row"><div><p class="nova-kicker">{{ 'nova.shower_store.search.range_kicker' | t }}</p><h2 class="nova-subtitle">{{ 'nova.shower_store.search.available' | t }}</h2></div><a class="nova-mini-link" href="{{ nova_search_shop_url | strip }}">{{ 'nova.shower_store.search.browse_all' | t }} →</a></div>
+          <div class="nova-grid nova-grid--4">
+            {% assign shown = 0 %}
+            {% for p in shower_collection.products %}
+              {% if shown >= 12 %}{% break %}{% endif %}
+              {% capture is_head_capture %}{% render 'is-focus-showerhead', product: p %}{% endcapture %}
+              {% assign is_head = is_head_capture | strip %}{% if is_head == 'true' %}{% render 'product-card', product: p %}{% assign shown = shown | plus: 1 %}{% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Showerhead search",
+  "settings":[
+    {"type":"collection","id":"fallback_collection","label":"Showerhead collection"}
+  ]
+}
+{% endschema %}

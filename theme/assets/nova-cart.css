@@ -1,0 +1,170 @@
+/* Nova 5.0 — cart */
+.nova-cart{display:grid;grid-template-columns:1fr 360px;gap:28px;}
+.nova-cart__items{display:grid;gap:12px;}
+.nova-cart-item{display:grid;grid-template-columns:110px 1fr auto;gap:16px;align-items:center;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025);}
+.nova-cart-item img{width:110px;height:110px;object-fit:contain;background:#08100d;border-radius:12px;}
+.nova-cart__summary{position:sticky;top:112px;padding:22px;border:1px solid rgba(255,255,255,.09);border-radius:var(--nova-radius);background:rgba(255,255,255,.035);height:max-content;}
+@media (max-width:1000px){.nova-cart{grid-template-columns:1fr;}.nova-cart__summary{position:static;}}
+@media (max-width:700px){.nova-cart-item{grid-template-columns:80px 1fr;}.nova-cart-item img{width:80px;height:80px;}.nova-cart-item>div:last-child{grid-column:2;}}
+.nova-cart-drawer__line{grid-template-columns:78px minmax(0,1fr) 32px;align-items:start;}
+.nova-cart-drawer__line>a img,.nova-cart-drawer__line>img{width:78px;height:78px;object-fit:contain;border-radius:12px;background:#dbe2e1;padding:5px;}
+.nova-cart-drawer__line-info{min-width:0;}
+.nova-cart-drawer__line-info h3{font-size:.84rem;line-height:1.3;margin:0 0 3px;}
+.nova-cart-drawer__line-info small{display:block;color:var(--nova-muted);font-size:.7rem;}
+.nova-cart-drawer__line-info>strong{display:block;margin-top:6px;font-size:.84rem;}
+.nova-line-quantity{display:inline-grid;grid-template-columns:30px 36px 30px;align-items:center;margin-top:9px;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}
+.nova-line-quantity button{height:30px;border:0;background:rgba(255,255,255,.035);color:var(--nova-text);cursor:pointer;}
+.nova-line-quantity span,.nova-line-quantity input{text-align:center;font-size:.74rem;}
+.nova-line-quantity input{width:44px;height:30px;padding:0;border:0;border-radius:0;background:transparent;}
+.nova-cart-upsell{padding:14px;border:1px solid rgba(182,255,59,.12);border-radius:15px;background:linear-gradient(145deg,rgba(182,255,59,.035),rgba(53,231,216,.025));}
+.nova-cart-upsell__label{margin-bottom:9px;font-size:.65rem;color:var(--nova-muted);text-transform:uppercase;letter-spacing:.1em;}
+.nova-cart-upsell__product{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;}
+.nova-cart-upsell__product img{width:58px;height:58px;object-fit:contain;border-radius:9px;background:#dbe2e1;padding:4px;}
+.nova-cart-upsell__product div{display:grid;gap:3px;}
+.nova-cart-upsell__product strong{font-size:.76rem;line-height:1.25;}
+.nova-cart-upsell__product span{font-size:.72rem;color:var(--nova-muted);}
+.nova-cart-page .nova-cart{align-items:start;}
+.nova-cart-item__commerce{display:grid;justify-items:end;gap:7px;}
+.nova-cart-page .nova-line-quantity{margin:0;}
+.nova-free-shipping--page{margin:10px 0 18px;padding:14px;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.018);}
+.nova-cart-page__upsell{display:grid;grid-template-columns:250px minmax(0,320px);gap:28px;align-items:center;margin-top:50px;padding-top:34px;border-top:1px solid rgba(255,255,255,.06);}
+@media (max-width:1050px){.nova-cart-page__upsell{grid-template-columns:1fr;}}
+@media (max-width:700px){.nova-cart-item{grid-template-columns:76px minmax(0,1fr);}.nova-cart-item__commerce{grid-column:2;justify-items:start;}.nova-cart-page__upsell{margin-top:32px;}}
+.nova-cart-item{background:#fff;border-color:#dfe4da;}
+.nova-cart-item__media{background:#f3f3ed;}
+.nova-cart-item__info a{color:#26342b;}
+.nova-cart-item__commerce{color:#425047;}
+.nova-cart-page{background:transparent;}
+.nova-cart__items,.nova-cart__summary{background:#fff;border-color:#dde3da;box-shadow:var(--nova-shadow-soft);}
+.nova-cart-item{border-bottom-color:#e5e8e2;}
+.nova-cart-page .nova-cart-item__media{background:#f2f3ed;}
+.nova-cart-page .nova-cart__summary{color:#2b392f;}
+.nova-cart-account--page{margin:14px 0;}
+.nova-cart-upsell__label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.nova-cart-upsell__label small{font-size:.62rem;letter-spacing:0;text-transform:none;color:var(--nova-muted);}
+.nova-cart-upsell__rail{display:grid;gap:8px;}
+.nova-cart-upsell__rail .nova-cart-upsell__product{padding-top:8px;border-top:1px solid rgba(23,33,27,.07);}
+.nova-cart-upsell__rail .nova-cart-upsell__product:first-child{padding-top:0;border-top:0;}
+/* Nova 5.4 — exact five-model cart safety */
+.nova-cart-range-warning{margin:14px 0;padding:13px 15px;border:1px solid #d8dfd7;border-radius:14px;background:#f5f7f3;color:#536057;font-size:.78rem;line-height:1.5;font-weight:650;}
+.nova-cart__summary button[name="checkout"][disabled]{opacity:.5;cursor:not-allowed;filter:saturate(.45);}
+
+
+/* Nova 5.4.1 — drawer polish */
+.nova-drawer--cart .nova-cart-drawer__line{display:grid;grid-template-columns:88px minmax(0,1fr) 34px;gap:14px;align-items:start;padding:16px 0;}
+.nova-drawer--cart .nova-cart-drawer__line>a img,.nova-drawer--cart .nova-cart-drawer__line>img{width:88px;height:88px;padding:6px;border-radius:14px;background:#f2f3ee;}
+.nova-drawer--cart .nova-cart-drawer__line-info{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 12px;align-items:start;min-width:0;}
+.nova-drawer--cart .nova-cart-drawer__line-info>a,.nova-drawer--cart .nova-cart-drawer__line-info>small{grid-column:1 / -1;min-width:0;}
+.nova-drawer--cart .nova-cart-drawer__line-info h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;font-size:.8rem;line-height:1.35;letter-spacing:-.01em;}
+.nova-drawer--cart .nova-cart-drawer__line-info>strong{grid-column:1;margin-top:4px;font-size:.92rem;line-height:1.1;color:#243229;}
+.nova-drawer--cart .nova-cart-drawer__line-info>.nova-line-quantity{grid-column:2;justify-self:end;align-self:end;margin-top:0;border:1px solid #dde2da;border-radius:10px;background:#f7f7f2;overflow:hidden;}
+.nova-drawer--cart .nova-cart-drawer__line-info>.nova-line-quantity span{min-width:34px;font-weight:700;}
+.nova-drawer--cart .nova-cart-drawer__line-info>.nova-line-quantity button{width:30px;height:30px;background:#fafaf8;}
+.nova-drawer--cart .nova-drawer__close[data-remove-line]{align-self:start;width:34px;height:34px;border-radius:50%;background:#f5f5f1;color:#415047;}
+@media (max-width:700px){
+  .nova-drawer--cart .nova-cart-drawer__line{grid-template-columns:72px minmax(0,1fr) 28px;gap:10px;padding:12px 0;}
+  .nova-drawer--cart .nova-cart-drawer__line>a img,.nova-drawer--cart .nova-cart-drawer__line>img{width:72px;height:72px;}
+  .nova-drawer--cart .nova-cart-drawer__line-info{grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;}
+  .nova-drawer--cart .nova-cart-drawer__line-info h3{font-size:.78rem;line-height:1.28;}
+  .nova-drawer--cart .nova-cart-drawer__line-info>strong{font-size:.82rem;}
+  .nova-drawer--cart .nova-cart-drawer__line-info>.nova-line-quantity{grid-template-columns:27px 30px 27px;}
+  .nova-drawer--cart .nova-cart-drawer__line-info>.nova-line-quantity button{width:27px;height:28px;}
+}
+
+
+/* Nova 7.2.4 — larger mobile cart product row */
+@media (max-width:700px){
+  .nova-drawer--cart .nova-cart-drawer__line{
+    grid-template-columns:104px minmax(0,1fr) 32px!important;
+    gap:14px!important;
+    padding:18px 0 20px!important;
+    align-items:start!important;
+  }
+  .nova-drawer--cart .nova-cart-drawer__line>a img,
+  .nova-drawer--cart .nova-cart-drawer__line>img{
+    width:104px!important;height:104px!important;padding:6px!important;border-radius:16px!important;
+  }
+  .nova-drawer--cart .nova-cart-drawer__line-info h3{
+    font-size:.94rem!important;line-height:1.34!important;-webkit-line-clamp:3!important;
+  }
+  .nova-drawer--cart .nova-cart-drawer__line-info>strong,
+  .nova-cart-drawer__commerce>strong{font-size:1.02rem!important;}
+  .nova-cart-drawer__commerce>.nova-line-quantity{margin-top:7px!important;}
+  .nova-cart-drawer__commerce>.nova-line-quantity button{width:34px!important;height:34px!important;}
+  .nova-cart-drawer__commerce>.nova-line-quantity span{min-width:38px!important;}
+}
+
+
+/* Nova 7.2.5 — mobile cart multi-item viewport */
+@media (max-width:700px){
+  /* Let the whole cart drawer scroll so the footer cannot squeeze the product list. */
+  .nova-drawer--cart{
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .nova-drawer--cart>.nova-drawer__head{
+    flex:0 0 auto !important;
+    position:sticky;
+    top:0;
+    z-index:12;
+  }
+  .nova-drawer--cart>.nova-drawer__body{
+    flex:0 0 auto !important;
+    min-height:0 !important;
+    overflow:visible !important;
+    width:100% !important;
+    padding:2px 14px 8px !important;
+  }
+  .nova-drawer--cart>.nova-drawer__foot{
+    flex:0 0 auto !important;
+  }
+
+  /* Compact but still readable rows: more than one item is visible at once. */
+  .nova-drawer--cart .nova-cart-drawer__line{
+    grid-template-columns:86px minmax(0,1fr) 30px !important;
+    gap:11px !important;
+    padding:12px 0 13px !important;
+    align-items:start !important;
+  }
+  .nova-drawer--cart .nova-cart-drawer__line>a img,
+  .nova-drawer--cart .nova-cart-drawer__line>img{
+    width:86px !important;
+    height:86px !important;
+    padding:5px !important;
+    border-radius:14px !important;
+  }
+  .nova-drawer--cart .nova-cart-drawer__line-info h3{
+    font-size:.86rem !important;
+    line-height:1.28 !important;
+    -webkit-line-clamp:2 !important;
+    margin-bottom:2px !important;
+  }
+  .nova-cart-drawer__commerce{
+    display:flex !important;
+    align-items:center !important;
+    flex-wrap:nowrap !important;
+    gap:10px !important;
+    margin-top:7px !important;
+  }
+  .nova-cart-drawer__commerce>strong{
+    flex:0 0 auto;
+    font-size:.94rem !important;
+  }
+  .nova-cart-drawer__commerce>.nova-line-quantity{
+    grid-template-columns:28px 32px 28px !important;
+    margin:0 !important;
+  }
+  .nova-cart-drawer__commerce>.nova-line-quantity button{
+    width:28px !important;
+    height:30px !important;
+  }
+  .nova-cart-drawer__commerce>.nova-line-quantity span{
+    min-width:32px !important;
+    font-size:.76rem !important;
+  }
+  .nova-drawer--cart [data-remove-line]{
+    width:30px !important;
+    height:30px !important;
+  }
+}

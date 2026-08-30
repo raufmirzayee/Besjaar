@@ -1,0 +1,836 @@
+/* Besjaar 11.3.0 — Premium Lux layer.
+   Loaded LAST (after besjaar-cart-polish-1140.css) so it sits on top of every
+   earlier generation. Scope pattern: body.nova-polish-v34 / body[data-page-type]
+   plus !important on contested properties, matching the house cascade rules.
+
+   What this layer does:
+   1. Unifies the three coexisting navies (#153252 / #173555 / #173f63) onto the
+      brand pair #153252 / #0f2947 by re-pointing every generation's tokens.
+   2. Introduces the display face Jost (the homepage skin already asked for it
+      but it was never loaded) and true variable-weight Inter.
+   3. Establishes a navy-tinted elevation scale and refined motion.
+   4. Repairs the cart page layout (grid templates existed but display:grid was
+      never declared anywhere, so the page fell back to stacked block flow).
+   5. Removes the remaining violet/green palette leaks (focus rings, ghost
+      hover, FAQ/404/list-collections tints, legacy drawer checkout). */
+
+/* ---------------------------------------------------------------------------
+   1. TOKENS — navy unification + lux scale
+--------------------------------------------------------------------------- */
+:root{
+  --lux-navy:#153252;
+  --lux-navy-deep:#0f2947;
+  --lux-navy-bright:#1d4269;
+  --lux-blue:#8cc8ec;
+  --lux-gold:#d9a441;
+  --lux-ink:#0f1c2e;
+  --lux-line:#e3e9ee;
+  --lux-soft:#f4f8fb;
+  --lux-tint:#eef5fa;
+  --lux-grad-primary:linear-gradient(180deg,#1d4269 0%,#153252 58%,#122b47 100%);
+  --lux-grad-band:linear-gradient(135deg,#0f2947 0%,#153252 52%,#1b3f66 100%);
+  --lux-shadow-xs:0 1px 2px rgba(15,41,71,.05);
+  --lux-shadow-sm:0 2px 6px rgba(15,41,71,.05),0 10px 26px rgba(15,41,71,.07);
+  --lux-shadow-md:0 4px 12px rgba(15,41,71,.06),0 20px 48px rgba(15,41,71,.11);
+  --lux-shadow-lg:0 8px 22px rgba(15,41,71,.08),0 34px 84px rgba(15,41,71,.16);
+  --lux-ring:0 0 0 3px rgba(21,50,82,.14);
+  --lux-ease:cubic-bezier(.22,.61,.36,1);
+  --lux-spring:cubic-bezier(.34,1.3,.44,1);
+  --lux-font-display:'Jost','Jost Fallback',Inter,'Inter Fallback',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --lux-font-text:Inter,'Inter Fallback',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* Re-point every earlier generation's navy to the brand pair. Custom
+     properties cascade normally, so this recolors hundreds of rules at once. */
+  --nova-accent:#153252!important;
+  --nova-accent-2:#0f2947!important;
+  --nova-teal:#153252!important;
+  --nova-sage:#153252!important;
+  --besjaar-navy:#153252!important;
+  --besjaar-navy-deep:#0f2947!important;
+  --besjaar-shadow-sm:var(--lux-shadow-sm)!important;
+  --besjaar-shadow-md:var(--lux-shadow-md)!important;
+  --bs5-navy:#153252!important;
+  --bs5-navy-deep:#0f2947!important;
+  --bc40-navy:#153252!important;
+  --bc40-navy-deep:#0f2947!important;
+  /* Legacy sage-tinted shadows become navy-tinted. */
+  --nova-shadow-xs:0 1px 2px rgba(15,41,71,.06)!important;
+  --nova-shadow-sm:0 8px 22px rgba(15,41,71,.08)!important;
+  --nova-shadow-md:0 16px 38px rgba(15,41,71,.11)!important;
+  --nova-shadow-lg:0 28px 72px rgba(15,41,71,.16)!important;
+  --nova-accent-warm:#9db8d2!important;
+  --bjx-navy:#153252;
+  --bjx-navy-2:#0f2947;
+  --bjx-violet:#153252;
+  --bjx-violet-dark:#0f2947;
+}
+body[data-page-type="index"]{
+  --home-navy:#153252!important;
+  --home-navy-deep:#0f2947!important;
+}
+body[data-page-type="product"]{
+  --besjaar-product-navy:#153252!important;
+  --besjaar-product-navy-dark:#0f2947!important;
+}
+body.nova-polish-v34 .bk-step3{
+  --bk3-navy:#153252!important;
+}
+
+/* ---------------------------------------------------------------------------
+   2. TYPOGRAPHY — Jost display / true-weight Inter text
+--------------------------------------------------------------------------- */
+/* The homepage skin (besjaar-home-step2.css) forces Jost on all .ind content
+   but Jost never loaded, so the page rendered in the OS font. Now that Jost
+   is loaded we keep it for display type and restore Inter for reading copy. */
+body[data-page-type="index"] .ind{font-family:var(--lux-font-text)!important}
+
+/* step2's `.ind h1,h2,h3{font-family:inherit!important}` is (0,2,2) — these
+   heading rules must sit above it, so they carry the element+class chain. */
+body[data-page-type="index"] .ind :is(h1.ind-hero__title,h2.ind-h2,h2.ind-cta__title),
+body[data-page-type="index"] .ind-scene__quote{
+  font-family:var(--lux-font-display)!important;
+  font-weight:600!important;
+  letter-spacing:-.025em!important;
+}
+body[data-page-type="index"] .ind h1.ind-hero__title{letter-spacing:-.03em!important}
+body[data-page-type="index"] .ind-hero__title em{font-style:normal;color:var(--lux-navy)!important}
+body[data-page-type="index"] .ind-specs__stats>div strong{
+  font-family:var(--lux-font-display)!important;
+  font-weight:560!important;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.015em!important;
+}
+
+body.nova-polish-v34 .nova-title,
+body.nova-polish-v34 .ba-cart-head h1,
+body.nova-polish-v34 .bk-collection h1,
+body.nova-polish-v34 .ind-bj-pd__title,
+body.nova-polish-v34 .ind-foot__newsletter h2,
+body.nova-polish-v34 .nova-404__code{
+  font-family:var(--lux-font-display)!important;
+  letter-spacing:-.02em!important;
+}
+body.nova-polish-v34 .ind-bj-pd__title{font-weight:560!important;letter-spacing:-.022em!important}
+body.nova-polish-v34 .bk-collection h1,
+body.nova-polish-v34 .ba-cart-head h1{font-weight:580!important}
+body.nova-polish-v34 .ind-foot__newsletter h2{font-weight:520!important;letter-spacing:-.012em!important}
+
+/* Editorial kickers: quiet caps with wide tracking. */
+body.nova-polish-v34 .nova-kicker,
+body.nova-polish-v34 .ind-kicker{
+  text-transform:uppercase!important;
+  letter-spacing:.16em!important;
+  font-size:.63rem!important;
+  font-weight:700!important;
+}
+
+/* Prices read as engineered numbers. */
+body.nova-polish-v34 .nova-price,
+body.nova-polish-v34 .ind-bj-pd__price,
+body.nova-polish-v34 .ind-bj-pd__compare,
+body.nova-polish-v34 .bp-model-card__price,
+body.nova-polish-v34 .bk-product-card__price,
+body.nova-polish-v34 .ba-cart-line__price,
+body.nova-polish-v34 .ba-cart-summary__row strong,
+body.nova-polish-v34 .nova-cart__total{
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   3. FOCUS, SELECTION, SCROLLBAR
+--------------------------------------------------------------------------- */
+/* Replaces both the green halo from nova-accessibility.css and the violet
+   outline from besjaar-editorial.css. The light inner ring stays: it is what
+   keeps focus perceptible on the navy footer/specs/CTA bands. */
+body.nova-polish-v34 :focus-visible{
+  outline:2px solid var(--lux-navy)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(21,50,82,.22)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__select:focus-visible{
+  outline:2px solid var(--lux-navy)!important;
+  outline-offset:3px!important;
+  border-color:var(--lux-navy)!important;
+}
+body.nova-polish-v34 .nova-search-form .nova-input:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+::selection{background:#153252;color:#fff}
+@supports (scrollbar-width:thin){
+  html{scrollbar-width:thin;scrollbar-color:rgba(21,50,82,.35) transparent}
+}
+
+/* ---------------------------------------------------------------------------
+   4. BUTTONS — gradient primaries, honest press states
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .nova-button--primary,
+body.nova-polish-v34 .ind-btn--primary{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important;
+  transition:box-shadow .22s var(--lux-ease),transform .22s var(--lux-ease),filter .22s var(--lux-ease)!important;
+}
+body.nova-polish-v34 .nova-button--primary:hover,
+body.nova-polish-v34 .ind-btn--primary:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  border-color:#0f2947!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 12px 28px rgba(15,41,71,.24)!important;
+  transform:translateY(-1px)!important;
+}
+body.nova-polish-v34 .nova-button--primary:active,
+body.nova-polish-v34 .ind-btn--primary:active{
+  transform:translateY(0) scale(.99)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 12px rgba(15,41,71,.18)!important;
+}
+/* Hero CTAs carry (0,3,0) inert-hover rules — out-specify them. */
+body[data-page-type="index"] .ind-hero--editorial .ind-btn--primary:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 12px 28px rgba(15,41,71,.24)!important;
+}
+body[data-page-type="index"] .ind-hero--editorial .ind-btn--secondary:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 10px 24px rgba(15,41,71,.10)!important;
+}
+/* Ghost/secondary hover: retire the violet-era lavender tint. */
+body.nova-polish-v34 .nova-button--ghost:hover,
+body.nova-polish-v34 .ind-btn--secondary:hover{
+  background:#f2f7fb!important;
+  border-color:#b7c9d9!important;
+  color:var(--lux-navy)!important;
+}
+/* Predictive-search submit was a near-black off-brand leftover. */
+body.nova-polish-v34 .nova-search-form--predictive .nova-button{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  color:#fff!important;
+}
+
+/* ---------------------------------------------------------------------------
+   5. FORMS — navy focus ring replaces the violet one
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .nova-input:focus,
+body.nova-polish-v34 .nova-select:focus,
+body.nova-polish-v34 .nova-textarea:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+
+/* ---------------------------------------------------------------------------
+   6. HEADER — quiet glass, scroll depth, refined menus
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .nova-header{
+  background:rgba(255,255,255,.92)!important;
+  backdrop-filter:blur(16px) saturate(170%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(170%);
+  transition:box-shadow .3s var(--lux-ease),background .3s var(--lux-ease);
+}
+body.nova-polish-v34 .nova-header.is-scrolled{
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:0 1px 0 rgba(15,41,71,.05),0 12px 32px rgba(15,41,71,.07)!important;
+}
+body.nova-polish-v34 .nova-nav__link{color:var(--lux-navy)!important}
+body.nova-polish-v34 .nova-icon-btn:active{transform:translateY(0) scale(.94)!important}
+body.nova-polish-v34 .nova-announcement{
+  background:var(--lux-grad-band)!important;
+}
+/* The discount-code copy button inherited a navy text color from the token
+   re-point; keep it readable on the navy band in both states. */
+body.nova-polish-v34 .nova-announcement__inner>button{
+  color:#fff!important;
+  border-color:rgba(255,255,255,.35)!important;
+}
+body.nova-polish-v34 .nova-announcement__inner>button.is-copied{
+  background:#fff!important;
+  color:var(--lux-navy)!important;
+}
+/* Mega menu: slightly slower, eased entrance with real depth. */
+body.nova-polish-v34 .nova-shop-mega-wrap .nova-shop-mega{
+  transform:translate(-50%,10px)!important;
+  transition:opacity .26s var(--lux-ease),transform .26s var(--lux-ease),visibility .26s var(--lux-ease)!important;
+  box-shadow:0 24px 60px rgba(15,41,71,.14),0 4px 14px rgba(15,41,71,.05)!important;
+  border-bottom:1px solid var(--lux-line)!important;
+}
+body.nova-polish-v34 .nova-shop-mega-wrap.is-open .nova-shop-mega,
+body.nova-polish-v34 .nova-shop-mega-wrap:hover .nova-shop-mega,
+body.nova-polish-v34 .nova-shop-mega-wrap:focus-within .nova-shop-mega{
+  transform:translate(-50%,0)!important;
+}
+body.nova-polish-v34 .nova-shop-mega__item:hover{
+  background:var(--lux-soft)!important;
+  transform:translateY(-2px);
+}
+body.nova-polish-v34 .nova-more-menu__panel{
+  border-radius:14px!important;
+  box-shadow:0 22px 54px rgba(15,41,71,.15),0 3px 10px rgba(15,41,71,.05)!important;
+}
+/* Cart count pulse (class applied by besjaar-premium-lux.js on count change). */
+@keyframes luxCountPulse{0%{transform:scale(1)}35%{transform:scale(1.3)}100%{transform:scale(1)}}
+body.nova-polish-v34.nova-motion-enabled [data-cart-count].lux-pulse{
+  animation:luxCountPulse .5s var(--lux-spring);
+}
+
+/* ---------------------------------------------------------------------------
+   7. HOMEPAGE — depth, warmth, and staggered life
+--------------------------------------------------------------------------- */
+body[data-page-type="index"] .ind-hero--editorial{
+  background:
+    radial-gradient(1100px 520px at 88% 8%,rgba(140,200,236,.18),transparent 62%),
+    linear-gradient(135deg,#fff 0%,#f7fafc 55%,#e9f2f8 100%)!important;
+}
+body[data-page-type="index"] .ind-hero__image-card{
+  box-shadow:0 30px 80px rgba(15,41,71,.14),0 6px 18px rgba(15,41,71,.05)!important;
+  background:linear-gradient(150deg,#f2f5f6 0%,#e9f0f5 100%)!important;
+}
+body[data-page-type="index"] .ind-hero__image-pill{
+  box-shadow:0 12px 30px rgba(15,41,71,.12)!important;
+  border-color:#dfe8f0!important;
+}
+body[data-page-type="index"] .ind-hero__customer-stars{
+  color:var(--lux-gold)!important;
+  letter-spacing:.08em!important;
+}
+
+/* Trust strip: give the check chips a jewelled ring. */
+body[data-page-type="index"] .ind-strip__row span{color:#3d5875!important}
+body[data-page-type="index"] .ind-strip__row i{
+  background:linear-gradient(160deg,#eef5fa,#dcebf5)!important;
+  color:var(--lux-navy)!important;
+  box-shadow:inset 0 0 0 1px rgba(21,50,82,.12);
+}
+
+/* Product range cards: cool studio tiles that lift as one object. */
+body[data-page-type="index"] .ind-products .bp-model-card__media{
+  background:linear-gradient(150deg,#f5f8fa 0%,#eaf1f6 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(21,50,82,.05)!important;
+  transition:transform .45s var(--lux-ease),box-shadow .45s var(--lux-ease)!important;
+}
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="index"] .ind-products .bp-model-card:hover .bp-model-card__media{
+    transform:translateY(-5px)!important;
+    box-shadow:inset 0 0 0 1px rgba(21,50,82,.06),0 26px 54px rgba(15,41,71,.13)!important;
+  }
+}
+body[data-page-type="index"] .ind-products .bp-model-card__badge{
+  background:var(--lux-grad-band)!important;
+  color:#fff!important;
+}
+body[data-page-type="index"] .bp-model-card__fact--positive{
+  background:var(--lux-tint)!important;
+  color:var(--lux-navy)!important;
+}
+
+/* Lifestyle scene: align radius with the rest of the page and add depth. */
+body[data-page-type="index"] .ind-scene{
+  border-radius:24px!important;
+  box-shadow:var(--lux-shadow-md)!important;
+}
+
+/* Feature cards: quiet borders, gentle lift. */
+body[data-page-type="index"] .ind-card{
+  border:1px solid var(--lux-line)!important;
+  box-shadow:var(--lux-shadow-xs)!important;
+  transition:box-shadow .35s var(--lux-ease),transform .35s var(--lux-ease);
+}
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="index"] .ind-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--lux-shadow-sm)!important;
+  }
+}
+body[data-page-type="index"] .ind-card__media{background:#eef3f7!important}
+
+/* Specs band: from flat fill to a lit navy room. */
+body[data-page-type="index"] .ind-specs{
+  background:
+    radial-gradient(900px 480px at 12% -8%,rgba(140,200,236,.16),transparent 58%),
+    linear-gradient(135deg,#0f2947 0%,#153252 55%,#1b3f66 100%)!important;
+}
+
+/* Reviews: the flattest section gets a real proof card. */
+body[data-page-type="index"] .ind-reviews{
+  background:linear-gradient(180deg,#fff 0%,#f7fafc 100%)!important;
+}
+body[data-page-type="index"] .ind-rating-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid #d8e6f1!important;
+  background:linear-gradient(160deg,#eef5fa 0%,#e2eef7 100%)!important;
+  box-shadow:var(--lux-shadow-sm)!important;
+}
+body[data-page-type="index"] .ind-rating-card::after{
+  content:"★";
+  position:absolute;
+  right:-18px;
+  bottom:-38px;
+  font-size:9rem;
+  line-height:1;
+  color:rgba(21,50,82,.06);
+  pointer-events:none;
+}
+body[data-page-type="index"] .ind-rating-card__stars{color:var(--lux-gold)!important;letter-spacing:.1em}
+
+/* Closing CTA: match the specs band and enrich the halo. */
+body[data-page-type="index"] .ind-cta{
+  background:
+    radial-gradient(820px 460px at 82% 110%,rgba(140,200,236,.15),transparent 58%),
+    linear-gradient(135deg,#0f2947 0%,#153252 58%,#1b3f66 100%)!important;
+}
+body[data-page-type="index"] .ind-cta__visual::before{
+  background:radial-gradient(closest-side,rgba(255,255,255,.10),rgba(255,255,255,.04) 55%,transparent 72%)!important;
+}
+
+/* Intra-section stagger: children of an already-revealed section arrive in
+   sequence. Only under the sanctioned motion gate, and only when the reveal
+   attribute exists (never set in design mode / reduced motion / no-JS). */
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal] .bp-model-card,
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal] .ind-card,
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal] .ind-specs__stats>div{
+  opacity:0;
+  transform:translateY(16px);
+}
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible .bp-model-card,
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible .ind-card,
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible .ind-specs__stats>div{
+  opacity:1;
+  transform:none;
+  transition:opacity .6s var(--lux-ease),transform .6s var(--lux-ease);
+}
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible :is(.bp-model-card,.ind-card,.ind-specs__stats>div):nth-child(2){transition-delay:.07s}
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible :is(.bp-model-card,.ind-card,.ind-specs__stats>div):nth-child(3){transition-delay:.14s}
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible :is(.bp-model-card,.ind-card,.ind-specs__stats>div):nth-child(4){transition-delay:.21s}
+.nova-polish-v34.nova-motion-enabled [data-nova-polish-reveal].is-nova-visible :is(.bp-model-card,.ind-card,.ind-specs__stats>div):nth-child(n+5){transition-delay:.28s}
+
+/* ---------------------------------------------------------------------------
+   8. PRODUCT PAGE — studio gallery, confident buybox
+--------------------------------------------------------------------------- */
+body[data-page-type="product"] .ind-bj-pd__stage{
+  background:linear-gradient(150deg,#f6f9fb 0%,#fdfdfd 52%,#edf3f8 100%)!important;
+  border-color:#e8eef3!important;
+  box-shadow:0 28px 70px rgba(15,41,71,.08)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__thumb[aria-current="true"]{
+  border-color:var(--lux-navy)!important;
+  box-shadow:0 0 0 1px var(--lux-navy) inset,0 6px 16px rgba(15,41,71,.10)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__sale{
+  background:var(--lux-grad-band)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__price{
+  color:#0f2440!important;
+  font-size:2.05rem!important;
+  letter-spacing:-.03em!important;
+}
+body[data-page-type="product"] .ind-bj-pd__add{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 26px rgba(15,41,71,.20)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__add:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 16px 34px rgba(15,41,71,.26)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__add:active{
+  transform:translateY(0) scale(.99)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__sticky-add{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+}
+/* Trust rows: from grey whisper to quiet assurance. */
+body[data-page-type="product"] .ind-bj-pd__trust>div{
+  background:#f5f9fc!important;
+  border-color:#e1eaf2!important;
+  color:#4b607a!important;
+  font-size:.64rem!important;
+}
+body[data-page-type="product"] .ind-bj-pd__trust svg{stroke:var(--lux-navy)!important}
+/* Restore the hover lift step4 removed from the info shortcuts. */
+body[data-page-type="product"] .ind-bj-pd__info-pills a:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 10px 22px rgba(15,41,71,.08)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__benefits>div::before{
+  background:linear-gradient(160deg,#eef5fa,#ddeaf5)!important;
+  color:var(--lux-navy)!important;
+}
+body[data-page-type="product"] .ind-bj-pd__details summary:hover{color:var(--lux-navy)!important}
+/* 360 viewer: earlier overrides targeted selectors that don't exist; these do. */
+body[data-page-type="product"] .nova-360__viewer-wrap{
+  border:1px solid #e2eaf1!important;
+  background:#fff!important;
+  box-shadow:var(--lux-shadow-md)!important;
+}
+body[data-page-type="product"] .nova-360__badge{
+  background:rgba(15,41,71,.9)!important;
+}
+/* Recommendation cards: coherent lift with the rest of the system. */
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="product"] .nova-smart-recommendations .nova-product-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--lux-shadow-sm)!important;
+  }
+}
+/* Mirror the earlier layers' mobile size corrections so the desktop bumps
+   above don't clobber them. */
+@media (max-width:780px){
+  body[data-page-type="product"] .ind-bj-pd__price{font-size:1.6rem!important}
+}
+@media (max-width:430px){
+  body[data-page-type="product"] .ind-bj-pd__trust>div{font-size:.57rem!important}
+}
+
+/* ---------------------------------------------------------------------------
+   9. COLLECTION — richer cards, finished edges
+   (.bk-* stylesheets load in the body, so out-specify with the body prefix.)
+--------------------------------------------------------------------------- */
+@media (hover:hover) and (pointer:fine){
+  body.nova-polish-v34 .bk-step3 .bk-product-card:hover .bk-product-card__media{
+    box-shadow:0 24px 56px rgba(15,41,71,.12)!important;
+    border-color:#dfe9f1!important;
+  }
+}
+body.nova-polish-v34 .bk-step3 .bk-badge{background:rgba(21,50,82,.95)!important}
+body.nova-polish-v34 .bk-step3 .bk-product-card__quick{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+}
+body.nova-polish-v34 .bk-step3 .bk-product-card__quick:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+}
+body.nova-polish-v34 .bk-step3 .bk-pagination a{
+  transition:transform .2s var(--lux-ease),box-shadow .2s var(--lux-ease),border-color .2s var(--lux-ease);
+}
+body.nova-polish-v34 .bk-step3 .bk-pagination a:hover{
+  transform:translateY(-1px);
+  border-color:var(--lux-navy)!important;
+  box-shadow:0 8px 18px rgba(15,41,71,.10);
+}
+body.nova-polish-v34 .bk-step3 .bk-pagination .is-current{background:var(--lux-grad-primary)!important}
+body.nova-polish-v34 .bk-step3 .bk-empty{
+  border:1px dashed #cfdce8;
+  border-radius:24px;
+  background:#f8fbfd;
+}
+
+/* ---------------------------------------------------------------------------
+   10. CART PAGE — repair the layout, then dress it
+   The grid templates below already exist in besjaar-commerce-step5.css; the
+   display declarations were never written anywhere, so the page rendered as
+   stacked blocks. This activates the intended two-column layout.
+--------------------------------------------------------------------------- */
+body[data-page-type="cart"] .ba-cart{display:grid!important}
+body[data-page-type="cart"] .ba-cart-head{
+  display:flex!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .ba-cart-progress__copy{display:grid!important;gap:4px!important}
+body[data-page-type="cart"] .ba-cart-line{display:grid!important;align-items:start!important}
+body[data-page-type="cart"] .ba-cart-line__media{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+body[data-page-type="cart"] .ba-cart-line__media img{
+  width:100%;height:100%;object-fit:contain;
+}
+body[data-page-type="cart"] .ba-cart-line__info{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  min-width:0;
+}
+body[data-page-type="cart"] .ba-cart-line__top{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .ba-cart-line__price{text-align:right}
+body[data-page-type="cart"] .ba-cart-line__bottom{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+body[data-page-type="cart"] .ba-cart-qty{
+  display:inline-flex!important;
+  align-items:stretch!important;
+  background:#fff!important;
+}
+body[data-page-type="cart"] .ba-cart-qty button{
+  width:38px;
+  min-height:38px;
+  border:0!important;
+  font-size:1.02rem;
+  line-height:1;
+  cursor:pointer;
+}
+body[data-page-type="cart"] .ba-cart-qty button:hover{background:var(--lux-soft)!important}
+body[data-page-type="cart"] .ba-cart-qty input{
+  width:46px;
+  border:0!important;
+  text-align:center;
+  font-weight:650;
+  font-size:.88rem;
+  background:#fff;
+  -moz-appearance:textfield;
+  appearance:textfield;
+}
+body[data-page-type="cart"] .ba-cart-qty input::-webkit-outer-spin-button,
+body[data-page-type="cart"] .ba-cart-qty input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+body[data-page-type="cart"] .ba-cart__continue{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .ba-cart__continue button{
+  min-height:40px;
+  padding:0 18px;
+  border:1px solid #cfd8e0;
+  border-radius:999px;
+  background:#fff;
+  color:var(--lux-navy);
+  font-size:.72rem;
+  font-weight:650;
+  cursor:pointer;
+}
+body[data-page-type="cart"] .ba-cart__continue button:hover{
+  background:#f2f7fb;
+  border-color:#b7c9d9;
+}
+/* Free-shipping progress: gradient fill, green celebration when unlocked. */
+body[data-page-type="cart"] .ba-cart-progress__track{
+  height:6px!important;
+  border-radius:999px!important;
+  overflow:hidden!important;
+}
+body[data-page-type="cart"] .ba-cart-progress__track i{
+  display:block;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#1d4269,#153252)!important;
+  transition:width .5s var(--lux-ease);
+}
+body[data-page-type="cart"] .ba-cart-progress__track[aria-valuenow="100"] i{
+  background:linear-gradient(90deg,#2f7f5d,#35915f)!important;
+}
+body[data-page-type="cart"] .ba-cart-summary{
+  background:#fff!important;
+  box-shadow:var(--lux-shadow-sm)!important;
+}
+body[data-page-type="cart"] .ba-cart-summary__row,
+body[data-page-type="cart"] .ba-cart-summary__discount{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:baseline!important;
+  gap:12px!important;
+}
+body[data-page-type="cart"] .ba-cart-summary__checkout{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(15,41,71,.20)!important;
+  transition:box-shadow .22s var(--lux-ease),transform .22s var(--lux-ease)!important;
+}
+body[data-page-type="cart"] .ba-cart-summary__checkout:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 32px rgba(15,41,71,.26)!important;
+}
+body[data-page-type="cart"] .ba-cart-summary__checkout:active{transform:translateY(0) scale(.99)!important}
+body[data-page-type="cart"] .ba-cart-empty{
+  padding:clamp(52px,9vw,96px) 24px;
+  border:1px solid var(--lux-line);
+  border-radius:26px;
+  background:linear-gradient(160deg,#fff 0%,#f4f9fc 100%);
+  text-align:center;
+}
+/* .ind-btn's display base lives in industry-home.css, which never loads on the
+   cart page — without this the empty-cart CTA collapses to a text-height strip. */
+body.nova-polish-v34 .ba-cart-empty .ind-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:48px;
+  padding:0 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   11. CART DRAWER + GLOBAL CHROME
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .nova-drawer-backdrop{
+  background:rgba(11,25,43,.44)!important;
+  backdrop-filter:blur(4px) saturate(120%);
+  -webkit-backdrop-filter:blur(4px) saturate(120%);
+}
+body.nova-polish-v34 .nova-drawer{
+  transition:transform .34s var(--lux-ease),visibility .34s var(--lux-ease)!important;
+}
+/* The desktop drawer checkout was a flat old-navy (#143454); align it with the
+   gradient primary system. */
+body.nova-polish-v34.nova-spatial-v4 .nova-cart-drawer__actions form .nova-button{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  color:#fff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(15,41,71,.20)!important;
+}
+body.nova-polish-v34.nova-spatial-v4 .nova-cart-drawer__actions form .nova-button:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+}
+body.nova-polish-v34 .nova-free-shipping__track i{
+  background:linear-gradient(90deg,#1d4269,#153252)!important;
+}
+/* Toast: dark teal relic becomes navy glass. */
+body.nova-polish-v34 .nova-toast{
+  background:rgba(15,32,54,.94)!important;
+  border:1px solid rgba(140,200,236,.28)!important;
+  color:#fff!important;
+  box-shadow:var(--lux-shadow-lg)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+/* Card lift: retire the sage-era border tint. */
+body.nova-polish-v34.nova-card-lift .nova-card:hover,
+body.nova-polish-v34.nova-card-lift .nova-product-card:hover,
+body.nova-polish-v34.nova-card-lift .nova-promo-card:hover{
+  border-color:#d4e2ee!important;
+}
+/* Collection/search card tiles: the lavender-grey literal becomes cool blue. */
+body.nova-polish-v34 .nova-product-card__media{background:#f2f6f9!important}
+body.nova-polish-v34 .ind-card__media{background:#eef3f7!important}
+
+/* ---------------------------------------------------------------------------
+   12. AUXILIARY PAGES — de-green FAQ/404, re-skin list-collections, search
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .nova-faq-page__accordion details{border-color:#e2e9f0!important}
+body.nova-polish-v34 .nova-faq-page__accordion details[open] summary i{
+  background:var(--lux-navy)!important;
+  border-color:var(--lux-navy)!important;
+}
+body.nova-polish-v34 .nova-faq-page__accordion summary b{
+  background:var(--lux-tint)!important;
+  color:#3a5677!important;
+}
+body.nova-polish-v34 .nova-faq-search__control input:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+body.nova-polish-v34 .nova-faq-page__hero-mark{
+  background:linear-gradient(180deg,#fff,#e9f2f9)!important;
+  color:var(--lux-navy)!important;
+}
+body.nova-polish-v34 .nova-404__code{
+  color:rgba(21,50,82,.15)!important;
+  -webkit-text-stroke:0!important;
+  text-shadow:none!important;
+}
+body.nova-polish-v34 .nova-five-catalog{background:#fff!important}
+body.nova-polish-v34 .nova-five-catalog__bar{
+  background:#f4f8fb!important;
+  border-color:#e3ebf2!important;
+}
+body.nova-polish-v34 .nova-five-catalog__grid .nova-product-card__title{
+  font-family:var(--lux-font-text)!important;
+  color:#12253d!important;
+}
+body.nova-polish-v34 .nova-five-catalog .nova-card-quick-add{
+  border-color:rgba(21,50,82,.25)!important;
+  color:var(--lux-navy)!important;
+}
+body.nova-polish-v34 .nova-search-five-count{
+  background:#f2f7fb!important;
+  border-color:#d9e6f0!important;
+  color:#3d5f80!important;
+}
+body.nova-polish-v34 .nova-search-shortcuts a:hover{
+  border-color:var(--lux-navy)!important;
+  color:var(--lux-navy)!important;
+  background:#f2f7fb!important;
+}
+body.nova-polish-v34 .nova-search-zero{
+  background:linear-gradient(160deg,#fff,#f3f8fc)!important;
+  border-color:#e0eaf2!important;
+}
+body.nova-polish-v34 .nova-contact-form-card,
+body.nova-polish-v34 .nova-support-panel{
+  border-color:#e3ebf2!important;
+  box-shadow:var(--lux-shadow-xs)!important;
+}
+
+/* ---------------------------------------------------------------------------
+   13. FOOTER — lit navy room, alive newsletter
+--------------------------------------------------------------------------- */
+body.nova-polish-v34 .ind-foot--editorial{
+  background:
+    radial-gradient(1000px 420px at 85% -10%,rgba(140,200,236,.09),transparent 60%),
+    #0f1722!important;
+}
+body.nova-polish-v34 .ind-foot--editorial .ind-foot__form{
+  transition:border-color .25s var(--lux-ease);
+}
+body.nova-polish-v34 .ind-foot--editorial .ind-foot__form:focus-within{
+  border-bottom-color:var(--lux-blue)!important;
+}
+body.nova-polish-v34 .ind-foot--editorial .ind-foot__form input{caret-color:var(--lux-blue)}
+body.nova-polish-v34 .ind-foot--editorial .ind-foot__assurance-item span,
+body.nova-polish-v34 .ind-foot--editorial .ind-foot__assurance-item svg{
+  color:#bcd9ee!important;
+}
+
+/* ---------------------------------------------------------------------------
+   14. MOBILE BOTTOM NAV — solid navy active pill
+--------------------------------------------------------------------------- */
+@media (max-width:700px){
+  body.nova-polish-v34 .nova-bottom-nav{
+    border-color:rgba(21,50,82,.12)!important;
+    box-shadow:0 14px 34px rgba(15,41,71,.15)!important;
+  }
+  body.nova-polish-v34 .nova-bottom-nav :is(a,button).is-active{
+    background:var(--lux-grad-primary)!important;
+    color:#fff!important;
+  }
+  body.nova-polish-v34 .nova-bottom-nav :is(a,button).is-active .nova-bottom-nav__count{
+    background:#fff!important;
+    color:var(--lux-navy)!important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   15. GUARDS — touch, reduced motion, theme editor
+--------------------------------------------------------------------------- */
+@media (hover:none),(pointer:coarse){
+  body[data-page-type="index"] .ind-card:hover,
+  body[data-page-type="index"] .ind-products .bp-model-card:hover .bp-model-card__media,
+  body[data-page-type="product"] .ind-bj-pd__info-pills a:hover,
+  body[data-page-type="product"] .nova-smart-recommendations .nova-product-card:hover{
+    transform:none!important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .nova-polish-v34 [data-nova-polish-reveal] .bp-model-card,
+  .nova-polish-v34 [data-nova-polish-reveal] .ind-card,
+  .nova-polish-v34 [data-nova-polish-reveal] .ind-specs__stats>div{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+  body.nova-polish-v34 [data-cart-count].lux-pulse{animation:none!important}
+}
+.nova-editor-safe [data-nova-polish-reveal] .bp-model-card,
+.nova-editor-safe [data-nova-polish-reveal] .ind-card,
+.nova-editor-safe [data-nova-polish-reveal] .ind-specs__stats>div{
+  opacity:1!important;
+  transform:none!important;
+}
+
+/* Last: the gradient buttons above declare box-shadow !important later in this
+   file than the focus rule, which would swallow the focus halo on keyboard
+   focus. Re-assert it here, combined with the buttons' own depth. */
+body.nova-polish-v34 :is(.nova-button--primary,.ind-btn--primary,.ind-bj-pd__add,.ind-bj-pd__sticky-add,.ba-cart-summary__checkout):focus-visible,
+body.nova-polish-v34.nova-spatial-v4 .nova-cart-drawer__actions form .nova-button:focus-visible{
+  box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(21,50,82,.22),inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important;
+}

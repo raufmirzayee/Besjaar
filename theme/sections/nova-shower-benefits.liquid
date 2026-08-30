@@ -1,0 +1,159 @@
+{% liquid
+  assign shower_family = product.metafields.custom.shower_family.value | default: '' | downcase
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+  assign diameter = product.metafields.custom.diameter_mm.value | default: ''
+  assign spray_story_image = product.metafields.custom.shower_spray_modes_image.value
+  assign connection = product.metafields.custom.connection_size.value | default: ''
+  capture filter_capture
+    render 'shower-filter-state', product: product
+  endcapture
+  assign filter_capture = filter_capture | strip
+  assign filter_included = false
+  if filter_capture == 'true'
+    assign filter_included = true
+  endif
+  assign filter_defined = false
+  if product.metafields.custom.filter_included != blank or filter_included
+    assign filter_defined = true
+  endif
+  capture hose_capture
+    render 'shower-hose-state', product: product
+  endcapture
+  assign hose_capture = hose_capture | strip
+  assign hose_included = false
+  if hose_capture == 'true'
+    assign hose_included = true
+  endif
+  assign hose_defined = false
+  if product.metafields.custom.hose_included != blank or hose_included
+    assign hose_defined = true
+  endif
+  assign install_time = product.metafields.custom.installation_time_min.value | default: ''
+  assign anti_limescale_defined = false
+  assign anti_limescale = false
+  if product.metafields.custom.anti_limescale != blank
+    assign anti_limescale_defined = true
+    assign anti_limescale = product.metafields.custom.anti_limescale.value
+  endif
+  assign subtitle = ''
+  if product.metafields.descriptors.subtitle != blank
+    assign subtitle = product.metafields.descriptors.subtitle.value
+  elsif product.metafields.custom.product_subtitle != blank
+    assign subtitle = product.metafields.custom.product_subtitle.value
+  endif
+  capture nova_family_capture
+    render 'product-family', product: product, template_hint: template.suffix
+  endcapture
+  assign nova_family = nova_family_capture | strip
+  assign is_shower = false
+  if nova_family == 'shower'
+    assign is_shower = true
+  endif
+  capture nova_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign nova_is_focus = nova_focus_capture | strip
+  assign card_count = 0
+  if spray_modes != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if filter_defined and filter_included
+    assign card_count = card_count | plus: 1
+  endif
+  if hose_defined and hose_included
+    assign card_count = card_count | plus: 1
+  endif
+  if connection != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if install_time != blank
+    assign card_count = card_count | plus: 1
+  endif
+  if anti_limescale_defined and anti_limescale
+    assign card_count = card_count | plus: 1
+  endif
+  if diameter != blank
+    assign card_count = card_count | plus: 1
+  endif
+%}
+
+{% if is_shower and nova_is_focus == 'true' and card_count > 0 %}
+<section class="nova-shower-section nova-shower-benefits" id="nova-product-benefits" data-reveal>
+  <div class="nova-shell">
+    <div class="nova-shower-heading">
+      <p class="nova-kicker">{{ 'nova.shower.benefits_eyebrow' | t }}</p>
+      <h2>{{ 'nova.shower.benefits_heading' | t }}</h2>
+      {% if subtitle != blank %}<p>{{ subtitle }}</p>{% else %}<p>{{ 'nova.shower.benefits_copy' | t }}</p>{% endif %}
+    </div>
+
+    <div class="nova-shower-benefit-grid">
+      {% if spray_modes != blank %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">≈</span>
+          <div><strong>{{ 'nova.shower.spray_modes_title' | t: count: spray_modes }}</strong><p>{{ 'nova.shower.spray_modes_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if filter_defined and filter_included %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">◇</span>
+          <div><strong>{{ 'nova.shower.filter_title' | t }}</strong><p>{{ 'nova.shower.filter_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if hose_defined and hose_included %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">↝</span>
+          <div><strong>{{ 'nova.shower.hose_title' | t }}</strong><p>{{ 'nova.shower.hose_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if connection != blank %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">⌁</span>
+          <div><strong>{{ connection }}</strong><p>{{ 'nova.shower.connection_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if install_time != blank %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">◷</span>
+          <div><strong>{{ 'nova.shower.install_time_title' | t: count: install_time }}</strong><p>{{ 'nova.shower.install_time_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if anti_limescale_defined and anti_limescale %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">✦</span>
+          <div><strong>{{ 'nova.shower.anti_limescale_title' | t }}</strong><p>{{ 'nova.shower.anti_limescale_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+      {% if diameter != blank %}
+        <article class="nova-shower-benefit-card">
+          <span class="nova-shower-benefit-card__icon" aria-hidden="true">◯</span>
+          <div><strong>Ø {{ diameter }} mm</strong><p>{{ 'nova.shower.diameter_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+    </div>
+
+    {% if spray_modes != blank %}
+      <div class="nova-shower-spray-feature">
+        <div class="nova-shower-spray-feature__number"><span>{{ spray_modes }}</span><small>{{ 'nova.shower.modes_label' | t }}</small></div>
+        <div class="nova-shower-spray-feature__copy"><p class="nova-kicker">{{ 'nova.shower.spray_eyebrow' | t }}</p><h3>{{ 'nova.shower.spray_heading' | t }}</h3><p>{{ 'nova.shower.spray_detail_copy' | t }}</p></div>
+        {% if spray_story_image != blank %}
+          {% assign spray_story_alt = spray_story_image.alt | default: product.title %}
+          <div class="nova-shower-spray-feature__image">{{ spray_story_image | image_url: width: 1100 | image_tag: loading: 'lazy', widths: '480, 720, 900, 1100', sizes: '(min-width: 900px) 32vw, 100vw', alt: spray_story_alt }}</div>
+        {% elsif product.featured_image != blank %}
+          <div class="nova-shower-spray-feature__image">{{ product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', alt: product.title }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shower benefits",
+  "settings": [],
+  "presets": [{"name":"Shower benefits"}]
+}
+{% endschema %}

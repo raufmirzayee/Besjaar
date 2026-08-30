@@ -1,0 +1,29 @@
+{%- comment -%}
+  Besjaar 11.6.10 — product gallery: the stage no longer crops. Every image
+  is shown whole inside a square white stage (letterboxed when it is not
+  square), so packshots keep their bases and infographics keep their last
+  row. Thumbnails likewise show the full image.
+
+  Temporary carrier; fold into assets/besjaar-product-detail.css during
+  consolidation.
+{%- endcomment -%}
+<style id="besjaar-product-1170">
+body[data-page-type="product"] .ind-bj-pd__stage{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;aspect-ratio:1/1!important;height:auto!important;min-height:0!important;max-height:none!important;padding:12px!important;background:#FFFFFF!important;overflow:hidden!important}
+body[data-page-type="product"] .ind-bj-pd__stage img{display:block!important;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center center!important}
+body[data-page-type="product"] .ind-bj-pd__thumb{background:#FFFFFF!important;overflow:hidden!important}
+body[data-page-type="product"] .ind-bj-pd__thumb img{width:100%!important;height:100%!important;object-fit:contain!important;padding:4px!important;box-sizing:border-box!important;background:#FFFFFF!important}
+</style>
+{% schema %}
+{
+  "name": "Besjaar product gallery",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.10: the product gallery shows each image whole in a square white stage instead of cropping it. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

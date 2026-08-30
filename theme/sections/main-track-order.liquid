@@ -1,0 +1,78 @@
+{% capture nova_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+<section class="nova-section nova-track-page nova-track-v412">
+  <div class="nova-shell">
+    <header class="nova-track-v412__hero">
+      <div>
+        <p class="nova-kicker">{{ 'nova.tracking.kicker' | t }}</p>
+        <h1>{{ 'nova.tracking.title' | t }}</h1>
+        <p>{{ 'nova.tracking.copy' | t }}</p>
+      </div>
+      <div class="nova-track-v412__hero-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 17h31v29H8z"/><path d="M39 27h10l8 9v10H39z"/><circle cx="20" cy="50" r="5"/><circle cx="49" cy="50" r="5"/><path d="M15 25h16M15 32h12"/></svg>
+      </div>
+    </header>
+
+    <div class="nova-track-v412__primary-grid">
+      <article class="nova-track-v412__primary-card is-dark">
+        <span class="nova-track-v412__number">01</span>
+        <div><p class="nova-kicker">{{ 'nova.tracking.fastest_way' | t }}</p><h2>{{ 'nova.tracking.shipping_email_title' | t }}</h2><p>{{ 'nova.tracking.shipping_email_copy' | t }}</p></div>
+        <span class="nova-track-v412__hint">{{ 'nova.tracking.shipping_email_hint' | t }}</span>
+      </article>
+
+      <article class="nova-track-v412__primary-card">
+        <span class="nova-track-v412__number">02</span>
+        <div><p class="nova-kicker">{{ 'nova.tracking.account_label' | t }}</p><h2>{{ 'nova.tracking.account_title' | t }}</h2><p>{{ 'nova.tracking.account_copy' | t }}</p></div>
+        <a class="nova-button nova-button--primary" href="{{ routes.account_url }}">{% if customer %}{{ 'nova.tracking.open_orders' | t }}{% else %}{{ 'nova.tracking.sign_in' | t }}{% endif %} →</a>
+      </article>
+    </div>
+
+    {% if customer and customer.orders.size > 0 %}
+      <section class="nova-track-v412__orders" aria-labelledby="track-orders-heading">
+        <div class="nova-track-v412__section-head"><div><p class="nova-kicker">{{ 'nova.tracking.your_orders' | t }}</p><h2 id="track-orders-heading">{{ 'nova.tracking.recent_orders' | t }}</h2></div><a class="nova-mini-link" href="{{ routes.account_url }}#orders">{{ 'nova.tracking.view_all_orders' | t }} →</a></div>
+        <div class="nova-track-v412__order-list">
+          {% for order in customer.orders limit: 3 %}
+            {% assign first_item = order.line_items.first %}
+            <a class="nova-track-v412__order" href="{{ order.customer_url }}">
+              <div class="nova-track-v412__order-media">{% if first_item.image %}{{ first_item.image | image_url: width: 240 | image_tag: loading: 'lazy', alt: first_item.title }}{% else %}<span aria-hidden="true">B</span>{% endif %}</div>
+              <div><span>{{ order.created_at | date: '%d.%m.%Y' }}</span><h3>{{ order.name }}</h3><p>{{ first_item.title }}</p></div>
+              <div class="nova-track-v412__order-status"><span>{{ order.fulfillment_status_label | default: order.financial_status_label }}</span><strong>{{ order.total_price | money }}</strong></div>
+              <span aria-hidden="true">→</span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
+    <section class="nova-track-v412__how" aria-labelledby="tracking-how-heading">
+      <div class="nova-track-v412__section-head"><div><p class="nova-kicker">{{ 'nova.tracking.how_kicker' | t }}</p><h2 id="tracking-how-heading">{{ 'nova.tracking.how_title' | t }}</h2></div></div>
+      <div class="nova-track-v412__how-grid">
+        <article><span>01</span><strong>{{ 'nova.tracking.how_1_title' | t }}</strong><p>{{ 'nova.tracking.how_1_copy' | t }}</p></article>
+        <article><span>02</span><strong>{{ 'nova.tracking.how_2_title' | t }}</strong><p>{{ 'nova.tracking.how_2_copy' | t }}</p></article>
+        <article><span>03</span><strong>{{ 'nova.tracking.how_3_title' | t }}</strong><p>{{ 'nova.tracking.how_3_copy' | t }}</p></article>
+      </div>
+    </section>
+
+    {% if section.blocks.size > 0 %}
+      <section class="nova-track-v412__app" aria-labelledby="tracking-app-heading">
+        <div class="nova-track-v412__section-head"><div><p class="nova-kicker">{{ 'nova.tracking.tracking_app' | t }}</p><h2 id="tracking-app-heading">{{ 'nova.tracking.tracking_app_title' | t }}</h2></div></div>
+        <div class="nova-app-surface">{% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}</div>
+      </section>
+    {% endif %}
+
+    <section class="nova-track-v412__help">
+      <div><p class="nova-kicker">{{ 'nova.tracking.no_update' | t }}</p><h2>{{ 'nova.tracking.help_title' | t }}</h2><p>{{ 'nova.tracking.help_copy' | t }}</p></div>
+      <div class="nova-track-v412__help-actions">
+        {% if settings.account_support_page != blank %}<a class="nova-button nova-button--primary" href="{% render 'localized-internal-url', url: settings.account_support_page.url %}">{{ 'nova.account.contact_support' | t }}</a>{% endif %}
+        <a class="nova-button nova-button--ghost" href="{{ nova_focused_shop_url | strip }}">{{ 'nova.account.continue_shopping' | t }}</a>
+      </div>
+    </section>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Order tracking",
+  "settings": [],
+  "blocks": [{"type":"@app"}],
+  "presets": [{"name":"Order tracking"}]
+}
+{% endschema %}

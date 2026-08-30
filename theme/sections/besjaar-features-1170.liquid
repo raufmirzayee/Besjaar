@@ -1,0 +1,102 @@
+{%- comment -%}
+  Besjaar 11.6.18 — home feature cards: send the filter card to the filters.
+
+  The runtime section makes each feature card clickable and appends a
+  "Shop showerheads →" link, all pointing at the full catalogue. On the
+  filter card that is the wrong destination: someone reading about the
+  cartridge in the handle wants the filter collection, not every product.
+
+  This retargets the card whose kicker mentions filtration — both the
+  stretched link over the card and the visible link — and relabels it.
+  The collection is found the same way the footer finds it, so it keeps
+  working if the collection is renamed. Retries briefly while the runtime
+  builds the links, then stops.
+{%- endcomment -%}
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    assign bj_filter_collection = blank
+    for bj_c in collections
+      assign bj_ident = bj_c.title | append: ' ' | append: bj_c.handle | downcase
+      if bj_ident contains 'filter'
+        assign bj_filter_collection = bj_c
+        break
+      endif
+    endfor
+    assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+    case bj_lang
+      when 'en'
+        assign bj_filter_label = 'Shop shower filters'
+      when 'de'
+        assign bj_filter_label = 'Duschfilter ansehen'
+      when 'fr'
+        assign bj_filter_label = 'Voir les filtres de douche'
+      else
+        assign bj_filter_label = 'Bekijk douchefilters'
+    endcase
+    capture bj_filter_url
+      if bj_filter_collection != blank
+        render 'localized-internal-url', url: bj_filter_collection.url
+      endif
+    endcapture
+    assign bj_filter_url = bj_filter_url | strip
+  -%}
+  {%- if bj_filter_url != blank -%}
+<script type="application/json" id="bj-filter-card">{"url":{{ bj_filter_url | json }},"label":{{ bj_filter_label | json }}}</script>
+<script>
+(function () {
+  'use strict';
+  var cfg;
+  try { cfg = JSON.parse(document.getElementById('bj-filter-card').textContent); } catch (e) { return; }
+  if (!cfg || !cfg.url) return;
+
+  var apply = function () {
+    var cards = document.querySelectorAll('.ind-features .ind-card');
+    if (!cards.length) return false;
+    var touched = false, found = false;
+    for (var i = 0; i < cards.length; i += 1) {
+      var card = cards[i];
+      var kicker = card.querySelector('.ind-card__kicker');
+      var text = ((kicker && kicker.textContent) || '').toLowerCase();
+      if (text.indexOf('filt') === -1) continue;
+      found = true;
+      if (card.getAttribute('data-bj-filter-link') === '1') return true;
+      var stretched = card.querySelector('.bj-card-link');
+      var cta = card.querySelector('.bj-card-cta');
+      if (stretched) { stretched.setAttribute('href', cfg.url); touched = true; }
+      if (cta) {
+        cta.setAttribute('href', cfg.url);
+        cta.textContent = cfg.label + ' \u2192';
+        touched = true;
+      }
+      if (touched) card.setAttribute('data-bj-filter-link', '1');
+    }
+    return found && touched;
+  };
+
+  var tries = 0;
+  var timer = window.setInterval(function () {
+    tries += 1;
+    if (apply() || tries > 25) window.clearInterval(timer);
+  }, 200);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
+  else apply();
+  document.addEventListener('shopify:section:load', apply);
+})();
+</script>
+  {%- endif -%}
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar feature links",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: points the filter feature card on the home page at the filter collection instead of the full catalogue, and relabels its link. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

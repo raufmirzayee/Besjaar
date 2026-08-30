@@ -1,0 +1,19 @@
+{%- liquid
+  assign nova_collection = collection
+  assign nova_handle = handle | default: nova_collection.handle | downcase | strip
+  assign nova_description = nova_collection.description | strip_html
+  assign nova_focus_collection = settings.shower_collection
+  assign is_focus_collection = false
+
+  if nova_focus_collection != blank and nova_collection != blank and nova_collection.id == nova_focus_collection.id
+    assign is_focus_collection = true
+  elsif nova_handle == 'badkamer-douche' or nova_handle == 'douche' or nova_handle == 'shower' or nova_handle == 'showerheads' or nova_handle == 'douchekoppen'
+    assign is_focus_collection = true
+  endif
+
+  if is_focus_collection
+    assign nova_description = 'nova.shower_store.catalog.copy' | t
+  endif
+
+  echo nova_description
+-%}

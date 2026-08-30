@@ -1,0 +1,186 @@
+{%- comment -%}Besjaar 11.6: this editor-addable section's styles were stranded in the legacy besjaar-premium-home.css homepage skin (never loaded by theme.liquid, and unsafe to load whole). The needed rules are extracted into besjaar-premium-sections.css, loaded section-scoped (Shopify dedupes repeated tags).{%- endcomment -%}
+{{ 'besjaar-premium-sections.css' | asset_url | stylesheet_tag }}
+{% liquid
+  assign source = section.settings.collection | default: settings.shower_collection
+  if source == blank
+    assign source = collections['badkamer-douche']
+  endif
+  if source == blank
+    assign source = collections['douchekoppen']
+  endif
+  if source == blank
+    assign source = collections['showerheads']
+  endif
+  if source == blank
+    assign source = collections['all']
+  endif
+
+  if section.settings.use_localized_copy
+    assign goals_eyebrow = 'nova.premium_home.goals.eyebrow' | t
+    assign goals_heading = 'nova.premium_home.goals.heading' | t
+    assign goals_text = 'nova.premium_home.goals.text' | t
+    assign goals_cta = 'nova.premium_home.goals.cta' | t
+  else
+    assign goals_eyebrow = section.settings.eyebrow
+    assign goals_heading = section.settings.heading
+    assign goals_text = section.settings.text
+    assign goals_cta = section.settings.cta_label
+  endif
+%}
+
+<section class="bp-section bp-goals" id="besjaar-shower-guide" data-bp-goals>
+  <div class="bp-shell">
+    <header class="bp-section__head bp-goals__head">
+      <div class="bp-section__head-copy">
+        <p class="bp-eyebrow">{{ goals_eyebrow | escape }}</p>
+        <h2 class="bp-h2">{{ goals_heading | escape }}</h2>
+      </div>
+      <div class="bp-section__side">{{ goals_text }}</div>
+    </header>
+
+    <div class="bp-goals__grid" role="list">
+      {% for block in section.blocks %}
+        {% liquid
+          assign goal = block.settings.goal
+          assign goal_product = block.settings.product
+          if goal_product == blank and source != blank
+            for candidate in source.products limit: 24
+              capture goal_is_head_capture
+                render 'is-shower-head', product: candidate
+              endcapture
+              assign goal_is_head = goal_is_head_capture | strip
+              if goal_is_head != 'true'
+                continue
+              endif
+
+              capture goal_spray_capture
+                render 'shower-spray-modes', product: candidate
+              endcapture
+              assign goal_spray = goal_spray_capture | strip | plus: 0
+              capture goal_filter_capture
+                render 'shower-filter-state', product: candidate
+              endcapture
+              assign goal_filter = goal_filter_capture | strip
+              capture goal_hose_capture
+                render 'shower-hose-state', product: candidate
+              endcapture
+              assign goal_hose = goal_hose_capture | strip
+
+              assign goal_match = false
+              case goal
+                when 'versatile'
+                  if goal_spray >= 4
+                    assign goal_match = true
+                  endif
+                when 'filter'
+                  if goal_filter == 'true'
+                    assign goal_match = true
+                  endif
+                when 'complete'
+                  if goal_hose == 'true'
+                    assign goal_match = true
+                  endif
+                when 'simple'
+                  if goal_spray <= 3 and goal_filter != 'true'
+                    assign goal_match = true
+                  endif
+              endcase
+              if goal_match
+                assign goal_product = candidate
+                break
+              endif
+            endfor
+          endif
+
+          if section.settings.use_localized_copy
+            capture goal_title_key
+              echo 'nova.premium_home.goals.' | append: goal | append: '_title'
+            endcapture
+            capture goal_text_key
+              echo 'nova.premium_home.goals.' | append: goal | append: '_text'
+            endcapture
+            capture goal_label_key
+              echo 'nova.premium_home.goals.' | append: goal | append: '_label'
+            endcapture
+            assign goal_title = goal_title_key | strip | t
+            assign goal_copy = goal_text_key | strip | t
+            assign goal_label = goal_label_key | strip | t
+          else
+            assign goal_title = block.settings.heading
+            assign goal_copy = block.settings.text
+            assign goal_label = block.settings.label
+          endif
+
+          assign goal_url = '#besjaar-model-finder'
+          if goal_product != blank
+            capture goal_url_capture
+              render 'localized-internal-url', url: goal_product.url
+            endcapture
+            assign goal_url = goal_url_capture | strip
+          elsif source != blank
+            capture goal_url_capture
+              render 'localized-internal-url', url: source.url
+            endcapture
+            assign goal_url = goal_url_capture | strip
+          endif
+        %}
+
+        <article class="bp-goal-card bp-goal-card--{{ goal }}{% if forloop.first %} bp-goal-card--featured{% endif %}" role="listitem" {{ block.shopify_attributes }}>
+          <a class="bp-goal-card__link" href="{{ goal_url }}" aria-label="{{ goal_title | escape }}">
+            <div class="bp-goal-card__media">
+              {% if goal_product != blank and goal_product.featured_image != blank %}
+                {{ goal_product.featured_image | image_url: width: 1100 | image_tag: loading: 'lazy', widths: '360,540,760,980,1100', sizes: '(min-width: 1000px) 30vw, (min-width: 700px) 48vw, 84vw', alt: goal_product.featured_image.alt }}
+              {% else %}
+                <img src="{{ 'besjaar-360-01.webp' | asset_url }}" width="960" height="960" loading="lazy" decoding="async" alt="{{ goal_title | escape }}">
+              {% endif %}
+            </div>
+            <div class="bp-goal-card__shade"></div>
+            <div class="bp-goal-card__copy">
+              <span class="bp-goal-card__label">{{ goal_label | escape }}</span>
+              <h3>{{ goal_title | escape }}</h3>
+              <p>{{ goal_copy | escape }}</p>
+              <span class="bp-goal-card__cta">{{ goals_cta | escape }} <i aria-hidden="true">→</i></span>
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop by shower goal",
+  "max_blocks": 4,
+  "settings": [
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"collection","id":"collection","label":"Showerhead collection"},
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"START WITH YOUR SHOWER"},
+    {"type":"text","id":"heading","label":"Heading","default":"Choose by what matters to you."},
+    {"type":"richtext","id":"text","label":"Introduction","default":"<p>Start with the experience you want. We will lead you to the closest Besjaar model.</p>"},
+    {"type":"text","id":"cta_label","label":"Card link","default":"Explore option"}
+  ],
+  "blocks": [
+    {
+      "type":"goal",
+      "name":"Shower goal",
+      "settings":[
+        {"type":"select","id":"goal","label":"Goal","default":"versatile","options":[{"value":"versatile","label":"More spray choice"},{"value":"filter","label":"Filter option"},{"value":"complete","label":"Complete set"},{"value":"simple","label":"Simple upgrade"}]},
+        {"type":"product","id":"product","label":"Featured product (optional)"},
+        {"type":"text","id":"label","label":"Small label","default":"SHOWER FEEL"},
+        {"type":"text","id":"heading","label":"Heading","default":"More ways to shower"},
+        {"type":"textarea","id":"text","label":"Text","default":"Choose more spray modes when variety matters."}
+      ]
+    }
+  ],
+  "presets":[{
+    "name":"Shop by shower goal",
+    "blocks":[
+      {"type":"goal","settings":{"goal":"versatile"}},
+      {"type":"goal","settings":{"goal":"filter"}},
+      {"type":"goal","settings":{"goal":"complete"}},
+      {"type":"goal","settings":{"goal":"simple"}}
+    ]
+  }]
+}
+{% endschema %}

@@ -1,0 +1,26 @@
+{%- comment -%}
+  Besjaar 11.6.17 — collection pages: hide the "Eén collectie…" banner.
+
+  The heading stays in the DOM, visually hidden, so the page keeps its h1 for
+  search engines — it just no longer takes up the first screen before the
+  product groups. Applies at every width (the desktop carrier already did
+  this above 901px; this covers phones as well).
+{%- endcomment -%}
+<style id="besjaar-collection-1170">
+body[data-page-type="collection"] .bk-collection__header--all{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+body[data-page-type="collection"] .bk-collection__shell{padding-top:16px!important}
+</style>
+{% schema %}
+{
+  "name": "Besjaar collection polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.17: hides the shop hub banner heading at every width while keeping it in the page for SEO. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

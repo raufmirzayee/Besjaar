@@ -1,0 +1,110 @@
+.nova-home-bol-proof{padding:clamp(56px,7vw,96px) 0;background:#f7f6f1;border-top:1px solid rgba(31,48,38,.07)}
+.nova-home-bol-proof__surface{padding:clamp(28px,4.5vw,58px);border:1px solid #e0e4de;border-radius:30px;background:linear-gradient(145deg,#fbfbf8,#f3f6f1);box-shadow:0 22px 54px rgba(27,42,33,.06)}
+.nova-home-bol-proof__intro{max-width:760px;margin:0 auto 28px;text-align:center}
+.nova-home-bol-proof__intro .nova-kicker{margin-bottom:10px;color:#617068}
+.nova-home-bol-proof__intro h2{margin:0;color:#17271e;font-size:clamp(2.1rem,4.2vw,3.9rem);line-height:.98;letter-spacing:-.05em}
+.nova-home-bol-proof__intro>p:last-child{max-width:650px;margin:14px auto 0;color:#69766e;font-size:.94rem;line-height:1.65}
+.nova-home-bol-proof__cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:980px;margin:0 auto}
+.nova-home-bol-proof__card{display:flex;min-height:320px;flex-direction:column;align-items:center;justify-content:center;padding:32px;border:1px solid #e1e5df;border-radius:22px;background:#fff;text-align:center;box-shadow:0 16px 38px rgba(26,38,31,.065)}
+.nova-home-bol-proof__brand{color:#1117c8;font-size:2.45rem;font-weight:900;letter-spacing:-.08em;line-height:1}
+.nova-home-bol-proof__score{display:flex;align-items:baseline;gap:8px;margin-top:20px;color:#17221c}
+.nova-home-bol-proof__score strong{font-size:3.15rem;line-height:1;font-weight:850;letter-spacing:-.055em}
+.nova-home-bol-proof__score span{color:#5f6a64;font-size:.9rem;font-weight:700}
+.nova-home-bol-proof__stars{margin-top:12px;color:#ffb400;font-size:1.28rem;letter-spacing:.08em}
+.nova-home-bol-proof__card>p{margin:15px 0 0;color:#667269;font-size:.85rem;line-height:1.55}
+.nova-home-bol-proof__card>p strong{color:#17271e}
+.nova-home-bol-proof__link{margin-top:20px;padding:10px 16px;border-radius:999px;background:#f4f5f1;color:#1f4f47;font-size:.75rem;font-weight:800;text-decoration:none}
+.nova-home-bol-proof__link:hover{text-decoration:underline;text-underline-offset:3px}
+.nova-home-bol-proof__card--sales{background:linear-gradient(150deg,#fff,#f5f8f5)}
+.nova-home-bol-proof__eyebrow{margin:0!important;color:#65756b!important;font-size:.65rem!important;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.nova-home-bol-proof__sales-number{margin-top:12px;color:#173329;font-size:4rem;font-weight:850;line-height:.9;letter-spacing:-.065em}
+.nova-home-bol-proof__card--sales h3{margin:10px 0 0;color:#17271e;font-size:1.45rem;line-height:1.1;letter-spacing:-.035em}
+.nova-home-bol-proof__seller{display:grid;grid-template-columns:auto auto;align-items:baseline;gap:4px 10px;margin-top:22px;padding-top:18px;border-top:1px solid #e7e9e5;min-width:min(100%,330px)}
+.nova-home-bol-proof__seller span{grid-column:1;color:#68746c;font-size:.72rem}
+.nova-home-bol-proof__seller strong{grid-column:2;color:#1117c8;font-size:1.5rem;letter-spacing:-.04em}
+.nova-home-bol-proof__seller small{grid-column:1/-1;color:#7b857f;font-size:.67rem}
+.nova-home-bol-proof__stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));max-width:980px;margin:20px auto 0;border:1px solid #e2e5df;border-radius:18px;background:#fff;overflow:hidden}
+.nova-home-bol-proof__stats>div{display:grid;gap:5px;padding:20px 16px;text-align:center;border-left:1px solid #e7e9e5}
+.nova-home-bol-proof__stats>div:first-child{border-left:0}
+.nova-home-bol-proof__stats strong{color:#223d62;font-size:1.65rem;line-height:1;font-weight:850;letter-spacing:-.045em}
+.nova-home-bol-proof__stats span{color:#58675f;font-size:.65rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+.nova-home-bol-proof__note{margin:12px auto 0!important;color:#89918c!important;font-size:.62rem!important;text-align:center}
+@media(max-width:700px){
+  .nova-home-bol-proof{padding:42px 0}
+  .nova-home-bol-proof__surface{padding:22px 14px;border-radius:20px}
+  .nova-home-bol-proof__intro{margin-bottom:18px;text-align:left}
+  .nova-home-bol-proof__intro h2{font-size:2.15rem}
+  .nova-home-bol-proof__intro>p:last-child{margin-left:0;font-size:.84rem}
+  .nova-home-bol-proof__cards{grid-template-columns:1fr;gap:12px}
+  .nova-home-bol-proof__card{min-height:0;padding:24px 18px;border-radius:18px}
+  .nova-home-bol-proof__brand{font-size:2rem}
+  .nova-home-bol-proof__score strong{font-size:2.65rem}
+  .nova-home-bol-proof__sales-number{font-size:3.25rem}
+  .nova-home-bol-proof__stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nova-home-bol-proof__stats>div:nth-child(odd){border-left:0}
+  .nova-home-bol-proof__stats>div:nth-child(n+3){border-top:1px solid #e7e9e5}
+  .nova-home-bol-proof__stats strong{font-size:1.4rem}
+}
+
+/* Nova 5.8.2 — compact bol.com credibility panel */
+.nova-home-bol-proof--compact .nova-home-bol-proof__surface{padding:clamp(26px,4vw,46px)}
+.nova-home-bol-proof--compact .nova-home-bol-proof__intro{max-width:820px;margin-bottom:22px}
+.nova-home-bol-proof--compact .nova-home-bol-proof__intro-short{max-width:560px;margin:.8rem auto 0;color:#69766f;font-size:.9rem;line-height:1.55}
+.nova-home-bol-proof__compact-panel{display:grid;grid-template-columns:1.2fr repeat(4,minmax(110px,.8fr)) auto;align-items:stretch;overflow:hidden;border:1px solid #dfe5df;border-radius:22px;background:#fff;box-shadow:0 14px 34px rgba(27,42,34,.05)}
+.nova-home-bol-proof__compact-brand{display:grid;place-items:center;align-content:center;gap:8px;padding:18px;border-right:1px solid #e6e9e5}
+.nova-home-bol-proof__compact-brand .nova-home-bol-proof__brand{font-size:2.05rem}
+.nova-home-bol-proof__compact-brand .nova-home-bol-proof__stars{font-size:.85rem;letter-spacing:.08em}
+.nova-home-bol-proof__compact-stat{display:grid;place-items:center;align-content:center;gap:6px;padding:18px 12px;border-right:1px solid #e6e9e5;text-align:center}
+.nova-home-bol-proof__compact-stat strong{color:#20362c;font-size:1.35rem;line-height:1;font-weight:900;letter-spacing:-.035em}
+.nova-home-bol-proof__compact-stat span{color:#718078;font-size:.59rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+.nova-home-bol-proof__compact-link{display:grid;place-items:center;padding:16px 18px;color:#fff;background:#1f3d34;text-decoration:none;font-size:.7rem;font-weight:850;text-align:center}
+.nova-home-bol-proof__compact-link:hover{background:#255f58}
+@media(max-width:800px){
+  .nova-home-bol-proof--compact{padding:34px 0}
+  .nova-home-bol-proof--compact .nova-home-bol-proof__surface{padding:20px 14px;border-radius:20px}
+  .nova-home-bol-proof--compact .nova-home-bol-proof__intro{margin-bottom:14px;text-align:left}
+  .nova-home-bol-proof--compact .nova-home-bol-proof__intro h2{font-size:clamp(1.9rem,9vw,2.5rem);line-height:.98}
+  .nova-home-bol-proof--compact .nova-home-bol-proof__intro-short{margin:.65rem 0 0;font-size:.78rem}
+  .nova-home-bol-proof__compact-panel{grid-template-columns:1fr 1fr;border-radius:18px}
+  .nova-home-bol-proof__compact-brand{grid-column:1/-1;grid-template-columns:auto auto;justify-content:center;gap:14px;padding:14px;border-right:0;border-bottom:1px solid #e6e9e5}
+  .nova-home-bol-proof__compact-brand .nova-home-bol-proof__brand{font-size:1.65rem}
+  .nova-home-bol-proof__compact-stat{min-height:82px;padding:12px;border-right:0;border-bottom:1px solid #e6e9e5}
+  .nova-home-bol-proof__compact-stat:nth-of-type(even){border-left:1px solid #e6e9e5}
+  .nova-home-bol-proof__compact-stat strong{font-size:1.15rem}
+  .nova-home-bol-proof__compact-stat span{font-size:.54rem}
+  .nova-home-bol-proof__compact-link{grid-column:1/-1;min-height:44px;padding:10px}
+  .nova-home-bol-proof__note{margin-top:8px!important;font-size:.55rem!important}
+}
+
+
+/* Nova 5.8.3 — simplified bol.com proof */
+.nova-home-bol-proof__compact-panel{grid-template-columns:1.1fr repeat(3,minmax(120px,.9fr)) auto!important;}
+@media(max-width:800px){
+  .nova-home-bol-proof--compact{padding:28px 0!important;}
+  .nova-home-bol-proof--compact .nova-home-bol-proof__surface{padding:18px 14px!important;}
+  .nova-home-bol-proof__compact-panel{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+  .nova-home-bol-proof__compact-brand{grid-column:1/-1!important;}
+  .nova-home-bol-proof__compact-stat{min-height:76px!important;padding:11px 6px!important;border-left:1px solid #e6e9e5!important;border-bottom:0!important;}
+  .nova-home-bol-proof__compact-stat:nth-of-type(2){border-left:0!important;}
+  .nova-home-bol-proof__compact-stat strong{font-size:1.08rem!important;}
+  .nova-home-bol-proof__compact-stat span{font-size:.49rem!important;line-height:1.25!important;}
+  .nova-home-bol-proof__compact-link{grid-column:1/-1!important;}
+  .nova-home-bol-proof__note{display:none!important;}
+}
+
+
+/* Besjaar Nova 7.4.8 — sourced, compact marketplace proof */
+.nova-bol-proof--credible{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.5fr);gap:24px 34px;align-items:end;margin:clamp(32px,5vw,64px) 0;padding:clamp(24px,3.5vw,40px);border:1px solid #e0e6e0;border-radius:26px;background:linear-gradient(145deg,#fbfcf9,#f3f7f3);box-shadow:0 18px 44px rgba(28,45,35,.055);}
+.nova-bol-proof__credible-intro h2{margin:0;color:#17271e;font-size:clamp(1.75rem,3vw,2.6rem);line-height:1;letter-spacing:-.045em;}
+.nova-bol-proof__credible-intro>p:last-child{max-width:520px;margin:12px 0 0;color:#69766e;font-size:.82rem;line-height:1.6;}
+.nova-bol-proof__credible-panel{display:grid;grid-template-columns:1.05fr repeat(3,minmax(94px,.75fr)) auto;min-width:0;overflow:hidden;border:1px solid #dfe5df;border-radius:18px;background:#fff;}
+.nova-bol-proof__credible-brand,.nova-bol-proof__credible-stat{display:grid;place-items:center;align-content:center;min-height:92px;padding:13px;border-right:1px solid #e6e9e5;text-align:center;}
+.nova-bol-proof__credible-brand span{color:#1117c8;font-size:1.72rem;font-weight:900;letter-spacing:-.08em;line-height:1;}
+.nova-bol-proof__credible-brand small{margin-top:6px;color:#7b867f;font-size:.52rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+.nova-bol-proof__credible-stat strong{color:#20362c;font-size:1.2rem;font-weight:900;letter-spacing:-.035em;line-height:1;}
+.nova-bol-proof__credible-stat span{margin-top:6px;color:#718078;font-size:.52rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase;}
+.nova-bol-proof__credible-link{display:grid;place-items:center;min-width:116px;padding:12px 15px;background:#1f3d34;color:#fff;font-size:.65rem;font-weight:850;text-align:center;text-decoration:none;}
+.nova-bol-proof__credible-link:hover{background:#255f58;}
+.nova-bol-proof--credible>.nova-bol-proof__note{grid-column:1/-1;margin:0!important;padding-top:0;color:#858f89!important;font-size:.58rem!important;text-align:right;}
+@media(max-width:980px){.nova-bol-proof--credible{grid-template-columns:1fr;align-items:stretch;}.nova-bol-proof__credible-panel{grid-template-columns:1fr repeat(3,minmax(0,.75fr)) auto;}}
+@media(max-width:700px){.nova-bol-proof--credible{gap:17px;margin:28px 0;padding:19px 14px;border-radius:20px;}.nova-bol-proof__credible-intro h2{font-size:2rem;}.nova-bol-proof__credible-intro>p:last-child{font-size:.77rem;}.nova-bol-proof__credible-panel{grid-template-columns:repeat(3,minmax(0,1fr));border-radius:16px;}.nova-bol-proof__credible-brand{grid-column:1/-1;min-height:66px;grid-template-columns:auto auto;gap:10px;border-right:0;border-bottom:1px solid #e6e9e5;}.nova-bol-proof__credible-brand small{margin:0;}.nova-bol-proof__credible-stat{min-height:78px;padding:10px 5px;border-right:1px solid #e6e9e5;}.nova-bol-proof__credible-stat:nth-of-type(4){border-right:0;}.nova-bol-proof__credible-stat strong{font-size:1.04rem;}.nova-bol-proof__credible-stat span{font-size:.47rem;line-height:1.25;}.nova-bol-proof__credible-link{grid-column:1/-1;min-height:43px;}.nova-bol-proof--credible>.nova-bol-proof__note{text-align:left;font-size:.54rem!important;}}

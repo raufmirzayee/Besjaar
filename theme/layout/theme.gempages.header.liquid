@@ -1,0 +1,517 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="color-scheme" content="light">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="dns-prefetch" href="//cdn.shopify.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap"></noscript>
+    <link rel="canonical" href="{{ canonical_url }}">
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% else %}
+      <link rel="icon" type="image/png" sizes="16x16" href="{{ 'besjaar-favicon-16.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'besjaar-favicon-32.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="128x128" href="{{ 'besjaar-favicon.png' | asset_url }}">
+      <link rel="shortcut icon" type="image/png" href="{{ 'besjaar-favicon-32.png' | asset_url }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ 'besjaar-apple-touch-icon.png' | asset_url }}">
+    {% endif %}
+
+    {% capture nova_localized_browser_title %}
+      {% case request.page_type %}
+        {% when 'product' %}{% render 'localized-product-title', product: product %}
+        {% when 'collection' %}{% render 'localized-collection-title', collection: collection %}
+        {% when 'page' %}{% render 'localized-page-title', page: page %}
+        {% else %}{{ page_title | default: 'Besjaar' }}
+      {% endcase %}
+    {% endcapture %}
+    {% liquid
+      comment
+        Respect Shopify's Search engine listing title when the merchant has set one.
+        The localized title is only a fallback. Keep the brand spelling protected.
+      endcomment
+      assign nova_browser_title = page_title | default: nova_localized_browser_title | strip | default: 'Besjaar'
+      assign nova_browser_title = nova_browser_title | replace: 'Beshear', 'Besjaar' | replace: 'beshear', 'Besjaar' | replace: 'BESHEAR', 'BESJAAR'
+      assign nova_browser_title_downcase = nova_browser_title | downcase
+      assign nova_is_brand_collection = false
+      if request.page_type == 'collection' and collection.handle == 'besjaar'
+        assign nova_is_brand_collection = true
+        if page_title == blank or page_title == 'Besjaar'
+          assign nova_browser_title = 'nova.shower_store.catalog.collection_name' | t
+        endif
+      endif
+      assign nova_browser_title_downcase = nova_browser_title | downcase
+
+      assign nova_meta_description = page_description | strip_html | strip
+      assign nova_is_focus_collection = false
+      if request.page_type == 'collection'
+        if settings.shower_collection != blank and collection.id == settings.shower_collection.id
+          assign nova_is_focus_collection = true
+        elsif collection.handle == 'badkamer-douche' or collection.handle == 'douchekoppen' or collection.handle == 'showerheads' or collection.handle == 'douche' or collection.handle == 'shower'
+          assign nova_is_focus_collection = true
+        endif
+      endif
+      if request.page_type == 'index'
+        assign nova_meta_description = 'nova.shower_store.meta.description' | t
+      elsif nova_meta_description == blank and nova_is_focus_collection
+        assign nova_meta_description = 'nova.seo_keywords.collection_meta_description' | t
+      elsif nova_meta_description == blank and request.page_type == 'page' and page.handle == 'faq'
+        assign nova_meta_description = 'nova.seo_keywords.faq_meta_description' | t
+      elsif nova_meta_description == blank and request.page_type == 'product' and product.description != blank
+        assign nova_meta_description = product.description | strip_html | strip | truncate: 190
+      elsif nova_meta_description == blank and request.page_type == 'collection' and collection.description != blank
+        assign nova_meta_description = collection.description | strip_html | strip | truncate: 190
+      elsif nova_meta_description == blank and request.page_type == 'page' and page.content != blank
+        assign nova_meta_description = page.content | strip_html | strip | truncate: 190
+      elsif nova_meta_description == blank and shop.description != blank
+        assign nova_meta_description = shop.description | strip_html | strip | truncate: 190
+      endif
+    %}
+    <title translate="no">
+      {% if request.page_type == 'index' %}{{ 'nova.shower_store.meta.title' | t }}{% else %}{{ nova_browser_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – {{ 'nova.page.page_number' | t: number: current_page }}{% endif %}{% unless nova_browser_title_downcase contains 'besjaar' %} – Besjaar{% endunless %}{% endif %}
+    </title>
+    <meta name="application-name" content="Besjaar">
+
+    {% if nova_meta_description != blank %}<meta name="description" content="{{ nova_meta_description | escape }}">{% endif %}
+    {% render 'meta-tags', nova_browser_title: nova_browser_title, nova_meta_description: nova_meta_description %}
+    {% render 'structured-data' %}
+    {{ content_for_header }}
+
+    <style>
+      :root {
+        --nova-bg: {{ settings.bg }};
+        --nova-surface: {{ settings.surface }};
+        --nova-text: {{ settings.text }};
+        --nova-muted: {{ settings.muted }};
+        --nova-accent: {{ settings.accent }};
+        --nova-accent-2: {{ settings.accent_2 }};
+        --nova-accent-warm: {{ settings.accent_warm }};
+        --nova-width: {{ settings.page_width }}px;
+        --nova-radius: {{ settings.card_radius }}px;
+      }
+    </style>
+    <style id="nova-critical-css">
+      html,body{margin:0;padding:0}body{background:var(--nova-bg,#F7F6F1);color:var(--nova-text,#18231C);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}img{max-width:100%;height:auto;display:block}*,*:before,*:after{box-sizing:border-box}.nova-shell{width:min(calc(100% - 32px),var(--nova-width,1360px));margin-inline:auto}.nova-header{position:sticky;top:0;z-index:100}.nova-hero__grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);align-items:center;gap:48px}.nova-button{display:inline-flex;align-items:center;justify-content:center}.nova-grid{display:grid;gap:18px}@media(max-width:900px){.nova-hero__grid{grid-template-columns:1fr}}@media(max-width:700px){.nova-shell{width:min(calc(100% - 24px),var(--nova-width,1360px))}}
+    </style>
+    {{ 'nova-core.css' | asset_url | stylesheet_tag }}
+    {{ 'nova-shell.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'index' or request.page_type == 'product' %}
+      {{ 'industry-home.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {%- comment -%}Cart drawer is global, so its styles must be global too.{%- endcomment -%}
+    {{ 'nova-cart.css' | asset_url | stylesheet_tag }}
+    {% case request.page_type %}
+      {% when 'index' %}
+        {{ 'nova-home.css' | asset_url | stylesheet_tag }}
+        {{ 'besjaar-premium-home.css' | asset_url | stylesheet_tag }}
+      {% when 'product' %}
+        {{ 'nova-product-page.css' | asset_url | stylesheet_tag }}
+        {% if settings.enable_shower_bundle %}{{ 'nova-bundle.css' | asset_url | stylesheet_tag }}{% endif %}
+        {% if settings.enable_smart_recommendations %}{{ 'nova-recommendations.css' | asset_url | stylesheet_tag }}{% endif %}
+      {% when 'collection', 'search', 'list-collections' %}
+        {{ 'nova-catalog.css' | asset_url | stylesheet_tag }}
+      {% when 'cart' %}
+        {% if settings.show_cart_addons %}{{ 'nova-bundle.css' | asset_url | stylesheet_tag }}{% endif %}
+        {% if settings.enable_smart_recommendations %}{{ 'nova-recommendations.css' | asset_url | stylesheet_tag }}{% endif %}
+      {% when 'page', 'blog', 'article', '404' %}
+        {{ 'nova-pages.css' | asset_url | stylesheet_tag }}
+    {% endcase %}
+    {% if request.page_type contains 'customers' or template.name contains 'customers' %}
+      {{ 'nova-account.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {% if request.path contains '/apps/parcelpanel' and request.page_type != 'page' and request.page_type != 'blog' and request.page_type != 'article' and request.page_type != '404' %}
+      {{ 'nova-pages.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {{ 'nova-polish.css' | asset_url | stylesheet_tag }}
+    {{ 'nova-accessibility.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-editorial.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-polish.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-foundation-v1.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'index' %}{{ 'besjaar-home-step2.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'index' %}{{ 'besjaar-mobile-feature-cards.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'product' %}{{ 'nova-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'product' %}{{ 'besjaar-product-step4.css' | asset_url | stylesheet_tag }}{% endif %}
+    {{ 'besjaar-commerce-step5.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-final-step6.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-mobile-corrections.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'product' %}{{ 'besjaar-mobile-detail-clarity.css' | asset_url | stylesheet_tag }}{% endif %}
+    {{ 'besjaar-cart-polish-1140.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-premium-lux.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-1150.css' | asset_url | stylesheet_tag }}
+    {% unless request.visual_preview_mode %}
+    {% liquid
+      capture nova_js_shop_url_capture
+        render 'shower-store-url'
+      endcapture
+      assign nova_js_shop_url = nova_js_shop_url_capture | strip
+
+      assign nova_search_collection = settings.shower_collection
+      if nova_search_collection == blank
+        assign nova_search_collection = collections['badkamer-douche']
+      endif
+      if nova_search_collection == blank
+        assign nova_search_collection = collections['douchekoppen']
+      endif
+      if nova_search_collection == blank
+        assign nova_search_collection = collections['showerheads']
+      endif
+      if nova_search_collection == blank
+        assign nova_search_collection = collections['douche']
+      endif
+      if nova_search_collection == blank
+        assign nova_search_collection = collections['shower']
+      endif
+
+      comment
+        Featured shower model selectors are presentation controls only. They must
+        never become a hard catalogue whitelist, so future shower products remain
+        purchasable and discoverable without a theme update.
+      endcomment
+      assign nova_focus_locked = false
+
+      capture nova_focus_product_ids
+        echo '['
+        assign nova_focus_first = true
+        if settings.shower_model_1 != blank
+          echo settings.shower_model_1.id | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_2 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_2.id | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_3 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_3.id | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_4 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_4.id | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_5 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_5.id | json
+        endif
+        echo ']'
+      endcapture
+
+      capture nova_search_product_ids
+        echo '['
+        assign nova_search_first = true
+        if nova_search_collection != blank
+          for nova_search_product in nova_search_collection.products limit: 50
+            unless nova_search_first
+              echo ','
+            endunless
+            echo nova_search_product.id | json
+            assign nova_search_first = false
+          endfor
+        endif
+        if settings.bundle_accessory_1 != blank
+          unless nova_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_1.id | json
+          assign nova_search_first = false
+        endif
+        if settings.bundle_accessory_2 != blank
+          unless nova_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_2.id | json
+          assign nova_search_first = false
+        endif
+        if settings.bundle_accessory_3 != blank
+          unless nova_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_3.id | json
+          assign nova_search_first = false
+        endif
+        echo ']'
+      endcapture
+
+      capture nova_focus_handles
+        echo '['
+        assign nova_focus_first = true
+        if settings.shower_model_1 != blank
+          echo settings.shower_model_1.handle | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_2 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_2.handle | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_3 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_3.handle | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_4 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_4.handle | json
+          assign nova_focus_first = false
+        endif
+        if settings.shower_model_5 != blank
+          unless nova_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_5.handle | json
+        endif
+        echo ']'
+      endcapture
+
+      assign nova_runtime_contact_page = settings.contact_page
+      if nova_runtime_contact_page == blank
+        assign nova_runtime_contact_page = pages['contact']
+      endif
+      capture nova_runtime_contact_url
+        if nova_runtime_contact_page != blank
+          render 'localized-internal-url', url: nova_runtime_contact_page.url
+        else
+          render 'localized-internal-url', url: '/pages/contact'
+        endif
+      endcapture
+      assign nova_runtime_contact_url = nova_runtime_contact_url | strip
+
+      assign nova_runtime_faq_page = settings.faq_page
+      if nova_runtime_faq_page == blank
+        assign nova_runtime_faq_page = pages['veelgestelde-vragen']
+      endif
+      if nova_runtime_faq_page == blank
+        assign nova_runtime_faq_page = pages['faq']
+      endif
+      capture nova_runtime_faq_url
+        if nova_runtime_faq_page != blank
+          render 'localized-internal-url', url: nova_runtime_faq_page.url
+        else
+          render 'localized-internal-url', url: '/pages/faq'
+        endif
+      endcapture
+      assign nova_runtime_faq_url = nova_runtime_faq_url | strip
+
+      assign nova_runtime_tracking_page = settings.tracking_page
+      capture nova_runtime_tracking_url
+        if nova_runtime_tracking_page != blank
+          render 'localized-internal-url', url: nova_runtime_tracking_page.url
+        else
+          render 'localized-internal-url', url: '/apps/parcelpanel'
+        endif
+      endcapture
+      assign nova_runtime_tracking_url = nova_runtime_tracking_url | strip
+    %}
+    <script>
+      window.NovaConfig = {
+        routes: {
+          root: {{ routes.root_url | json }},
+          search: {{ routes.search_url | json }},
+          predictiveSearch: {{ routes.predictive_search_url | json }},
+          cart: {{ routes.cart_url | json }},
+          cartJson: {{ routes.cart_url | append: '.js' | json }},
+          cartAdd: {{ routes.cart_add_url | append: '.js' | json }},
+          cartChange: {{ routes.cart_change_url | append: '.js' | json }},
+          allProducts: {{ nova_js_shop_url | json }},
+          contact: {{ nova_runtime_contact_url | json }},
+          faq: {{ nova_runtime_faq_url | json }},
+          tracking: {{ nova_runtime_tracking_url | json }}
+        },
+        trackingCopy: {
+          kicker: {{ 'nova.tracking_app.kicker' | t | json }},
+          title: {{ 'nova.tracking_app.title' | t | json }},
+          body: {{ 'nova.tracking_app.body' | t | json }},
+          order: {{ 'nova.tracking_app.order' | t | json }},
+          tracking: {{ 'nova.tracking_app.tracking' | t | json }},
+          support: {{ 'nova.tracking_app.support' | t | json }},
+          supportBody: {{ 'nova.tracking_app.support_body' | t | json }},
+          supportCta: {{ 'nova.tracking_app.support_cta' | t | json }},
+          chip1: {{ 'nova.tracking_app.chip1' | t | json }},
+          chip2: {{ 'nova.tracking_app.chip2' | t | json }},
+          chip3: {{ 'nova.tracking_app.chip3' | t | json }}
+        },
+        currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+        catalog: {
+          focusLocked: {{ nova_focus_locked | json }},
+          focusProductIds: {{ nova_focus_product_ids | strip }},
+          searchProductIds: {{ nova_search_product_ids | strip }},
+          focusHandles: {{ nova_focus_handles | strip }}
+        },
+        commerce: {
+          showFreeShippingBar: {{ settings.show_free_shipping_bar | json }},
+          freeShippingThresholdCents: {{ settings.free_shipping_threshold | times: 100 | json }},
+          showCartAddons: {{ settings.show_cart_addons | json }}
+        },
+        delivery: {
+          enabled: {{ settings.show_delivery_estimates | json }},
+          region: {% if settings.enable_markets_localization and localization.country != blank %}{{ localization.country.name | json }}{% else %}{{ settings.delivery_region_label | json }}{% endif %},
+          cutoffHour: {{ settings.order_cutoff_hour | json }},
+          processingDays: {{ settings.processing_business_days | json }},
+          transitMinDays: {{ settings.transit_min_business_days | json }},
+          transitMaxDays: {{ settings.transit_max_business_days | json }},
+          skipWeekends: {{ settings.skip_delivery_weekends | json }}
+        },
+        searchDiscovery: {
+          showRecent: {{ settings.show_recent_searches | json }},
+          recentLimit: {{ settings.recent_search_limit | json }},
+          showBrands: {{ settings.show_search_brands | json }},
+          showPopular: {{ settings.show_search_popular | json }},
+          popularTerms: {{ 'nova.search.popular_terms' | t | json }}
+        },
+        mobile: {
+          fullscreenSearch: {{ settings.mobile_fullscreen_search | json }},
+          swipeGallery: {{ settings.mobile_swipe_gallery | json }},
+          filterSheet: {{ settings.mobile_filter_sheet | json }},
+          compactHeader: {{ settings.mobile_compact_header | json }}
+        },
+        markets: {
+          enabled: {{ settings.enable_markets_localization | json }},
+          country: {{ localization.country.iso_code | json }},
+          countryName: {{ localization.country.name | json }},
+          currency: {{ localization.country.currency.iso_code | json }},
+          language: {{ localization.language.iso_code | json }}
+        },
+        editor: {
+          designMode: {{ request.design_mode | json }}
+        },
+        design: {
+          polishedMotion: {{ settings.enable_polished_motion | json }},
+          sectionReveal: {{ settings.enable_section_reveal | json }},
+          cardLift: {{ settings.enable_card_lift | json }},
+          stickyDesktopBuybox: {{ settings.sticky_desktop_buybox | json }}
+        },
+        analytics: {
+          enabled: {{ settings.enable_measurement_layer | json }},
+          attribution: {{ settings.enable_campaign_attribution | json }},
+          debug: {{ settings.analytics_debug_mode | json }},
+          context: {
+            pageType: {{ request.page_type | json }},
+            locale: {{ request.locale.iso_code | json }},
+            currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+            productId: {% if product %}{{ product.id | json }}{% else %}null{% endif %},
+            productHandle: {% if product %}{{ product.handle | json }}{% else %}null{% endif %},
+            productTitle: {% if product %}{{ product.title | json }}{% else %}null{% endif %},
+            variantId: {% if product %}{{ product.selected_or_first_available_variant.id | json }}{% else %}null{% endif %},
+            collectionHandle: {% if collection %}{{ collection.handle | json }}{% else %}null{% endif %},
+            searchTerms: {% if search %}{{ search.terms | json }}{% else %}null{% endif %},
+            cartItemCount: {{ cart.item_count | default: 0 | json }}
+          },
+          i18n: {
+            yes: {{ 'nova.analytics.yes' | t | json }},
+            no: {{ 'nova.analytics.no' | t | json }},
+            unknown: {{ 'nova.analytics.unknown' | t | json }},
+            noCampaign: {{ 'nova.analytics.no_campaign' | t | json }},
+            waiting: {{ 'nova.analytics.debug_waiting' | t | json }},
+            save: {{ 'nova.analytics.save' | t | json }},
+            saving: {{ 'nova.analytics.saving' | t | json }},
+            saved: {{ 'nova.analytics.saved' | t | json }},
+            unavailable: {{ 'nova.analytics.unavailable' | t | json }},
+            ready: {{ 'nova.analytics.ready' | t | json }},
+            unavailableShort: {{ 'nova.analytics.unavailable_short' | t | json }}
+          }
+        },
+        i18n: {
+          cartLoading: {{ 'nova.js.cart_loading' | t | json }},
+          cartEmpty: {{ 'nova.js.cart_empty' | t | json }},
+          shopProducts: {{ 'nova.js.shop_products' | t | json }},
+          remove: {{ 'nova.js.remove' | t | json }},
+          regularPrice: {{ 'nova.product.regular_price' | t | json }},
+          salePrice: {{ 'nova.product.sale_price' | t | json }},
+          cartError: {{ 'nova.js.cart_error' | t | json }},
+          cartUpdateError: {{ 'nova.js.cart_update_error' | t | json }},
+          openCart: {{ 'nova.js.open_cart' | t | json }},
+          adding: {{ 'nova.js.adding' | t | json }},
+          added: {{ 'nova.js.added' | t | json }},
+          wishlistRemoved: {{ 'nova.js.wishlist_removed' | t | json }},
+          wishlistSaved: {{ 'nova.js.wishlist_saved' | t | json }},
+          wishlistEmpty: {{ 'nova.js.wishlist_empty' | t | json }},
+          discoverProducts: {{ 'nova.js.discover_products' | t | json }},
+          decrease: {{ 'nova.js.decrease' | t | json }},
+          increase: {{ 'nova.js.increase' | t | json }},
+          freeShippingRemaining: {{ 'nova.js.free_shipping_remaining' | t | json }},
+          freeShippingUnlocked: {{ 'nova.js.free_shipping_unlocked' | t | json }},
+          cartSavings: {{ 'nova.js.cart_savings' | t | json }},
+          completeOrder: {{ 'nova.js.complete_order' | t | json }},
+          quickAdd: {{ 'nova.js.quick_add' | t | json }},
+          cartRecommendationHeading: {{ 'nova.intelligence.related_heading' | t | json }},
+          cartRecommendationCopy: {{ 'nova.intelligence.related_copy' | t | json }},
+          cartAddonHeading: {{ 'nova.cart.drawer_addon_heading' | t | json }},
+          cartAddonCopy: {{ 'nova.cart.drawer_addon_copy' | t | json }},
+          moveToCart: {{ 'nova.js.move_to_cart' | t | json }},
+          searchProducts: {{ 'nova.js.search_products' | t | json }},
+          searchCollections: {{ 'nova.js.search_collections' | t | json }},
+          searchSuggestions: {{ 'nova.js.search_suggestions' | t | json }},
+          searchPages: {{ 'nova.js.search_pages' | t | json }},
+          searchAll: {{ 'nova.js.search_all' | t | json }},
+          searchNoResults: {{ 'nova.js.search_no_results' | t | json }},
+          searchRecent: {{ 'nova.js.search_recent' | t | json }},
+          searchPopular: {{ 'nova.js.search_popular' | t | json }},
+          searchBrands: {{ 'nova.js.search_brands' | t | json }},
+          searchSpecs: {{ 'nova.js.search_specs' | t | json }},
+          searchClearRecent: {{ 'nova.js.search_clear_recent' | t | json }},
+          searchAvailable: {{ 'nova.js.search_available' | t | json }},
+          searchView: {{ 'nova.js.search_view' | t | json }},
+          deliveryEstimateRange: {{ 'nova.delivery.estimate_range' | t | json }},
+          shippingChecking: {{ 'nova.delivery.checking_rates' | t | json }},
+          shippingError: {{ 'nova.delivery.rates_error' | t | json }},
+          shippingEmpty: {{ 'nova.delivery.rates_empty' | t | json }},
+          shippingRatesHeading: {{ 'nova.delivery.rates_heading' | t | json }},
+          shippingRateDelivery: {{ 'nova.delivery.rate_delivery' | t | json }},
+          campaignCopied: {{ 'nova.campaign.copied' | t | json }},
+          campaignDays: {{ 'nova.campaign.days' | t | json }},
+          campaignHours: {{ 'nova.campaign.hours' | t | json }},
+          campaignMinutes: {{ 'nova.campaign.minutes' | t | json }},
+          campaignExpired: {{ 'nova.campaign.expired' | t | json }}
+        }
+      };
+    </script>
+      <script src="{{ 'nova-core.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'nova-accessibility.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'besjaar-premium-lux.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'besjaar-1150.js' | asset_url }}" defer="defer"></script>
+      {% if request.page_type == 'product' %}<script src="{{ 'nova-product.js' | asset_url }}" defer="defer"></script><script src="{{ 'nova-gallery-fix.js' | asset_url }}" defer="defer"></script><script src="{{ 'nova-360.js' | asset_url }}" defer="defer"></script>{% if settings.enable_shower_bundle %}<script src="{{ 'nova-bundle.js' | asset_url }}" defer="defer"></script>{% endif %}{% elsif request.page_type == 'index' %}<script src="{{ 'nova-360.js' | asset_url }}" defer="defer"></script><script src="{{ 'besjaar-premium-home.js' | asset_url }}" defer="defer"></script>{% elsif request.page_type == 'cart' %}{% if settings.show_cart_addons %}<script src="{{ 'nova-bundle.js' | asset_url }}" defer="defer"></script>{% endif %}{% endif %}
+      {% if settings.enable_smart_recommendations %}{% if request.page_type == 'product' or request.page_type == 'cart' %}<script src="{{ 'nova-recommendations.js' | asset_url }}" defer="defer"></script>{% endif %}{% endif %}
+      {% if request.page_type contains 'customers' or template.name contains 'customers' %}<script src="{{ 'nova-account.js' | asset_url }}" defer="defer"></script>{% endif %}
+      {% if request.path contains '/apps/parcelpanel' %}<script src="{{ 'nova-tracking.js' | asset_url }}" defer="defer"></script>{% endif %}
+      {% if settings.enable_measurement_layer %}{% unless request.design_mode %}<script src="{{ 'nova-analytics.js' | asset_url }}" defer="defer"></script>{% endunless %}{% endif %}
+    {% endunless %}
+  </head>
+  <body class="nova-polish-v34 nova-spatial-v4 nova-launch-v7{% if settings.show_mobile_bottom_nav %} besjaar-has-mobile-nav{% endif %}{% if request.design_mode or request.visual_preview_mode %} nova-editor-safe{% endif %}" data-page-type="{{ request.page_type | escape }}">
+    <a class="nova-skip" href="#MainContent">{{ 'nova.accessibility.skip_to_content' | t }}</a>
+    {% sections 'header-group' %}
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+    
+    {% unless request.design_mode or request.visual_preview_mode %}
+      
+      
+    {% endunless %}
+  {% if request.design_mode %}<script src="{{ 'besjaar-editor-preview.js' | asset_url }}" defer="defer"></script>{% endif %}
+  </body>
+</html>

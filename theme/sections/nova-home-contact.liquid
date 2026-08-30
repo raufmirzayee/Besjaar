@@ -1,0 +1,22 @@
+<section class="nova-section nova-home-contact" id="besjaar-contact">
+  <div class="nova-shell nova-home-contact__grid">
+    <div class="nova-home-support__head">
+      <p class="nova-kicker">{{ 'nova.contact.kicker' | t }}</p>
+      <h2>{{ 'nova.contact.title' | t }}</h2>
+      <p>{{ 'nova.contact.intro' | t }}</p>
+    </div>
+    <div class="nova-home-contact__form">
+      {% form 'contact' %}
+        {% if form.posted_successfully? %}<p class="nova-form-message nova-form-message--success" role="status" aria-live="polite">{{ 'nova.contact.success' | t }}</p>{% endif %}
+        {% if form.errors %}<div class="nova-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+        <div class="nova-home-contact__fields">
+          <label><span>{{ 'nova.contact.name' | t }}</span><input class="nova-input" type="text" name="contact[name]" autocomplete="name"></label>
+          <label><span>{{ 'nova.contact.email' | t }}</span><input class="nova-input" type="email" name="contact[email]" autocomplete="email" required></label>
+        </div>
+        <label><span>{{ 'nova.contact.message' | t }}</span><textarea class="nova-input" name="contact[body]" rows="5" required></textarea></label>
+        <button class="nova-button nova-button--primary" type="submit">{{ 'nova.contact.send' | t }}</button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+{% schema %}{"name":"Home contact","settings":[],"presets":[{"name":"Home contact"}]}{% endschema %}

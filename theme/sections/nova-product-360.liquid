@@ -1,0 +1,204 @@
+{% liquid
+  assign frames = product.metafields.custom.product_360_frames.value
+  assign frame_count = 0
+  assign frame_source = 'none'
+
+  if frames != blank and frames.size >= 8
+    assign frame_count = frames.size
+    assign frame_source = 'metafield'
+  endif
+
+  assign bundled_target_matches = false
+  if section.settings.bundled_product != blank and section.settings.bundled_product.id == product.id
+    assign bundled_target_matches = true
+  elsif section.settings.bundled_product == blank and section.settings.bundled_product_handle != blank and product.handle == section.settings.bundled_product_handle
+    assign bundled_target_matches = true
+  endif
+
+  if frame_source == 'none' and section.settings.use_bundled_frames and bundled_target_matches
+    assign frame_count = 23
+    assign frame_source = 'bundled'
+  endif
+%}
+
+{% if frame_count >= 8 %}
+  <section
+    id="NovaProduct360-{{ product.id }}"
+    class="nova-360"
+    data-nova-360
+    data-frame-count="{{ frame_count }}"
+    data-frame-source="{{ frame_source }}"
+    data-drag-sensitivity="{{ section.settings.drag_sensitivity }}"
+    data-autoplay="{{ section.settings.autoplay | json }}"
+    data-autoplay-speed="{{ section.settings.autoplay_speed }}"
+    data-pause-label="{{ 'nova.immersive.pause' | t | escape }}"
+    data-reveal
+  >
+    <div class="nova-shell">
+      <div class="nova-360__heading">
+        <div>
+          <p class="nova-kicker">{{ 'nova.immersive.eyebrow' | t }}</p>
+          <h2>{{ 'nova.immersive.heading' | t }}</h2>
+          <p>{{ 'nova.immersive.copy' | t }}</p>
+        </div>
+        <div class="nova-360__meta" aria-label="{{ 'nova.immersive.frame_count_label' | t | escape }}">
+          <strong>360°</strong>
+          <span>{{ 'nova.immersive.frames' | t: count: frame_count }}</span>
+        </div>
+      </div>
+
+      <div class="nova-360__viewer-wrap">
+        <div
+          class="nova-360__viewer"
+          tabindex="0"
+          role="slider"
+          aria-valuemin="1"
+          aria-valuemax="{{ frame_count }}"
+          aria-valuenow="1"
+          aria-valuetext="1 / {{ frame_count }}"
+          aria-roledescription="{{ 'nova.immersive.viewer_role' | t | escape }}"
+          aria-label="{{ 'nova.immersive.viewer_label' | t: product: product.title | escape }}"
+          aria-keyshortcuts="ArrowLeft ArrowRight Home End"
+          data-nova-360-viewer
+        >
+          {% if frame_source == 'metafield' %}
+            {% assign first_frame = frames.first %}
+            {% assign first_alt = first_frame.alt | default: product.title %}
+            <img
+              class="nova-360__image"
+              src="{{ first_frame | image_url: width: 1400 }}"
+              srcset="{{ first_frame | image_url: width: 700 }} 700w, {{ first_frame | image_url: width: 1000 }} 1000w, {{ first_frame | image_url: width: 1400 }} 1400w, {{ first_frame | image_url: width: 1800 }} 1800w"
+              sizes="(min-width: 1000px) 980px, 100vw"
+              width="{{ first_frame.width }}"
+              height="{{ first_frame.height }}"
+              alt="{{ first_alt | escape }}"
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+              data-nova-360-image
+            >
+          {% else %}
+            <img
+              class="nova-360__image"
+              src="{{ 'besjaar-360-01.webp' | asset_url }}"
+              width="960"
+              height="960"
+              alt="{{ product.title | escape }}"
+              loading="lazy"
+              decoding="async"
+              draggable="false"
+              data-nova-360-image
+            >
+          {% endif %}
+
+          <div class="nova-360__loading" hidden data-nova-360-loading role="status" aria-live="polite">{{ 'nova.immersive.loading' | t }}</div>
+        </div>
+
+        <div class="nova-360__controls">
+          <button type="button" class="nova-360__control" data-nova-360-prev aria-label="{{ 'nova.immersive.previous' | t | escape }}">←</button>
+          <div class="nova-360__progress" aria-hidden="true"><span data-nova-360-progress></span></div>
+          <span class="nova-360__counter" aria-hidden="true"><span data-nova-360-current>1</span> / {{ frame_count }}</span>
+          <button type="button" class="nova-360__control" data-nova-360-next aria-label="{{ 'nova.immersive.next' | t | escape }}">→</button>
+          {% if section.settings.show_autoplay_control %}
+            <button type="button" class="nova-360__play" data-nova-360-play aria-pressed="false">
+              <span data-nova-360-play-label>{{ 'nova.immersive.play' | t }}</span>
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <p class="nova-360__note">{{ 'nova.immersive.note' | t }}</p>
+
+      <script type="application/json" data-nova-360-frames>
+        {% if frame_source == 'metafield' %}
+          [
+            {% for frame in frames %}
+              {
+                "url": {{ frame | image_url: width: 1400 | json }},
+                "alt": {{ frame.alt | default: product.title | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
+        {% else %}
+          [
+            {% for i in (1..23) %}
+              {% capture frame_number %}{% if i < 10 %}0{% endif %}{{ i }}{% endcapture %}
+              {% assign frame_asset = 'besjaar-360-' | append: frame_number | append: '.webp' %}
+              {
+                "url": {{ frame_asset | asset_url | json }},
+                "alt": {{ product.title | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ]
+        {% endif %}
+      </script>
+    </div>
+  </section>
+{% elsif request.design_mode %}
+  <section class="nova-360 nova-360--setup" data-reveal>
+    <div class="nova-shell">
+      <div class="nova-360__setup-card">
+        <p class="nova-kicker">Nova 7.5.2</p>
+        <h2>360° product viewer</h2>
+        <p>This theme contains a bundled 23-frame Besjaar spin. Select the matching product below, or keep using <code>custom.product_360_frames</code> (List of files). Product metafield frames always take priority over bundled frames.</p>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Product 360 viewer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_bundled_frames",
+      "label": "Use bundled 23-frame Besjaar spin",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "bundled_product",
+      "label": "Product using bundled spin"
+    },
+    {
+      "type": "text",
+      "id": "bundled_product_handle",
+      "label": "Fallback product handle",
+      "default": "besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver"
+    },
+    {
+      "type": "range",
+      "id": "drag_sensitivity",
+      "label": "Drag sensitivity",
+      "min": 3,
+      "max": 16,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Start rotating automatically",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_autoplay_control",
+      "label": "Show play / pause control",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay speed",
+      "min": 60,
+      "max": 220,
+      "step": 10,
+      "unit": "ms",
+      "default": 110
+    }
+  ],
+  "presets": [{"name": "Product 360 viewer"}]
+}
+{% endschema %}

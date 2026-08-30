@@ -1,0 +1,112 @@
+<section class="nova-section nova-addresses-page nova-account-v41 nova-account-v41--addresses">
+  <div class="nova-shell">
+    <div class="nova-account-v41__subhero">
+      <div>
+        <p class="nova-kicker">{{ 'nova.account.customer_space' | t }}</p>
+        <h1>{{ 'nova.account.addresses' | t }}</h1>
+        <p>{{ 'nova.account.addresses_copy_v41' | t }}</p>
+      </div>
+      <a class="nova-button nova-button--ghost" href="{{ routes.account_url }}">← {{ 'nova.account.back_to_account' | t }}</a>
+    </div>
+
+    {% render 'nova-account-nav', active: 'addresses' %}
+
+    <div class="nova-address-v41__toolbar">
+      <div><strong>{{ 'nova.account.saved_addresses' | t }}</strong><span>{{ 'nova.account.addresses_count' | t: count: customer.addresses.size }}</span></div>
+      <details class="nova-address-v41__add">
+        <summary class="nova-button nova-button--primary">+ {{ 'nova.account.add_address' | t }}</summary>
+        <div class="nova-address-v41__form-panel">
+          <div class="nova-address-v41__form-head"><div><p class="nova-kicker">{{ 'nova.account.new_address' | t }}</p><h2>{{ 'nova.account.add_delivery_address' | t }}</h2></div></div>
+          {% form 'customer_address', customer.new_address %}
+            <div class="nova-form-grid nova-form-grid--2">
+              <div><label class="nova-label" for="AddressFirstNameNew">{{ 'nova.account.first_name' | t }}</label><input class="nova-input" id="AddressFirstNameNew" type="text" name="address[first_name]" autocomplete="given-name"></div>
+              <div><label class="nova-label" for="AddressLastNameNew">{{ 'nova.account.last_name' | t }}</label><input class="nova-input" id="AddressLastNameNew" type="text" name="address[last_name]" autocomplete="family-name"></div>
+              <div><label class="nova-label" for="AddressCompanyNew">{{ 'nova.account.company' | t }}</label><input class="nova-input" id="AddressCompanyNew" type="text" name="address[company]" autocomplete="organization"></div>
+              <div><label class="nova-label" for="AddressPhoneNew">{{ 'nova.account.phone' | t }}</label><input class="nova-input" id="AddressPhoneNew" type="tel" name="address[phone]" autocomplete="tel"></div>
+              <div class="nova-form-grid__wide"><label class="nova-label" for="AddressAddress1New">{{ 'nova.account.address_line_1' | t }}</label><input class="nova-input" id="AddressAddress1New" type="text" name="address[address1]" autocomplete="address-line1" required></div>
+              <div class="nova-form-grid__wide"><label class="nova-label" for="AddressAddress2New">{{ 'nova.account.address_line_2' | t }}</label><input class="nova-input" id="AddressAddress2New" type="text" name="address[address2]" autocomplete="address-line2"></div>
+              <div><label class="nova-label" for="AddressZipNew">{{ 'nova.account.postal_code' | t }}</label><input class="nova-input" id="AddressZipNew" type="text" name="address[zip]" autocomplete="postal-code"></div>
+              <div><label class="nova-label" for="AddressCityNew">{{ 'nova.account.city' | t }}</label><input class="nova-input" id="AddressCityNew" type="text" name="address[city]" autocomplete="address-level2" required></div>
+              <div><label class="nova-label" for="AddressProvinceNew">{{ 'nova.account.province' | t }}</label><input class="nova-input" id="AddressProvinceNew" type="text" name="address[province]" autocomplete="address-level1"></div>
+              <div><label class="nova-label" for="AddressCountryNew">{{ 'nova.account.country' | t }}</label><select class="nova-select" id="AddressCountryNew" name="address[country]">{{ all_country_option_tags }}</select></div>
+            </div>
+            <label class="nova-check"><input type="checkbox" name="address[default]" value="1"><span>{{ 'nova.account.set_default' | t }}</span></label>
+            <button class="nova-button nova-button--primary" type="submit">{{ 'nova.account.save_address' | t }}</button>
+          {% endform %}
+        </div>
+      </details>
+    </div>
+
+    {% if customer.default_address %}
+      {% assign address = customer.default_address %}
+      <article class="nova-address-v41__default">
+        <div class="nova-address-v41__default-mark"><span aria-hidden="true">⌂</span></div>
+        <div class="nova-address-v41__default-copy">
+          <div><span>{{ 'nova.account.default_address' | t }}</span><h2>{{ address.first_name | escape }} {{ address.last_name | escape }}</h2></div>
+          <div class="nova-address-v41__formatted">{{ address | format_address }}</div>
+        </div>
+        <details class="nova-address-v41__edit">
+          <summary class="nova-button nova-button--ghost">{{ 'nova.account.edit_address' | t }}</summary>
+          <div class="nova-address-v41__form-panel nova-address-v41__form-panel--inline">
+            {% form 'customer_address', address %}
+              <div class="nova-form-grid nova-form-grid--2">
+                <div><label class="nova-label" for="AddressFirstName-{{ address.id }}">{{ 'nova.account.first_name' | t }}</label><input class="nova-input" id="AddressFirstName-{{ address.id }}" type="text" name="address[first_name]" value="{{ address.first_name | escape }}" autocomplete="given-name"></div>
+                <div><label class="nova-label" for="AddressLastName-{{ address.id }}">{{ 'nova.account.last_name' | t }}</label><input class="nova-input" id="AddressLastName-{{ address.id }}" type="text" name="address[last_name]" value="{{ address.last_name | escape }}" autocomplete="family-name"></div>
+                <div class="nova-form-grid__wide"><label class="nova-label" for="AddressLine1-{{ address.id }}">{{ 'nova.account.address_line_1' | t }}</label><input class="nova-input" id="AddressLine1-{{ address.id }}" type="text" name="address[address1]" value="{{ address.address1 | escape }}" autocomplete="address-line1" required></div>
+                <div class="nova-form-grid__wide"><label class="nova-label" for="AddressLine2-{{ address.id }}">{{ 'nova.account.address_line_2' | t }}</label><input class="nova-input" id="AddressLine2-{{ address.id }}" type="text" name="address[address2]" value="{{ address.address2 | escape }}" autocomplete="address-line2"></div>
+                <div><label class="nova-label" for="AddressZip-{{ address.id }}">{{ 'nova.account.postal_code' | t }}</label><input class="nova-input" id="AddressZip-{{ address.id }}" type="text" name="address[zip]" value="{{ address.zip | escape }}" autocomplete="postal-code"></div>
+                <div><label class="nova-label" for="AddressCity-{{ address.id }}">{{ 'nova.account.city' | t }}</label><input class="nova-input" id="AddressCity-{{ address.id }}" type="text" name="address[city]" value="{{ address.city | escape }}" autocomplete="address-level2" required></div>
+                <div><label class="nova-label" for="AddressProvince-{{ address.id }}">{{ 'nova.account.province' | t }}</label><input class="nova-input" id="AddressProvince-{{ address.id }}" type="text" name="address[province]" value="{{ address.province | escape }}" autocomplete="address-level1"></div>
+                <div><label class="nova-label" for="AddressCountry-{{ address.id }}">{{ 'nova.account.country' | t }}</label><select class="nova-select" id="AddressCountry-{{ address.id }}" name="address[country]" data-default="{{ address.country }}">{{ all_country_option_tags }}</select></div>
+                <div><label class="nova-label" for="AddressPhone-{{ address.id }}">{{ 'nova.account.phone' | t }}</label><input class="nova-input" id="AddressPhone-{{ address.id }}" type="tel" name="address[phone]" value="{{ address.phone | escape }}" autocomplete="tel"></div>
+              </div>
+              <button class="nova-button nova-button--primary" type="submit">{{ 'nova.account.save_address' | t }}</button>
+            {% endform %}
+          </div>
+        </details>
+      </article>
+    {% endif %}
+
+    {% if customer.addresses.size > 0 %}
+      <div class="nova-address-v41__grid">
+        {% for address in customer.addresses %}
+          {% unless address == customer.default_address %}
+            <article class="nova-address-v41__card">
+              <div class="nova-address-v41__card-top"><span>{{ 'nova.account.delivery_address' | t }}</span><strong>{{ forloop.index | prepend: '0' }}</strong></div>
+              <h3>{{ address.first_name | escape }} {{ address.last_name | escape }}</h3>
+              <div class="nova-address-v41__formatted">{{ address | format_address }}</div>
+              <details class="nova-address-v41__edit">
+                <summary class="nova-mini-link">{{ 'nova.account.edit_address' | t }} →</summary>
+                <div class="nova-address-v41__form-panel nova-address-v41__form-panel--inline">
+                  {% form 'customer_address', address %}
+                    <div class="nova-form-grid nova-form-grid--2">
+                      <div><label class="nova-label" for="AddressFirstName-{{ address.id }}">{{ 'nova.account.first_name' | t }}</label><input class="nova-input" id="AddressFirstName-{{ address.id }}" type="text" name="address[first_name]" value="{{ address.first_name | escape }}" autocomplete="given-name"></div>
+                      <div><label class="nova-label" for="AddressLastName-{{ address.id }}">{{ 'nova.account.last_name' | t }}</label><input class="nova-input" id="AddressLastName-{{ address.id }}" type="text" name="address[last_name]" value="{{ address.last_name | escape }}" autocomplete="family-name"></div>
+                      <div class="nova-form-grid__wide"><label class="nova-label" for="AddressLine1-{{ address.id }}">{{ 'nova.account.address_line_1' | t }}</label><input class="nova-input" id="AddressLine1-{{ address.id }}" type="text" name="address[address1]" value="{{ address.address1 | escape }}" autocomplete="address-line1" required></div>
+                      <div class="nova-form-grid__wide"><label class="nova-label" for="AddressLine2-{{ address.id }}">{{ 'nova.account.address_line_2' | t }}</label><input class="nova-input" id="AddressLine2-{{ address.id }}" type="text" name="address[address2]" value="{{ address.address2 | escape }}" autocomplete="address-line2"></div>
+                      <div><label class="nova-label" for="AddressZip-{{ address.id }}">{{ 'nova.account.postal_code' | t }}</label><input class="nova-input" id="AddressZip-{{ address.id }}" type="text" name="address[zip]" value="{{ address.zip | escape }}" autocomplete="postal-code"></div>
+                      <div><label class="nova-label" for="AddressCity-{{ address.id }}">{{ 'nova.account.city' | t }}</label><input class="nova-input" id="AddressCity-{{ address.id }}" type="text" name="address[city]" value="{{ address.city | escape }}" autocomplete="address-level2" required></div>
+                      <div><label class="nova-label" for="AddressProvince-{{ address.id }}">{{ 'nova.account.province' | t }}</label><input class="nova-input" id="AddressProvince-{{ address.id }}" type="text" name="address[province]" value="{{ address.province | escape }}" autocomplete="address-level1"></div>
+                      <div><label class="nova-label" for="AddressCountry-{{ address.id }}">{{ 'nova.account.country' | t }}</label><select class="nova-select" id="AddressCountry-{{ address.id }}" name="address[country]" data-default="{{ address.country }}">{{ all_country_option_tags }}</select></div>
+                      <div><label class="nova-label" for="AddressPhone-{{ address.id }}">{{ 'nova.account.phone' | t }}</label><input class="nova-input" id="AddressPhone-{{ address.id }}" type="tel" name="address[phone]" value="{{ address.phone | escape }}" autocomplete="tel"></div>
+                    </div>
+                    <label class="nova-check"><input type="checkbox" name="address[default]" value="1"><span>{{ 'nova.account.set_default' | t }}</span></label>
+                    <button class="nova-button nova-button--primary" type="submit">{{ 'nova.account.save_address' | t }}</button>
+                  {% endform %}
+                </div>
+              </details>
+            </article>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="nova-account-v41__empty">
+        <span class="nova-account-v41__empty-icon" aria-hidden="true">⌂</span>
+        <div><h2>{{ 'nova.account.no_addresses_title' | t }}</h2><p>{{ 'nova.account.no_addresses_copy_v41' | t }}</p></div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+{"name":"Addresses","settings":[]}
+{% endschema %}

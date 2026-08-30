@@ -1,0 +1,17 @@
+<section class="nova-section nova-apps-section">
+  <div class="nova-shell">
+    <div class="nova-apps-section__inner">
+      {% for block in section.blocks %}
+        {% if block.type == '@app' %}{% render block %}{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Apps",
+  "settings":[],
+  "blocks":[{"type":"@app"}],
+  "presets":[{"name":"Apps"}]
+}
+{% endschema %}

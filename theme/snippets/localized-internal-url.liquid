@@ -1,0 +1,95 @@
+{%- liquid
+  assign nova_url = url | default: '' | strip
+  assign nova_root = routes.root_url | default: '/'
+
+  comment
+    Normalize absolute URLs that point back to this same Shopify storefront.
+    This protects menu/page settings that were saved as full custom-domain or
+    myshopify.com URLs while preserving the visitor's active EN/NL locale.
+  endcomment
+  if nova_url != blank
+    assign nova_url_size = nova_url | size
+    assign nova_shop_url = shop.url | default: ''
+    assign nova_shop_url_size = nova_shop_url | size
+    assign nova_shop_url_prefix = nova_url | slice: 0, nova_shop_url_size
+
+    assign nova_secure_url = shop.secure_url | default: ''
+    assign nova_secure_url_size = nova_secure_url | size
+    assign nova_secure_url_prefix = nova_url | slice: 0, nova_secure_url_size
+
+    assign nova_permanent_https = 'https://' | append: shop.permanent_domain
+    assign nova_permanent_https_size = nova_permanent_https | size
+    assign nova_permanent_https_prefix = nova_url | slice: 0, nova_permanent_https_size
+
+    assign nova_permanent_http = 'http://' | append: shop.permanent_domain
+    assign nova_permanent_http_size = nova_permanent_http | size
+    assign nova_permanent_http_prefix = nova_url | slice: 0, nova_permanent_http_size
+
+    if nova_shop_url != blank and nova_shop_url_prefix == nova_shop_url
+      assign nova_url = nova_url | slice: nova_shop_url_size, nova_url_size
+    elsif nova_secure_url != blank and nova_secure_url_prefix == nova_secure_url
+      assign nova_url = nova_url | slice: nova_secure_url_size, nova_url_size
+    elsif shop.permanent_domain != blank and nova_permanent_https_prefix == nova_permanent_https
+      assign nova_url = nova_url | slice: nova_permanent_https_size, nova_url_size
+    elsif shop.permanent_domain != blank and nova_permanent_http_prefix == nova_permanent_http
+      assign nova_url = nova_url | slice: nova_permanent_http_size, nova_url_size
+    endif
+  endif
+
+  if nova_url == blank
+    assign nova_url = '/'
+  endif
+
+  assign nova_url_lc = nova_url | downcase
+  assign nova_first_char = nova_url | slice: 0, 1
+  assign nova_root_length = nova_root | size
+  assign nova_url_root_prefix = nova_url | slice: 0, nova_root_length
+  assign nova_root_last_char = nova_root | slice: -1, 1
+  assign nova_is_external = false
+
+  if nova_url contains '://' or nova_url contains 'mailto:' or nova_url contains 'tel:' or nova_url contains 'javascript:'
+    assign nova_is_external = true
+  endif
+
+  comment
+    ParcelPanel is an app-proxy route. Rebuild it from the locale-aware root
+    instead of trusting any stored or previously malformed source URL.
+  endcomment
+  if nova_url_lc contains 'parcelpanel'
+    if nova_root == '/'
+      echo '/apps/parcelpanel'
+    elsif nova_root_last_char == '/'
+      echo nova_root | append: 'apps/parcelpanel'
+    else
+      echo nova_root | append: '/apps/parcelpanel'
+    endif
+  elsif nova_is_external or nova_first_char == '#' or nova_first_char == '?'
+    echo nova_url
+  elsif nova_url contains '/policies/'
+    assign nova_policy_tail = nova_url | split: '/policies/' | last
+    if nova_root == '/'
+      echo '/policies/' | append: nova_policy_tail
+    elsif nova_root_last_char == '/'
+      echo nova_root | append: 'policies/' | append: nova_policy_tail
+    else
+      echo nova_root | append: '/policies/' | append: nova_policy_tail
+    endif
+  elsif nova_first_char == '/'
+    if nova_root == '/' or nova_url_root_prefix == nova_root
+      echo nova_url
+    else
+      assign nova_path_without_slash = nova_url | remove_first: '/'
+      if nova_root_last_char == '/'
+        echo nova_root | append: nova_path_without_slash
+      else
+        echo nova_root | append: '/' | append: nova_path_without_slash
+      endif
+    endif
+  else
+    if nova_root_last_char == '/'
+      echo nova_root | append: nova_url
+    else
+      echo nova_root | append: '/' | append: nova_url
+    endif
+  endif
+-%}

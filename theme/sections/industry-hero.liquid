@@ -1,0 +1,109 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_eyebrow = 'industry.hero.eyebrow' | t
+    assign v_heading = 'industry.hero.heading' | t
+    assign v_accent = 'industry.hero.heading_accent' | t
+    assign v_text = 'industry.hero.text' | t
+    assign v_primary = 'industry.hero.primary' | t
+    assign v_secondary = 'industry.hero.secondary' | t
+  else
+    assign v_eyebrow = section.settings.eyebrow
+    assign v_heading = section.settings.heading
+    assign v_accent = section.settings.heading_accent
+    assign v_text = section.settings.text
+    assign v_primary = section.settings.primary_label
+    assign v_secondary = section.settings.secondary_label
+  endif
+  assign customer_happy_value = 'industry.hero.customer_happy_value' | t
+  assign customer_happy_label = 'industry.hero.customer_happy_label' | t
+%}
+{% capture hero_primary_url %}{% render 'shower-store-url' %}{% endcapture %}
+{% assign hero_primary_url = hero_primary_url | strip %}
+<section class="ind ind-hero ind-hero--editorial">
+  <div class="ind-shell ind-hero__grid">
+    <div class="ind-hero__content">
+      <span class="ind-kicker ind-hero__kicker"><i aria-hidden="true"></i>{{ v_eyebrow | escape }}</span>
+      <h1 class="ind-hero__title"><span>{{ v_heading | escape }}</span><em>{{ v_accent | escape }}</em></h1>
+      <p class="ind-hero__copy">{{ v_text | escape }}</p>
+      <div class="ind-hero__actions">
+        <a class="ind-btn ind-btn--primary" href="{% if section.settings.primary_link != blank %}{% render 'localized-internal-url', url: section.settings.primary_link %}{% else %}{{ hero_primary_url }}{% endif %}">{{ v_primary | escape }}</a>
+        <a class="ind-btn ind-btn--secondary" href="#ind-details">{{ v_secondary | escape }}</a>
+      </div>
+      <div class="ind-hero__customer-proof" aria-label="{{ customer_happy_value | append: ' ' | append: customer_happy_label | escape }}">
+        <span class="ind-hero__customer-stars" aria-hidden="true">★★★★★</span>
+        <p class="ind-hero__customer-copy"><strong>{{ customer_happy_value }}</strong> <span>{{ customer_happy_label }}</span></p>
+      </div>
+    </div>
+
+    <figure class="ind-hero__visual">
+      <div class="ind-hero__image-card">
+        {%- comment -%}Besjaar 11.6.1: no srcset here — Shopify's CDN does not generate on-demand size variants for theme assets (only for product/file images), so sized asset URLs resolve to the "No image" placeholder.{%- endcomment -%}
+        <img src="{{ 'besjaar-premium-hero-pressure-v3.webp' | asset_url }}" width="1672" height="941" loading="eager" decoding="async" fetchpriority="high" alt="{{ v_heading | escape }}">
+      </div>
+      <figcaption class="ind-hero__image-pill">
+        <span aria-hidden="true">◌</span>
+        <strong>{{ 'industry.strip.i2' | t }}</strong>
+      </figcaption>
+    </figure>
+  </div>
+
+</section>
+{% schema %}
+{
+  "name": "Editorial hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_localized_copy",
+      "label": "Use translated copy (NL/EN/DE/FR)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "PRESSURE · COMFORT · ROUTINE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A better shower."
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading second line",
+      "default": "Every day."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Premium showerheads for a strong, comfortable flow and flexible spray modes — a simple upgrade for every day."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button",
+      "default": "Shop showerheads"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button",
+      "default": "Why Besjaar"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Editorial hero"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,109 @@
+{% liquid
+  assign card_product = product
+  assign image_loading_mode = image_loading | default: 'lazy'
+  assign image_priority_mode = image_priority | default: 'auto'
+  capture display_title_capture
+    render 'localized-product-title', product: card_product
+  endcapture
+  assign display_title = display_title_capture | strip
+
+  capture product_url_capture
+    render 'localized-internal-url', url: card_product.url
+  endcapture
+  assign product_url = product_url_capture | strip
+
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: card_product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+
+  capture filter_capture
+    render 'shower-filter-state', product: card_product
+  endcapture
+  assign filter_included = filter_capture | strip
+
+  capture hose_capture
+    render 'shower-hose-state', product: card_product
+  endcapture
+  assign hose_included = hose_capture | strip
+
+  assign selected_variant = card_product.selected_or_first_available_variant
+  assign sale_percent = 0
+  if selected_variant.compare_at_price > selected_variant.price and selected_variant.compare_at_price > 0
+    assign sale_difference = selected_variant.compare_at_price | minus: selected_variant.price
+    assign sale_percent = sale_difference | times: 100 | divided_by: selected_variant.compare_at_price
+  endif
+  assign alternate_image = blank
+  if card_product.images.size > 1
+    assign alternate_image = card_product.images[1]
+  endif
+%}
+
+<article class="bk-product-card{% unless card_product.available %} is-sold-out{% endunless %}">
+  <div class="bk-product-card__media">
+    <a class="bk-product-card__media-link" href="{{ product_url }}" aria-label="{{ display_title | escape }}">
+      {% if card_product.featured_image != blank %}
+        {% if image_priority_mode == 'high' %}
+          {{ card_product.featured_image | image_url: width: 1200 | image_tag: class: 'bk-product-card__image bk-product-card__image--primary', loading: image_loading_mode, fetchpriority: 'high', decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: display_title }}
+        {% else %}
+          {{ card_product.featured_image | image_url: width: 1200 | image_tag: class: 'bk-product-card__image bk-product-card__image--primary', loading: image_loading_mode, decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: display_title }}
+        {% endif %}
+        {% if alternate_image != blank %}
+          {{ alternate_image | image_url: width: 1200 | image_tag: class: 'bk-product-card__image bk-product-card__image--alternate', loading: 'lazy', decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: '' }}
+        {% endif %}
+      {% else %}
+        <span class="bk-product-card__placeholder" aria-hidden="true"></span>
+      {% endif %}
+    </a>
+
+    <div class="bk-product-card__badges">
+      {% if card_product.compare_at_price_max > card_product.price %}
+        <span class="bk-badge bk-badge--sale">{% if sale_percent > 0 %}-{{ sale_percent }}%{% else %}{{ 'nova.product_card.sale' | t }}{% endif %}</span>
+      {% endif %}
+      {% if filter_included == 'true' %}
+        <span class="bk-badge">{{ 'besjaar_collection_grid.badge_filter' | t }}</span>
+      {% elsif spray_modes != blank %}
+        <span class="bk-badge">{{ 'besjaar_collection_grid.badge_modes' | t: count: spray_modes }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="bk-product-card__body">
+    <div class="bk-product-card__meta">
+      <span>BESJAAR</span>
+      <span class="bk-product-card__availability{% unless card_product.available %} is-unavailable{% endunless %}"><i aria-hidden="true"></i>{% if card_product.available %}{{ 'nova.product_card.in_stock' | t }}{% else %}{{ 'nova.product_card.sold_out' | t }}{% endif %}</span>
+    </div>
+
+    {% if settings.show_card_review_ratings %}
+      <div class="bk-product-card__rating">{% render 'review-stars', product: card_product, compact: true %}</div>
+    {% endif %}
+
+    <h3><a href="{{ product_url }}">{{ display_title }}</a></h3>
+
+    <div class="bk-product-card__price">
+      <strong>{{ card_product.price | money }}</strong>
+      {% if card_product.compare_at_price_max > card_product.price %}<s><span class="nova-visually-hidden">{{ 'nova.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+    </div>
+
+    {% if spray_modes != blank or filter_included == 'true' or hose_included == 'true' %}
+      <div class="bk-product-card__facts">
+        {% if spray_modes != blank %}<span>{{ 'besjaar_collection_grid.fact_modes' | t: count: spray_modes }}</span>{% endif %}
+        {% if filter_included == 'true' %}<span>{{ 'besjaar_collection_grid.fact_filter' | t }}</span>{% endif %}
+        {% if hose_included == 'true' %}<span>{{ 'besjaar_collection_grid.fact_hose' | t }}</span>{% endif %}
+      </div>
+    {% endif %}
+
+    <div class="bk-product-card__action bk-product-card__action--dual">
+      <a class="bk-product-card__view" href="{{ product_url }}"><span>{{ 'nova.product_card.view_product' | t }}</span><span aria-hidden="true">→</span></a>
+      {% if card_product.available and selected_variant != blank %}
+        <form class="nova-card-quick-form bk-product-card__quick-form" method="post" action="{{ routes.cart_add_url }}">
+          <input type="hidden" name="id" value="{{ selected_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button class="bk-product-card__quick" type="submit" data-card-quick-add="{{ selected_variant.id }}" aria-label="{{ 'nova.product_card.quick_add_label' | t: title: display_title | escape }}"><span>{{ 'nova.product_card.quick_add' | t }}</span><span aria-hidden="true">+</span></button>
+        </form>
+      {% else %}
+        <span class="is-disabled bk-product-card__quick-disabled">{{ 'nova.product_card.sold_out' | t }}</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

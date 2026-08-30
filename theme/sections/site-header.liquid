@@ -1,0 +1,559 @@
+{% liquid
+  assign nova_free_shipping_threshold_cents = settings.free_shipping_threshold | times: 100
+  assign nova_free_shipping_threshold_money = nova_free_shipping_threshold_cents | money_without_trailing_zeros
+  if section.settings.use_localized_announcement
+    assign announcement_text = 'nova.header.announcement' | t: amount: nova_free_shipping_threshold_money
+    assign announcement_mobile_text = 'nova.header.announcement_mobile' | t: amount: nova_free_shipping_threshold_money
+  else
+    assign announcement_text = section.settings.announcement
+    assign announcement_mobile_text = section.settings.announcement_mobile | default: section.settings.announcement
+  endif
+  capture nova_shower_url
+    render 'shower-store-url'
+  endcapture
+  assign nova_shower_url = nova_shower_url | strip
+
+  assign nova_mega_collection = settings.shower_collection
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['badkamer-douche']
+  endif
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['douchekoppen']
+  endif
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['showerheads']
+  endif
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['douche']
+  endif
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['shower']
+  endif
+  assign nova_mega_filter_all = false
+  if nova_mega_collection == blank
+    assign nova_mega_collection = collections['all']
+    assign nova_mega_filter_all = true
+  endif
+
+  assign nova_mobile_filter_collection = blank
+  for nova_mobile_collection_candidate in collections
+    assign nova_mobile_collection_identity = nova_mobile_collection_candidate.title | append: ' ' | append: nova_mobile_collection_candidate.handle | downcase
+    if nova_mobile_collection_candidate.products_count > 0 and nova_mobile_collection_identity contains 'filter'
+      assign nova_mobile_filter_collection = nova_mobile_collection_candidate
+      break
+    endif
+  endfor
+
+  assign nova_mega_featured_product = blank
+  if section.settings.mega_featured_product != blank
+    assign nova_mega_featured_product = section.settings.mega_featured_product
+  endif
+
+  assign nova_account_url = routes.account_login_url
+  if customer
+    assign nova_account_url = routes.account_url
+  endif
+  assign nova_customer_account_menu = section.settings.customer_account_menu.handle | default: 'customer-account-main-menu'
+
+  assign nova_faq_current = false
+  assign nova_contact_current = false
+  if request.page_type == 'page' and page != blank
+    if page.handle == 'veelgestelde-vragen' or page.handle == 'faq' or page.handle == 'frequently-asked-questions'
+      assign nova_faq_current = true
+    endif
+    if page.handle == 'contact' or page.handle == 'contact-us' or page.handle == 'contacteer-ons' or page.handle == 'klantenservice'
+      assign nova_contact_current = true
+    endif
+  endif
+  assign nova_track_current = false
+  if request.path contains '/track-order' or request.path contains '/track-your-order' or request.path contains '/order-tracking' or request.path contains '/tracking' or request.path contains '/apps/parcelpanel'
+    assign nova_track_current = true
+  endif
+
+  assign nova_faq_page = settings.faq_page
+  if nova_faq_page == blank
+    assign nova_faq_page = pages['veelgestelde-vragen']
+  endif
+  if nova_faq_page == blank
+    assign nova_faq_page = pages['faq']
+  endif
+  if nova_faq_page == blank
+    assign nova_faq_page = pages['frequently-asked-questions']
+  endif
+  capture nova_faq_url
+    if nova_faq_page != blank
+      render 'localized-internal-url', url: nova_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  assign nova_faq_url = nova_faq_url | strip
+
+  assign nova_contact_page = settings.contact_page
+  if nova_contact_page == blank
+    assign nova_contact_page = pages['contact']
+  endif
+  if nova_contact_page == blank
+    assign nova_contact_page = pages['contact-us']
+  endif
+  if nova_contact_page == blank
+    assign nova_contact_page = pages['contacteer-ons']
+  endif
+  if nova_contact_page == blank
+    assign nova_contact_page = pages['klantenservice']
+  endif
+  capture nova_contact_url
+    if nova_contact_page != blank
+      render 'localized-internal-url', url: nova_contact_page.url
+    else
+      render 'localized-internal-url', url: '/pages/contact'
+    endif
+  endcapture
+  assign nova_contact_url = nova_contact_url | strip
+
+  assign nova_tracking_page = settings.tracking_page
+  if nova_tracking_page == blank
+    assign nova_tracking_page = pages['track-order']
+  endif
+  if nova_tracking_page == blank
+    assign nova_tracking_page = pages['track-your-order']
+  endif
+  if nova_tracking_page == blank
+    assign nova_tracking_page = pages['order-tracking']
+  endif
+  if nova_tracking_page == blank
+    assign nova_tracking_page = pages['tracking']
+  endif
+  capture nova_track_url
+    if nova_tracking_page != blank
+      render 'localized-internal-url', url: nova_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+  assign nova_track_url = nova_track_url | strip
+
+  assign nova_about_current = false
+  if request.page_type == 'page' and page != blank
+    if page.handle == 'over-ons' or page.handle == 'overons' or page.handle == 'about-us' or page.handle == 'about'
+      assign nova_about_current = true
+    endif
+  endif
+  assign nova_about_page = pages['over-ons']
+  if nova_about_page == blank
+    assign nova_about_page = pages['overons']
+  endif
+  if nova_about_page == blank
+    assign nova_about_page = pages['about-us']
+  endif
+  if nova_about_page == blank
+    assign nova_about_page = pages['about']
+  endif
+  capture nova_about_url
+    if nova_about_page != blank
+      render 'localized-internal-url', url: nova_about_page.url
+    else
+      render 'localized-internal-url', url: '/pages/about-us'
+    endif
+  endcapture
+  assign nova_about_url = nova_about_url | strip
+  assign nova_reviews_url = routes.root_url | append: '#ind-reviews'
+%}
+{% if section.settings.show_announcement and announcement_text != blank %}
+  {% liquid
+    assign nova_announcement_link = section.settings.announcement_link | default: routes.root_url
+    capture nova_announcement_link_capture
+      render 'localized-internal-url', url: nova_announcement_link
+    endcapture
+    assign nova_announcement_url = nova_announcement_link_capture | strip
+    if section.settings.announcement_discount_code != blank
+      assign nova_announcement_target = nova_announcement_url | url_encode
+      assign nova_announcement_code = section.settings.announcement_discount_code | url_encode
+      assign nova_discount_path = 'discount/' | append: nova_announcement_code | append: '?redirect=' | append: nova_announcement_target
+      capture nova_discount_url_capture
+        render 'localized-internal-url', url: nova_discount_path
+      endcapture
+      assign nova_announcement_url = nova_discount_url_capture | strip
+    endif
+  %}
+  <div class="nova-announcement" data-campaign-window data-campaign-start="{{ section.settings.announcement_start_at | escape }}" data-campaign-end="{{ section.settings.announcement_end_at | escape }}">
+    <div class="nova-shell nova-announcement__inner">
+      <a href="{{ nova_announcement_url }}"><span class="nova-announcement__desktop-copy">{{ announcement_text }}</span><span class="nova-announcement__mobile-copy">{{ announcement_mobile_text }}</span></a>
+      {% if section.settings.announcement_discount_code != blank %}<button type="button" data-promo-copy="{{ section.settings.announcement_discount_code | escape }}"><span>{{ 'nova.campaign.code' | t }}</span> <strong>{{ section.settings.announcement_discount_code | escape }}</strong></button>{% endif %}
+      {% if settings.enable_campaign_countdowns and section.settings.announcement_show_countdown and section.settings.announcement_end_at != blank %}<span class="nova-announcement__countdown" data-campaign-countdown data-end="{{ section.settings.announcement_end_at | escape }}"><span>{{ 'nova.campaign.ends_in' | t }}</span> <strong data-campaign-countdown-value>—</strong></span>{% endif %}
+    </div>
+  </div>
+{% endif %}
+<header class="nova-header" data-site-header>
+  <div class="nova-shell nova-header__row">
+    <a class="nova-brand notranslate" translate="no" data-nova-brand href="{{ routes.root_url }}" aria-label="Besjaar — {{ 'nova.header.home' | t | escape }}">
+      {% if section.settings.logo != blank %}
+        {{ section.settings.logo | image_url: width: 320 | image_tag: widths: '140,220,320', alt: 'Besjaar' }}
+      {% else %}<span translate="no">BESJAAR</span>{% endif %}
+    </a>
+
+    <nav class="nova-nav nova-nav--shower-focus" aria-label="{{ 'nova.accessibility.main_navigation' | t | escape }}">
+      <div class="nova-shop-mega-wrap" data-shop-mega>
+        <a class="nova-nav__link nova-shop-mega__trigger" href="{{ nova_shower_url }}" aria-haspopup="true" aria-expanded="false" aria-controls="NovaShopMega-{{ section.id }}" data-shop-mega-trigger>
+          <span>{{ 'nova.shower_store.nav.shop' | t }}</span>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m3 5 4 4 4-4"/></svg>
+        </a>
+        <div class="nova-shop-mega" id="NovaShopMega-{{ section.id }}" data-shop-mega-panel aria-hidden="true" inert>
+          <div class="nova-shell nova-shop-mega__inner{% if nova_mega_featured_product != blank %} has-featured{% else %} is-catalog-only{% endif %}">
+            <div class="nova-shop-mega__catalog">
+              <a class="nova-shop-mega__eyebrow nova-shop-mega__all-link" href="{{ nova_shower_url }}">{{ 'nova.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
+              <div class="nova-shop-mega__grid">
+                {% assign nova_mega_rendered = 0 %}
+                {% if nova_mega_collection != blank %}
+                  {% for mega_product in nova_mega_collection.products limit: 24 %}
+                    {% assign nova_mega_include = true %}
+                    {% if nova_mega_filter_all %}
+                      {% capture nova_mega_is_head_capture %}{% render 'is-shower-head', product: mega_product %}{% endcapture %}
+                      {% assign nova_mega_is_head = nova_mega_is_head_capture | strip %}
+                      {% unless nova_mega_is_head == 'true' %}{% assign nova_mega_include = false %}{% endunless %}
+                    {% endif %}
+                    {% if nova_mega_featured_product != blank and mega_product.id == nova_mega_featured_product.id %}
+                      {% assign nova_mega_include = false %}
+                    {% endif %}
+                    {% if nova_mega_include and nova_mega_rendered < 6 %}
+                      {% capture nova_mega_product_url %}{% render 'localized-internal-url', url: mega_product.url %}{% endcapture %}
+                      <a class="nova-shop-mega__item" href="{{ nova_mega_product_url | strip }}">
+                        <span class="nova-shop-mega__thumb">
+                          {% if mega_product.featured_image != blank %}
+                            {% assign nova_mega_image_alt = mega_product.featured_image.alt | default: mega_product.title %}
+                            {{ mega_product.featured_image | image_url: width: 180 | image_tag: loading: 'lazy', decoding: 'async', widths: '80,120,180', sizes: '72px', alt: nova_mega_image_alt }}
+                          {% else %}
+                            <span class="nova-shop-mega__thumb-placeholder" aria-hidden="true"></span>
+                          {% endif %}
+                        </span>
+                        <span class="nova-shop-mega__item-copy">
+                          <strong>{% render 'localized-product-title', product: mega_product %}</strong>
+                          <small><span translate="no">Besjaar</span><span aria-hidden="true"> · </span>{{ mega_product.price | money }}</small>
+                        </span>
+                      </a>
+                      {% assign nova_mega_rendered = nova_mega_rendered | plus: 1 %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+
+            {% if nova_mega_featured_product != blank %}
+              {% capture nova_mega_featured_url %}{% render 'localized-internal-url', url: nova_mega_featured_product.url %}{% endcapture %}
+              <a class="nova-shop-mega__featured" href="{{ nova_mega_featured_url | strip }}">
+                {% if nova_mega_featured_product.featured_image != blank %}
+                  {% assign nova_mega_featured_alt = nova_mega_featured_product.featured_image.alt | default: nova_mega_featured_product.title %}
+                  {{ nova_mega_featured_product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', decoding: 'async', widths: '420,640,900', sizes: '340px', alt: nova_mega_featured_alt }}
+                {% endif %}
+                <span class="nova-shop-mega__featured-shade" aria-hidden="true"></span>
+                <span class="nova-shop-mega__featured-copy">
+                  <small>{{ 'nova.header.featured' | t }}</small>
+                  <strong>{% render 'localized-product-title', product: nova_mega_featured_product %}</strong>
+                  <span>{{ 'nova.header.view_product' | t }} →</span>
+                </span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <a class="nova-nav__link" href="{{ routes.root_url }}#ind-details">{{ 'nova.shower_store.nav.guide' | t }}</a>
+      <a class="nova-nav__link" href="{{ nova_about_url }}"{% if nova_about_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.about' | t }}</a>
+      <div class="nova-more-menu{% if nova_faq_current or nova_contact_current or nova_track_current %} is-current{% endif %}" data-more-menu>
+        <button class="nova-nav__link nova-more-menu__trigger" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="NovaMoreMenu-{{ section.id }}" data-more-menu-trigger>
+          <span>{{ 'nova.shower_store.nav.more' | t }}</span>
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m3 5 4 4 4-4"/></svg>
+        </button>
+        <div class="nova-more-menu__panel" id="NovaMoreMenu-{{ section.id }}" data-more-menu-panel aria-hidden="true" inert>
+          <a href="{{ nova_reviews_url }}">{{ 'nova.shower_store.nav.reviews' | t }} <span aria-hidden="true">→</span></a>
+          <a href="{{ nova_faq_url }}"{% if nova_faq_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.faq' | t }} <span aria-hidden="true">→</span></a>
+          <a href="{{ nova_contact_url }}"{% if nova_contact_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.contact' | t }} <span aria-hidden="true">→</span></a>
+          <a href="{{ nova_track_url }}"{% if nova_track_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.track' | t }} <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="nova-header__actions">
+      <button class="nova-icon-btn nova-menu-toggle" type="button" aria-label="{{ 'nova.accessibility.menu' | t }}" aria-expanded="false" aria-controls="NovaMobileMenu-{{ section.id }}" aria-haspopup="true" data-menu-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <button class="nova-icon-btn" type="button" aria-label="{{ 'nova.accessibility.search' | t }}" aria-expanded="false" aria-haspopup="dialog" aria-controls="NovaSearchPanel-{{ section.id }}" data-search-toggle>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      </button>
+      {% if settings.show_header_localization %}{% unless request.visual_preview_mode %}<div class="nova-localization-slot nova-localization-slot--desktop">{% render 'nova-localization', context: 'header', section_id: section.id %}</div>{% endunless %}{% endif %}
+      {% if shop.customer_accounts_enabled %}
+        {% if section.settings.use_shopify_account_component %}
+          <div class="nova-account-action nova-shopify-account-wrap">
+            <shopify-account class="nova-shopify-account" menu="{{ nova_customer_account_menu }}" aria-label="{{ 'nova.header.my_account' | t | escape }}"></shopify-account>
+          </div>
+        {% elsif customer %}
+          <details class="nova-account-menu nova-account-action">
+            <summary class="nova-account-trigger" aria-label="{{ 'nova.header.my_account' | t | escape }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.8 21a7.2 7.2 0 0 1 14.4 0"/></svg>
+              {% if settings.show_account_labels %}<span>{{ 'nova.header.my_account' | t }}</span>{% endif %}
+            </summary>
+            <div class="nova-account-popover nova-account-popover--retail">
+              <div class="nova-account-popover__head">
+                <div class="nova-account-popover__avatar" aria-hidden="true">{{ customer.first_name | default: customer.email | slice: 0 | upcase }}</div>
+                <div><span>{{ settings.account_member_label | default: 'Besjaar Account' | escape }}</span><strong>{{ customer.first_name | default: customer.email | escape }}</strong><small>{{ customer.email | escape }}</small></div>
+              </div>
+              <div class="nova-account-popover__snapshot"><span><b>{{ customer.orders_count }}</b>{{ 'nova.account.orders' | t }}</span><span><b>{{ customer.addresses.size }}</b>{{ 'nova.account.addresses' | t }}</span></div>
+              <a href="{{ routes.account_url }}">{{ 'nova.account.overview' | t }} <span>→</span></a>
+              <a href="{{ routes.account_url }}#orders">{{ 'nova.account.orders_tracking' | t }} <span>→</span></a>
+              <a href="{{ routes.account_addresses_url }}">{{ 'nova.account.delivery_details' | t }} <span>→</span></a>
+              {% if settings.returns_info_page != blank %}<a href="{% render 'localized-internal-url', url: settings.returns_info_page.url %}">{{ 'nova.account.returns_v46' | t }} <span>→</span></a>{% endif %}
+              {% if settings.enable_besjaar_club and settings.show_club_header_link %}{% assign nova_club_url = routes.account_url %}{% if settings.club_page != blank %}{% assign nova_club_url = settings.club_page.url %}{% elsif settings.account_rewards_page != blank %}{% assign nova_club_url = settings.account_rewards_page.url %}{% endif %}<a href="{% render 'localized-internal-url', url: nova_club_url %}">{{ settings.club_name | default: 'Besjaar Club' | escape }} <span>→</span></a>{% endif %}
+              {% if settings.account_support_page != blank %}<a href="{% render 'localized-internal-url', url: settings.account_support_page.url %}">{{ 'nova.account.support' | t }} <span>→</span></a>{% endif %}
+              <a class="nova-account-popover__logout" href="{{ routes.account_logout_url }}">{{ 'nova.account.logout' | t }}</a>
+            </div>
+          </details>
+          <a class="nova-icon-btn nova-account-action nova-account-action--mobile" href="{{ routes.account_url }}" aria-label="{{ 'nova.header.my_account' | t | escape }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.8 21a7.2 7.2 0 0 1 14.4 0"/></svg>
+          </a>
+        {% else %}
+          <a class="nova-account-trigger nova-account-action" href="{{ routes.account_login_url }}" rel="nofollow" aria-label="{{ 'nova.header.sign_in' | t | escape }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4.8 21a7.2 7.2 0 0 1 14.4 0"/></svg>
+            {% if settings.show_account_labels %}<span>{{ 'nova.header.sign_in' | t }}</span>{% endif %}
+          </a>
+        {% endif %}
+      {% endif %}
+      <button class="nova-icon-btn" type="button" aria-label="{{ 'nova.accessibility.cart' | t }}" aria-haspopup="dialog" aria-controls="NovaCartDrawer" data-open-drawer="cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20.5 7H6"/><circle cx="9.5" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>
+        <span class="nova-count" data-cart-count>{{ cart.item_count }}</span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nova-mobile-menu" id="NovaMobileMenu-{{ section.id }}" data-mobile-menu aria-hidden="true" aria-label="{{ 'nova.accessibility.mobile_menu' | t | escape }}" inert>
+    <div class="nova-mobile-menu__shop">
+      <a class="nova-mobile-menu__shop-title nova-mobile-menu__shop-all" href="{{ nova_shower_url }}">{{ 'nova.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
+      <div class="nova-mobile-menu__categories">
+        {% if nova_mega_collection != blank %}
+          <a href="{% render 'localized-internal-url', url: nova_mega_collection.url %}">
+            <span>{% render 'localized-collection-title', collection: nova_mega_collection %}</span><b aria-hidden="true">→</b>
+          </a>
+        {% endif %}
+        {% if nova_mobile_filter_collection != blank and nova_mobile_filter_collection.id != nova_mega_collection.id %}
+          <a href="{% render 'localized-internal-url', url: nova_mobile_filter_collection.url %}">
+            <span>{% render 'localized-collection-title', collection: nova_mobile_filter_collection %}</span><b aria-hidden="true">→</b>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    <a href="{{ routes.root_url }}#ind-details">{{ 'nova.shower_store.nav.guide' | t }}</a>
+    <a href="{{ nova_about_url }}"{% if nova_about_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.about' | t }}</a>
+    <div class="nova-mobile-menu__more">
+      <span>{{ 'nova.shower_store.nav.more' | t }}</span>
+      <a href="{{ nova_reviews_url }}">{{ 'nova.shower_store.nav.reviews' | t }}</a>
+      <a href="{{ nova_faq_url }}"{% if nova_faq_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.faq' | t }}</a>
+      <a href="{{ nova_contact_url }}"{% if nova_contact_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.contact' | t }}</a>
+      <a href="{{ nova_track_url }}"{% if nova_track_current %} aria-current="page"{% endif %}>{{ 'nova.shower_store.nav.track' | t }}</a>
+    </div>
+    {% if shop.customer_accounts_enabled %}
+      {% if section.settings.use_shopify_account_component %}
+        <div class="nova-mobile-menu__account-component"><span>{{ 'nova.header.my_account' | t }}</span><shopify-account class="nova-shopify-account nova-shopify-account--mobile" menu="{{ nova_customer_account_menu }}"></shopify-account></div>
+      {% else %}
+        <a class="nova-mobile-menu__account" href="{{ nova_account_url }}" rel="nofollow">{% if customer %}{{ 'nova.header.my_account' | t }}{% else %}{{ 'nova.header.sign_in_create' | t }}{% endif %} →</a>
+      {% endif %}
+    {% endif %}
+    {% if settings.show_header_localization %}{% unless request.visual_preview_mode %}<div class="nova-mobile-menu__localization">{% render 'nova-localization', context: 'mobile', section_id: section.id %}</div>{% endunless %}{% endif %}
+  </nav>
+
+  <div class="nova-search-panel" id="NovaSearchPanel-{{ section.id }}" data-search-panel aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="NovaSearchDialogTitle-{{ section.id }}" tabindex="-1" inert>
+    <div class="nova-shell nova-search-panel__inner">
+      <div class="nova-search-panel__top"><div><p class="nova-kicker">{{ 'nova.search.kicker' | t }}</p><strong class="nova-search-panel__mobile-title" id="NovaSearchDialogTitle-{{ section.id }}">{{ 'nova.mobile.search_title' | t }}</strong></div><button type="button" class="nova-drawer__close" data-search-close aria-label="{{ 'nova.accessibility.close' | t }}">×</button></div>
+      <form class="nova-search-form nova-search-form--predictive" action="{{ routes.search_url }}" method="get" role="search">
+        <label class="nova-visually-hidden" for="NovaHeaderSearch-{{ section.id }}">{{ 'nova.accessibility.search' | t }}</label>
+        <input class="nova-input" id="NovaHeaderSearch-{{ section.id }}" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'nova.header.search_placeholder' | t }}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="listbox" aria-controls="NovaPredictiveSearch-{{ section.id }}" aria-expanded="false" data-predictive-input required>
+        <input name="type" type="hidden" value="product">
+        <input name="options[prefix]" type="hidden" value="last">
+        <button class="nova-button nova-button--primary" type="submit">{{ 'nova.header.search_button' | t }}</button>
+      </form>
+      {%- comment -%}Besjaar 11.6: the container is a plain live region — the listbox role is applied by nova-core.js to the element that directly wraps the option links, per the ARIA listbox content model.{%- endcomment -%}
+      <div class="nova-predictive" id="NovaPredictiveSearch-{{ section.id }}" aria-live="polite" data-predictive-results hidden></div>
+      <div class="nova-search-discovery" data-search-discovery>
+        {% if settings.show_recent_searches %}
+          <div class="nova-search-discovery__block" data-recent-searches-wrap hidden>
+            <div class="nova-search-discovery__head"><span>{{ 'nova.search.recent' | t }}</span><button type="button" data-clear-recent-searches>{{ 'nova.search.clear_recent' | t }}</button></div>
+            <div class="nova-search-shortcuts" data-recent-searches></div>
+          </div>
+        {% endif %}
+        {% if settings.show_search_popular %}
+          <div class="nova-search-discovery__block">
+            <div class="nova-search-discovery__head"><span>{{ 'nova.search.popular' | t }}</span></div>
+            <div class="nova-search-shortcuts" data-search-shortcuts>
+              {% assign nova_popular_terms = 'nova.search.popular_terms' | t | split: ',' %}
+              {% for term in nova_popular_terms %}{% assign clean_term = term | strip %}{% if clean_term != blank %}<a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=last&q={{ clean_term | url_encode }}">{{ clean_term }}</a>{% endif %}{% endfor %}
+            </div>
+          </div>
+        {% endif %}
+        {% if settings.show_search_brands %}
+          <div class="nova-search-discovery__block">
+            <div class="nova-search-discovery__head"><span>{{ 'nova.search.brands' | t }}</span></div>
+            <div class="nova-search-brands">
+              <a href="{% render 'localized-internal-url', url: nova_shower_url %}">BESJAAR · {{ 'nova.shower_store.nav.shop' | t }} <span>→</span></a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+
+<noscript>
+  <div class="nova-nojs-tools" role="region" aria-label="{{ 'nova.accessibility.main_navigation' | t | escape }}">
+    <div class="nova-shell nova-nojs-tools__inner">
+      <form class="nova-nojs-search" action="{{ routes.search_url }}" method="get" role="search">
+        <label class="nova-visually-hidden" for="NovaNoJsSearch-{{ section.id }}">{{ 'nova.accessibility.search' | t }}</label>
+        <input class="nova-input" id="NovaNoJsSearch-{{ section.id }}" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'nova.header.search_placeholder' | t }}" required>
+        <input name="type" type="hidden" value="product">
+        <input name="options[prefix]" type="hidden" value="last">
+        <button class="nova-button nova-button--primary" type="submit">{{ 'nova.header.search_button' | t }}</button>
+      </form>
+      <nav class="nova-nojs-tools__links" aria-label="{{ 'nova.accessibility.mobile_navigation' | t | escape }}">
+        <a href="{% render 'localized-internal-url', url: nova_shower_url %}">{{ 'nova.shower_store.nav.shop' | t }}</a>
+        <a href="{{ routes.root_url }}#ind-details">{{ 'nova.shower_store.nav.guide' | t }}</a>
+        <a href="{{ nova_reviews_url }}">{{ 'nova.shower_store.nav.reviews' | t }}</a>
+        <a href="{{ nova_about_url }}">{{ 'nova.shower_store.nav.about' | t }}</a>
+        <a href="{{ nova_faq_url }}">{{ 'nova.shower_store.nav.faq' | t }}</a>
+        <a href="{{ nova_contact_url }}">{{ 'nova.shower_store.nav.contact' | t }}</a>
+        <a href="{{ nova_track_url }}">{{ 'nova.shower_store.nav.track' | t }}</a>
+        {% if shop.customer_accounts_enabled %}<a href="{{ nova_account_url }}" rel="nofollow">{{ 'nova.header.my_account' | t }}</a>{% endif %}
+        <a href="{{ routes.cart_url }}">{{ 'nova.header.cart_title' | t }} ({{ cart.item_count }})</a>
+      </nav>
+    </div>
+  </div>
+</noscript>
+
+{% capture nova_cart_range_json %}
+[
+  {% assign nova_cart_range_count = 0 %}
+  {% for nova_cart_product in collections['all'].products limit: 50 %}
+    {% if nova_cart_range_count >= 12 %}{% break %}{% endif %}
+    {% capture nova_cart_is_focus_capture %}{% render 'is-focus-showerhead', product: nova_cart_product %}{% endcapture %}
+    {% assign nova_cart_is_focus = nova_cart_is_focus_capture | strip %}
+    {% if nova_cart_is_focus == 'true' and nova_cart_product.available %}
+      {% assign nova_cart_variant = nova_cart_product.selected_or_first_available_variant %}
+      {% if nova_cart_variant != blank %}
+        {% capture nova_cart_product_url %}{% render 'localized-internal-url', url: nova_cart_product.url %}{% endcapture %}
+        {% if nova_cart_range_count > 0 %},{% endif %}
+        {
+          "id": {{ nova_cart_product.id | json }},
+          "title": {{ nova_cart_product.title | json }},
+          "url": {{ nova_cart_product_url | strip | json }},
+          "image": {% if nova_cart_product.featured_image %}{{ nova_cart_product.featured_image | image_url: width: 180 | json }}{% else %}""{% endif %},
+          "price": {{ nova_cart_product.price | json }},
+          "variantId": {{ nova_cart_variant.id | json }}
+        }
+        {% assign nova_cart_range_count = nova_cart_range_count | plus: 1 %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+]
+{% endcapture %}
+<script type="application/json" data-nova-cart-range>{{ nova_cart_range_json | strip }}</script>
+
+{% capture nova_cart_addons_json %}
+[
+  {% assign nova_cart_addon_count = 0 %}
+  {% for nova_addon_index in (1..3) %}
+    {% case nova_addon_index %}{% when 1 %}{% assign nova_cart_addon = settings.bundle_accessory_1 %}{% when 2 %}{% assign nova_cart_addon = settings.bundle_accessory_2 %}{% else %}{% assign nova_cart_addon = settings.bundle_accessory_3 %}{% endcase %}
+    {% capture nova_cart_addon_is_head_capture %}{% render 'is-shower-head', product: nova_cart_addon %}{% endcapture %}
+    {% assign nova_cart_addon_is_head = nova_cart_addon_is_head_capture | strip %}
+    {% if nova_cart_addon != blank and nova_cart_addon.available and nova_cart_addon_is_head != 'true' %}
+      {% assign nova_cart_addon_duplicate = false %}
+      {% if nova_addon_index == 2 and nova_cart_addon.id == settings.bundle_accessory_1.id %}{% assign nova_cart_addon_duplicate = true %}{% endif %}
+      {% if nova_addon_index == 3 %}{% if nova_cart_addon.id == settings.bundle_accessory_1.id or nova_cart_addon.id == settings.bundle_accessory_2.id %}{% assign nova_cart_addon_duplicate = true %}{% endif %}{% endif %}
+      {% unless nova_cart_addon_duplicate %}
+        {% assign nova_cart_addon_variant = nova_cart_addon.selected_or_first_available_variant %}
+        {% capture nova_cart_addon_url %}{% render 'localized-internal-url', url: nova_cart_addon.url %}{% endcapture %}
+        {% if nova_cart_addon_count > 0 %},{% endif %}
+        {
+          "id": {{ nova_cart_addon.id | json }},
+          "title": {{ nova_cart_addon.title | json }},
+          "url": {{ nova_cart_addon_url | strip | json }},
+          "image": {% if nova_cart_addon.featured_image %}{{ nova_cart_addon.featured_image | image_url: width: 180 | json }}{% else %}""{% endif %},
+          "price": {{ nova_cart_addon_variant.price | json }},
+          "variantId": {{ nova_cart_addon_variant.id | json }}
+        }
+        {% assign nova_cart_addon_count = nova_cart_addon_count | plus: 1 %}
+      {% endunless %}
+    {% endif %}
+  {% endfor %}
+]
+{% endcapture %}
+<script type="application/json" data-nova-cart-addons>{{ nova_cart_addons_json | strip }}</script>
+
+<div class="nova-drawer-backdrop" data-drawer-backdrop aria-hidden="true"></div>
+<aside class="nova-drawer nova-drawer--cart" id="NovaCartDrawer" data-drawer="cart" role="dialog" aria-modal="true" aria-labelledby="NovaCartDrawerTitle" tabindex="-1" aria-hidden="true" inert>
+  <div class="nova-drawer__head"><div><p class="nova-kicker">BESJAAR / {{ 'nova.catalog.cart' | t }}</p><h2 id="NovaCartDrawerTitle">{{ 'nova.header.cart_title' | t }} <span class="nova-cart-drawer__count" data-cart-count aria-label="{{ 'nova.cart.items_kicker' | t: count: cart.item_count | escape }}">{{ cart.item_count }}</span></h2></div><button class="nova-drawer__close" type="button" data-close-drawer aria-label="{{ 'nova.accessibility.close' | t }}">×</button></div>
+  {% if settings.show_free_shipping_bar and nova_free_shipping_threshold_cents > 0 %}
+    <div class="nova-cart-drawer__shipping-progress nova-free-shipping" data-free-shipping aria-label="{{ 'nova.cart.free_shipping_progress' | t | escape }}">
+      <div class="nova-free-shipping__row"><span data-free-shipping-text aria-live="polite"></span><strong>{{ nova_free_shipping_threshold_money }}</strong></div>
+      <div class="nova-free-shipping__track" data-free-shipping-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i data-free-shipping-progress></i></div>
+    </div>
+  {% endif %}
+  {%- comment -%}Besjaar 11.6: no aria-live on the full drawer body — re-rendering every line made screen readers announce the entire cart after each quantity tap. The totals/discount nodes below keep their own aria-live for the meaningful outcome.{%- endcomment -%}
+  <div class="nova-drawer__body" data-cart-drawer-body aria-busy="false"></div>
+  <div class="nova-cart-drawer__upsell" data-cart-drawer-upsell hidden></div>
+  <div class="nova-drawer__foot nova-cart-drawer__foot" data-cart-drawer-foot{% if cart.item_count == 0 %} hidden{% endif %}>
+    <div class="nova-cart-drawer__discount" data-cart-drawer-discount hidden aria-live="polite"></div>
+    <div class="nova-cart__total"><span>{{ 'nova.cart.estimated_total' | t }}</span><strong data-cart-drawer-total aria-live="polite">{{ cart.total_price | money }}</strong></div>
+    <div class="nova-cart-drawer__actions"><a class="nova-button nova-button--ghost" href="{{ routes.cart_url }}">{{ 'nova.header.view_cart' | t }}</a><form action="{{ routes.cart_url }}" method="post" data-cart-checkout-form><input type="hidden" name="checkout" value="Checkout"><button class="nova-button nova-button--primary" type="submit" name="checkout" value="Checkout" data-cart-drawer-checkout>{{ 'nova.cart.drawer_checkout' | t }}</button></form></div>
+    <div class="nova-cart-drawer__benefits" aria-label="{{ 'nova.product.purchase_confidence' | t | escape }}">
+      {% if nova_free_shipping_threshold_cents > 0 %}
+        <span class="nova-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><small>{{ 'nova.product.free_shipping_from' | t: amount: nova_free_shipping_threshold_money }}</small></span>
+      {% endif %}
+      <span class="nova-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 0v10l8 4 8-4V7M12 11v10"/></svg><small>{{ 'nova.product.returns_days' | t: days: settings.return_window_days }}</small></span>
+      <span class="nova-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3"/></svg><small>{{ 'nova.cart.secure_checkout_note' | t }}</small></span>
+    </div>
+    {% if shop.enabled_payment_types.size > 0 %}
+      <div class="nova-payments nova-cart-drawer__payments" aria-label="{{ 'nova.footer.payments_label' | t | escape }}">
+        {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}
+      </div>
+    {% endif %}
+    <p class="nova-cart-drawer__secure"><span aria-hidden="true">⌁</span> {{ 'nova.cart.secure_checkout_note' | t }}</p>
+    <p class="nova-cart-drawer__assurance">{{ 'nova.cart.drawer_assurance' | t: days: settings.return_window_days }}</p>
+    {% render 'delivery-promise', context: 'drawer' %}
+    {% if settings.show_account_cart_prompt and shop.customer_accounts_enabled %}
+      <div class="nova-cart-account">
+        {% if customer %}
+          <div><span class="nova-cart-account__icon">✓</span><p><strong>{{ 'nova.account.cart_signed_in' | t }}</strong><small>{{ customer.email | escape }}</small></p></div>
+          <a href="{{ routes.account_url }}">{{ 'nova.header.my_account' | t }} →</a>
+        {% else %}
+          <div><span class="nova-cart-account__icon">○</span><p><strong>{{ 'nova.account.cart_account_title' | t }}</strong><small>{{ 'nova.account.cart_account_copy' | t }}</small></p></div>
+          <a href="{{ routes.account_login_url }}" rel="nofollow">{{ 'nova.header.sign_in' | t }} →</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</aside>
+
+{% if settings.show_mobile_bottom_nav %}
+<nav class="nova-bottom-nav nova-bottom-nav--v21 nova-bottom-nav--v33" aria-label="{{ 'nova.accessibility.mobile_navigation' | t | escape }}">
+  <a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m3 11 9-8 9 8v10H6a3 3 0 0 1-3-3Z"/><path d="M9 21v-7h6v7"/></svg><span>{{ 'nova.header.home' | t }}</span></a>
+  <a href="{% render 'localized-internal-url', url: nova_shower_url %}"{% if request.page_type == 'collection' or request.page_type == 'product' or request.page_type == 'list-collections' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span>{{ 'nova.header.shop' | t }}</span></a>
+  <button type="button" data-search-toggle aria-expanded="false" aria-haspopup="dialog" aria-controls="NovaSearchPanel-{{ section.id }}"{% if request.page_type == 'search' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>{{ 'nova.header.search_short' | t }}</span></button>
+  <button type="button" data-open-drawer="cart" aria-haspopup="dialog" aria-controls="NovaCartDrawer"{% if request.page_type == 'cart' %} class="is-active" aria-current="page"{% endif %}><span class="nova-bottom-nav__count" data-cart-count>{{ cart.item_count }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20.5 7H6"/></svg><span>{{ 'nova.header.cart_short' | t }}</span></button>
+</nav>
+{% endif %}
+
+{% schema %}
+{
+  "name":"Header",
+  "settings":[
+    {"type":"checkbox","id":"show_announcement","label":"Show announcement","default":true},
+    {"type":"checkbox","id":"use_localized_announcement","label":"Use automatic localized announcement (EN / NL / DE / FR)","default":true},
+    {"type":"text","id":"announcement","label":"Custom announcement","default":"GRATIS VERZENDING IN NL VANAF €25 — BESJAAR DOUCHEKOPPEN, DUIDELIJK VERGELEKEN"},
+    {"type":"text","id":"announcement_mobile","label":"Custom mobile announcement","default":"GRATIS NL VERZENDING VANAF €25","info":"Keep this short so it stays readable on small screens."},
+    {"type":"url","id":"announcement_link","label":"Announcement link"},
+    {"type":"text","id":"announcement_discount_code","label":"Optional real discount code","info":"Only enter a code that already exists in Shopify."},
+    {"type":"text","id":"announcement_start_at","label":"Campaign start (ISO 8601)"},
+    {"type":"text","id":"announcement_end_at","label":"Campaign end (ISO 8601)"},
+    {"type":"checkbox","id":"announcement_show_countdown","label":"Countdown when end is set","default":false},
+    {"type":"image_picker","id":"logo","label":"Logo"},
+    {"type":"product","id":"mega_featured_product","label":"Mega menu featured product","info":"Optional. Leave blank for the compact catalog-only menu."},
+    {"type":"checkbox","id":"use_shopify_account_component","label":"Use modern Shopify customer account component","default":true},
+    {"type":"link_list","id":"customer_account_menu","label":"Customer account menu","default":"customer-account-main-menu"}
+  ]
+}
+{% endschema %}

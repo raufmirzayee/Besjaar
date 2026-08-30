@@ -1,0 +1,35 @@
+{% unless request.page_type == 'product' %}{{ 'nova-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endunless %}
+<section class="nova-shower-buying-guide nova-shower-trust-education" data-reveal>
+  <div class="nova-shell">
+    <header class="nova-shower-buying-guide__head">
+      <div><p class="nova-kicker"><span translate="no">Besjaar</span> · {{ 'nova.shower_buying_guide.eyebrow' | t }}</p><h2>{{ 'nova.shower_buying_guide.heading' | t }}</h2></div>
+      <p>{{ 'nova.shower_buying_guide.copy' | t }}</p>
+    </header>
+
+    <div class="nova-shower-buying-guide__steps">
+      <article class="nova-shower-buying-guide-card"><span class="nova-shower-buying-guide-card__num">01</span><div><h3>{{ 'nova.shower_buying_guide.setup_heading' | t }}</h3><p>{{ 'nova.shower_buying_guide.setup_copy' | t }}</p></div></article>
+      <article class="nova-shower-buying-guide-card"><span class="nova-shower-buying-guide-card__num">02</span><div><h3>{{ 'nova.shower_buying_guide.modes_heading' | t }}</h3><p>{{ 'nova.shower_buying_guide.modes_copy' | t }}</p></div></article>
+      <article class="nova-shower-buying-guide-card"><span class="nova-shower-buying-guide-card__num">03</span><div><h3>{{ 'nova.shower_buying_guide.filter_heading' | t }}</h3><p>{{ 'nova.shower_buying_guide.filter_copy' | t }}</p></div></article>
+      <article class="nova-shower-buying-guide-card"><span class="nova-shower-buying-guide-card__num">04</span><div><h3>{{ 'nova.shower_buying_guide.fit_heading' | t }}</h3><p>{{ 'nova.shower_buying_guide.fit_copy' | t }}</p></div></article>
+    </div>
+
+    {% if section.settings.show_truth_standard %}
+      <div class="nova-shower-buying-guide__truth">
+        <span aria-hidden="true">✓</span>
+        <div><strong>{{ 'nova.shower_buying_guide.truth_heading' | t }}</strong><p>{{ 'nova.shower_buying_guide.truth_copy' | t }}</p></div>
+        {% if section.settings.guide_link != blank %}<a href="{{ section.settings.guide_link }}">{{ 'nova.shower_buying_guide.learn_more' | t }} →</a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Shower buying guide",
+  "settings":[
+    {"type":"checkbox","id":"show_truth_standard","label":"Show evidence-first buying note","default":true},
+    {"type":"url","id":"guide_link","label":"Optional detailed guide link"}
+  ],
+  "presets":[{"name":"Shower buying guide"}],
+  "enabled_on":{"templates":["collection"]}
+}
+{% endschema %}

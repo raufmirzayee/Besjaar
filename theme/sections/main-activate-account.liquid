@@ -1,0 +1,18 @@
+<section class="nova-section nova-auth-page nova-auth-v41 nova-auth-v41--utility">
+  <div class="nova-shell nova-auth-v41__utility-shell">
+    <div class="nova-auth-v41__card">
+      <div class="nova-auth-v41__card-head"><span>{{ 'nova.account.customer_space' | t }}</span><h1>{{ 'nova.account.activate' | t }}</h1><p>{{ 'nova.account.activate_copy' | t }}</p></div>
+      {% form 'activate_customer_password' %}
+        <div class="nova-auth-fields">
+          <div><label class="nova-label" for="ActivatePassword">{{ 'nova.account.password' | t }}</label><input class="nova-input" id="ActivatePassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+          <div><label class="nova-label" for="ActivatePasswordConfirmation">{{ 'nova.account.confirm_password' | t }}</label><input class="nova-input" id="ActivatePasswordConfirmation" type="password" name="customer[password_confirmation]" autocomplete="new-password" required></div>
+          <button class="nova-button nova-button--primary nova-auth-v41__submit" type="submit">{{ 'nova.account.activate_button' | t }}</button>
+        </div>
+        {% if form.errors %}<div class="nova-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Activate account","settings":[]}
+{% endschema %}

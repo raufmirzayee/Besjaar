@@ -1,0 +1,13 @@
+{%- liquid
+  assign nova_candidate = product
+  assign nova_is_range = false
+  if nova_candidate != blank
+    capture nova_family_capture
+      render 'product-family', product: nova_candidate
+    endcapture
+    assign nova_family = nova_family_capture | strip
+    if nova_family == 'shower'
+      assign nova_is_range = true
+    endif
+  endif
+-%}{{- nova_is_range -}}

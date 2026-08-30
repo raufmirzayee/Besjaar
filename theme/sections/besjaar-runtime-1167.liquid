@@ -1,0 +1,690 @@
+{%- comment -%}
+  Besjaar 11.6.8 — runtime patches.
+
+  1. Cart drawer speed: /cart/change.js already returns the full cart, but
+     nova-core.js discards it and reads /cart.js again. Serve that follow-up
+     read from the change.js response (one-shot, 1.5 s window).
+  2. Product gallery: warm the images the thumbnails will request —
+     neighbours on idle, everything after the first touch, the touched thumb
+     immediately. Never on data-saver / 2G.
+  3. Phones: no backdrop-filter on the drawer backdrop, toast, zoom button
+     and hero pill while things animate.
+  4. Home product cards: the "Shop nu" text link becomes a full-width
+     outlined button, and cards stretch to equal height with the button
+     anchored at the bottom so a row of buttons lines up.
+  5. Mobile menu, tile layout: navy "Shop alles" button, category tiles,
+     icon rows for the pages, a 2×2 icon grid for the "Meer" links, account
+     row, compact language pill and a trust line — everything visible, no
+     accordions. Built by re-arranging the existing links, so the theme's
+     open/close logic and every href stay untouched.
+  6. Home colour rhythm: ice hero with a sky glow and a two-tone headline,
+     navy trust strip, white range, navy-veiled scene, ice feature band,
+     white reviews, navy CTA with a white title. Kickers in blue on light
+     bands, sky on navy.
+  7. Product accordion: the details panels are exclusive (besjaar-1150.js
+     closes the others), so opening a lower panel collapsed the long
+     description above it and the page jumped. The tapped heading now stays
+     where it was: the scroll position is compensated for the collapsed
+     height.
+  8. Product delivery promise: only the delivery estimate shows on the
+     product page, full width, styled like the trust tiles (the returns and
+     warranty cards duplicated the tiles and clipped on phones).
+  9. Trust strip ticker: when the strip overflows (phones), the items scroll
+     continuously (seamless loop from a cloned, aria-hidden set), pause on
+     hover/focus, and stay static under prefers-reduced-motion or when
+     everything fits.
+ 10. Feature cards link to the showerhead collection: a stretched link
+     covers each card (labelled with the card title) and a short call to
+     action line is appended to the card body.
+ 11. Home CTA 360° spin: the static image in the closing CTA is replaced
+     by the theme's own 360 viewer (assets/nova-360.js, loaded on demand).
+     Frame source, in order of preference: the 36 frames cut from the studio
+     spin video (besjaar-cta-360-01.webp … -36.webp) in Shopify Files, else
+     the same files as theme assets, else the theme's bundled 23-frame spin
+     (assets/besjaar-360-01..23.webp), else the still image stays. Rotates
+     continuously, drag / arrow keys to rotate, resumes after a drag, pauses
+     off-screen, no autoplay under prefers-reduced-motion.
+
+  (The compact cart-drawer redesign that briefly lived here was reverted on
+  request; the drawer renders exactly as the 11.2.40 layer styles it.)
+
+  Temporary carrier like besjaar-tokens-1164. During the consolidation, fold
+  (1) into refreshCart(cart) in nova-core.js, (2)+(7) into the product page
+  scripts, (3) into the mobile CSS, (4)+(6)+(9) into the home CSS/JS, (5)
+  into the mobile menu markup in sections/site-header.liquid, (8) into
+  snippets/delivery-promise.liquid, (10) into sections/industry-features.liquid
+  as a real <a> per card, (11) into sections/industry-cta.liquid as a proper
+  viewer block.
+{%- endcomment -%}
+{%- liquid
+  assign bj_ship_money = settings.free_shipping_threshold | times: 100 | money_without_trailing_zeros
+  assign bj_menu_t1 = 'nova.product.free_shipping_from' | t: amount: bj_ship_money
+  assign bj_menu_t2 = 'nova.product.returns_days' | t: days: settings.return_window_days
+  assign bj_menu_foot = bj_menu_t1 | append: ' · ' | append: bj_menu_t2
+  assign bj_menu_cat = 'Categorieën'
+  assign bj_menu_more = 'Meer'
+  case request.locale.iso_code
+    when 'en'
+      assign bj_menu_cat = 'Categories'
+      assign bj_menu_more = 'More'
+    when 'de'
+      assign bj_menu_cat = 'Kategorien'
+      assign bj_menu_more = 'Mehr'
+    when 'fr'
+      assign bj_menu_cat = 'Catégories'
+      assign bj_menu_more = 'Plus'
+  endcase
+-%}
+<script type="application/json" id="bj-menu-config">{"foot":{{ bj_menu_foot | json }},"categories":{{ bj_menu_cat | json }},"more":{{ bj_menu_more | json }}}</script>
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    assign bj_360_hint = 'Sleep om te draaien'
+    assign bj_360_label = 'Besjaar douchekop, 360° weergave — sleep om te draaien'
+    case request.locale.iso_code
+      when 'en'
+        assign bj_360_hint = 'Drag to rotate'
+        assign bj_360_label = 'Besjaar showerhead, 360° view — drag to rotate'
+      when 'de'
+        assign bj_360_hint = 'Ziehen zum Drehen'
+        assign bj_360_label = 'Besjaar Duschkopf, 360°-Ansicht — zum Drehen ziehen'
+      when 'fr'
+        assign bj_360_hint = 'Glissez pour faire tourner'
+        assign bj_360_label = 'Pommeau de douche Besjaar, vue à 360° — glissez pour tourner'
+    endcase
+  -%}
+  <script type="application/json" id="bj-cta-360-frames" data-script="{{ 'nova-360.js' | asset_url }}" data-hint="{{ bj_360_hint | escape }}" data-label="{{ bj_360_label | escape }}">{"files":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | file_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"assets":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"bundled":[{%- for i in (1..23) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_asset = 'besjaar-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_asset | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]}</script>
+{%- endif -%}
+<style id="besjaar-runtime-1167">
+@media (max-width:900px){
+  body.nova-polish-v34 .nova-drawer-backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(11,25,43,.5)!important}
+  body.nova-polish-v34 .nova-toast{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(15,32,54,.97)!important}
+  .ind-bj-pd__zoom{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#fff!important}
+  .ind-hero--editorial .ind-hero__customer-proof{backdrop-filter:none!important;background:rgba(255,255,255,.92)!important}
+}
+
+/* Home product cards: equal heights, button anchored at the bottom, a real button instead of a text link */
+body[data-page-type="index"] .ind-products__grid{align-items:stretch!important}
+body[data-page-type="index"] .ind-products .bp-model-card{display:flex!important;flex-direction:column!important;height:100%!important}
+body[data-page-type="index"] .ind-products .bp-model-card>.bp-model-card__body{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__foot{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;margin-top:auto!important;padding-top:12px!important;border-top:0!important}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important;min-height:44px!important;margin:0!important;padding:0 16px!important;border:1.5px solid var(--bj-navy)!important;border-radius:999px!important;background:#fff!important;color:var(--bj-navy)!important;font-size:.86rem!important;font-weight:600!important;line-height:1!important;letter-spacing:0!important;text-decoration:none!important;box-shadow:none!important;transition:background-color .18s var(--bj-ease),color .18s var(--bj-ease)}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link::after,
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link::before{content:none!important}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link:hover,
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link:focus-visible{background:var(--bj-navy)!important;color:#fff!important;text-decoration:none!important}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link span{display:inline-block;transition:transform .18s var(--bj-ease)}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link:hover span{transform:translateX(3px)}
+body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__stock{font-size:.72rem!important;color:var(--bj-muted)!important}
+@media (prefers-reduced-motion:reduce){
+  body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link,
+  body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link span{transition:none!important}
+  body[data-page-type="index"] .ind-products .bp-model-card .bp-model-card__link:hover span{transform:none!important}
+}
+
+/* Home colour rhythm: ice → navy → white → photo → ice → white → navy */
+body[data-page-type="index"] .ind-kicker{color:var(--bj-blue)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial{background:radial-gradient(560px 340px at 94% 0%,rgba(140,200,236,.42),transparent 64%),linear-gradient(160deg,var(--bj-ice-100) 0%,var(--bj-ice-50) 58%,#FFFFFF 100%)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__kicker{color:var(--bj-blue)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__kicker i{background:var(--bj-sky)!important;box-shadow:0 0 0 4px rgba(140,200,236,.28)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__title span{color:var(--bj-navy-deep)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__title em{color:var(--bj-blue)!important;font-style:normal!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__image-card{background:#FFFFFF!important;border-color:rgba(255,255,255,.9)!important}
+body[data-page-type="index"] .ind-hero.ind-hero--editorial .ind-hero__customer-proof{background:rgba(255,255,255,.82)!important;border-color:rgba(21,50,82,.14)!important}
+body[data-page-type="index"] .ind.ind-strip{background:var(--bj-navy)!important;border-top:0!important;border-bottom:0!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row{border:0!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row span{color:rgba(255,255,255,.92)!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row span i{background:rgba(140,200,236,.16)!important;color:var(--bj-sky)!important;box-shadow:inset 0 0 0 1px rgba(140,200,236,.4)!important}
+body[data-page-type="index"] .ind.ind-products{background:#FFFFFF!important}
+body[data-page-type="index"] .ind-products::before{display:none!important}
+body[data-page-type="index"] .ind.ind-scene .ind-scene__veil{background:linear-gradient(180deg,rgba(15,41,71,.36) 0%,rgba(15,41,71,.72) 100%)!important}
+body[data-page-type="index"] .ind.ind-scene .ind-kicker{color:var(--bj-sky)!important}
+body[data-page-type="index"] .ind.ind-scene .ind-scene__quote{color:#FFFFFF!important}
+body[data-page-type="index"] .ind.ind-features{background:var(--bj-ice-50)!important}
+body[data-page-type="index"] .ind-features::before{display:none!important}
+body[data-page-type="index"] .ind.ind-features .ind-card{background:#FFFFFF!important;border:1px solid var(--bj-line)!important}
+body[data-page-type="index"] .ind.ind-features .ind-card__kicker{color:var(--bj-blue)!important}
+body[data-page-type="index"] .ind.ind-reviews{background:#FFFFFF!important}
+body[data-page-type="index"] .ind.ind-cta .ind-cta__kicker{color:var(--bj-sky)!important}
+body[data-page-type="index"] .ind.ind-cta .ind-cta__title{color:#FFFFFF!important}
+body[data-page-type="index"] .ind.ind-cta .ind-btn--ghostlight{color:#FFFFFF!important;border-color:rgba(255,255,255,.45)!important}
+
+/* Home CTA 360 spin */
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360{position:relative!important;display:block!important;width:100%!important}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360__viewer{position:relative!important;display:block!important;overflow:hidden!important;border-radius:18px!important;background:#E9EBEE!important;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360.is-dragging .bj-cta-360__viewer{cursor:grabbing}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360__viewer:focus-visible{outline:2px solid var(--bj-sky)!important;outline-offset:4px!important}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360__image{display:block!important;width:100%!important;height:auto!important;aspect-ratio:1/1;object-fit:cover;-webkit-user-drag:none;transition:opacity .2s var(--bj-ease)}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360.is-loading .bj-cta-360__image{opacity:.85}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360__hint{position:absolute!important;left:50%!important;bottom:14px!important;transform:translateX(-50%);display:inline-flex!important;align-items:center!important;gap:6px!important;margin:0!important;padding:6px 12px!important;border-radius:999px!important;background:rgba(15,41,71,.78)!important;color:#FFFFFF!important;font-size:.68rem!important;font-weight:600!important;letter-spacing:.04em!important;white-space:nowrap!important;pointer-events:none!important}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360__hint svg{width:14px;height:14px}
+body[data-page-type="index"] .ind.ind-cta .bj-cta-360.is-interacted .bj-cta-360__hint{opacity:0;transition:opacity .4s var(--bj-ease)}
+
+/* Feature cards link to the showerhead collection */
+body[data-page-type="index"] .ind.ind-features .ind-card{position:relative!important;cursor:pointer}
+body[data-page-type="index"] .ind.ind-features .ind-card .bj-card-link{position:absolute!important;inset:0!important;z-index:2!important;border-radius:inherit!important;text-decoration:none!important}
+body[data-page-type="index"] .ind.ind-features .ind-card .bj-card-link:focus-visible{outline:2px solid var(--bj-blue)!important;outline-offset:3px!important}
+body[data-page-type="index"] .ind.ind-features .ind-card .bj-card-cta{display:inline-flex!important;align-items:center!important;gap:6px!important;margin-top:12px!important;color:var(--bj-blue)!important;font-size:.8rem!important;font-weight:600!important;letter-spacing:0!important;line-height:1.2!important}
+body[data-page-type="index"] .ind.ind-features .ind-card .bj-card-cta span{display:inline-block;transition:transform .18s var(--bj-ease)}
+body[data-page-type="index"] .ind.ind-features .ind-card:hover .bj-card-cta span{transform:translateX(3px)}
+@media (prefers-reduced-motion:reduce){body[data-page-type="index"] .ind.ind-features .ind-card .bj-card-cta span{transition:none!important;transform:none!important}}
+
+/* Trust strip ticker */
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee{display:block!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+body[data-page-type="index"] .ind.ind-strip .bj-marquee__track{display:flex!important;width:max-content!important;animation:bj-marquee var(--bj-marquee-duration,30s) linear infinite;will-change:transform}
+body[data-page-type="index"] .ind.ind-strip .bj-marquee__set{display:flex!important;align-items:center!important;flex:0 0 auto!important;gap:0!important}
+body[data-page-type="index"] .ind.ind-strip .bj-marquee__set>span{flex:0 0 auto!important;white-space:nowrap!important;margin:0 32px 0 0!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee:hover .bj-marquee__track,
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee:focus-within .bj-marquee__track{animation-play-state:paused}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee--static .bj-marquee__set[aria-hidden]{display:none!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee--static .bj-marquee__track{animation:none!important;width:100%!important;justify-content:center!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee--static .bj-marquee__set{width:100%!important;justify-content:space-between!important}
+body[data-page-type="index"] .ind.ind-strip .ind-strip__row.bj-marquee--static .bj-marquee__set>span{margin:0!important}
+@keyframes bj-marquee{from{transform:translateX(0)}to{transform:translateX(var(--bj-marquee-shift,-50%))}}
+@media (prefers-reduced-motion:reduce){body[data-page-type="index"] .ind.ind-strip .bj-marquee__track{animation:none!important}}
+
+/* Product page: delivery promise shows only the estimate, full width, styled like the trust tiles */
+body[data-page-type="product"] .nova-delivery-promise--product{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important;gap:8px!important;width:100%!important;max-width:none!important;overflow:visible!important;padding:0!important;margin:12px 0 0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item:not(.nova-delivery-promise__item--primary){display:none!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary{grid-column:1!important;display:flex!important;align-items:center!important;gap:12px!important;width:100%!important;max-width:none!important;min-width:0!important;flex:none!important;padding:12px 14px!important;border:1px solid var(--bj-line)!important;border-radius:12px!important;background:var(--bj-ice-50)!important;box-shadow:none!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary .nova-delivery-promise__icon{flex:0 0 auto!important;width:36px!important;height:36px!important;border-radius:10px!important;background:#FFFFFF!important;color:var(--bj-navy)!important;box-shadow:none!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary>div{min-width:0!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary>div>span{color:var(--bj-blue)!important;font-size:.66rem!important;letter-spacing:.1em!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary>div>strong{color:var(--bj-navy-deep)!important;font-size:1rem!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__item--primary>div>small{color:var(--bj-muted)!important;font-size:.76rem!important;line-height:1.35!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__note{grid-column:1!important;width:100%!important;max-width:none!important;min-width:0!important;padding:0 2px!important;margin:0!important;color:var(--bj-muted)!important;font-size:.72rem!important;line-height:1.4!important}
+body[data-page-type="product"] .nova-delivery-promise--product>.nova-delivery-promise__note a{color:var(--bj-blue)!important;text-decoration:underline!important;text-underline-offset:.15em!important}
+
+/* Mobile menu: tile layout on an ice sheet */
+body.nova-polish-v34 .nova-mobile-menu{overflow-y:auto!important;-webkit-overflow-scrolling:touch;padding:14px 16px calc(120px + env(safe-area-inset-bottom))!important;background:var(--bj-ice-50)!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__shop,
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__more{display:block!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-primary{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;width:100%!important;min-height:54px!important;margin:0 0 16px!important;padding:0 16px 0 20px!important;border:0!important;border-radius:14px!important;background:var(--bj-navy)!important;color:#FFFFFF!important;font-size:1rem!important;font-weight:600!important;line-height:1.2!important;letter-spacing:-.01em!important;text-transform:none!important;text-decoration:none!important;box-shadow:0 10px 24px rgba(15,41,71,.16)!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-primary>span[aria-hidden]{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:32px!important;height:32px!important;border-radius:50%!important;background:rgba(255,255,255,.14)!important;color:#FFFFFF!important;font-size:1rem!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-label{display:block!important;margin:0 0 8px 2px!important;padding:0!important;color:var(--bj-muted)!important;font-size:.66rem!important;font-weight:600!important;letter-spacing:.12em!important;text-transform:uppercase!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tiles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin:0 0 16px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tiles[hidden]{display:none!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tile,
+body.nova-polish-v34 .nova-mobile-menu .bj-m-row{display:flex!important;align-items:center!important;gap:10px!important;min-height:58px!important;margin:0!important;padding:10px 12px!important;border:1px solid var(--bj-line)!important;border-radius:14px!important;background:#FFFFFF!important;color:var(--bj-navy-deep)!important;font-size:.9rem!important;font-weight:600!important;line-height:1.25!important;letter-spacing:-.005em!important;text-transform:none!important;text-decoration:none!important;box-shadow:0 1px 2px rgba(15,41,71,.04)!important;transition:border-color .18s var(--bj-ease),box-shadow .18s var(--bj-ease)}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tile:active,
+body.nova-polish-v34 .nova-mobile-menu .bj-m-row:active{border-color:var(--bj-blue)!important;box-shadow:0 0 0 3px rgba(47,98,143,.12)!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-row{min-height:56px!important;margin:0 0 8px!important;font-size:1rem!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-row[aria-current="page"]{border-color:var(--bj-blue)!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-icon{flex:0 0 34px!important;width:34px!important;height:34px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;border-radius:10px!important;background:var(--bj-ice-100)!important;color:var(--bj-blue)!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-icon svg{width:18px;height:18px}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-text{flex:1 1 auto!important;min-width:0!important;color:inherit!important;font:inherit!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-chev{flex:0 0 auto!important;display:inline-flex!important;color:var(--bj-muted)!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-chev svg{width:16px;height:16px}
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tile>b,
+body.nova-polish-v34 .nova-mobile-menu .bj-m-tile>span[aria-hidden]{display:none!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__account-component{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:56px!important;margin:0 0 12px!important;padding:8px 8px 8px 14px!important;border:1px solid var(--bj-line)!important;border-radius:14px!important;background:#FFFFFF!important;box-shadow:0 1px 2px rgba(15,41,71,.04)!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__account-component>span{flex:1 1 auto!important;min-width:0!important;margin:0!important;color:var(--bj-navy-deep)!important;font-size:1rem!important;font-weight:600!important;letter-spacing:-.01em!important;text-transform:none!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__account-component shopify-account,
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__account-component .nova-shopify-account{flex:0 0 auto!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__localization{display:flex!important;justify-content:flex-start!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important}
+body.nova-polish-v34 .nova-mobile-menu .nova-mobile-menu__localization>*{max-width:220px!important}
+body.nova-polish-v34 .nova-mobile-menu .bj-menu-foot{margin:18px 0 0 2px!important;padding:0!important;color:var(--bj-muted)!important;font-size:.76rem!important;line-height:1.5!important;letter-spacing:0!important}
+@media (prefers-reduced-motion:reduce){.nova-mobile-menu .bj-m-tile,.nova-mobile-menu .bj-m-row{transition:none!important}}
+</style>
+<script>
+(function () {
+  'use strict';
+
+  var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var conserveData = !!(connection && (connection.saveData || /(^|-)2g$/.test(connection.effectiveType || '')));
+  var noop = function () {};
+  var lang = (document.documentElement.lang || 'nl').toLowerCase();
+  var reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+  var nativeFetch = window.fetch;
+  if (typeof nativeFetch === 'function' && typeof Response === 'function') {
+    var cachedCart = null;
+    var cachedAt = 0;
+    var pathOf = function (input) {
+      try { return new URL(typeof input === 'string' ? input : ((input && input.url) || ''), window.location.href).pathname; } catch (e) { return ''; }
+    };
+    window.fetch = function (input, init) {
+      var path = pathOf(input);
+      var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+      if (method === 'GET' && cachedCart && /\/cart\.js$/.test(path) && (Date.now() - cachedAt) < 1500) {
+        var body = cachedCart;
+        cachedCart = null;
+        return Promise.resolve(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      }
+      var request = nativeFetch.apply(window, arguments);
+      if (method === 'POST' && /\/cart\/change\.js$/.test(path)) {
+        request.then(function (response) {
+          if (!response || !response.ok) return;
+          response.clone().text().then(function (text) { cachedCart = text; cachedAt = Date.now(); }).catch(noop);
+        }).catch(noop);
+      }
+      return request;
+    };
+  }
+
+  var warmGallery = function () {
+    if (conserveData) return;
+    var root = document.querySelector('[data-besjaar-product-section]');
+    if (!root || root.getAttribute('data-bj-warm') === '1') return;
+    root.setAttribute('data-bj-warm', '1');
+    var main = root.querySelector('[id^="BesjaarMainImage-"]');
+    var thumbs = Array.prototype.slice.call(root.querySelectorAll('.ind-bj-pd__thumb'));
+    if (!main || thumbs.length < 2) return;
+
+    var sizes = main.getAttribute('sizes') || '';
+    var warmed = [];
+    var warm = function (btn) {
+      if (!btn || !btn.dataset || !btn.dataset.src || warmed.indexOf(btn) !== -1) return;
+      warmed.push(btn);
+      var img = new Image();
+      img.decoding = 'async';
+      if ('fetchPriority' in img) img.fetchPriority = 'low';
+      if (sizes) img.sizes = sizes;
+      if (btn.dataset.srcSmall) img.srcset = btn.dataset.srcSmall + ' 700w, ' + btn.dataset.src + ' 1600w';
+      img.src = btn.dataset.src;
+    };
+    var currentIndex = function () {
+      for (var i = 0; i < thumbs.length; i += 1) { if (thumbs[i].getAttribute('aria-current') === 'true') return i; }
+      return 0;
+    };
+    var idle = function (fn) {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout: 2500 });
+      else window.setTimeout(fn, 600);
+    };
+    var warmNeighbours = function () {
+      var i = currentIndex(), n = thumbs.length;
+      warm(thumbs[(i + 1) % n]);
+      warm(thumbs[(i - 1 + n) % n]);
+    };
+    var warmedAll = false;
+    var warmAll = function () {
+      if (warmedAll) return;
+      warmedAll = true;
+      idle(function () { thumbs.forEach(warm); });
+    };
+
+    if (document.readyState === 'complete') idle(warmNeighbours);
+    else window.addEventListener('load', function () { idle(warmNeighbours); }, { once: true });
+
+    var strip = root.querySelector('.ind-bj-pd__thumbs');
+    var stage = root.querySelector('.ind-bj-pd__stage');
+    [strip, stage].forEach(function (node) {
+      if (!node) return;
+      ['pointerdown', 'touchstart', 'pointerover'].forEach(function (type) {
+        node.addEventListener(type, warmAll, { passive: true, once: true });
+      });
+    });
+    if (strip) {
+      var warmTarget = function (event) {
+        var btn = event.target && event.target.closest ? event.target.closest('.ind-bj-pd__thumb') : null;
+        if (btn) warm(btn);
+      };
+      strip.addEventListener('pointerover', warmTarget, { passive: true });
+      strip.addEventListener('touchstart', warmTarget, { passive: true });
+    }
+  };
+
+  /* Product accordion: keep the tapped heading in place while other panels collapse. */
+  var stabiliseAccordions = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.ind-bj-pd__details'), function (group) {
+      if (group.getAttribute('data-bj-accordion') === '1') return;
+      group.setAttribute('data-bj-accordion', '1');
+      var pending = null;
+      var clearTimer = 0;
+      var scrollByInstant = function (delta) {
+        var html = document.documentElement;
+        var previous = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        window.scrollBy(0, delta);
+        html.style.scrollBehavior = previous;
+      };
+      group.addEventListener('click', function (event) {
+        var summary = event.target && event.target.closest ? event.target.closest('summary') : null;
+        if (!summary || !group.contains(summary)) return;
+        pending = { summary: summary, top: summary.getBoundingClientRect().top };
+        window.clearTimeout(clearTimer);
+        clearTimer = window.setTimeout(function () { pending = null; }, 600);
+      }, true);
+      Array.prototype.forEach.call(group.querySelectorAll('details'), function (details) {
+        details.addEventListener('toggle', function () {
+          if (!pending || !details.contains(pending.summary)) return;
+          var record = pending;
+          pending = null;
+          window.clearTimeout(clearTimer);
+          var settle = function () {
+            var delta = record.summary.getBoundingClientRect().top - record.top;
+            if (Math.abs(delta) > 1) scrollByInstant(delta);
+          };
+          settle();
+          window.requestAnimationFrame(function () { settle(); window.requestAnimationFrame(settle); });
+        });
+      });
+    });
+  };
+
+  /* Trust strip ticker: seamless loop when the items overflow, static when they fit. */
+  var tickerStrip = function () {
+    if (reducedMotion) return;
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    var row = document.querySelector('.ind-strip .ind-strip__row');
+    if (!row || row.getAttribute('data-bj-marquee') === '1') return;
+    var items = Array.prototype.filter.call(row.children, function (node) { return node.tagName === 'SPAN'; });
+    if (items.length < 2) return;
+    row.setAttribute('data-bj-marquee', '1');
+    var track = document.createElement('div');
+    track.className = 'bj-marquee__track';
+    var set = document.createElement('div');
+    set.className = 'bj-marquee__set';
+    items.forEach(function (item) { set.appendChild(item); });
+    var clone = set.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    track.appendChild(set);
+    track.appendChild(clone);
+    row.appendChild(track);
+    var measure = function () {
+      row.classList.add('bj-marquee');
+      row.classList.remove('bj-marquee--static');
+      var setWidth = set.getBoundingClientRect().width;
+      var rowWidth = row.getBoundingClientRect().width;
+      if (setWidth > rowWidth + 1) {
+        track.style.setProperty('--bj-marquee-shift', (-setWidth) + 'px');
+        track.style.setProperty('--bj-marquee-duration', Math.max(18, Math.round(setWidth / 40)) + 's');
+      } else {
+        row.classList.add('bj-marquee--static');
+      }
+    };
+    measure();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure).catch(noop);
+    var resizeTimer = 0;
+    window.addEventListener('resize', function () { window.clearTimeout(resizeTimer); resizeTimer = window.setTimeout(measure, 150); }, { passive: true });
+  };
+
+  /* Feature cards: the whole card links to the showerhead collection. */
+  var linkFeatureCards = function () {
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    var cards = document.querySelectorAll('.ind-features .ind-card');
+    if (!cards.length) return;
+    var config = window.NovaConfig || {};
+    var url = (config.routes && config.routes.allProducts) || '';
+    if (!url) {
+      var heroButton = document.querySelector('.ind-hero__actions .ind-btn--primary');
+      url = heroButton ? heroButton.getAttribute('href') : '';
+    }
+    if (!url) return;
+    var label = lang.indexOf('nl') === 0 ? 'Bekijk douchekoppen'
+      : lang.indexOf('de') === 0 ? 'Duschköpfe ansehen'
+      : lang.indexOf('fr') === 0 ? 'Voir les pommeaux de douche'
+      : 'Shop showerheads';
+    Array.prototype.forEach.call(cards, function (card) {
+      if (card.getAttribute('data-bj-linked') === '1') return;
+      card.setAttribute('data-bj-linked', '1');
+      var title = card.querySelector('.ind-card__title');
+      var link = document.createElement('a');
+      link.className = 'bj-card-link';
+      link.href = url;
+      link.setAttribute('aria-label', (title ? title.textContent.trim() + ' \u2013 ' : '') + label);
+      card.appendChild(link);
+      var body = card.querySelector('.ind-card__body');
+      if (body) {
+        var cta = document.createElement('span');
+        cta.className = 'bj-card-cta';
+        cta.setAttribute('aria-hidden', 'true');
+        cta.textContent = label + ' ';
+        var arrow = document.createElement('span');
+        arrow.textContent = '\u2192';
+        cta.appendChild(arrow);
+        body.appendChild(cta);
+      }
+    });
+  };
+
+  /* Home CTA: replace the still image with the theme's 360 viewer. Frames from
+     Shopify Files, else theme assets, else the theme's bundled spin, else keep the still. */
+  var mountCta360 = function () {
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    var data = document.getElementById('bj-cta-360-frames');
+    var visual = document.querySelector('.ind-cta .ind-cta__visual');
+    if (!data || !visual || visual.getAttribute('data-bj-360') === '1') return;
+    var sources;
+    try { sources = JSON.parse(data.textContent || '{}'); } catch (e) { sources = {}; }
+    var candidates = [];
+    ['files', 'assets', 'bundled'].forEach(function (name) {
+      if (sources && Array.isArray(sources[name]) && sources[name].length >= 8) candidates.push({ name: name, frames: sources[name] });
+    });
+    if (!candidates.length) return;
+    visual.setAttribute('data-bj-360', '1');
+    var scriptUrl = data.getAttribute('data-script') || '';
+    var hint = data.getAttribute('data-hint') || '';
+    var label = data.getAttribute('data-label') || '';
+
+    var mount = function (source) {
+      var frames = source.frames;
+      var still = visual.querySelector('img');
+      var root = document.createElement('div');
+      root.className = 'bj-cta-360';
+      root.setAttribute('data-nova-360', '');
+      root.setAttribute('data-frame-count', String(frames.length));
+      root.setAttribute('data-frame-source', source.name);
+      root.setAttribute('data-drag-sensitivity', '6');
+      root.setAttribute('data-autoplay', 'true');
+      root.setAttribute('data-autoplay-speed', source.name === 'bundled' ? '220' : '160');
+      var viewer = document.createElement('div');
+      viewer.className = 'bj-cta-360__viewer';
+      viewer.setAttribute('data-nova-360-viewer', '');
+      viewer.setAttribute('tabindex', '0');
+      viewer.setAttribute('role', 'slider');
+      viewer.setAttribute('aria-valuemin', '1');
+      viewer.setAttribute('aria-valuemax', String(frames.length));
+      viewer.setAttribute('aria-valuenow', '1');
+      viewer.setAttribute('aria-valuetext', '1 / ' + frames.length);
+      viewer.setAttribute('aria-label', label);
+      viewer.setAttribute('aria-keyshortcuts', 'ArrowLeft ArrowRight Home End');
+      var img = document.createElement('img');
+      img.className = 'bj-cta-360__image';
+      img.setAttribute('data-nova-360-image', '');
+      img.src = frames[0].url;
+      img.alt = frames[0].alt || label;
+      img.width = 800;
+      img.height = 800;
+      img.decoding = 'async';
+      img.draggable = false;
+      viewer.appendChild(img);
+      root.appendChild(viewer);
+      var frameData = document.createElement('script');
+      frameData.type = 'application/json';
+      frameData.setAttribute('data-nova-360-frames', '');
+      frameData.textContent = JSON.stringify(frames);
+      root.appendChild(frameData);
+      if (hint) {
+        var tip = document.createElement('p');
+        tip.className = 'bj-cta-360__hint';
+        tip.setAttribute('aria-hidden', 'true');
+        tip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 12a8 8 0 0 1-13.7 5.7M18 3v4h-4M6 21v-4h4"/></svg>' + hint;
+        root.appendChild(tip);
+      }
+      visual.removeAttribute('aria-hidden');
+      if (still) still.replaceWith(root); else visual.appendChild(root);
+      var warmAll = function () { frames.forEach(function (frame) { var i = new Image(); i.decoding = 'async'; i.src = frame.url; }); };
+      if (!conserveData) {
+        if ('IntersectionObserver' in window) {
+          var watcher = new IntersectionObserver(function (entries) {
+            if (!entries.some(function (entry) { return entry.isIntersecting; })) return;
+            watcher.disconnect();
+            if ('requestIdleCallback' in window) window.requestIdleCallback(warmAll, { timeout: 3000 });
+            else window.setTimeout(warmAll, 400);
+          }, { rootMargin: '900px 0px' });
+          watcher.observe(root);
+        } else {
+          window.setTimeout(warmAll, 1500);
+        }
+      }
+      if (!scriptUrl) return;
+      if (document.querySelector('script[src*="nova-360"]')) {
+        document.dispatchEvent(new CustomEvent('shopify:section:load', { detail: {} }));
+        return;
+      }
+      var runtime = document.createElement('script');
+      runtime.src = scriptUrl;
+      runtime.defer = true;
+      document.head.appendChild(runtime);
+    };
+
+    var tryCandidate = function (index) {
+      if (index >= candidates.length) return;
+      var candidate = candidates[index];
+      var probe = new Image();
+      probe.onload = function () { mount(candidate); };
+      probe.onerror = function () { tryCandidate(index + 1); };
+      probe.src = candidate.frames[0].url;
+    };
+    tryCandidate(0);
+  };
+
+  /* Mobile menu: tile layout built from the existing links. */
+  var modernizeMobileMenu = function () {
+    var menu = document.querySelector('[data-mobile-menu]');
+    if (!menu || menu.getAttribute('data-bj-menu') === '2') return;
+    menu.setAttribute('data-bj-menu', '2');
+    var config = {};
+    var configNode = document.getElementById('bj-menu-config');
+    if (configNode) { try { config = JSON.parse(configNode.textContent || '{}') || {}; } catch (e) { config = {}; } }
+    var paths = {
+      arrow: 'M5 12h14M13 6l6 6-6 6',
+      chevron: 'm9 6 6 6-6 6',
+      grid: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z',
+      droplet: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z',
+      compass: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm2.5-11.5-1.8 4.7-4.7 1.8 1.8-4.7 4.7-1.8Z',
+      info: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 11v5M12 8h.01',
+      star: 'm12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8L12 3.5Z',
+      help: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h.01',
+      mail: 'M4 6h16v12H4zM4 7l8 6 8-6',
+      truck: 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z',
+      link: 'M10 14a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1'
+    };
+    var svg = function (name) {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (paths[name] || paths.link) + '"/></svg>';
+    };
+    var iconFor = function (link, fallback) {
+      var key = ((link.getAttribute('href') || '') + ' ' + (link.textContent || '')).toLowerCase();
+      if (/review|beoordel|bewert|avis/.test(key)) return 'star';
+      if (/faq|veelgestelde|frequently|h\u00e4ufig|questions/.test(key)) return 'help';
+      if (/contact|kontakt|klantenservice/.test(key)) return 'mail';
+      if (/track|volgen|tracking|parcel|bestelling|order|sendung|suivi|commande/.test(key)) return 'truck';
+      if (/ind-details|keuzehulp|guide|hulp|ratgeber|choisir/.test(key)) return 'compass';
+      if (/over-ons|overons|about|\u00fcber|propos/.test(key)) return 'info';
+      if (/filter/.test(key)) return 'droplet';
+      return fallback || 'grid';
+    };
+    var decorate = function (link, fallback, chevron) {
+      if (link.getAttribute('data-bj-tile') === '1') return;
+      link.setAttribute('data-bj-tile', '1');
+      var labelText = '';
+      var labelNode = link.querySelector('span:not([aria-hidden])');
+      if (labelNode) {
+        labelText = labelNode.textContent.trim();
+        labelNode.classList.add('bj-m-text');
+      } else {
+        labelText = link.textContent.trim();
+        link.textContent = '';
+        labelNode = document.createElement('span');
+        labelNode.className = 'bj-m-text';
+        labelNode.textContent = labelText;
+        link.appendChild(labelNode);
+      }
+      var icon = document.createElement('span');
+      icon.className = 'bj-m-icon';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.innerHTML = svg(iconFor(link, fallback));
+      link.insertBefore(icon, link.firstChild);
+      if (chevron) {
+        var chev = document.createElement('span');
+        chev.className = 'bj-m-chev';
+        chev.setAttribute('aria-hidden', 'true');
+        chev.innerHTML = svg('chevron');
+        link.appendChild(chev);
+      }
+    };
+    var makeLabel = function (text) {
+      var label = document.createElement('span');
+      label.className = 'bj-m-label';
+      label.textContent = text;
+      return label;
+    };
+
+    var shop = menu.querySelector('.nova-mobile-menu__shop');
+    if (shop) {
+      var title = shop.querySelector('.nova-mobile-menu__shop-title');
+      if (title) {
+        title.classList.add('bj-m-primary');
+        if (!title.querySelector('span[aria-hidden]')) {
+          var arrow = document.createElement('span');
+          arrow.setAttribute('aria-hidden', 'true');
+          arrow.textContent = '\u2192';
+          title.appendChild(arrow);
+        }
+        if (title.parentNode !== shop) shop.insertBefore(title, shop.firstChild);
+      }
+      var cats = shop.querySelector('.nova-mobile-menu__categories');
+      if (cats && cats.children.length) {
+        cats.hidden = false;
+        cats.classList.add('bj-m-tiles');
+        Array.prototype.forEach.call(cats.querySelectorAll('a'), function (link) { link.classList.add('bj-m-tile'); decorate(link, 'grid', false); });
+        if (config.categories && !shop.querySelector('.bj-m-label')) shop.insertBefore(makeLabel(config.categories), cats);
+      }
+    }
+
+    Array.prototype.forEach.call(menu.children, function (child) {
+      if (child.tagName === 'A') { child.classList.add('bj-m-row'); decorate(child, 'link', true); }
+    });
+
+    var more = menu.querySelector('.nova-mobile-menu__more');
+    if (more) {
+      var label = null;
+      var links = [];
+      Array.prototype.forEach.call(more.children, function (child) {
+        if (child.tagName === 'SPAN' && !label) label = child;
+        else if (child.tagName === 'A') links.push(child);
+      });
+      if (links.length) {
+        var grid = more.querySelector('.bj-m-tiles');
+        if (!grid) {
+          grid = document.createElement('div');
+          grid.className = 'bj-m-tiles';
+          links.forEach(function (link) { grid.appendChild(link); });
+          more.appendChild(grid);
+        }
+        links.forEach(function (link) { link.classList.add('bj-m-tile'); decorate(link, 'link', false); });
+        if (label) { label.className = 'bj-m-label'; if (config.more) label.textContent = config.more; more.insertBefore(label, grid); }
+      }
+    }
+
+    var legacy = menu.querySelectorAll('.bj-menu-toggle, .bj-menu-panel');
+    Array.prototype.forEach.call(legacy, function (node) { if (node.classList.contains('bj-menu-toggle')) node.remove(); });
+
+    if (config.foot && !menu.querySelector('.bj-menu-foot')) {
+      var foot = document.createElement('p');
+      foot.className = 'bj-menu-foot';
+      foot.textContent = config.foot;
+      menu.appendChild(foot);
+    }
+  };
+
+  var init = function () { warmGallery(); stabiliseAccordions(); tickerStrip(); linkFeatureCards(); mountCta360(); modernizeMobileMenu(); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
+  document.addEventListener('shopify:section:load', init);
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar runtime patches",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8 runtime patches: cart speed, gallery warming, no blur on phones, home card buttons, the tile-style mobile menu, home colour rhythm, stable product accordion, delivery estimate card, ticker strip, linked feature cards, and the CTA 360° spin (besjaar-cta-360-01–36.webp from Files or theme assets, else the bundled spin). Keep this section in the header group, after the colour tokens."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

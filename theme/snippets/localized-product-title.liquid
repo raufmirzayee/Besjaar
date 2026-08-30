@@ -1,0 +1,223 @@
+{%- liquid
+  assign nova_product = product
+  assign nova_locale = request.locale.iso_code | downcase
+  assign nova_title = nova_product.title
+
+  if nova_locale == 'de'
+    if nova_product.metafields.custom.title_de != blank
+      assign nova_title = nova_product.metafields.custom.title_de.value
+    elsif nova_product.metafields.custom.short_title_de != blank
+      assign nova_title = nova_product.metafields.custom.short_title_de.value
+    elsif nova_product.metafields.custom.short_title != blank
+      assign nova_title = nova_product.metafields.custom.short_title.value
+    endif
+  elsif nova_locale == 'fr'
+    if nova_product.metafields.custom.title_fr != blank
+      assign nova_title = nova_product.metafields.custom.title_fr.value
+    elsif nova_product.metafields.custom.short_title_fr != blank
+      assign nova_title = nova_product.metafields.custom.short_title_fr.value
+    elsif nova_product.metafields.custom.short_title != blank
+      assign nova_title = nova_product.metafields.custom.short_title.value
+    endif
+  elsif nova_locale == 'en'
+    if nova_product.metafields.custom.title_en != blank
+      assign nova_title = nova_product.metafields.custom.title_en.value
+    elsif nova_product.metafields.custom.short_title_en != blank
+      assign nova_title = nova_product.metafields.custom.short_title_en.value
+    elsif nova_product.metafields.custom.short_title != blank
+      assign nova_title = nova_product.metafields.custom.short_title.value
+    endif
+  elsif nova_locale == 'nl'
+    if nova_product.metafields.custom.title_nl != blank
+      assign nova_title = nova_product.metafields.custom.title_nl.value
+    elsif nova_product.metafields.custom.short_title_nl != blank
+      assign nova_title = nova_product.metafields.custom.short_title_nl.value
+    elsif nova_product.metafields.custom.short_title != blank
+      assign nova_title = nova_product.metafields.custom.short_title.value
+    endif
+  elsif nova_product.metafields.custom.short_title != blank
+    assign nova_title = nova_product.metafields.custom.short_title.value
+  endif
+
+  assign nova_title_lc = nova_product.title | downcase
+  assign nova_allow_legacy_title_fallback = false
+  if nova_product.metafields.custom.product_family == blank
+    assign nova_allow_legacy_title_fallback = true
+  endif
+  assign nova_type_lc = nova_product.type | downcase
+  assign nova_shower_family = nova_product.metafields.custom.shower_family.value | default: '' | downcase | strip
+  capture nova_family_capture
+    render 'product-family', product: nova_product
+  endcapture
+  assign nova_family = nova_family_capture | strip
+  assign nova_is_shower = false
+  if nova_family == 'shower'
+    assign nova_is_shower = true
+  endif
+
+  if nova_is_shower and nova_product.metafields.custom.title_en == blank and nova_product.metafields.custom.title_nl == blank and nova_product.metafields.custom.title_de == blank and nova_product.metafields.custom.title_fr == blank and nova_product.metafields.custom.short_title_en == blank and nova_product.metafields.custom.short_title_nl == blank and nova_product.metafields.custom.short_title_de == blank and nova_product.metafields.custom.short_title_fr == blank
+    assign nova_spray_modes = ''
+    if nova_product.metafields.custom.spray_modes != blank
+      assign nova_spray_modes = nova_product.metafields.custom.spray_modes.value
+    elsif nova_title_lc contains '10 sproei' or nova_title_lc contains '10 spray'
+      assign nova_spray_modes = 10
+    elsif nova_title_lc contains '3 sproei' or nova_title_lc contains '3 spray'
+      assign nova_spray_modes = 3
+    endif
+
+    assign nova_has_filter = false
+    if nova_product.metafields.custom.filter_included != blank
+      assign nova_has_filter = nova_product.metafields.custom.filter_included.value
+    endif
+    if nova_product.metafields.custom.filter_included == blank
+      if nova_title_lc contains 'met filter' or nova_title_lc contains 'with filter' or nova_title_lc contains 'filtered shower'
+        assign nova_has_filter = true
+      endif
+    endif
+
+    assign nova_has_hose = false
+    if nova_product.metafields.custom.hose_included != blank
+      assign nova_has_hose = nova_product.metafields.custom.hose_included.value
+    endif
+    if nova_product.metafields.custom.hose_included == blank
+      if nova_title_lc contains 'met slang' or nova_title_lc contains 'with hose'
+        assign nova_has_hose = true
+      endif
+    endif
+
+    assign nova_pack = nova_product.metafields.custom.package_quantity.value | default: 0
+    if nova_pack == 0 and nova_allow_legacy_title_fallback
+      if nova_title_lc contains '2 stuks' or nova_title_lc contains '2-pack' or nova_title_lc contains '2 pack' or nova_title_lc contains '2 filters' or nova_title_lc contains '2 vervangingsfilters'
+        assign nova_pack = 2
+      endif
+    endif
+
+    assign nova_is_filter_only = false
+    if nova_shower_family == 'shower_filter'
+      assign nova_is_filter_only = true
+    elsif nova_allow_legacy_title_fallback
+      if nova_title_lc contains 'douchefilter' or nova_title_lc contains 'shower filter'
+        unless nova_title_lc contains 'douchekop' or nova_title_lc contains 'shower head'
+          assign nova_is_filter_only = true
+        endunless
+      endif
+    endif
+
+    assign nova_colour = ''
+    if nova_product.metafields.custom.colour != blank
+      assign nova_colour = nova_product.metafields.custom.colour.value | downcase | strip
+    elsif nova_title_lc contains 'zilver' or nova_title_lc contains 'silver'
+      assign nova_colour = 'silver'
+    elsif nova_title_lc contains 'chroom' or nova_title_lc contains 'chrome'
+      assign nova_colour = 'chrome'
+    elsif nova_title_lc contains 'zwart' or nova_title_lc contains 'black'
+      assign nova_colour = 'black'
+    elsif nova_title_lc contains 'wit' or nova_title_lc contains 'white'
+      assign nova_colour = 'white'
+    endif
+
+    if nova_is_filter_only
+      if nova_pack == 2
+        assign nova_title = 'nova.product.retail_shower_filter_two_pack' | t
+      else
+        assign nova_title = 'nova.product.retail_shower_filter' | t
+      endif
+    else
+      assign nova_title = 'nova.product.retail_shower_head' | t
+      if nova_has_filter and nova_has_hose
+        assign nova_suffix = 'nova.product.retail_with_filter_hose' | t
+        assign nova_title = nova_title | append: ' ' | append: nova_suffix
+      elsif nova_has_filter
+        assign nova_suffix = 'nova.product.retail_with_filter' | t
+        assign nova_title = nova_title | append: ' ' | append: nova_suffix
+      elsif nova_has_hose
+        assign nova_suffix = 'nova.product.retail_with_hose' | t
+        assign nova_title = nova_title | append: ' ' | append: nova_suffix
+      endif
+      if nova_spray_modes != blank
+        assign nova_modes = 'nova.product.retail_spray_modes' | t: count: nova_spray_modes
+        assign nova_title = nova_title | append: ' – ' | append: nova_modes
+      endif
+      case nova_colour
+        when 'zilver', 'silver'
+          assign nova_colour_label = 'nova.product.color_silver' | t
+        when 'chroom', 'chrome'
+          assign nova_colour_label = 'nova.product.color_chrome' | t
+        when 'zwart', 'black'
+          assign nova_colour_label = 'nova.product.color_black' | t
+        when 'wit', 'white'
+          assign nova_colour_label = 'nova.product.color_white' | t
+        else
+          assign nova_colour_label = ''
+      endcase
+      if nova_colour_label != blank
+        assign nova_title = nova_title | append: ' – ' | append: nova_colour_label
+      endif
+    endif
+  elsif nova_locale == 'en'
+    assign nova_title = nova_title | replace: 'Waterbesparende', 'Water-Saving' | replace: 'waterbesparende', 'water-saving'
+    assign nova_title = nova_title | replace: 'Hoge Druk', 'High Pressure' | replace: 'hoge druk', 'high pressure'
+    assign nova_title = nova_title | replace: 'Sproeistanden', 'Spray Modes' | replace: 'sproeistanden', 'spray modes'
+    assign nova_title = nova_title | replace: 'Douchekop', 'Shower Head' | replace: 'douchekop', 'shower head'
+    assign nova_title = nova_title | replace: 'Handdouche', 'Hand Shower' | replace: 'handdouche', 'hand shower'
+    assign nova_title = nova_title | replace: 'Met Slang', 'With Hose' | replace: 'met slang', 'with hose'
+    assign nova_title = nova_title | replace: 'Met Filter', 'With Filter' | replace: 'met filter', 'with filter'
+    assign nova_title = nova_title | replace: 'Zilver', 'Silver' | replace: 'zilver', 'silver'
+    assign nova_title = nova_title | replace: 'Chroom', 'Chrome' | replace: 'chroom', 'chrome'
+    assign nova_title = nova_title | replace: 'Zwart', 'Black' | replace: 'zwart', 'black'
+    assign nova_title = nova_title | replace: 'Wit', 'White' | replace: 'wit', 'white'
+  elsif nova_locale == 'de'
+    assign nova_title = nova_title | replace: 'Waterbesparende', 'Wassersparender' | replace: 'waterbesparende', 'wassersparender'
+    assign nova_title = nova_title | replace: 'Water-Saving', 'Wassersparender' | replace: 'water-saving', 'wassersparender'
+    assign nova_title = nova_title | replace: 'Hoge Druk', 'Hochdruck' | replace: 'hoge druk', 'Hochdruck'
+    assign nova_title = nova_title | replace: 'High Pressure', 'Hochdruck' | replace: 'high pressure', 'Hochdruck'
+    assign nova_title = nova_title | replace: 'Sproeistanden', 'Strahlarten' | replace: 'sproeistanden', 'Strahlarten'
+    assign nova_title = nova_title | replace: 'Spray Modes', 'Strahlarten' | replace: 'spray modes', 'Strahlarten'
+    assign nova_title = nova_title | replace: 'Douchekop', 'Duschkopf' | replace: 'douchekop', 'Duschkopf'
+    assign nova_title = nova_title | replace: 'Shower Head', 'Duschkopf' | replace: 'shower head', 'Duschkopf'
+    assign nova_title = nova_title | replace: 'Handdouche', 'Handbrause' | replace: 'handdouche', 'Handbrause'
+    assign nova_title = nova_title | replace: 'Hand Shower', 'Handbrause' | replace: 'hand shower', 'Handbrause'
+    assign nova_title = nova_title | replace: 'Met Slang', 'Mit Schlauch' | replace: 'met slang', 'mit Schlauch'
+    assign nova_title = nova_title | replace: 'With Hose', 'Mit Schlauch' | replace: 'with hose', 'mit Schlauch'
+    assign nova_title = nova_title | replace: 'Met Filter', 'Mit Filter' | replace: 'met filter', 'mit Filter'
+    assign nova_title = nova_title | replace: 'With Filter', 'Mit Filter' | replace: 'with filter', 'mit Filter'
+    assign nova_title = nova_title | replace: 'Zilver', 'Silber' | replace: 'zilver', 'Silber' | replace: 'Silver', 'Silber' | replace: 'silver', 'Silber'
+    assign nova_title = nova_title | replace: 'Chroom', 'Chrom' | replace: 'chroom', 'Chrom' | replace: 'Chrome', 'Chrom' | replace: 'chrome', 'Chrom'
+    assign nova_title = nova_title | replace: 'Zwart', 'Schwarz' | replace: 'zwart', 'Schwarz' | replace: 'Black', 'Schwarz' | replace: 'black', 'Schwarz'
+    assign nova_title = nova_title | replace: 'Wit', 'Weiß' | replace: 'wit', 'Weiß' | replace: 'White', 'Weiß' | replace: 'white', 'Weiß'
+  elsif nova_locale == 'fr'
+    assign nova_title = nova_title | replace: 'Waterbesparende', 'Économe en eau' | replace: 'waterbesparende', 'économe en eau'
+    assign nova_title = nova_title | replace: 'Water-Saving', 'Économe en eau' | replace: 'water-saving', 'économe en eau'
+    assign nova_title = nova_title | replace: 'Hoge Druk', 'Haute pression' | replace: 'hoge druk', 'haute pression'
+    assign nova_title = nova_title | replace: 'High Pressure', 'Haute pression' | replace: 'high pressure', 'haute pression'
+    assign nova_title = nova_title | replace: 'Sproeistanden', 'Types de jet' | replace: 'sproeistanden', 'types de jet'
+    assign nova_title = nova_title | replace: 'Spray Modes', 'Types de jet' | replace: 'spray modes', 'types de jet'
+    assign nova_title = nova_title | replace: 'Douchekop', 'Pommeau de douche' | replace: 'douchekop', 'pommeau de douche'
+    assign nova_title = nova_title | replace: 'Shower Head', 'Pommeau de douche' | replace: 'shower head', 'pommeau de douche'
+    assign nova_title = nova_title | replace: 'Handdouche', 'Douchette' | replace: 'handdouche', 'douchette'
+    assign nova_title = nova_title | replace: 'Hand Shower', 'Douchette' | replace: 'hand shower', 'douchette'
+    assign nova_title = nova_title | replace: 'Met Slang', 'Avec flexible' | replace: 'met slang', 'avec flexible'
+    assign nova_title = nova_title | replace: 'With Hose', 'Avec flexible' | replace: 'with hose', 'avec flexible'
+    assign nova_title = nova_title | replace: 'Met Filter', 'Avec filtre' | replace: 'met filter', 'avec filtre'
+    assign nova_title = nova_title | replace: 'With Filter', 'Avec filtre' | replace: 'with filter', 'avec filtre'
+    assign nova_title = nova_title | replace: 'Zilver', 'Argent' | replace: 'zilver', 'argent' | replace: 'Silver', 'Argent' | replace: 'silver', 'argent'
+    assign nova_title = nova_title | replace: 'Chroom', 'Chrome' | replace: 'chroom', 'chrome'
+    assign nova_title = nova_title | replace: 'Zwart', 'Noir' | replace: 'zwart', 'noir' | replace: 'Black', 'Noir' | replace: 'black', 'noir'
+    assign nova_title = nova_title | replace: 'Wit', 'Blanc' | replace: 'wit', 'blanc' | replace: 'White', 'Blanc' | replace: 'white', 'blanc'
+  elsif nova_locale == 'nl'
+    assign nova_title = nova_title | replace: 'Water-Saving', 'Waterbesparende' | replace: 'water-saving', 'waterbesparende'
+    assign nova_title = nova_title | replace: 'High Pressure', 'Hoge Druk' | replace: 'high pressure', 'hoge druk'
+    assign nova_title = nova_title | replace: 'Spray Modes', 'Sproeistanden' | replace: 'spray modes', 'sproeistanden'
+    assign nova_title = nova_title | replace: 'Shower Head', 'Douchekop' | replace: 'shower head', 'douchekop'
+    assign nova_title = nova_title | replace: 'Hand Shower', 'Handdouche' | replace: 'hand shower', 'handdouche'
+    assign nova_title = nova_title | replace: 'With Hose', 'Met Slang' | replace: 'with hose', 'met slang'
+    assign nova_title = nova_title | replace: 'With Filter', 'Met Filter' | replace: 'with filter', 'met filter'
+    assign nova_title = nova_title | replace: 'Silver', 'Zilver' | replace: 'silver', 'zilver'
+    assign nova_title = nova_title | replace: 'Chrome', 'Chroom' | replace: 'chrome', 'chroom'
+    assign nova_title = nova_title | replace: 'Black', 'Zwart' | replace: 'black', 'zwart'
+    assign nova_title = nova_title | replace: 'White', 'Wit' | replace: 'white', 'wit'
+
+  endif
+
+  echo nova_title
+-%}

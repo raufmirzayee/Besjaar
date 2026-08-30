@@ -1,0 +1,126 @@
+{% liquid
+  assign target_product = section.settings.product
+  if target_product == blank and section.settings.product_handle != blank
+    assign target_product = all_products[section.settings.product_handle]
+  endif
+  assign nova_product_fallback = 'nova.immersive.product_fallback' | t
+  assign product_label = target_product.title | default: nova_product_fallback
+  assign nova_home_360_heading = section.settings.heading
+  assign nova_home_360_copy = section.settings.copy
+  assign nova_home_360_cta = section.settings.cta_label
+  if section.settings.use_localized_copy
+    assign nova_home_360_heading = 'nova.immersive.aside_heading' | t
+    assign nova_home_360_copy = 'nova.immersive.aside_copy' | t
+    assign nova_home_360_cta = 'nova.immersive.view_showerhead' | t
+  endif
+%}
+<section
+  class="nova-360 nova-home-360"
+  data-nova-360
+  data-frame-count="23"
+  data-frame-source="bundled"
+  data-drag-sensitivity="{{ section.settings.drag_sensitivity }}"
+  data-autoplay="{{ section.settings.autoplay | json }}"
+  data-autoplay-speed="{{ section.settings.autoplay_speed }}"
+  data-pause-label="{{ 'nova.immersive.pause' | t | escape }}"
+  data-reveal
+>
+  <div class="nova-shell">
+    <div class="nova-360__heading">
+      <div>
+        <p class="nova-kicker">{{ 'nova.immersive.eyebrow' | t }}</p>
+        <h2>{{ 'nova.immersive.heading' | t }}</h2>
+        <p>{{ 'nova.immersive.copy' | t }}</p>
+      </div>
+      <div class="nova-360__meta" aria-label="{{ 'nova.immersive.frame_count_label' | t | escape }}">
+        <strong>360°</strong>
+        <span>{{ 'nova.immersive.frames' | t: count: 23 }}</span>
+      </div>
+    </div>
+
+    <div class="nova-home-360__layout">
+      <div class="nova-360__viewer-wrap">
+        <div
+          class="nova-360__viewer"
+          tabindex="0"
+          role="slider"
+          aria-valuemin="1"
+          aria-valuemax="23"
+          aria-valuenow="1"
+          aria-valuetext="1 / 23"
+          aria-roledescription="{{ 'nova.immersive.viewer_role' | t | escape }}"
+          aria-label="{{ 'nova.immersive.viewer_label' | t: product: product_label | escape }}"
+          aria-keyshortcuts="ArrowLeft ArrowRight Home End"
+          data-nova-360-viewer
+        >
+          <img
+            class="nova-360__image"
+            src="{{ 'besjaar-360-01.webp' | asset_url }}"
+            width="960"
+            height="960"
+            alt="{{ product_label | escape }}"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+            data-nova-360-image
+          >
+          <div class="nova-360__loading" hidden data-nova-360-loading role="status" aria-live="polite">{{ 'nova.immersive.loading' | t }}</div>
+        </div>
+
+        <div class="nova-360__controls">
+          <button type="button" class="nova-360__control" data-nova-360-prev aria-label="{{ 'nova.immersive.previous' | t | escape }}">←</button>
+          <div class="nova-360__progress" aria-hidden="true"><span data-nova-360-progress></span></div>
+          <span class="nova-360__counter" aria-hidden="true"><span data-nova-360-current>1</span> / 23</span>
+          <button type="button" class="nova-360__control" data-nova-360-next aria-label="{{ 'nova.immersive.next' | t | escape }}">→</button>
+          <button type="button" class="nova-360__play" data-nova-360-play aria-pressed="false">
+            <span data-nova-360-play-label>{{ 'nova.immersive.play' | t }}</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="nova-home-360__aside">
+        <span class="nova-home-360__number">01</span>
+        <h3>{{ nova_home_360_heading }}</h3>
+        <p>{{ nova_home_360_copy }}</p>
+        {% if target_product != blank %}
+          <a class="nova-button nova-button--primary" href="{% render 'localized-internal-url', url: target_product.url %}">{{ nova_home_360_cta }} <span aria-hidden="true">→</span></a>
+        {% endif %}
+      </div>
+    </div>
+
+    <script type="application/json" data-nova-360-frames>
+      [
+        {% for i in (1..23) %}
+          {% capture frame_number %}{% if i < 10 %}0{% endif %}{{ i }}{% endcapture %}
+          {% assign frame_asset = 'besjaar-360-' | append: frame_number | append: '.webp' %}
+          {"url": {{ frame_asset | asset_url | json }}, "alt": {{ product_label | json }}}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    </script>
+  </div>
+</section>
+
+{%- comment -%}
+  Besjaar 11.6: theme.liquid only loads nova-360.js on shower product pages, so
+  this editor-addable section must bring its own runtime (the script is
+  idempotent via its WeakSet, so double-loading on product pages is harmless).
+{%- endcomment -%}
+<script src="{{ 'nova-360.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "Home 360 showcase",
+  "settings": [
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"product","id":"product","label":"Linked product"},
+    {"type":"text","id":"product_handle","label":"Fallback product handle","default":"besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver"},
+    {"type":"text","id":"heading","label":"Side heading","default":"One product. Every angle."},
+    {"type":"textarea","id":"copy","label":"Side copy","default":"Swipe the showerhead yourself and inspect the head, handle and filter chamber before you buy."},
+    {"type":"text","id":"cta_label","label":"Button label","default":"View showerhead"},
+    {"type":"range","id":"drag_sensitivity","label":"Drag sensitivity","min":3,"max":16,"step":1,"default":7},
+    {"type":"checkbox","id":"autoplay","label":"Auto rotate on homepage","default":true},
+    {"type":"range","id":"autoplay_speed","label":"Autoplay speed","min":80,"max":240,"step":10,"unit":"ms","default":140}
+  ],
+  "presets": [{"name":"Home 360 showcase"}]
+}
+{% endschema %}

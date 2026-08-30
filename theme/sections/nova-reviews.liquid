@@ -1,0 +1,166 @@
+{% liquid
+  assign rating_meta = product.metafields.reviews.rating
+  assign count_meta = product.metafields.reviews.rating_count
+  assign rating = blank
+  assign scale_max = 5
+  assign count = 0
+  if rating_meta != blank
+    assign rating = rating_meta.value.rating | default: rating_meta.value
+    assign scale_max = rating_meta.value.scale_max | default: 5
+  endif
+  if count_meta != blank
+    assign count = count_meta.value | default: count_meta
+  endif
+
+  assign has_native_summary = false
+  if rating != blank and count > 0
+    assign has_native_summary = true
+  endif
+
+  capture product_family_capture
+    render 'product-family', product: product
+  endcapture
+  assign product_family = product_family_capture | strip
+  assign is_shower = false
+  if product_family == 'shower'
+    assign is_shower = true
+  endif
+
+  assign app_count = 0
+  for block in section.blocks
+    if block.type == '@app'
+      assign app_count = app_count | plus: 1
+    endif
+  endfor
+
+  assign has_judgeme = false
+  if product.metafields.judgeme.badge != blank or product.metafields.judgeme.review_widget_data != blank or product.metafields.judgeme.widget.size > 20 or shop.metafields.judgeme.shop_reviews_count != blank
+    assign has_judgeme = true
+  endif
+
+  assign has_automatic_review_provider = false
+  if app_count > 0
+    assign has_automatic_review_provider = true
+  elsif has_judgeme and section.settings.enable_legacy_judgeme_widget
+    assign has_automatic_review_provider = true
+  endif
+
+  assign rating_percent = 0
+  if has_native_summary and scale_max > 0
+    assign rating_percent = rating | times: 100.0 | divided_by: scale_max
+  endif
+  comment
+    Reviews render for every product, not only shower-family models, so any
+    product carrying review-app data or Shopify rating metafields shows its
+    proof.
+  endcomment
+  assign has_published_reviews = false
+  if product.metafields.custom.reviews.value != blank
+    assign has_published_reviews = true
+  endif
+
+  assign nova_reviews_should_render = false
+  if has_native_summary or has_automatic_review_provider or has_published_reviews or section.settings.show_review_form or request.design_mode
+    assign nova_reviews_should_render = true
+  endif
+%}
+
+{% if nova_reviews_should_render %}
+  {% if is_shower and request.page_type != 'product' %}{{ 'nova-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endif %}
+  {{ 'besjaar-reviews.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'besjaar-reviews.js' | asset_url }}" defer></script>
+  <section class="nova-section nova-reviews{% if is_shower %} nova-reviews--shower nova-shower-trust-education{% endif %}" id="nova-reviews" data-review-provider="{% if app_count > 0 %}app-block{% elsif has_judgeme and section.settings.enable_legacy_judgeme_widget %}judgeme-legacy{% elsif has_published_reviews %}metafield{% elsif section.settings.show_review_form %}email-fallback{% else %}none{% endif %}" data-reveal>
+    <div class="nova-shell">
+      {% if section.settings.show_intro %}
+        <div class="nova-reviews__head">
+          <div>
+            <p class="nova-kicker">{{ 'nova.reviews.kicker' | t }}</p>
+            <h2 class="nova-title">{% if is_shower %}{{ 'nova.reviews.shower_heading' | t }}{% else %}{{ 'nova.reviews.heading' | t }}{% endif %}</h2>
+            <p class="nova-copy">{% if is_shower %}{{ 'nova.reviews.shower_copy' | t }}{% else %}{{ 'nova.reviews.copy' | t }}{% endif %}</p>
+          </div>
+          {% if has_native_summary and section.settings.show_native_summary and has_automatic_review_provider == false %}
+            <div class="nova-reviews__summary" aria-label="{{ 'nova.reviews.rating_accessible' | t: rating: rating, max: scale_max, count: count | escape }}">
+              <strong>{{ rating | round: 1 }}</strong>
+              <span class="nova-rating-meter" style="--nova-rating-percent:{{ rating_percent }}%" aria-hidden="true"><span class="nova-rating-meter__base">★★★★★</span><span class="nova-rating-meter__fill">★★★★★</span></span>
+              <small>{{ 'nova.reviews.based_on' | t: count: count }}</small>
+              {% if is_shower %}<small class="nova-reviews__summary-note">{{ 'nova.reviews.real_data_note' | t }}</small>{% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% elsif has_native_summary and section.settings.show_native_summary and has_automatic_review_provider == false %}
+        <div class="nova-reviews__summary nova-reviews__summary--standalone" aria-label="{{ 'nova.reviews.rating_accessible' | t: rating: rating, max: scale_max, count: count | escape }}">
+          <strong>{{ rating | round: 1 }}</strong>
+          <span class="nova-rating-meter" style="--nova-rating-percent:{{ rating_percent }}%" aria-hidden="true"><span class="nova-rating-meter__base">★★★★★</span><span class="nova-rating-meter__fill">★★★★★</span></span>
+          <small>{{ 'nova.reviews.based_on' | t: count: count }}</small>
+        </div>
+      {% endif %}
+
+      {% unless has_automatic_review_provider %}
+        {% render 'product-reviews-list', product: product %}
+      {% endunless %}
+
+      {% if app_count > 0 %}
+        <div class="nova-reviews__app nova-apps-section__inner{% if settings.show_review_app_surface %} nova-reviews__app--styled{% endif %}">
+          {% for block in section.blocks %}
+            {% if block.type == '@app' %}{% render block %}{% endif %}
+          {% endfor %}
+        </div>
+      {% elsif has_judgeme and section.settings.enable_legacy_judgeme_widget %}
+        <div class="nova-reviews__app nova-reviews__app--judgeme nova-apps-section__inner">
+          {% assign judgeme_has_legacy = false %}
+          {% if product.metafields.judgeme.widget.size > 20 %}
+            {% assign judgeme_has_legacy = true %}
+          {% endif %}
+          <div style="clear:both"></div>
+          <div
+            id="judgeme_product_reviews"
+            class="jdgm-widget jdgm-review-widget"
+            data-product-title="{{ product.title | escape }}"
+            data-id="{{ product.id }}"
+            data-product-id="{{ product.id }}"
+            data-widget="review"
+            data-auto-install="false"
+            data-shop-reviews-count="{{ shop.metafields.judgeme.shop_reviews_count | default: 0 | escape }}"
+            data-entry-point="review_widget.js"
+            data-entry-key="review-widget/main.js"
+          >
+            {% if judgeme_has_legacy %}
+              <div class="jdgm-legacy-widget-content" style="display:none">{{ product.metafields.judgeme.widget }}</div>
+            {% endif %}
+          </div>
+          {% if product.metafields.judgeme.review_widget_data %}
+            <script>
+              window.jdgm = window.jdgm || {};
+              window.jdgm.data = window.jdgm.data || {};
+              window.jdgm.data.reviewWidget = window.jdgm.data.reviewWidget || {};
+              window.jdgm.data.reviewWidget[{{ product.id }}] = {{ product.metafields.judgeme.review_widget_data }};
+            </script>
+          {% endif %}
+        </div>
+      {% elsif request.design_mode %}
+        <div class="nova-editor-note nova-editor-note--reviews">
+          <strong>Connect automatic customer reviews</strong>
+          <p>Install Judge.me Product Reviews, enable its app embed, then add the Review Widget app block inside this Reviews & ratings section. Submissions, moderation and publishing will then be handled automatically.</p>
+        </div>
+      {% endif %}
+
+      {% if section.settings.show_review_form and has_automatic_review_provider == false %}
+        {% render 'product-review-form', product: product %}
+      {% endif %}
+    </div>
+  </section>
+{% endif %}
+{% schema %}
+{
+  "name":"Reviews & ratings",
+  "settings":[
+    {"type":"checkbox","id":"show_intro","label":"Show Besjaar review heading and introduction","default":true},
+    {"type":"checkbox","id":"show_native_summary","label":"Show Shopify rating summary when available","default":true},
+    {"type":"checkbox","id":"show_review_form","label":"Show email fallback form when no review app is connected","default":false,"info":"This fallback emails the submission for manual moderation. Leave it disabled when the official review app block is placed as a separate section."},
+    {"type":"checkbox","id":"enable_legacy_judgeme_widget","label":"Use legacy Judge.me widget markup","default":false,"info":"Leave disabled when using Judge.me's official Shopify app block. Enable only for an older Judge.me installation that relies on theme markup."},
+    {"type":"paragraph","content":"For fully automatic submission, moderation, publishing and review-request emails, add a review app block below. App blocks placed inside this section automatically suppress the manual metafield list and email fallback."}
+  ],
+  "blocks":[{"type":"@app"}],
+  "presets":[{"name":"Reviews & ratings"}]
+}
+{% endschema %}

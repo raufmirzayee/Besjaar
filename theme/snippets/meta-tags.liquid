@@ -1,0 +1,144 @@
+{% assign nova_focus_product_value = 'true' %}
+{% if request.page_type == 'article' and article != blank %}
+  <meta property="article:published_time" content="{{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+  <meta property="article:modified_time" content="{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+{% endif %}
+{% if request.page_type == 'product' and product != blank %}
+  {% capture nova_focus_product_capture %}{% render 'is-focus-showerhead', product: product %}{% endcapture %}
+  {% assign nova_focus_product_value = nova_focus_product_capture | strip %}
+{% endif %}
+{% liquid
+  assign nova_meta_title = nova_browser_title | default: page_title | default: shop.name
+  assign nova_social_description = nova_meta_description | default: page_description | default: shop.description | strip_html | strip
+  if request.page_type == 'index'
+    assign nova_meta_title = 'nova.shower_store.meta.title' | t
+    assign nova_social_description = 'nova.shower_store.meta.description' | t
+  endif
+
+  assign nova_meta_image = page_image
+  if nova_meta_image == blank and request.page_type == 'product' and product.featured_media != blank
+    assign nova_meta_image = product.featured_media.preview_image
+  endif
+  if nova_meta_image == blank and settings.social_share_image != blank
+    assign nova_meta_image = settings.social_share_image
+  endif
+  assign nova_use_bundled_share_image = false
+  if nova_meta_image == blank
+    assign nova_use_bundled_share_image = true
+  endif
+
+  assign nova_meta_image_alt = nova_meta_title
+  if request.page_type == 'product' and product.featured_media.preview_image.alt != blank
+    assign nova_meta_image_alt = product.featured_media.preview_image.alt
+  elsif nova_meta_image != blank and nova_meta_image.alt != blank
+    assign nova_meta_image_alt = nova_meta_image.alt
+  endif
+
+  assign nova_og_type = 'website'
+  if request.page_type == 'product'
+    assign nova_og_type = 'product'
+  elsif request.page_type == 'article'
+    assign nova_og_type = 'article'
+  endif
+
+  assign nova_noindex = false
+  if request.page_type == 'search' or request.page_type == 'cart' or request.page_type == '404'
+    assign nova_noindex = true
+  elsif request.page_type contains 'customers'
+    assign nova_noindex = true
+  elsif request.page_type == 'product' and product != blank and nova_focus_product_value != 'true'
+    assign nova_noindex = true
+  endif
+%}
+<meta property="og:site_name" content="Besjaar">
+{% liquid
+  comment
+    Besjaar 11.6: og:locale must be a canonical ll_CC pair from Facebook's locale
+    list. Appending the storefront market country produced invalid codes such as
+    de_NL / fr_NL, so map each supported language explicitly instead.
+  endcomment
+  assign nova_og_locale_lang = request.locale.iso_code | split: '-' | first | downcase
+  case nova_og_locale_lang
+    when 'nl'
+      assign nova_og_locale = 'nl_NL'
+    when 'de'
+      assign nova_og_locale = 'de_DE'
+    when 'fr'
+      assign nova_og_locale = 'fr_FR'
+    when 'en'
+      assign nova_og_locale = 'en_GB'
+    else
+      assign nova_og_locale = request.locale.iso_code | replace: '-', '_'
+  endcase
+%}
+<meta property="og:locale" content="{{ nova_og_locale }}">
+{% for nova_language in localization.available_languages %}
+  {% liquid
+    assign nova_alt_lang = nova_language.iso_code | split: '-' | first | downcase
+    case nova_alt_lang
+      when 'nl'
+        assign nova_og_locale_alt = 'nl_NL'
+      when 'de'
+        assign nova_og_locale_alt = 'de_DE'
+      when 'fr'
+        assign nova_og_locale_alt = 'fr_FR'
+      when 'en'
+        assign nova_og_locale_alt = 'en_GB'
+      else
+        assign nova_og_locale_alt = nova_language.iso_code | replace: '-', '_'
+    endcase
+  %}
+  {% unless nova_og_locale_alt == nova_og_locale %}<meta property="og:locale:alternate" content="{{ nova_og_locale_alt }}">{% endunless %}
+{% endfor %}
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:title" content="{{ nova_meta_title | escape }}">
+<meta property="og:type" content="{{ nova_og_type }}">
+{% if nova_social_description != blank %}<meta property="og:description" content="{{ nova_social_description | escape }}">{% endif %}
+{% if nova_meta_image != blank %}
+  {% liquid
+    comment
+      Besjaar 11.6: declare the dimensions of the 1200px asset actually served,
+      not the intrinsic size of the original upload.
+    endcomment
+    assign nova_og_image_width = nova_meta_image.width | default: 1200 | at_most: 1200
+    if nova_meta_image.aspect_ratio > 0
+      assign nova_og_image_height = 1.0 | times: nova_og_image_width | divided_by: nova_meta_image.aspect_ratio | round
+    else
+      assign nova_og_image_height = nova_meta_image.height | default: 630
+    endif
+  %}
+  <meta property="og:image" content="https:{{ nova_meta_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ nova_meta_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="{{ nova_og_image_width }}">
+  <meta property="og:image:height" content="{{ nova_og_image_height }}">
+  <meta property="og:image:alt" content="{{ nova_meta_image_alt | escape }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https:{{ nova_meta_image | image_url: width: 1200 }}">
+  <meta name="twitter:image:alt" content="{{ nova_meta_image_alt | escape }}">
+{% elsif nova_use_bundled_share_image %}
+  {% assign nova_bundled_share_url = 'besjaar-social-share.png' | asset_url %}
+  <meta property="og:image" content="https:{{ nova_bundled_share_url }}">
+  <meta property="og:image:secure_url" content="https:{{ nova_bundled_share_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ nova_meta_title | escape }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https:{{ nova_bundled_share_url }}">
+  <meta name="twitter:image:alt" content="{{ nova_meta_title | escape }}">
+{% else %}
+  <meta name="twitter:card" content="summary">
+{% endif %}
+<meta name="twitter:title" content="{{ nova_meta_title | escape }}">
+{% if nova_social_description != blank %}<meta name="twitter:description" content="{{ nova_social_description | escape }}">{% endif %}
+{% if request.page_type == 'product' and product != blank %}
+  {% assign nova_meta_variant = product.selected_or_first_available_variant | default: product.variants.first %}
+  <meta property="product:price:amount" content="{{ nova_meta_variant.price | divided_by: 100.0 }}">
+  <meta property="product:price:currency" content="{{ cart.currency.iso_code | default: shop.currency }}">
+  <meta property="product:availability" content="{% if nova_meta_variant.available %}in stock{% else %}out of stock{% endif %}">
+  <meta property="product:brand" content="{{ product.vendor | default: 'Besjaar' | escape }}">
+{% endif %}
+{% if nova_noindex %}
+  <meta name="robots" content="noindex,follow,max-image-preview:large">
+{% else %}
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+{% endif %}

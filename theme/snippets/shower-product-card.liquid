@@ -1,0 +1,149 @@
+{% liquid
+  assign card_product = product
+  capture nova_shower_card_title
+    render 'localized-product-title', product: card_product
+  endcapture
+  assign card_title = nova_shower_card_title | strip
+  if settings.compact_card_titles
+    assign card_title = card_title | truncatewords: 9
+  endif
+
+  assign subtitle = ''
+  if card_product.metafields.custom.product_subtitle != blank
+    assign subtitle = card_product.metafields.custom.product_subtitle.value
+  endif
+  assign best_for = ''
+  if card_product.metafields.custom.best_for != blank
+    assign best_for = card_product.metafields.custom.best_for.value
+  endif
+
+  assign family = ''
+  if card_product.metafields.custom.shower_family != blank
+    assign family = card_product.metafields.custom.shower_family.value | downcase | strip
+  endif
+
+  assign family_label = 'nova.shower_collection.family_shower_head' | t
+  case family
+    when 'filtered_shower_head'
+      assign family_label = 'nova.shower_collection.family_filtered' | t
+    when 'hand_shower'
+      assign family_label = 'nova.shower_collection.family_hand_shower' | t
+    when 'shower_set'
+      assign family_label = 'nova.shower_collection.family_set' | t
+  endcase
+
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: card_product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+
+  assign diameter = ''
+  if card_product.metafields.custom.diameter_mm != blank
+    assign diameter = card_product.metafields.custom.diameter_mm.value
+  endif
+
+  assign connection = ''
+  if card_product.metafields.custom.connection_size != blank
+    assign connection = card_product.metafields.custom.connection_size.value
+  endif
+
+  capture filter_included_capture
+    render 'shower-filter-state', product: card_product
+  endcapture
+  assign filter_included = filter_included_capture | strip
+
+  capture hose_included_capture
+    render 'shower-hose-state', product: card_product
+  endcapture
+  assign hose_included = hose_included_capture | strip
+
+  assign filter_defined = false
+  if card_product.metafields.custom.filter_included != blank
+    assign filter_defined = true
+  elsif card_product.metafields.custom.product_family == blank
+    assign filter_defined = true
+  endif
+
+  assign hose_defined = false
+  if card_product.metafields.custom.hose_included != blank
+    assign hose_defined = true
+  elsif card_product.metafields.custom.product_family == blank
+    assign hose_defined = true
+  endif
+
+  assign badge = family_label
+  if card_product.compare_at_price_max > card_product.price
+    assign badge = 'nova.product_card.sale' | t
+  elsif card_product.available == false
+    assign badge = 'nova.product_card.sold_out' | t
+  endif
+
+  assign vendor_lc = card_product.vendor | downcase | strip
+
+  assign image_alt = card_title
+  if card_product.featured_image != blank and card_product.featured_image.alt != blank
+    assign image_alt = card_product.featured_image.alt
+  endif
+
+  assign image_url = ''
+  if card_product.featured_image != blank
+    assign image_url = card_product.featured_image | image_url: width: 900
+  endif
+
+  capture nova_shower_card_url_capture
+    render 'localized-internal-url', url: card_product.url
+  endcapture
+  assign nova_shower_card_url = nova_shower_card_url_capture | strip
+%}
+
+<article class="nova-shower-card{% unless card_product.available %} is-sold-out{% endunless %}" data-reveal data-shower-choice-card data-choice-filter="{{ filter_included }}" data-choice-hose="{{ hose_included }}" data-choice-spray="{{ spray_modes | default: 0 }}">
+  <div class="nova-shower-card__media">
+    <a href="{{ nova_shower_card_url }}" aria-label="{{ card_title | escape }}">
+      {% if card_product.featured_image != blank %}
+        {{ card_product.featured_image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '360,540,720,1000', sizes: '(max-width: 640px) 92vw, (max-width: 1000px) 46vw, 28vw', alt: image_alt }}
+      {% else %}
+        <span class="nova-shower-card__placeholder" aria-hidden="true"></span>
+      {% endif %}
+    </a>
+    <span class="nova-shower-card__badge">{{ badge }}</span>
+  </div>
+
+  <div class="nova-shower-card__body">
+    <div class="nova-shower-card__brand-row">
+      <span translate="no">Besjaar</span>
+      <small>{{ family_label }}</small>
+    </div>
+
+    {% if best_for != blank %}<p class="nova-shower-card__best-for"><span>{{ 'nova.product.best_for' | t }}</span>{{ best_for }}</p>{% endif %}
+    <h3><a href="{{ nova_shower_card_url }}">{{ card_title }}</a></h3>
+    {% if subtitle != blank %}<p class="nova-shower-card__subtitle">{{ subtitle }}</p>{% endif %}
+    {% if settings.show_card_review_ratings %}<div class="nova-shower-card__rating">{% render 'review-stars', product: card_product, compact: true %}</div>{% endif %}
+
+    <div class="nova-shower-card__facts" aria-label="{{ 'nova.shower_collection.key_specs' | t }}">
+      {% if spray_modes != blank %}<span><b>{{ spray_modes }}</b>{{ 'nova.shower_collection.modes_short' | t }}</span>{% endif %}
+      {% if filter_defined and filter_included == 'true' %}<span><b>✓</b>{{ 'nova.shower_collection.filter_short' | t }}</span>{% endif %}
+      {% if hose_defined and hose_included == 'true' %}<span><b>✓</b>{{ 'nova.shower_collection.hose_short' | t }}</span>{% endif %}
+      {% if diameter != blank %}<span><b>{{ diameter }}</b>mm</span>{% endif %}
+      {% if connection != blank %}<span><b>↔</b>{{ connection }}</span>{% endif %}
+    </div>
+
+    <div class="nova-shower-card__purchase">
+      <div class="nova-shower-card__price">
+        <strong>{{ card_product.price | money }}</strong>
+        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="nova-visually-hidden">{{ 'nova.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+      </div>
+      <span class="nova-shower-card__stock{% unless card_product.available %} is-muted{% endunless %}">{% if card_product.available %}{{ 'nova.product_card.in_stock' | t }}{% else %}{{ 'nova.product_card.sold_out' | t }}{% endif %}</span>
+    </div>
+
+    <div class="nova-shower-card__actions">
+      <a class="nova-button nova-button--primary" href="{{ nova_shower_card_url }}">{{ 'nova.shower_collection.view_model' | t }}</a>
+      {% if settings.show_card_quick_add and card_product.available and card_product.has_only_default_variant %}
+        <form class="nova-card-quick-form" action="{{ routes.cart_add_url }}" method="post">
+          <input type="hidden" name="id" value="{{ card_product.selected_or_first_available_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button class="nova-shower-card__quick-add" type="submit" data-card-quick-add="{{ card_product.selected_or_first_available_variant.id }}" aria-label="{{ 'nova.product_card.quick_add_label' | t: title: card_title | escape }}">+ {{ 'nova.product_card.quick_add' | t }}</button>
+        </form>
+      {% endif %}
+    </div>
+</div>
+</article>

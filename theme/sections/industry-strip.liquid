@@ -1,0 +1,31 @@
+<div class="ind ind-strip">
+  <div class="ind-shell ind-strip__row">
+    {% if section.settings.use_localized_copy %}
+      <span><i aria-hidden="true">✓</i>{{ 'industry.strip.i1' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'industry.strip.i2' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'industry.strip.i3' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'industry.strip.i4' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'industry.strip.i5' | t }}</span>
+    {% elsif section.blocks.size > 0 %}
+      {% for block in section.blocks %}<span {{ block.shopify_attributes }}><i aria-hidden="true">✓</i>{{ block.settings.text | escape }}</span>{% endfor %}
+    {% else %}
+      <span><i aria-hidden="true">✓</i>PREMIUM CHROOMAFWERKING</span>
+      <span><i aria-hidden="true">✓</i>KRACHTIGE STRAAL</span>
+      <span><i aria-hidden="true">✓</i>½″ UNIVERSELE AANSLUITING</span>
+      <span><i aria-hidden="true">✓</i>FILTEROPTIE BESCHIKBAAR</span>
+      <span><i aria-hidden="true">✓</i>30 DAGEN BEDENKTIJD</span>
+    {% endif %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Industry spec strip",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true}
+  ],
+  "blocks": [
+    {"type": "item", "name": "Item", "settings": [{"type": "text", "id": "text", "label": "Text", "default": "CHROOM AFWERKING"}]}
+  ],
+  "presets": [{"name": "Industry spec strip"}]
+}
+{% endschema %}

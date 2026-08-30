@@ -1,0 +1,16 @@
+{%- liquid
+  assign nova_page = page
+  assign nova_handle = handle | default: nova_page.handle | downcase | strip
+  assign nova_title = title | default: nova_page.title
+  case nova_handle
+    when 'contact'
+      assign nova_title = 'nova.navigation.contact' | t
+    when 'veelgestelde-vragen', 'faq', 'frequently-asked-questions'
+      assign nova_title = 'nova.navigation.faq' | t
+    when 'volg-uw-bestelling', 'track-order', 'order-tracking'
+      assign nova_title = 'nova.navigation.track_order' | t
+    when 'over-ons', 'overons', 'about-us', 'about'
+      assign nova_title = 'nova.navigation.about' | t
+  endcase
+  echo nova_title
+-%}

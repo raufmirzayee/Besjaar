@@ -1,0 +1,361 @@
+{%- comment -%}
+  Besjaar 11.6.17 — business / wholesale quote page.
+
+  Hero, four benefit cards and a quote request form. The form is Shopify's
+  native contact form, so submissions arrive as e-mail at the store's contact
+  address with no app and no third-party data processing. Custom fields are
+  passed as contact[Label] and appear as labelled lines in that e-mail.
+
+  Copy is localised NL/EN/DE/FR in the section. The product list in the
+  dropdown is read from the catalogue, so it stays current by itself.
+{%- endcomment -%}
+{% liquid
+  assign v_lang = request.locale.iso_code | split: '-' | first | downcase
+  case v_lang
+    when 'en'
+      assign t_kicker = 'ORDERING FOR BUSINESS'
+      assign t_title_a = 'BESJAAR'
+      assign t_title_b = 'in larger'
+      assign t_title_c = 'quantities.'
+      assign t_intro = 'For retailers, installers, hotels, gyms and other organisations. Request a quote for showerheads, filters or complete sets.'
+      assign t_cta = 'Request a quote'
+      assign t_badge_n = '10–500+'
+      assign t_badge_l = 'units per request'
+      assign t_ben_kicker = 'BUSINESS BENEFITS'
+      assign t_ben_title = 'Straightforward buying, without a complicated process.'
+      assign t_b1t = 'Price by volume'
+      assign t_b1c = 'A quote based on the product, the quantity and the delivery you need.'
+      assign t_b2t = 'Business invoice'
+      assign t_b2c = 'Clear invoicing with your company details and VAT information.'
+      assign t_b3t = 'Delivery to suit you'
+      assign t_b3c = 'We agree stock, planning and one or several delivery addresses.'
+      assign t_b4t = 'A named contact'
+      assign t_b4c = 'One point of contact for product choice, quantities and repeat orders.'
+      assign t_form_kicker = 'REQUEST A BUSINESS QUOTE'
+      assign t_form_title = 'Tell us what you need.'
+      assign t_form_intro = 'Nothing is committed yet. We review your request and put together a quote.'
+      assign t_side_kicker = 'REQUEST A QUOTE'
+      assign t_side_title = 'Ready to order for business?'
+      assign t_side_copy = 'Fill in the form, or e-mail us directly. It helps if you already know the product and the quantity.'
+      assign t_side_label = 'Prefer to discuss it?'
+      assign t_side_reply = 'Usually a reply within 1–2 working days.'
+      assign t_side_link = 'See the products first'
+      assign t_f_company = 'Company name'
+      assign t_f_person = 'Contact person'
+      assign t_f_email = 'Business e-mail'
+      assign t_f_phone = 'Phone number'
+      assign t_f_reg = 'Company registration no.'
+      assign t_f_country = 'Country'
+      assign t_f_product = 'Product'
+      assign t_f_qty = 'Quantity needed'
+      assign t_f_date = 'Preferred delivery date'
+      assign t_f_notes = 'Anything else'
+      assign t_f_notes_ph = 'For example which products, quantities, packaging or delivery locations matter to you.'
+      assign t_f_choose = 'Select an option'
+      assign t_f_consent = 'I agree that Besjaar may contact me about this business request.'
+      assign t_f_send = 'Send request'
+      assign t_f_ok = 'Thank you — your request has arrived. We will come back to you within 1–2 working days.'
+      assign t_other = 'Other'
+    when 'de'
+      assign t_kicker = 'GESCHÄFTSKUNDEN'
+      assign t_title_a = 'BESJAAR'
+      assign t_title_b = 'in größeren'
+      assign t_title_c = 'Stückzahlen.'
+      assign t_intro = 'Für Händler, Installateure, Hotels, Fitnessstudios und andere Organisationen. Fordern Sie ein Angebot für Duschköpfe, Filter oder komplette Sets an.'
+      assign t_cta = 'Angebot anfordern'
+      assign t_badge_n = '10–500+'
+      assign t_badge_l = 'Stück pro Anfrage'
+      assign t_ben_kicker = 'IHRE VORTEILE'
+      assign t_ben_title = 'Klar einkaufen, ohne komplizierten Prozess.'
+      assign t_b1t = 'Preis nach Menge'
+      assign t_b1c = 'Ein Angebot passend zu Produkt, Stückzahl und gewünschter Lieferung.'
+      assign t_b2t = 'Geschäftsrechnung'
+      assign t_b2c = 'Klare Rechnungsstellung mit Ihren Firmendaten und USt-Angaben.'
+      assign t_b3t = 'Lieferung nach Absprache'
+      assign t_b3c = 'Wir stimmen Bestand, Planung und eine oder mehrere Lieferadressen ab.'
+      assign t_b4t = 'Fester Ansprechpartner'
+      assign t_b4c = 'Ein Kontakt für Produktwahl, Stückzahlen und Folgebestellungen.'
+      assign t_form_kicker = 'GESCHÄFTLICHES ANGEBOT ANFRAGEN'
+      assign t_form_title = 'Sagen Sie uns, was Sie brauchen.'
+      assign t_form_intro = 'Noch unverbindlich. Wir prüfen Ihre Anfrage und erstellen ein passendes Angebot.'
+      assign t_side_kicker = 'ANGEBOT ANFORDERN'
+      assign t_side_title = 'Bereit, geschäftlich zu bestellen?'
+      assign t_side_copy = 'Füllen Sie das Formular aus oder schreiben Sie uns direkt. Hilfreich ist, wenn Produkt und Stückzahl schon feststehen.'
+      assign t_side_label = 'Lieber besprechen?'
+      assign t_side_reply = 'Antwort meist innerhalb von 1–2 Werktagen.'
+      assign t_side_link = 'Zuerst die Produkte ansehen'
+      assign t_f_company = 'Firmenname'
+      assign t_f_person = 'Ansprechpartner'
+      assign t_f_email = 'Geschäftliche E-Mail'
+      assign t_f_phone = 'Telefonnummer'
+      assign t_f_reg = 'Handelsregisternummer'
+      assign t_f_country = 'Land'
+      assign t_f_product = 'Produkt'
+      assign t_f_qty = 'Gewünschte Stückzahl'
+      assign t_f_date = 'Wunschliefertermin'
+      assign t_f_notes = 'Weitere Angaben'
+      assign t_f_notes_ph = 'Zum Beispiel welche Produkte, Stückzahlen, Verpackung oder Lieferorte wichtig sind.'
+      assign t_f_choose = 'Bitte wählen'
+      assign t_f_consent = 'Ich bin damit einverstanden, dass Besjaar mich zu dieser Anfrage kontaktiert.'
+      assign t_f_send = 'Anfrage senden'
+      assign t_f_ok = 'Danke — Ihre Anfrage ist angekommen. Wir melden uns innerhalb von 1–2 Werktagen.'
+      assign t_other = 'Anderes'
+    when 'fr'
+      assign t_kicker = 'COMMANDER EN PROFESSIONNEL'
+      assign t_title_a = 'BESJAAR'
+      assign t_title_b = 'en plus'
+      assign t_title_c = 'grandes quantités.'
+      assign t_intro = 'Pour les revendeurs, installateurs, hôtels, salles de sport et autres organisations. Demandez un devis pour des pommeaux, des filtres ou des ensembles complets.'
+      assign t_cta = 'Demander un devis'
+      assign t_badge_n = '10–500+'
+      assign t_badge_l = 'pièces par demande'
+      assign t_ben_kicker = 'AVANTAGES PROFESSIONNELS'
+      assign t_ben_title = 'Acheter clairement, sans processus compliqué.'
+      assign t_b1t = 'Prix selon le volume'
+      assign t_b1c = 'Un devis adapté au produit, à la quantité et à la livraison souhaitée.'
+      assign t_b2t = 'Facture professionnelle'
+      assign t_b2c = 'Une facturation claire avec vos coordonnées d’entreprise et la TVA.'
+      assign t_b3t = 'Livraison convenue'
+      assign t_b3c = 'Nous convenons du stock, du planning et d’une ou plusieurs adresses.'
+      assign t_b4t = 'Un interlocuteur dédié'
+      assign t_b4c = 'Un contact unique pour le choix, les quantités et les recommandes.'
+      assign t_form_kicker = 'DEMANDER UN DEVIS PROFESSIONNEL'
+      assign t_form_title = 'Dites-nous ce qu’il vous faut.'
+      assign t_form_intro = 'Sans engagement. Nous examinons votre demande et préparons un devis.'
+      assign t_side_kicker = 'DEMANDE DE DEVIS'
+      assign t_side_title = 'Prêt à commander en professionnel ?'
+      assign t_side_copy = 'Remplissez le formulaire ou écrivez-nous directement. C’est plus simple si le produit et la quantité sont déjà connus.'
+      assign t_side_label = 'Vous préférez en parler ?'
+      assign t_side_reply = 'Réponse généralement sous 1 à 2 jours ouvrés.'
+      assign t_side_link = 'Voir d’abord les produits'
+      assign t_f_company = 'Nom de l’entreprise'
+      assign t_f_person = 'Personne de contact'
+      assign t_f_email = 'E-mail professionnel'
+      assign t_f_phone = 'Téléphone'
+      assign t_f_reg = 'Numéro d’entreprise'
+      assign t_f_country = 'Pays'
+      assign t_f_product = 'Produit'
+      assign t_f_qty = 'Quantité souhaitée'
+      assign t_f_date = 'Date de livraison souhaitée'
+      assign t_f_notes = 'Précisions'
+      assign t_f_notes_ph = 'Par exemple les produits, quantités, emballages ou lieux de livraison importants.'
+      assign t_f_choose = 'Sélectionnez'
+      assign t_f_consent = 'J’accepte que Besjaar me contacte au sujet de cette demande professionnelle.'
+      assign t_f_send = 'Envoyer la demande'
+      assign t_f_ok = 'Merci — votre demande est bien reçue. Nous revenons vers vous sous 1 à 2 jours ouvrés.'
+      assign t_other = 'Autre'
+    else
+      assign t_kicker = 'ZAKELIJK BESTELLEN BIJ BESJAAR'
+      assign t_title_a = 'BESJAAR'
+      assign t_title_b = 'in grotere'
+      assign t_title_c = 'aantallen.'
+      assign t_intro = 'Voor retailers, installateurs, hotels, sportscholen en andere organisaties. Vraag een offerte aan voor douchekoppen, filters of complete sets.'
+      assign t_cta = 'Vraag een offerte aan'
+      assign t_badge_n = '10–500+'
+      assign t_badge_l = 'stuks per aanvraag'
+      assign t_ben_kicker = 'ZAKELIJKE VOORDELEN'
+      assign t_ben_title = 'Duidelijk inkopen, zonder ingewikkeld proces.'
+      assign t_b1t = 'Prijs op volume'
+      assign t_b1c = 'Een voorstel dat past bij het product, het aantal en de gewenste levering.'
+      assign t_b2t = 'Zakelijke factuur'
+      assign t_b2c = 'Heldere facturatie met je bedrijfsgegevens en btw-informatie.'
+      assign t_b3t = 'Levering afstemmen'
+      assign t_b3c = 'We bespreken voorraad, planning en één of meerdere afleverlocaties.'
+      assign t_b4t = 'Persoonlijk contact'
+      assign t_b4c = 'Één aanspreekpunt voor productkeuze, aantallen en vervolgbestellingen.'
+      assign t_form_kicker = 'VRAAG EEN ZAKELIJKE OFFERTE AAN'
+      assign t_form_title = 'Vertel ons wat je nodig hebt.'
+      assign t_form_intro = 'Je zit nog nergens aan vast. We bekijken je aanvraag en maken een voorstel op maat.'
+      assign t_side_kicker = 'OFFERTE AANVRAGEN'
+      assign t_side_title = 'Klaar om zakelijk te bestellen?'
+      assign t_side_copy = 'Vul het formulier in of mail rechtstreeks. Voor een goede eerste prijsindicatie helpt het als je product en aantal al weet.'
+      assign t_side_label = 'Liever even overleggen?'
+      assign t_side_reply = 'Reactie meestal binnen 1–2 werkdagen.'
+      assign t_side_link = 'Bekijk eerst de producten'
+      assign t_f_company = 'Bedrijfsnaam'
+      assign t_f_person = 'Contactpersoon'
+      assign t_f_email = 'Zakelijk e-mailadres'
+      assign t_f_phone = 'Telefoonnummer'
+      assign t_f_reg = 'KVK-nummer'
+      assign t_f_country = 'Land'
+      assign t_f_product = 'Product'
+      assign t_f_qty = 'Gewenst aantal'
+      assign t_f_date = 'Gewenste leverdatum'
+      assign t_f_notes = 'Toelichting'
+      assign t_f_notes_ph = 'Vertel ons bijvoorbeeld welke producten, aantallen, verpakkingswensen of leverlocaties belangrijk zijn.'
+      assign t_f_choose = 'Maak een keuze'
+      assign t_f_consent = 'Ik ga ermee akkoord dat Besjaar contact met mij opneemt over deze zakelijke aanvraag.'
+      assign t_f_send = 'Verstuur aanvraag'
+      assign t_f_ok = 'Bedankt — je aanvraag is binnen. We reageren binnen 1–2 werkdagen.'
+      assign t_other = 'Anders'
+  endcase
+
+  assign bj_email = section.settings.contact_email | default: shop.email
+  assign bj_hero_image = section.settings.hero_image
+%}
+<section class="bj-b2b" id="bj-b2b">
+  <div class="ind-shell">
+
+    <div class="bj-b2b__hero">
+      <div class="bj-b2b__hero-copy">
+        <span class="bj-b2b__kicker">{{ t_kicker | escape }}</span>
+        <h1 class="bj-b2b__title"><em>{{ t_title_a | escape }}</em> <span>{{ t_title_b | escape }}</span> <span>{{ t_title_c | escape }}</span></h1>
+        <p class="bj-b2b__intro">{{ t_intro | escape }}</p>
+        <div class="bj-b2b__hero-actions">
+          <a class="bj-b2b__btn" href="#bj-b2b-form">{{ t_cta | escape }} <span aria-hidden="true">→</span></a>
+          <a class="bj-b2b__mail" href="mailto:{{ bj_email }}">{{ bj_email }}</a>
+        </div>
+      </div>
+      <div class="bj-b2b__hero-visual">
+        {% if bj_hero_image != blank %}
+          <img src="{{ bj_hero_image | image_url: width: 1200 }}" alt="{{ bj_hero_image.alt | default: 'Besjaar' | escape }}" width="1200" height="900" loading="eager">
+        {% else %}
+          <img src="{{ 'besjaar-premium-hero-pressure-v3.webp' | asset_url }}" alt="Besjaar" loading="eager">
+        {% endif %}
+        <div class="bj-b2b__badge"><strong>{{ t_badge_n | escape }}</strong><small>{{ t_badge_l | escape }}</small></div>
+      </div>
+    </div>
+
+    <div class="bj-b2b__benefits">
+      <div class="bj-b2b__benefits-head">
+        <span class="bj-b2b__kicker">{{ t_ben_kicker | escape }}</span>
+        <h2>{{ t_ben_title | escape }}</h2>
+      </div>
+      <div class="bj-b2b__cards">
+        <article><span>01</span><h3>{{ t_b1t | escape }}</h3><p>{{ t_b1c | escape }}</p></article>
+        <article><span>02</span><h3>{{ t_b2t | escape }}</h3><p>{{ t_b2c | escape }}</p></article>
+        <article><span>03</span><h3>{{ t_b3t | escape }}</h3><p>{{ t_b3c | escape }}</p></article>
+        <article><span>04</span><h3>{{ t_b4t | escape }}</h3><p>{{ t_b4c | escape }}</p></article>
+      </div>
+    </div>
+
+    <div class="bj-b2b__quote" id="bj-b2b-form">
+      <aside class="bj-b2b__aside">
+        <span class="bj-b2b__kicker">{{ t_side_kicker | escape }}</span>
+        <h2>{{ t_side_title | escape }}</h2>
+        <p>{{ t_side_copy | escape }}</p>
+        <div class="bj-b2b__mailcard">
+          <small>{{ t_side_label | escape }}</small>
+          <a href="mailto:{{ bj_email }}">{{ bj_email }}</a>
+          <small>{{ t_side_reply | escape }}</small>
+        </div>
+        <a class="bj-b2b__link" href="{% render 'shower-store-url' %}">{{ t_side_link | escape }} <span aria-hidden="true">→</span></a>
+      </aside>
+
+      <div class="bj-b2b__formcard">
+        <span class="bj-b2b__kicker">{{ t_form_kicker | escape }}</span>
+        <h2>{{ t_form_title | escape }}</h2>
+        <p class="bj-b2b__formintro">{{ t_form_intro | escape }}</p>
+
+        {% form 'contact', id: 'bj-b2b-contact' %}
+          {% if form.posted_successfully? %}
+            <p class="bj-b2b__ok" role="status">{{ t_f_ok | escape }}</p>
+          {% else %}
+            {% if form.errors %}
+              <p class="bj-b2b__err" role="alert">{{ form.errors | default_errors }}</p>
+            {% endif %}
+            <input type="hidden" name="contact[Aanvraagtype]" value="Zakelijke offerte">
+            <div class="bj-b2b__grid">
+              <label>{{ t_f_company | escape }} *<input type="text" name="contact[Bedrijfsnaam]" required></label>
+              <label>{{ t_f_person | escape }} *<input type="text" name="contact[Contactpersoon]" required></label>
+              <label>{{ t_f_email | escape }} *<input type="email" name="contact[email]" required autocomplete="email"></label>
+              <label>{{ t_f_phone | escape }}<input type="tel" name="contact[Telefoonnummer]" autocomplete="tel"></label>
+              <label>{{ t_f_reg | escape }}<input type="text" name="contact[KVK-nummer]"></label>
+              <label>{{ t_f_country | escape }}
+                <select name="contact[Land]">
+                  <option>Nederland</option><option>België</option><option>Deutschland</option><option>France</option><option>{{ t_other | escape }}</option>
+                </select>
+              </label>
+              <label>{{ t_f_product | escape }}
+                <select name="contact[Product]">
+                  <option value="">{{ t_f_choose | escape }}</option>
+                  {% for p in collections.all.products limit: 25 %}<option>{{ p.title | escape }}</option>{% endfor %}
+                </select>
+              </label>
+              <label>{{ t_f_qty | escape }}
+                <select name="contact[Gewenst aantal]">
+                  <option value="">{{ t_f_choose | escape }}</option>
+                  <option>10–25</option><option>25–50</option><option>50–100</option><option>100–250</option><option>250–500</option><option>500+</option>
+                </select>
+              </label>
+              <label class="bj-b2b__wide">{{ t_f_date | escape }}<input type="date" name="contact[Gewenste leverdatum]"></label>
+              <label class="bj-b2b__wide">{{ t_f_notes | escape }}<textarea name="contact[body]" rows="4" placeholder="{{ t_f_notes_ph | escape }}"></textarea></label>
+            </div>
+            <label class="bj-b2b__consent"><input type="checkbox" required> <span>{{ t_f_consent | escape }}</span></label>
+            <button type="submit" class="bj-b2b__submit">{{ t_f_send | escape }} <span aria-hidden="true">→</span></button>
+          {% endif %}
+        {% endform %}
+      </div>
+    </div>
+
+  </div>
+</section>
+<style>
+  .bj-b2b{padding:clamp(28px,6vw,60px) 0 clamp(40px,8vw,80px);background:var(--bj-ice-50,#F6F9FC);color:var(--bj-ink,#11110E)}
+  .bj-b2b__kicker{display:inline-flex;align-items:center;margin:0 0 12px;padding:6px 12px;border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:999px;background:var(--bj-ice-100,#EEF6FB);color:var(--bj-blue,#2F628F);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;line-height:1}
+  .bj-b2b h2{margin:0 0 12px;color:var(--bj-navy-deep,#0F2947);font-size:clamp(1.5rem,4.4vw,2.1rem);font-weight:600;line-height:1.14;letter-spacing:-.025em}
+  .bj-b2b p{color:var(--bj-muted,#49627D);line-height:1.6}
+  .bj-b2b__hero{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:stretch}
+  .bj-b2b__hero-copy{padding:clamp(24px,5vw,40px);border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:22px;background:var(--bj-ice-100,#EEF6FB)}
+  .bj-b2b__title{margin:0 0 14px;color:var(--bj-navy-deep,#0F2947);font-size:clamp(2.1rem,8vw,3.2rem);font-weight:700;line-height:1.02;letter-spacing:-.03em}
+  .bj-b2b__title em{font-style:normal;display:block}
+  .bj-b2b__title span{display:block;font-weight:600}
+  .bj-b2b__intro{margin:0;max-width:46ch;font-size:1rem}
+  .bj-b2b__hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:22px}
+  .bj-b2b__btn{display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:0 22px;border-radius:999px;background:var(--bj-navy-deep,#0F2947);color:#FFFFFF;font-size:.95rem;font-weight:600;text-decoration:none}
+  .bj-b2b__btn:hover{background:var(--bj-navy,#153252)}
+  .bj-b2b__mail{color:var(--bj-navy,#153252);font-size:.85rem;font-weight:600;text-decoration:none;border-bottom:1px solid var(--bj-line,rgba(21,50,82,.25));padding-bottom:2px}
+  .bj-b2b__hero-visual{position:relative;border-radius:22px;overflow:hidden;background:#FFFFFF;border:1px solid var(--bj-line,rgba(21,50,82,.12))}
+  .bj-b2b__hero-visual img{width:100%;height:100%;object-fit:cover;display:block;aspect-ratio:4/3}
+  .bj-b2b__badge{position:absolute;left:16px;bottom:16px;display:flex;flex-direction:column;gap:2px;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.95);box-shadow:0 10px 26px rgba(15,41,71,.14)}
+  .bj-b2b__badge strong{color:var(--bj-navy-deep,#0F2947);font-size:1.15rem;font-weight:700;line-height:1}
+  .bj-b2b__badge small{color:var(--bj-muted,#49627D);font-size:.7rem}
+  .bj-b2b__benefits{margin-top:clamp(36px,7vw,64px)}
+  .bj-b2b__benefits-head{max-width:40ch;margin:0 0 20px}
+  .bj-b2b__cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .bj-b2b__cards article{padding:18px;border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:16px;background:#FFFFFF}
+  .bj-b2b__cards span{display:block;margin:0 0 22px;color:var(--bj-muted,#49627D);font-size:.68rem;font-weight:700;letter-spacing:.1em}
+  .bj-b2b__cards h3{margin:0 0 6px;color:var(--bj-navy-deep,#0F2947);font-size:1rem;font-weight:600;letter-spacing:-.015em}
+  .bj-b2b__cards p{margin:0;font-size:.86rem}
+  .bj-b2b__quote{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:clamp(36px,7vw,64px)}
+  .bj-b2b__aside h2{max-width:16ch}
+  .bj-b2b__aside p{max-width:44ch;font-size:.95rem}
+  .bj-b2b__mailcard{display:flex;flex-direction:column;gap:6px;margin:20px 0;padding:16px 18px;border-radius:16px;background:var(--bj-ice-100,#EEF6FB)}
+  .bj-b2b__mailcard small{color:var(--bj-muted,#49627D);font-size:.76rem}
+  .bj-b2b__mailcard a{color:var(--bj-navy-deep,#0F2947);font-size:1.05rem;font-weight:700;text-decoration:none}
+  .bj-b2b__link{display:inline-flex;align-items:center;gap:6px;color:var(--bj-blue,#2F628F);font-size:.86rem;font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:3px}
+  .bj-b2b__formcard{padding:clamp(20px,4vw,32px);border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:22px;background:#FFFFFF;box-shadow:0 18px 44px rgba(15,41,71,.07)}
+  .bj-b2b__formintro{margin:0 0 20px;padding:0 0 18px;border-bottom:1px solid var(--bj-line,rgba(21,50,82,.12));font-size:.92rem}
+  .bj-b2b__grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+  .bj-b2b__grid label,.bj-b2b__consent{display:flex;flex-direction:column;gap:6px;color:var(--bj-navy,#153252);font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .bj-b2b__grid input,.bj-b2b__grid select,.bj-b2b__grid textarea{width:100%;box-sizing:border-box;min-height:46px;padding:11px 13px;border:1px solid var(--bj-line,rgba(21,50,82,.18));border-radius:10px;background:#FFFFFF;color:var(--bj-ink,#11110E);font-family:inherit;font-size:.95rem;font-weight:400;letter-spacing:0;text-transform:none}
+  .bj-b2b__grid textarea{min-height:110px;resize:vertical}
+  .bj-b2b__grid input:focus-visible,.bj-b2b__grid select:focus-visible,.bj-b2b__grid textarea:focus-visible{outline:2px solid var(--bj-blue,#2F628F);outline-offset:1px;border-color:var(--bj-blue,#2F628F)}
+  .bj-b2b__consent{flex-direction:row;align-items:flex-start;gap:10px;margin:18px 0 0;font-size:.78rem;font-weight:400;letter-spacing:0;text-transform:none;color:var(--bj-muted,#49627D);line-height:1.5}
+  .bj-b2b__consent input{margin-top:3px;width:16px;height:16px;flex:0 0 auto}
+  .bj-b2b__submit{display:inline-flex;align-items:center;gap:8px;min-height:52px;margin-top:20px;padding:0 24px;border:0;border-radius:999px;background:var(--bj-navy-deep,#0F2947);color:#FFFFFF;font-family:inherit;font-size:.92rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+  .bj-b2b__submit:hover{background:var(--bj-navy,#153252)}
+  .bj-b2b__ok{padding:16px 18px;border-radius:14px;background:rgba(25,112,74,.09);color:var(--bj-success,#19704A);font-weight:600}
+  .bj-b2b__err{padding:14px 16px;border-radius:12px;background:rgba(166,61,61,.08);color:var(--bj-danger,#A63D3D);font-size:.9rem}
+  @media (min-width:760px){
+    .bj-b2b__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .bj-b2b__wide{grid-column:1 / -1}
+  }
+  @media (min-width:901px){
+    .bj-b2b__hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
+    .bj-b2b__cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .bj-b2b__benefits-head{margin-bottom:26px}
+    .bj-b2b__quote{grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:40px;align-items:start}
+  }
+</style>
+{% schema %}
+{
+  "name": "Zakelijk / B2B",
+  "settings": [
+    {"type": "paragraph", "content": "Aanvragen komen binnen als e-mail op het contactadres van de winkel (Instellingen → Winkelgegevens). Er is geen app nodig."},
+    {"type": "text", "id": "contact_email", "label": "Zichtbaar e-mailadres", "info": "Alleen wat op de pagina staat. Leeg = het e-mailadres van de winkel."},
+    {"type": "image_picker", "id": "hero_image", "label": "Hero-afbeelding"}
+  ],
+  "presets": [{"name": "Zakelijk / B2B"}]
+}
+{% endschema %}

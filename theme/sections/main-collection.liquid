@@ -1,0 +1,162 @@
+{%- comment -%}Besjaar 11.6: self-load the catalog CSS — theme.liquid no longer ships nova-catalog.css on collection pages because the live template (besjaar-collection-grid) doesn't use it.{%- endcomment -%}
+{{ 'nova-catalog.css' | asset_url | stylesheet_tag }}
+{% liquid
+  capture nova_collection_title
+    render 'localized-collection-title', collection: collection
+  endcapture
+  assign collection_display_title = nova_collection_title | strip
+  if collection.handle == 'besjaar'
+    assign collection_display_title = 'Besjaar'
+  endif
+
+  assign hero_image = collection.image
+  if hero_image == blank and collection.products.first != blank
+    assign hero_image = collection.products.first.featured_image
+  endif
+  assign active_filters = 0
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active_filters = active_filters | plus: 1
+      endif
+    else
+      for value in filter.active_values
+        assign active_filters = active_filters | plus: 1
+      endfor
+    endif
+  endfor
+%}
+
+<section class="nova-section nova-collection-page">
+  <div class="nova-shell">
+    <nav class="nova-breadcrumbs" aria-label="{{ 'nova.accessibility.breadcrumbs' | t | escape }}" data-reveal>
+      <a href="{{ routes.root_url }}">{{ 'nova.collection.home' | t }}</a><span>/</span><a href="{{ routes.collections_url }}">{{ 'nova.collection.collections' | t }}</a><span>/</span><strong translate="no"{% if collection.handle == 'besjaar' %} class="notranslate" data-nova-brand{% endif %}>{{ collection_display_title }}</strong>
+    </nav>
+
+    <header class="nova-collection-hero" data-reveal>
+      <div class="nova-collection-hero__copy">
+        <p class="nova-kicker">{{ 'nova.catalog.collection' | t }} / {% if collection.products_count < 10 %}0{% endif %}{{ collection.products_count }}</p>
+        <h1 class="nova-title{% if collection.handle == 'besjaar' %} notranslate{% endif %}"{% if collection.handle == 'besjaar' %} translate="no" data-nova-brand{% endif %}>{{ collection_display_title }}</h1>
+        {% capture nova_collection_description %}{% render 'localized-collection-description', collection: collection %}{% endcapture %}{% assign nova_collection_description = nova_collection_description | strip %}{% if nova_collection_description != blank %}<div class="nova-copy">{{ nova_collection_description | truncatewords: 42 }}</div>{% endif %}
+        <div class="nova-collection-hero__meta">
+          <span>{{ 'nova.collection.products_count' | t: count: collection.products_count }}</span>
+          {% if collection.products_count > 0 %}<span>{{ 'nova.collection.curated_catalog' | t }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="nova-collection-hero__visual{% if hero_image == blank %} is-fallback{% endif %}" aria-hidden="true">
+        {% if hero_image != blank %}
+          {{ hero_image | image_url: width: 1000 | image_tag: loading: 'eager', widths: '480,720,1000', sizes: '(max-width: 900px) 100vw, 36vw', alt: '' }}
+        {% else %}
+          <span class="nova-collection-hero__orb"></span>
+        {% endif %}
+      </div>
+    </header>
+
+    {% paginate collection.products by section.settings.products_per_page %}
+      <div class="nova-catalog-toolbar" data-reveal>
+        <div class="nova-catalog-toolbar__left">
+          <strong>{{ 'nova.collection.products' | t }}</strong>
+          <span>{{ paginate.items }} {{ 'nova.collection.results' | t }}</span>
+        </div>
+        <div class="nova-catalog-toolbar__actions">
+          {% if section.settings.show_filters and collection.filters.size > 0 %}
+            <button class="nova-filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="NovaFilters-{{ section.id }}">
+              {{ 'nova.collection.filters' | t }}{% if active_filters > 0 %}<span>{{ active_filters }}</span>{% endif %}
+            </button>
+          {% endif %}
+          <form method="get" class="nova-sort-form">
+            <label class="nova-label" for="SortBy-{{ section.id }}">{{ 'nova.collection.sort' | t }}</label>
+            <select class="nova-select" id="SortBy-{{ section.id }}" name="sort_by" onchange="this.form.submit()">
+              {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+              {% for option in collection.sort_options %}<option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>{% endfor %}
+            </select>
+          </form>
+        </div>
+      </div>
+
+      {% if section.settings.show_filters and collection.filters.size > 0 %}
+        <form class="nova-filters" id="NovaFilters-{{ section.id }}" method="get" data-filter-panel hidden>
+          {% if collection.sort_by != blank %}<input type="hidden" name="sort_by" value="{{ collection.sort_by }}">{% endif %}
+          <div class="nova-filters__head"><strong>{{ 'nova.collection.refine' | t }}</strong><a href="{% render 'localized-internal-url', url: collection.url %}">{{ 'nova.collection.clear_all' | t }}</a></div>
+          <div class="nova-filters__grid">
+            {% for filter in collection.filters %}
+              <details class="nova-filter-group" open>
+                <summary>{{ filter.label }}<span aria-hidden="true">+</span></summary>
+                <div class="nova-filter-group__body">
+                  {% case filter.type %}
+                    {% when 'boolean', 'list' %}
+                      {% for value in filter.values %}
+                        <label class="nova-filter-option{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                          <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value }}" {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                          <span>{{ value.label }}</span><small>{{ value.count }}</small>
+                        </label>
+                      {% endfor %}
+                    {% when 'price_range' %}
+                      <div class="nova-price-filter">
+                        <label><span>{{ 'nova.collection.from' | t }}</span><input class="nova-input" name="{{ filter.min_value.param_name }}" inputmode="decimal" value="{% render 'price-filter-input-value', value: filter.min_value.value %}" placeholder="0"></label>
+                        <label><span>{{ 'nova.collection.to' | t }}</span><input class="nova-input" name="{{ filter.max_value.param_name }}" inputmode="decimal" value="{% render 'price-filter-input-value', value: filter.max_value.value %}" placeholder="{% render 'price-filter-input-value', value: filter.range_max %}"></label>
+                      </div>
+                  {% endcase %}
+                </div>
+              </details>
+            {% endfor %}
+          </div>
+          <div class="nova-filters__actions"><button class="nova-button nova-button--primary" type="submit">{{ 'nova.collection.apply_filters' | t }}</button><button class="nova-button nova-button--ghost" type="button" data-filter-close>{{ 'nova.collection.close' | t }}</button></div>
+        </form>
+        {% if settings.mobile_filter_sheet %}<button class="nova-filter-backdrop" type="button" data-filter-backdrop aria-label="{{ 'nova.mobile.close_filters' | t | escape }}" hidden></button>{% endif %}
+      {% endif %}
+
+      {% if collection.products_count > 0 %}
+        <div class="nova-catalog-products">
+          {% if section.settings.prioritize_available %}
+            {% for product in collection.products %}{% if product.available %}{% render 'product-card', product: product %}{% endif %}{% endfor %}
+            {% if section.settings.show_sold_out %}{% for product in collection.products %}{% unless product.available %}{% render 'product-card', product: product %}{% endunless %}{% endfor %}{% endif %}
+          {% else %}
+            {% for product in collection.products %}{% if section.settings.show_sold_out or product.available %}{% render 'product-card', product: product %}{% endif %}{% endfor %}
+          {% endif %}
+        </div>
+        {% if paginate.pages > 1 %}<nav class="nova-pagination" aria-label="Pagination">{% if paginate.previous %}<a href="{% render 'localized-internal-url', url: paginate.previous.url %}">←</a>{% endif %}{% for part in paginate.parts %}{% if part.is_link %}<a href="{% render 'localized-internal-url', url: part.url %}">{{ part.title }}</a>{% else %}<span {% if part.title == paginate.current_page %}class="current"{% endif %}>{{ part.title }}</span>{% endif %}{% endfor %}{% if paginate.next %}<a href="{% render 'localized-internal-url', url: paginate.next.url %}">→</a>{% endif %}</nav>{% endif %}
+      {% else %}<div class="nova-empty">{{ 'nova.collection.no_products' | t }}</div>{% endif %}
+    {% endpaginate %}
+  </div>
+</section>
+
+<script>
+  (() => {
+    const section = document.currentScript.closest('.shopify-section') || document;
+    const toggle = section.querySelector('[data-filter-toggle]');
+    const panel = section.querySelector('[data-filter-panel]');
+    const close = section.querySelector('[data-filter-close]');
+    const backdrop = section.querySelector('[data-filter-backdrop]');
+    if (!toggle || !panel) return;
+    const mobileSheet = () => document.body.classList.contains('nova-mobile-filter-enabled') && window.matchMedia('(max-width: 700px)').matches;
+    const setOpen = (open) => {
+      /* Besjaar 11.6: return focus to the toggle when the sheet closes while
+         focus is inside it (WCAG 2.4.3), and honor prefers-reduced-motion. */
+      const hadFocusInside = !open && panel.contains(document.activeElement);
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (backdrop) backdrop.hidden = !open;
+      document.documentElement.classList.toggle('nova-filter-sheet-open', Boolean(open && mobileSheet()));
+      if (open && !mobileSheet()) panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+      if (open && mobileSheet()) window.setTimeout(() => panel.querySelector('input,select,button,a')?.focus(), 30);
+      if (hadFocusInside) toggle.focus();
+    };
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    if (close) close.addEventListener('click', () => setOpen(false));
+    if (backdrop) backdrop.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Main collection",
+  "settings": [
+    {"type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 32, "step": 4, "default": 20},
+    {"type": "checkbox", "id": "show_filters", "label": "Show storefront filters", "default": true},
+    {"type": "checkbox", "id": "prioritize_available", "label": "Show available products first", "default": true},
+    {"type": "checkbox", "id": "show_sold_out", "label": "Show sold-out products after available products", "default": true}
+  ]
+}
+{% endschema %}

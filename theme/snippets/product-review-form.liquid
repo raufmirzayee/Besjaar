@@ -1,0 +1,90 @@
+{%- liquid
+  comment
+    Write-a-review form for a single product.
+
+    Liquid cannot persist visitor input, so this posts through Shopify's native
+    contact form: the review is emailed to the store's contact address with the
+    product, rating and body attached. Publishing a submitted review means adding
+    it to the product's custom.reviews metafield (see snippets/product-reviews-list).
+
+    Installing a review app instead makes submission and publishing automatic;
+    this form is the zero-app path and both can run side by side.
+  endcomment
+  assign form_product = form_product | default: product
+  assign review_form_id = 'BesjaarReviewForm-' | append: form_product.id
+-%}
+<div class="besjaar-review-form" id="{{ review_form_id }}-wrap">
+  <details class="besjaar-review-form__disclosure" data-review-disclosure>
+    <summary class="besjaar-review-form__toggle">
+      <span>{{ 'nova.reviews.write_cta' | t }}</span>
+      <span class="besjaar-review-form__chevron" aria-hidden="true">⌄</span>
+    </summary>
+
+    <div class="besjaar-review-form__body">
+      <p class="besjaar-review-form__intro">{{ 'nova.reviews.write_intro' | t }}</p>
+
+      {%- form 'contact', id: review_form_id, class: 'besjaar-review-form__form' -%}
+        {%- if form.posted_successfully? -%}
+          <div class="nova-form-message nova-form-message--success" role="status">{{ 'nova.reviews.write_success' | t }}</div>
+        {%- endif -%}
+        {%- if form.errors -%}
+          <div id="{{ review_form_id }}-errors" class="nova-form-message nova-form-message--error" role="alert" aria-live="assertive">
+            <strong>{{ 'nova.forms.error_heading' | t }}</strong>
+            {{ form.errors | default_errors }}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Identifies which product the review belongs to in the email. {%- endcomment -%}
+        <input type="hidden" name="contact[Product]" value="{{ form_product.title | escape }}">
+        <input type="hidden" name="contact[Product URL]" value="{{ shop.url }}{{ form_product.url }}">
+        <input type="hidden" name="contact[Submission type]" value="Product review">
+
+        <fieldset class="besjaar-review-form__rating">
+          <legend class="nova-label">{{ 'nova.reviews.form_rating' | t }}</legend>
+          <div class="besjaar-stars-input">
+            {%- for star in (1..5) reversed -%}
+              <input type="radio" id="{{ review_form_id }}-star{{ star }}" name="contact[Rating]" value="{{ star }} / 5" required aria-required="true">
+              <label for="{{ review_form_id }}-star{{ star }}">
+                <span aria-hidden="true">★</span>
+                <span class="nova-visually-hidden">{{ 'nova.reviews.form_stars' | t: count: star }}</span>
+              </label>
+            {%- endfor -%}
+          </div>
+        </fieldset>
+
+        <div class="besjaar-review-form__grid">
+          <div>
+            <label class="nova-label" for="{{ review_form_id }}-name">{{ 'nova.contact.name' | t }}</label>
+            <input class="nova-input" id="{{ review_form_id }}-name" type="text" name="contact[name]" autocomplete="name" required aria-required="true" value="{{ form.name | default: customer.name | escape }}">
+          </div>
+          <div>
+            <label class="nova-label" for="{{ review_form_id }}-email">{{ 'nova.contact.email' | t }}</label>
+            <input class="nova-input" id="{{ review_form_id }}-email" type="email" name="contact[email]" autocomplete="email" required aria-required="true"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="{{ review_form_id }}-errors"{% endif %} value="{{ form.email | default: customer.email | escape }}">
+          </div>
+        </div>
+
+        <div>
+          <label class="nova-label" for="{{ review_form_id }}-title">{{ 'nova.reviews.form_title' | t }}</label>
+          <input class="nova-input" id="{{ review_form_id }}-title" type="text" name="contact[Review title]" maxlength="80" placeholder="{{ 'nova.reviews.form_title_placeholder' | t | escape }}">
+        </div>
+
+        <div>
+          <label class="nova-label" for="{{ review_form_id }}-body">{{ 'nova.reviews.form_body' | t }}</label>
+          <textarea class="nova-textarea" id="{{ review_form_id }}-body" name="contact[body]" rows="5" minlength="10" maxlength="1200" required aria-required="true" aria-describedby="{{ review_form_id }}-counter{% if form.errors contains 'body' %} {{ review_form_id }}-errors{% endif %}"{% if form.errors contains 'body' %} aria-invalid="true"{% endif %} data-review-body placeholder="{{ 'nova.reviews.form_body_placeholder' | t | escape }}">{{ form.body | escape }}</textarea>
+          <span class="besjaar-review-form__counter" id="{{ review_form_id }}-counter" data-review-counter aria-live="polite">0 / 1200</span>
+        </div>
+
+        {%- comment -%} Honeypot: hidden from people, tempting to bots. {%- endcomment -%}
+        <div class="besjaar-review-form__hp" aria-hidden="true">
+          <label for="{{ review_form_id }}-hp">{{ 'nova.reviews.form_hp' | t }}</label>
+          <input id="{{ review_form_id }}-hp" type="text" name="contact[Company website]" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="besjaar-review-form__actions">
+          <button type="submit" class="besjaar-review-form__submit" data-review-submit>{{ 'nova.reviews.form_submit' | t }}</button>
+          <p class="besjaar-review-form__note">{{ 'nova.reviews.form_note' | t }}</p>
+        </div>
+      {%- endform -%}
+    </div>
+  </details>
+</div>

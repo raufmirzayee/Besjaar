@@ -1,0 +1,14 @@
+{%- liquid
+  assign nova_item = product
+  assign nova_hose = false
+  if nova_item != blank
+    if nova_item.metafields.custom.hose_included != blank
+      assign nova_hose = nova_item.metafields.custom.hose_included.value
+    else
+      assign nova_title = nova_item.title | downcase
+      if nova_title contains 'met slang' or nova_title contains 'with hose' or nova_title contains 'incl. hose' or nova_title contains 'incl hose' or nova_title contains 'slang inbegrepen'
+        assign nova_hose = true
+      endif
+    endif
+  endif
+-%}{{- nova_hose -}}

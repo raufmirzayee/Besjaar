@@ -1,0 +1,323 @@
+/* Nova 5.0 — account */
+.nova-form-grid__wide{grid-column:1/-1;}
+.nova-address-add>summary::-webkit-details-marker,.nova-address-card summary::-webkit-details-marker,.nova-recovery>summary::-webkit-details-marker{display:none;}
+.nova-check{display:flex;align-items:center;gap:9px;color:var(--nova-muted);font-size:.76rem;}
+.nova-address-form--inline .nova-form-grid__wide{grid-column:auto;}
+.nova-auth-fields{display:grid;gap:13px;}
+.nova-recovery{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);}
+.nova-recovery>summary{cursor:pointer;color:var(--nova-muted);font-size:.76rem;}
+.nova-recovery form{display:grid;gap:10px;margin-top:12px;}
+@media (max-width:700px){.nova-form-grid__wide{grid-column:auto;}}
+.nova-check{color:var(--nova-teal);}
+.nova-account-v41{--acct-ink:#1d1d1f;--acct-muted:#6e6e73;--acct-line:#e7e7e8;--acct-soft:#f5f5f7;--acct-teal:#1f3d34;--acct-sage:#789a56;color:var(--acct-ink);}
+.nova-account-v41__identity h1,.nova-account-v41__subhero h1{margin:.2rem 0 .5rem;font-size:clamp(2.65rem,5.3vw,5.6rem);line-height:.95;letter-spacing:-.065em;color:var(--acct-ink);}
+.nova-account-v41__identity p:last-child,.nova-account-v41__subhero>div>p:last-child{margin:0;max-width:720px;color:var(--acct-muted);font-size:clamp(.93rem,1.2vw,1.08rem);line-height:1.6;}
+.nova-account-v41__nav{position:sticky;top:64px;z-index:50;display:flex;gap:4px;overflow-x:auto;padding:11px 0;margin:0 0 34px;background:rgba(245,245,247,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--acct-line);scrollbar-width:none;}
+.nova-account-v41__nav::-webkit-scrollbar{display:none;}
+.nova-account-v41__nav a,.nova-account-v41__nav button{border:0;background:transparent;color:#6d6d72;border-radius:999px;padding:9px 13px;font:inherit;font-size:.76rem;font-weight:700;white-space:nowrap;cursor:pointer;}
+.nova-account-v41__nav a:hover,.nova-account-v41__nav button:hover,.nova-account-v41__nav .is-active{background:#fff;color:#1d1d1f;box-shadow:0 1px 0 rgba(0,0,0,.03),0 5px 18px rgba(0,0,0,.045);}
+.nova-account-v41__empty{min-height:220px;padding:34px;border:1px solid var(--acct-line);border-radius:28px;background:#fff;display:flex;align-items:center;gap:22px;box-shadow:0 14px 44px rgba(31,40,34,.035);}
+.nova-account-v41__empty-icon{width:58px;height:58px;flex:0 0 58px;border-radius:50%;background:#f2f5f1;color:#577367;display:grid;place-items:center;}
+.nova-account-v41__empty-icon svg{width:24px;height:24px;}
+.nova-account-v41__empty h2,.nova-account-v41__empty h3{margin:0 0 .4rem;color:#252527;}
+.nova-account-v41__empty p{margin:0;color:#77777c;max-width:560px;}
+.nova-account-v41__subhero{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;padding:26px 0 28px;border-bottom:1px solid var(--acct-line);}
+.nova-address-v41__toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:8px 0 28px;}
+.nova-address-v41__toolbar>div{display:grid;gap:4px;}
+.nova-address-v41__toolbar strong{font-size:1rem;}
+.nova-address-v41__toolbar span{color:#848489;font-size:.72rem;}
+.nova-address-v41__add{position:relative;}
+.nova-address-v41__add>summary,.nova-address-v41__edit>summary{list-style:none;cursor:pointer;}
+.nova-address-v41__add>summary::-webkit-details-marker,.nova-address-v41__edit>summary::-webkit-details-marker{display:none;}
+.nova-address-v41__form-panel{margin-top:12px;padding:28px;border:1px solid var(--acct-line);border-radius:26px;background:#fff;box-shadow:0 22px 65px rgba(31,40,34,.09);}
+.nova-address-v41__add>.nova-address-v41__form-panel{position:absolute;z-index:70;right:0;width:min(760px,calc(100vw - 28px));}
+.nova-address-v41__form-head h2{margin:.3rem 0 1.4rem;font-size:1.65rem;letter-spacing:-.04em;}
+.nova-address-v41__form-panel form{display:grid;gap:15px;}
+.nova-address-v41__form-panel--inline{position:static!important;width:auto!important;box-shadow:none;margin-top:18px;background:#f8f8f8;}
+.nova-address-v41__default{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:20px;align-items:center;padding:26px;border:1px solid #dce5da;border-radius:28px;background:linear-gradient(145deg,#f4f8f2,#fff);box-shadow:0 15px 45px rgba(41,57,46,.045);margin-bottom:14px;}
+.nova-address-v41__default-mark{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#1f3d34;border:1px solid #e0e7de;font-size:1.1rem;}
+.nova-address-v41__default-copy{display:grid;grid-template-columns:minmax(180px,.65fr) minmax(0,1fr);gap:28px;align-items:start;}
+.nova-address-v41__default-copy span,.nova-address-v41__card-top span{display:block;color:#768179;font-size:.63rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.nova-address-v41__default-copy h2{margin:.35rem 0 0;font-size:1.25rem;}
+.nova-address-v41__formatted{color:#72777a;font-size:.78rem;line-height:1.6;}
+.nova-address-v41__formatted p{margin:.12rem 0;}
+.nova-address-v41__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.nova-address-v41__card{padding:24px;border-radius:24px;border:1px solid var(--acct-line);background:#fff;min-height:245px;display:flex;flex-direction:column;box-shadow:0 12px 35px rgba(31,40,34,.035);}
+.nova-address-v41__card-top{display:flex;align-items:center;justify-content:space-between;}
+.nova-address-v41__card-top strong{color:#c4c5c6;font-size:.7rem;}
+.nova-address-v41__card h3{margin:22px 0 12px;font-size:1.05rem;}
+.nova-address-v41__card .nova-address-v41__edit{margin-top:auto;padding-top:18px;}
+.nova-auth-v41{background:#f5f5f7;}
+.nova-auth-v41__shell{min-height:660px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(380px,.65fr);gap:clamp(28px,6vw,92px);align-items:center;max-width:1180px;}
+.nova-auth-v41__intro{padding:28px 0;}
+.nova-auth-v41__intro h1{margin:.35rem 0 .75rem;font-size:clamp(3.4rem,6.5vw,6.7rem);line-height:.9;letter-spacing:-.07em;color:#1d1d1f;max-width:760px;}
+.nova-auth-v41__intro>div:first-child>p:last-child{max-width:680px;color:#6e6e73;font-size:1rem;line-height:1.65;}
+.nova-auth-v41__benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:44px;}
+.nova-auth-v41__benefits>div{min-height:185px;padding:20px;border-radius:22px;background:#fff;border:1px solid #e7e7e8;}
+.nova-auth-v41__benefits span{display:block;color:#789a56;font-size:.65rem;font-weight:850;letter-spacing:.1em;margin-bottom:34px;}
+.nova-auth-v41__benefits strong{display:block;font-size:.88rem;}
+.nova-auth-v41__benefits p{margin:.45rem 0 0;color:#77777c;font-size:.72rem;line-height:1.5;}
+.nova-auth-v41__card{padding:34px;border-radius:30px;background:#fff;border:1px solid #e5e5e6;box-shadow:0 24px 75px rgba(0,0,0,.08);}
+.nova-auth-v41__card-head>span{color:#1f3d34;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;}
+.nova-auth-v41__card-head h2{margin:.4rem 0 .55rem;font-size:2rem;letter-spacing:-.045em;}
+.nova-auth-v41__card-head p{margin:0 0 25px;color:#77777c;font-size:.79rem;line-height:1.55;}
+.nova-auth-v41__submit{width:100%;min-height:50px;margin-top:4px;}
+.nova-auth-v41__join{display:flex;justify-content:space-between;gap:14px;padding-top:18px;margin-top:18px;border-top:1px solid #ececee;font-size:.76rem;}
+.nova-auth-v41__join span{color:#85858a;}
+.nova-auth-v41__join a{font-weight:750;color:#1f3d34;}
+.nova-auth-v41__recovery{margin-top:16px;padding-top:0;border:0;}
+.nova-auth-v41__recovery>summary{color:#6e6e73;font-size:.73rem;}
+.nova-auth-v41__recovery form{padding:18px;margin-top:12px;background:#f7f7f8;border-radius:17px;}
+.nova-auth-v41__guest{margin:18px 0 0;color:#9a9a9e;font-size:.67rem;text-align:center;line-height:1.45;}
+@media (max-width:1050px){.nova-address-v41__grid{grid-template-columns:repeat(2,minmax(0,1fr));}.nova-address-v41__default-copy{grid-template-columns:1fr;}.nova-auth-v41__shell{grid-template-columns:1fr;max-width:760px;}.nova-auth-v41__intro{padding-bottom:0;}.nova-auth-v41__benefits{margin-top:30px;}}
+@media (max-width:700px){.nova-account-v41{padding-top:26px;}.nova-account-v41__hero,.nova-account-v41__subhero{align-items:flex-start;flex-direction:column;padding-top:6px;}.nova-account-v41__identity h1,.nova-account-v41__subhero h1{font-size:clamp(2.55rem,13vw,4rem);}.nova-account-v41__nav{top:52px;margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px;}.nova-account-v41__empty{align-items:flex-start;flex-direction:column;padding:24px;border-radius:22px;}.nova-address-v41__toolbar{align-items:flex-start;flex-direction:column;}.nova-address-v41__add,.nova-address-v41__add>summary{width:100%;}.nova-address-v41__add>summary{justify-content:center;}.nova-address-v41__add>.nova-address-v41__form-panel{position:static;width:100%;padding:19px;border-radius:20px;}.nova-address-v41__default{grid-template-columns:48px minmax(0,1fr);padding:19px;border-radius:22px;}.nova-address-v41__default-mark{width:46px;height:46px;}.nova-address-v41__default .nova-address-v41__edit{grid-column:1/-1;}.nova-address-v41__default .nova-address-v41__edit>summary{width:100%;justify-content:center;}.nova-address-v41__grid{grid-template-columns:1fr;}.nova-address-v41__card{min-height:220px;border-radius:21px;}.nova-address-v41__form-panel--inline{padding:16px;}.nova-auth-v41{padding-top:30px;}.nova-auth-v41__shell{min-height:auto;}.nova-auth-v41__intro h1{font-size:clamp(3rem,14vw,4.8rem);}.nova-auth-v41__benefits{grid-template-columns:1fr;gap:7px;}.nova-auth-v41__benefits>div{min-height:auto;}.nova-auth-v41__benefits span{margin-bottom:14px;}.nova-auth-v41__card{padding:22px 18px;border-radius:24px;}.nova-auth-v41__join{align-items:flex-start;flex-direction:column;}}
+.nova-auth-v41__utility-shell{min-height:620px;display:grid;place-items:center;}
+.nova-auth-v41__utility-shell>.nova-auth-v41__card{width:min(100%,540px);}
+.nova-auth-v41__utility-shell .nova-auth-v41__card-head h1{margin:.45rem 0 .65rem;font-size:clamp(2.4rem,5vw,4rem);line-height:.95;letter-spacing:-.06em;color:#1d1d1f;}
+.nova-order-v412__hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(28px,6vw,90px);align-items:end;padding:34px 0 42px;border-bottom:1px solid var(--journey-line);}
+.nova-order-v412__back{display:inline-flex;margin-bottom:28px;color:#747478;font-size:.74rem;font-weight:700;text-decoration:none;}
+.nova-order-v412__back:hover{color:var(--journey-teal);}
+.nova-order-v412__state-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.nova-order-v412__state{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:#eef3ef;color:#466452;font-size:.65rem;font-weight:800;letter-spacing:.035em;}
+.nova-order-v412__state i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px rgba(80,125,88,.1);}
+.nova-order-v412__state.is-moving{background:#eaf4f1;color:#287065;}
+.nova-order-v412__state.is-ready{background:#f1f5ed;color:#61764d;}
+.nova-order-v412__state.is-processing{background:#f6f2e9;color:#877044;}
+.nova-order-v412__state.is-cancelled{background:#f8eceb;color:#9b4b47;}
+.nova-order-v412__date{color:#8b8b90;font-size:.69rem;}
+.nova-order-v412__hero h1{margin:.28rem 0 .72rem;font-size:clamp(3.8rem,8vw,8.5rem);line-height:.84;letter-spacing:-.075em;color:var(--journey-ink);}
+.nova-order-v412__hero-main>p:last-child{max-width:720px;margin:0;color:var(--journey-muted);font-size:clamp(.92rem,1.15vw,1.08rem);line-height:1.65;}
+.nova-order-v412__hero-meta{min-width:235px;padding:26px;border:1px solid var(--journey-line);border-radius:28px;background:#fff;box-shadow:0 20px 64px rgba(24,35,29,.055);}
+.nova-order-v412__hero-meta>span{display:block;color:#89898e;font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;}
+.nova-order-v412__hero-meta>strong{display:block;margin:6px 0 4px;font-size:2.15rem;letter-spacing:-.05em;}
+.nova-order-v412__hero-meta>small{display:block;color:#89898e;font-size:.72rem;}
+.nova-order-v412__journey{margin:26px 0 14px;padding:30px;border:1px solid var(--journey-line);border-radius:30px;background:#fff;box-shadow:0 18px 58px rgba(24,35,29,.04);}
+.nova-order-v412__section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px;}
+.nova-order-v412__section-head h2{margin:.22rem 0 0;font-size:clamp(1.8rem,3vw,2.8rem);letter-spacing:-.05em;}
+.nova-order-v412__section-head>span{color:#88888d;font-size:.72rem;}
+.nova-order-v412__steps{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:0;padding:10px 0 0;list-style:none;}
+.nova-order-v412__steps:before{content:"";position:absolute;left:8%;right:8%;top:29px;height:2px;background:#e5e8e5;}
+.nova-order-v412__steps li{position:relative;z-index:1;display:grid;justify-items:center;gap:13px;padding:0 15px;text-align:center;}
+.nova-order-v412__step-marker{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid #dedfe0;color:#9a9a9e;box-shadow:0 0 0 6px #fff;}
+.nova-order-v412__step-marker b{font-size:.75rem;}
+.nova-order-v412__steps li.is-done .nova-order-v412__step-marker{background:#1f3d34;border-color:#1f3d34;color:#fff;}
+.nova-order-v412__steps li.is-current .nova-order-v412__step-marker{background:#fff;border-color:#1f3d34;color:#1f3d34;box-shadow:0 0 0 7px #edf4f1;}
+.nova-order-v412__steps li.is-upcoming{opacity:.58;}
+.nova-order-v412__steps strong{display:block;font-size:.82rem;letter-spacing:-.015em;}
+.nova-order-v412__steps p{max-width:190px;margin:6px auto 0;color:#85858a;font-size:.68rem;line-height:1.45;}
+.nova-order-v412__cancelled{display:flex;align-items:center;gap:18px;margin:26px 0;padding:26px 28px;border:1px solid #ecd4d2;border-radius:28px;background:#fff7f6;}
+.nova-order-v412__cancelled-icon{width:50px;height:50px;flex:0 0 50px;border-radius:50%;display:grid;place-items:center;background:#f2dedd;color:#9b4b47;font-size:1.5rem;}
+.nova-order-v412__cancelled h2{margin:.25rem 0 .4rem;font-size:1.45rem;}
+.nova-order-v412__cancelled p:last-child{margin:0;color:#7a6867;font-size:.78rem;}
+.nova-order-v412__status-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:14px 0 54px;border:1px solid var(--journey-line);border-radius:22px;overflow:hidden;background:var(--journey-line);}
+.nova-order-v412__status-strip>div{min-height:92px;padding:18px 20px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;}
+.nova-order-v412__status-strip span{color:#8a8a8f;font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.085em;}
+.nova-order-v412__status-strip strong{font-size:.9rem;}
+.nova-order-v412__shipment-section{margin-bottom:58px;}
+.nova-order-v412__shipments{display:grid;gap:10px;}
+.nova-order-v412__shipment-card{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(190px,.65fr) auto;align-items:center;gap:20px;padding:18px 20px;border:1px solid var(--journey-line);border-radius:24px;background:#fff;box-shadow:0 12px 38px rgba(31,40,34,.035);}
+.nova-order-v412__shipment-icon{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;background:#eef5f2;color:#1f3d34;}
+.nova-order-v412__shipment-icon svg{width:25px;height:25px;}
+.nova-order-v412__shipment-main>span{color:#8b8b90;font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.075em;}
+.nova-order-v412__shipment-main h3{margin:.3rem 0 .2rem;font-size:1.05rem;}
+.nova-order-v412__shipment-main p{margin:0;color:#88888d;font-size:.69rem;}
+.nova-order-v412__shipment-meta{margin:0;}
+.nova-order-v412__shipment-meta dt{color:#99999d;font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;}
+.nova-order-v412__shipment-meta dd{margin:5px 0 0;font-size:.78rem;font-weight:750;overflow-wrap:anywhere;}
+.nova-order-v412__tracking-pending{padding:9px 12px;border-radius:999px;background:#f5f5f7;color:#85858a;font-size:.65rem;font-weight:700;text-align:center;}
+.nova-order-v412__shipment-empty{display:flex;align-items:center;gap:18px;padding:24px;border:1px dashed #d9dcda;border-radius:25px;background:rgba(255,255,255,.56);}
+.nova-order-v412__shipment-empty h3{margin:0 0 .35rem;}
+.nova-order-v412__shipment-empty p{margin:0;max-width:650px;color:#7b7b80;font-size:.77rem;line-height:1.55;}
+.nova-order-v412__layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(310px,.55fr);gap:24px;align-items:start;}
+.nova-order-v412__item-list{display:grid;gap:9px;}
+.nova-order-v412__item{display:grid;grid-template-columns:112px minmax(0,1fr) auto;gap:18px;align-items:center;padding:14px;border:1px solid var(--journey-line);border-radius:24px;background:#fff;transition:transform .18s ease,box-shadow .18s ease;}
+.nova-order-v412__item:hover{transform:translateY(-1px);box-shadow:0 16px 42px rgba(31,40,34,.05);}
+.nova-order-v412__item-media{width:112px;height:112px;border-radius:18px;overflow:hidden;background:#f5f5f7;display:grid;place-items:center;}
+.nova-order-v412__item-media img{width:100%;height:100%;object-fit:contain;padding:7px;}
+.nova-order-v412__item-media span{font-size:1.4rem;font-weight:800;color:#789a56;}
+.nova-order-v412__item-eyebrow{display:flex;gap:9px;flex-wrap:wrap;color:#909095;font-size:.61rem;text-transform:uppercase;letter-spacing:.06em;}
+.nova-order-v412__item-info h3{margin:.45rem 0 .35rem;font-size:1rem;line-height:1.3;}
+.nova-order-v412__item-info h3 a{color:inherit;text-decoration:none;}
+.nova-order-v412__item-info p{margin:0 0 .45rem;color:#77777c;font-size:.72rem;}
+.nova-order-v412__item-price{text-align:right;}
+.nova-order-v412__item-price span{display:block;margin-bottom:5px;color:#99999d;font-size:.58rem;text-transform:uppercase;letter-spacing:.075em;}
+.nova-order-v412__item-price strong{font-size:.96rem;}
+.nova-order-v412__summary{position:sticky;top:116px;padding:26px;border:1px solid var(--journey-line);border-radius:28px;background:#fff;box-shadow:0 20px 58px rgba(31,40,34,.05);}
+.nova-order-v412__summary-head{padding-bottom:19px;margin-bottom:5px;border-bottom:1px solid var(--journey-line);}
+.nova-order-v412__summary-head h2{margin:.28rem 0 .15rem;font-size:1.65rem;letter-spacing:-.04em;}
+.nova-order-v412__summary-head>span{color:#909095;font-size:.68rem;}
+.nova-order-v412__summary-row{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--journey-line);font-size:.77rem;}
+.nova-order-v412__summary-row span{color:#77777c;}
+.nova-order-v412__summary-row.is-saving strong{color:#5f7e50;}
+.nova-order-v412__summary-total{display:flex;justify-content:space-between;align-items:end;gap:18px;padding:20px 0 16px;}
+.nova-order-v412__summary-total span{font-weight:750;}
+.nova-order-v412__summary-total strong{font-size:1.45rem;letter-spacing:-.035em;}
+.nova-order-v412__payment-note{display:flex;justify-content:space-between;gap:10px;padding:11px 13px;border-radius:13px;background:#f4f6f3;font-size:.68rem;}
+.nova-order-v412__payment-note span{color:#7c837f;}
+.nova-order-v412__payment-note strong{color:#486052;}
+.nova-order-v412__delivery-info{margin-top:62px;}
+.nova-order-v412__detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.nova-order-v412__detail-card{min-height:210px;padding:22px;border:1px solid var(--journey-line);border-radius:25px;background:#fff;display:grid;grid-template-columns:44px minmax(0,1fr);gap:15px;align-items:start;}
+.nova-order-v412__detail-icon{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:#f0f4f1;color:#1f3d34;}
+.nova-order-v412__detail-icon svg{width:20px;height:20px;}
+.nova-order-v412__detail-card>div>span{display:block;color:#8b8b90;font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;}
+.nova-order-v412__detail-card h3{margin:.48rem 0 .75rem;font-size:.94rem;}
+.nova-order-v412__detail-card>div>div,.nova-order-v412__detail-card p{color:#77777c;font-size:.72rem;line-height:1.55;}
+.nova-order-v412__detail-card p{margin:0;}
+.nova-order-v412__detail-card address,.nova-order-v412__detail-card p{font-style:normal;}
+.nova-order-v412__help{display:flex;align-items:center;justify-content:space-between;gap:30px;margin-top:58px;padding:30px;border-radius:30px;background:#1d1d1f;color:#fff;}
+.nova-order-v412__help-main{display:flex;align-items:center;gap:20px;}
+.nova-order-v412__help-icon{width:54px;height:54px;flex:0 0 54px;border-radius:18px;display:grid;place-items:center;background:#2b2b2e;color:#d7e5dc;}
+.nova-order-v412__help-icon svg{width:23px;height:23px;}
+.nova-order-v412__help h2{margin:.3rem 0 .5rem;color:#fff;font-size:clamp(1.5rem,2.5vw,2.25rem);letter-spacing:-.04em;}
+.nova-order-v412__help p:last-child{max-width:650px;margin:0;color:#aaaab0;font-size:.78rem;line-height:1.55;}
+.nova-order-v412__help-actions{display:flex;gap:8px;flex-wrap:wrap;}
+@media (max-width:1020px){.nova-order-v412__hero{grid-template-columns:1fr;}.nova-order-v412__hero-meta{width:min(100%,420px);}.nova-order-v412__shipment-card{grid-template-columns:52px minmax(0,1fr) auto;}.nova-order-v412__shipment-meta{grid-column:2;}.nova-order-v412__layout{grid-template-columns:1fr;}.nova-order-v412__summary{position:static;}.nova-order-v412__detail-grid{grid-template-columns:1fr 1fr;}.nova-order-v412__detail-card:last-child:nth-child(odd){grid-column:1/-1;}}
+@media (max-width:700px){.nova-order-v412{padding-top:14px;}.nova-order-v412__hero{padding:12px 0 26px;gap:22px;}.nova-order-v412__back{margin-bottom:20px;}.nova-order-v412__hero h1{font-size:clamp(3.6rem,19vw,5.7rem);}.nova-order-v412__hero-meta{padding:19px;border-radius:22px;}.nova-order-v412__hero-meta>strong{font-size:1.8rem;}.nova-order-v412__journey{padding:21px 18px;border-radius:24px;}.nova-order-v412__steps{display:grid;grid-template-columns:1fr;gap:0;padding:0;}.nova-order-v412__steps:before{left:19px;right:auto;top:20px;bottom:20px;width:2px;height:auto;}.nova-order-v412__steps li{grid-template-columns:40px minmax(0,1fr);justify-items:start;text-align:left;gap:13px;padding:0 0 23px;}.nova-order-v412__steps li:last-child{padding-bottom:0;}.nova-order-v412__step-marker{grid-column:1;}.nova-order-v412__steps li>div{grid-column:2;}.nova-order-v412__steps p{max-width:none;margin:5px 0 0;}.nova-order-v412__status-strip{grid-template-columns:1fr 1fr;margin-bottom:42px;border-radius:18px;}.nova-order-v412__status-strip>div{min-height:82px;padding:14px;}.nova-order-v412__section-head{align-items:flex-start;flex-direction:column;gap:8px;}.nova-order-v412__shipment-card{grid-template-columns:46px minmax(0,1fr);gap:13px;padding:16px;border-radius:21px;}.nova-order-v412__shipment-icon{width:46px;height:46px;border-radius:15px;}.nova-order-v412__shipment-meta{grid-column:2;}.nova-order-v412__item{grid-template-columns:82px minmax(0,1fr);gap:12px;border-radius:20px;}.nova-order-v412__item-media{width:82px;height:82px;border-radius:15px;}.nova-order-v412__item-price{grid-column:2;text-align:left;display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid #eeeef0;}.nova-order-v412__item-price span{margin:0;}.nova-order-v412__summary{padding:20px;border-radius:22px;}.nova-order-v412__detail-grid{grid-template-columns:1fr;}.nova-order-v412__detail-card:last-child:nth-child(odd){grid-column:auto;}.nova-order-v412__detail-card{min-height:auto;padding:19px;border-radius:21px;}.nova-order-v412__help{align-items:flex-start;flex-direction:column;padding:22px;border-radius:24px;}.nova-order-v412__help-main{align-items:flex-start;}.nova-order-v412__help-icon{width:46px;height:46px;flex-basis:46px;}}
+.nova-account-v46{--a46-ink:#1d1d1f;--a46-muted:#6e6e73;--a46-line:#e5e5e7;--a46-soft:#f5f5f7;--a46-surface:#fff;--a46-teal:#1f3d34;--a46-sage:#789a56;--a46-dark:#17211b;background:var(--a46-soft);color:var(--a46-ink);padding:34px 0 90px;}
+.nova-account-v46__shell{max-width:1440px;display:grid;grid-template-columns:278px minmax(0,1fr);gap:28px;align-items:start;}
+.nova-account-v46__sidebar{position:sticky;top:84px;min-height:calc(100vh - 120px);display:flex;flex-direction:column;padding:22px 16px 16px;border:1px solid var(--a46-line);border-radius:28px;background:rgba(255,255,255,.96);box-shadow:0 16px 50px rgba(28,36,31,.045);}
+.nova-account-v46__member{display:flex;gap:13px;align-items:center;padding:8px 8px 20px;border-bottom:1px solid var(--a46-line);}
+.nova-account-v46__avatar{width:48px;height:48px;flex:0 0 48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#e9f1e8,#f7faf6);color:var(--a46-teal);font-size:1.05rem;font-weight:850;border:1px solid #dbe5d9;}
+.nova-account-v46__member-copy{min-width:0;}
+.nova-account-v46__member-copy>span{display:block;color:#8a8a8f;font-size:.59rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;}
+.nova-account-v46__member-copy strong{display:block;margin:4px 0 2px;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nova-account-v46__member-copy small{display:block;color:#85858a;font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nova-account-v46__side-nav{display:grid;gap:4px;margin-top:15px;}
+.nova-account-v46__side-nav a,.nova-account-v46__side-nav button{width:100%;display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:10px;padding:11px 12px;border:0;border-radius:12px;background:transparent;color:#5f6260;text-align:left;font:inherit;font-size:.75rem;font-weight:700;cursor:pointer;}
+.nova-account-v46__side-nav svg{width:18px;height:18px;}
+.nova-account-v46__side-nav b{min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:grid;place-items:center;background:#f0f1f0;color:#777b78;font-size:.61rem;}
+.nova-account-v46__side-nav a:hover,.nova-account-v46__side-nav button:hover,.nova-account-v46__side-nav .is-active{background:#f1f5f1;color:#254f49;}
+.nova-account-v46__side-nav .is-active svg{stroke-width:1.9;}
+.nova-account-v46__sidebar-bottom{margin-top:auto;padding-top:18px;border-top:1px solid var(--a46-line);}
+.nova-account-v46__profile-meter{display:grid;grid-template-columns:44px 1fr;gap:11px;align-items:center;padding:9px;}
+.nova-account-v46__profile-ring{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--a46-teal) var(--account-progress),#e9ece9 0);position:relative;}
+.nova-account-v46__profile-ring:after{content:"";position:absolute;inset:5px;border-radius:50%;background:#fff;}
+.nova-account-v46__profile-ring i{position:relative;z-index:1;font-size:.54rem;font-style:normal;font-weight:800;}
+.nova-account-v46__profile-meter strong,.nova-account-v46__profile-meter small{display:block;}
+.nova-account-v46__profile-meter strong{font-size:.7rem;}
+.nova-account-v46__profile-meter small{margin-top:3px;color:#8a8a8f;font-size:.59rem;line-height:1.35;}
+.nova-account-v46__logout{display:flex;align-items:center;gap:9px;margin-top:8px;padding:10px 12px;color:#8a5a58;font-size:.7rem;font-weight:700;}
+.nova-account-v46__logout svg{width:17px;height:17px;}
+.nova-account-v46__main{min-width:0;}
+.nova-account-v46__hero{display:flex;align-items:end;justify-content:space-between;gap:30px;padding:12px 4px 30px;}
+.nova-account-v46__hero h1{margin:.28rem 0 .65rem;font-size:clamp(3rem,6vw,6.6rem);line-height:.9;letter-spacing:-.065em;}
+.nova-account-v46__hero p:last-child{max-width:720px;margin:0;color:var(--a46-muted);font-size:clamp(.9rem,1.1vw,1.02rem);line-height:1.6;}
+.nova-account-v46__hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.nova-account-v46__mobile-nav{display:none;}
+.nova-account-v46__stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+.nova-account-v46__stats article{min-height:108px;padding:17px;border:1px solid var(--a46-line);border-radius:20px;background:#fff;display:grid;grid-template-columns:38px minmax(0,1fr) 24px;gap:11px;align-items:center;}
+.nova-account-v46__stat-icon{width:38px;height:38px;border-radius:12px;background:#f1f5f1;color:var(--a46-teal);display:grid;place-items:center;}
+.nova-account-v46__stat-icon svg{width:18px;height:18px;}
+.nova-account-v46__stats strong{display:block;font-size:1.45rem;letter-spacing:-.04em;}
+.nova-account-v46__stats div span{display:block;margin-top:2px;color:#85858a;font-size:.64rem;}
+.nova-account-v46__stats article>a,.nova-account-v46__stats article>button{border:0;background:transparent;color:#7d817e;font:inherit;font-size:.9rem;cursor:pointer;}
+.nova-account-v46__live-order,.nova-account-v46__first-order{margin-top:18px;border-radius:28px;background:linear-gradient(135deg,#17251f,#20372f);color:#fff;overflow:hidden;box-shadow:0 26px 70px rgba(24,42,34,.14);}
+.nova-account-v46__live-order{padding:28px;}
+.nova-account-v46__live-top{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;}
+.nova-account-v46__live-top h2{margin:.2rem 0 .35rem;color:#fff;font-size:clamp(2.1rem,4vw,4rem);letter-spacing:-.055em;}
+.nova-account-v46__live-top>div>span{color:#aebbb4;font-size:.72rem;}
+.nova-account-v46__live-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.nova-account-v46__order-products{display:flex;align-items:center;gap:8px;margin-top:26px;padding:14px;border-radius:19px;background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.08);}
+.nova-account-v46__order-product{width:54px;height:54px;flex:0 0 54px;border-radius:12px;background:#fff;overflow:hidden;display:grid;place-items:center;}
+.nova-account-v46__order-product img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.nova-account-v46__order-product span{color:var(--a46-sage);font-weight:800;}
+.nova-account-v46__order-product-copy{margin-left:6px;min-width:0;}
+.nova-account-v46__order-product-copy strong,.nova-account-v46__order-product-copy span{display:block;}
+.nova-account-v46__order-product-copy strong{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem;}
+.nova-account-v46__order-product-copy span{margin-top:4px;color:#aab8b1;font-size:.64rem;}
+.nova-account-v46__journey{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.nova-account-v46__journey li{position:relative;display:grid;grid-template-columns:27px minmax(0,1fr);gap:9px;padding-right:16px;color:#82928a;}
+.nova-account-v46__journey li:not(:last-child):after{content:"";position:absolute;top:13px;left:27px;right:0;height:1px;background:rgba(255,255,255,.14);}
+.nova-account-v46__journey i{width:27px;height:27px;z-index:1;border-radius:50%;display:grid;place-items:center;background:#31433b;border:1px solid rgba(255,255,255,.15);font-size:.62rem;font-style:normal;font-weight:800;}
+.nova-account-v46__journey strong,.nova-account-v46__journey span{display:block;}
+.nova-account-v46__journey strong{font-size:.68rem;color:#a6b3ad;}
+.nova-account-v46__journey span{margin-top:3px;font-size:.57rem;}
+.nova-account-v46__journey .is-done,.nova-account-v46__journey .is-current{color:#dfe9e3;}
+.nova-account-v46__journey .is-done i,.nova-account-v46__journey .is-current i{background:#8fb36e;color:#132018;border-color:#8fb36e;}
+.nova-account-v46__journey .is-current i{box-shadow:0 0 0 5px rgba(143,179,110,.13);}
+.nova-account-v46__journey .is-done strong,.nova-account-v46__journey .is-current strong{color:#fff;}
+.nova-account-v46__cancelled{margin-top:20px;padding:15px 18px;border-radius:15px;background:rgba(143,67,64,.22);}
+.nova-account-v46__cancelled strong,.nova-account-v46__cancelled span{display:block;}
+.nova-account-v46__cancelled span{margin-top:4px;color:#e3c5c3;font-size:.7rem;}
+.nova-account-v46__first-order{min-height:260px;padding:32px;display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:22px;align-items:center;}
+.nova-account-v46__first-icon{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;background:#eef4ef;color:var(--a46-teal);}
+.nova-account-v46__first-icon svg{width:27px;height:27px;}
+.nova-account-v46__first-order h2{margin:.25rem 0 .5rem;color:#fff;font-size:clamp(2rem,4vw,3.7rem);letter-spacing:-.05em;}
+.nova-account-v46__first-order p:last-child{margin:0;max-width:640px;color:#aebbb4;font-size:.78rem;line-height:1.55;}
+.nova-account-v46__hub,.nova-account-v46__orders,.nova-account-v46__account-management,.nova-account-v46__apps{margin-top:52px;}
+.nova-account-v46__section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:15px;}
+.nova-account-v46__section-head h2{margin:.2rem 0 0;font-size:clamp(1.8rem,3vw,2.8rem);letter-spacing:-.045em;}
+.nova-account-v46__hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.nova-account-v46__panel{min-height:310px;padding:23px;border:1px solid var(--a46-line);border-radius:24px;background:#fff;}
+.nova-account-v46__panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.nova-account-v46__panel-head>div>span{display:block;color:#87878c;font-size:.59rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+.nova-account-v46__panel-head h3{margin:.35rem 0 0;font-size:1.28rem;letter-spacing:-.035em;}
+.nova-account-v46__product-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:19px;}
+.nova-account-v46__preview-item{min-width:0;}
+.nova-account-v46__preview-media{aspect-ratio:1;border-radius:14px;overflow:hidden;background:#f5f5f7;display:block;}
+.nova-account-v46__preview-media img{width:100%;height:100%;object-fit:contain;padding:6px;}
+.nova-account-v46__preview-item strong{display:block;margin-top:8px;font-size:.68rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nova-account-v46__preview-item small{display:block;margin-top:3px;color:#86868b;font-size:.6rem;}
+.nova-account-v46__preview-actions{display:flex;gap:6px;margin-top:6px;align-items:center;}
+.nova-account-v46__preview-actions a,.nova-account-v46__preview-actions button{border:0;background:transparent;padding:0;color:var(--a46-teal);font:inherit;font-size:.6rem;font-weight:750;cursor:pointer;}
+.nova-account-v46__rail-empty{grid-column:1/-1;min-height:170px;border-radius:16px;background:#f7f7f8;display:grid;place-items:center;padding:20px;text-align:center;color:#818186;font-size:.72rem;line-height:1.5;}
+.nova-account-v46__address-preview{display:grid;grid-template-columns:42px 1fr;gap:12px;margin-top:22px;padding:17px;border-radius:16px;background:#f7f9f7;}
+.nova-account-v46__address-icon{width:40px;height:40px;border-radius:12px;background:#eaf1ea;color:var(--a46-teal);display:grid;place-items:center;}
+.nova-account-v46__address-icon svg{width:19px;height:19px;}
+.nova-account-v46__address-preview strong{font-size:.78rem;}
+.nova-account-v46__address-preview p{margin:.35rem 0 0;color:#777b78;font-size:.67rem;line-height:1.5;}
+.nova-account-v46__panel-empty{margin-top:22px;padding:17px;border-radius:16px;background:#f7f7f8;}
+.nova-account-v46__panel-empty strong{font-size:.78rem;}
+.nova-account-v46__panel-empty p{margin:.4rem 0 0;color:#7f7f84;font-size:.68rem;}
+.nova-account-v46__service-facts{display:grid;gap:7px;margin-top:16px;}
+.nova-account-v46__service-facts span,.nova-account-v46__service-facts a{display:flex;gap:8px;align-items:center;color:#6e726f;font-size:.66rem;}
+.nova-account-v46__service-facts b{color:var(--a46-teal);}
+.nova-account-v46__help-links{display:grid;gap:7px;margin-top:18px;}
+.nova-account-v46__help-links>a{display:grid;grid-template-columns:40px minmax(0,1fr) 18px;gap:10px;align-items:center;padding:12px;border:1px solid #ececee;border-radius:14px;transition:.18s ease;}
+.nova-account-v46__help-links>a:hover{border-color:#d8dfda;background:#fafcf9;}
+.nova-account-v46__help-links>a>span{width:38px;height:38px;border-radius:11px;background:#f1f5f1;color:var(--a46-teal);display:grid;place-items:center;}
+.nova-account-v46__help-links svg{width:18px;height:18px;}
+.nova-account-v46__help-links strong,.nova-account-v46__help-links small{display:block;}
+.nova-account-v46__help-links strong{font-size:.71rem;}
+.nova-account-v46__help-links small{margin-top:2px;color:#8a8a8f;font-size:.59rem;}
+.nova-account-v46__help-links>a>b{color:#898d8a;font-size:.75rem;}
+.nova-account-v46__section-head--orders{align-items:center;}
+.nova-account-v46__order-tabs{display:flex;gap:4px;padding:4px;border:1px solid var(--a46-line);border-radius:999px;background:#fff;}
+.nova-account-v46__order-tabs button{border:0;background:transparent;border-radius:999px;padding:7px 11px;color:#7b7b80;font:inherit;font-size:.62rem;font-weight:750;cursor:pointer;}
+.nova-account-v46__order-tabs .is-active{background:#1d2823;color:#fff;}
+.nova-account-v46__order-table{border:1px solid var(--a46-line);border-radius:23px;background:#fff;overflow:hidden;}
+.nova-account-v46__order-row{display:grid;grid-template-columns:68px minmax(0,1fr) minmax(120px,.45fr) auto minmax(100px,auto);gap:14px;align-items:center;padding:13px 15px;border-bottom:1px solid #ececee;}
+.nova-account-v46__order-row:last-child{border-bottom:0;}
+.nova-account-v46__order-row[hidden]{display:none;}
+.nova-account-v46__order-media{width:66px;height:66px;border-radius:14px;background:#f7f7f8;overflow:hidden;display:grid;place-items:center;}
+.nova-account-v46__order-media img{width:100%;height:100%;object-fit:contain;padding:5px;}
+.nova-account-v46__order-media span{color:var(--a46-sage);font-weight:850;}
+.nova-account-v46__order-info{min-width:0;}
+.nova-account-v46__order-title{display:flex;gap:7px;align-items:center;}
+.nova-account-v46__order-title a{font-size:.76rem;font-weight:800;}
+.nova-account-v46__order-title span{color:#929297;font-size:.6rem;}
+.nova-account-v46__order-info>strong{display:block;margin-top:6px;font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nova-account-v46__order-info>small{display:block;margin-top:3px;color:#8b8b90;font-size:.6rem;}
+.nova-account-v46__order-status span{display:inline-flex;padding:6px 8px;border-radius:999px;background:#eef4ef;color:#4f6e5c;font-size:.59rem;font-weight:800;}
+.nova-account-v46__order-status span.is-cancelled{background:#f8eeee;color:#96504c;}
+.nova-account-v46__order-status span.is-fulfilled{background:#eef4f1;color:#3f6d61;}
+.nova-account-v46__order-status small{display:block;margin-top:5px;color:#8b8b90;font-size:.58rem;}
+.nova-account-v46__order-total{font-size:.76rem;white-space:nowrap;}
+.nova-account-v46__order-actions{display:grid;gap:5px;justify-items:end;}
+.nova-account-v46__reorder-status{min-height:18px;margin:8px 0 0;color:#52705f;font-size:.66rem;}
+.nova-account-v46__empty-orders{min-height:210px;padding:28px;border:1px solid var(--a46-line);border-radius:24px;background:#fff;display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:20px;align-items:center;}
+.nova-account-v46__empty-orders h3{margin:0;font-size:1.25rem;}
+.nova-account-v46__empty-orders p{margin:.45rem 0 0;color:#7d7d82;font-size:.72rem;}
+.nova-account-v46__management-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;}
+.nova-account-v46__management-grid>a,.nova-account-v46__management-grid>button{min-height:120px;display:grid;grid-template-columns:42px minmax(0,1fr) 18px;gap:10px;align-items:center;padding:16px;border:1px solid var(--a46-line);border-radius:18px;background:#fff;color:inherit;text-align:left;font:inherit;cursor:pointer;}
+.nova-account-v46__management-grid>a:hover,.nova-account-v46__management-grid>button:hover{border-color:#d7ddd8;box-shadow:0 12px 32px rgba(34,44,38,.05);}
+.nova-account-v46__management-grid>*>span{width:40px;height:40px;border-radius:12px;background:#f1f5f1;color:var(--a46-teal);display:grid;place-items:center;}
+.nova-account-v46__management-grid svg{width:19px;height:19px;}
+.nova-account-v46__management-grid strong,.nova-account-v46__management-grid small{display:block;}
+.nova-account-v46__management-grid strong{font-size:.72rem;}
+.nova-account-v46__management-grid small{margin-top:3px;color:#87878c;font-size:.59rem;line-height:1.35;}
+.nova-account-v46__management-grid b{color:#8c908d;}
+@media (max-width:1150px){.nova-account-v46__shell{grid-template-columns:230px minmax(0,1fr);gap:20px;}.nova-account-v46__stats{grid-template-columns:repeat(2,minmax(0,1fr));}.nova-account-v46__management-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.nova-account-v46__order-row{grid-template-columns:62px minmax(0,1fr) minmax(110px,.4fr) auto;}.nova-account-v46__order-actions{grid-column:2/-1;display:flex;justify-content:flex-end;}.nova-account-v46__journey strong{font-size:.62rem;}}
+@media (max-width:900px){.nova-account-v46{padding-top:20px;}.nova-account-v46__shell{display:block;}.nova-account-v46__sidebar{display:none;}.nova-account-v46__mobile-nav{position:sticky;top:52px;z-index:45;display:flex;gap:5px;overflow-x:auto;margin:0 -12px 20px;padding:9px 12px;background:rgba(245,245,247,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--a46-line);scrollbar-width:none;}.nova-account-v46__mobile-nav::-webkit-scrollbar{display:none;}.nova-account-v46__mobile-nav a,.nova-account-v46__mobile-nav button{border:0;border-radius:999px;background:#fff;padding:8px 11px;color:#737378;white-space:nowrap;font:inherit;font-size:.66rem;font-weight:750;}.nova-account-v46__mobile-nav .is-active{background:#1d2823;color:#fff;}.nova-account-v46__hero{padding-top:5px;}.nova-account-v46__hub-grid{grid-template-columns:1fr;}.nova-account-v46__panel{min-height:auto;}.nova-account-v46__journey{overflow-x:auto;grid-template-columns:repeat(4,minmax(150px,1fr));padding-bottom:4px;}.nova-account-v46__live-order{padding:23px;}.nova-account-v46__order-table{overflow:visible;background:transparent;border:0;}.nova-account-v46__order-row{margin-bottom:8px;border:1px solid var(--a46-line)!important;border-radius:18px;background:#fff;grid-template-columns:60px minmax(0,1fr) auto;padding:12px;}.nova-account-v46__order-status{grid-column:2;}.nova-account-v46__order-total{grid-column:3;grid-row:1;}.nova-account-v46__order-actions{grid-column:2/4;justify-content:flex-start;}.nova-account-v46__section-head--orders{align-items:flex-start;flex-direction:column;}.nova-account-v46__order-tabs{overflow-x:auto;max-width:100%;}}
+@media (max-width:650px){.nova-account-v46{padding-bottom:72px;}.nova-account-v46__hero{align-items:flex-start;flex-direction:column;gap:18px;}.nova-account-v46__hero h1{font-size:clamp(2.7rem,14vw,4.6rem);}.nova-account-v46__hero-actions{width:100%;}.nova-account-v46__stats{grid-template-columns:1fr 1fr;gap:7px;}.nova-account-v46__stats article{min-height:92px;padding:13px;grid-template-columns:34px minmax(0,1fr) 18px;}.nova-account-v46__stat-icon{width:34px;height:34px;}.nova-account-v46__stats strong{font-size:1.2rem;}.nova-account-v46__live-top{flex-direction:column;}.nova-account-v46__order-products{overflow-x:auto;}.nova-account-v46__order-product-copy{min-width:150px;}.nova-account-v46__journey{margin-left:-4px;margin-right:-4px;}.nova-account-v46__first-order{grid-template-columns:50px 1fr;padding:22px;}.nova-account-v46__first-icon{width:50px;height:50px;}.nova-account-v46__hub,.nova-account-v46__orders,.nova-account-v46__account-management,.nova-account-v46__apps{margin-top:40px;}.nova-account-v46__panel{padding:18px;border-radius:20px;}.nova-account-v46__product-rail{grid-template-columns:repeat(3,minmax(100px,1fr));overflow-x:auto;padding-bottom:4px;}.nova-account-v46__management-grid{grid-template-columns:1fr;}.nova-account-v46__management-grid>a,.nova-account-v46__management-grid>button{min-height:88px;}.nova-account-v46__empty-orders{grid-template-columns:50px 1fr;padding:20px;}.nova-account-v46__order-row{grid-template-columns:52px minmax(0,1fr) auto;}.nova-account-v46__order-media{width:52px;height:52px;}.nova-account-v46__order-status{grid-column:2;}.nova-account-v46__order-actions{grid-column:2/4;}.nova-account-v46__order-info>strong{max-width:190px;}}

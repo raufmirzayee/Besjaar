@@ -1,0 +1,64 @@
+{% capture nova_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+<section class="nova-404 nova-404--v21">
+  <div class="nova-shell">
+    <div class="nova-404__code">404</div>
+    <p class="nova-kicker">{{ 'nova.not_found.kicker' | t }}</p>
+    <h1>{{ 'nova.not_found.heading' | t }}</h1>
+    <p class="nova-copy" style="margin-inline:auto">{{ 'nova.not_found.text' | t }}</p>
+    <div class="nova-404__actions">
+      <a class="nova-button nova-button--primary" href="{{ routes.root_url }}">{{ 'nova.not_found.button' | t }}</a>
+      <a class="nova-button nova-button--ghost" href="{{ nova_focused_shop_url | strip }}">{{ 'nova.not_found.shop' | t }}</a>
+    </div>
+    <form class="nova-search-form nova-404__search" action="{{ routes.search_url }}" method="get" role="search">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      <label class="nova-visually-hidden" for="Nova404Search">{{ 'nova.accessibility.search' | t }}</label><input class="nova-input" id="Nova404Search" type="search" name="q" autocomplete="off" placeholder="{{ 'nova.search.placeholder' | t | escape }}" required>
+      <button class="nova-button nova-button--ghost" type="submit">{{ 'nova.search.button' | t }}</button>
+    </form>
+    <div class="nova-404__popular" role="group" aria-label="{{ 'nova.search.popular' | t | escape }}">
+      <span>{{ 'nova.search.popular' | t }}</span>
+      <div class="nova-search-shortcuts">
+        {% assign nova_popular_terms = 'nova.search.popular_terms' | t | split: ',' %}
+        {% for term in nova_popular_terms limit: 4 %}
+          {% assign clean_term = term | strip %}
+          {% if clean_term != blank %}<a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=last&q={{ clean_term | url_encode }}">{{ clean_term }}</a>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {%- comment -%}Besjaar 11.6: land lost visitors on shoppable cards, not only a search box — same fallback-range pattern as the zero-results search state.{%- endcomment -%}
+    {% liquid
+      assign nova_404_collection = settings.shower_collection
+      if nova_404_collection == blank
+        assign nova_404_collection = collections['badkamer-douche']
+      endif
+      if nova_404_collection == blank
+        assign nova_404_collection = collections['douchekoppen']
+      endif
+      if nova_404_collection == blank
+        assign nova_404_collection = collections['showerheads']
+      endif
+      if nova_404_collection == blank
+        assign nova_404_collection = collections['douche']
+      endif
+      if nova_404_collection == blank
+        assign nova_404_collection = collections['shower']
+      endif
+    %}
+    {% if nova_404_collection != blank and nova_404_collection.products.size > 0 %}
+      <div class="nova-search-five-range nova-404__range">
+        <div class="nova-heading-row"><div><p class="nova-kicker">{{ 'nova.shower_store.search.range_kicker' | t }}</p><h2 class="nova-subtitle">{{ 'nova.shower_store.search.available' | t }}</h2></div><a class="nova-mini-link" href="{{ nova_focused_shop_url | strip }}">{{ 'nova.shower_store.search.browse_all' | t }} →</a></div>
+        <div class="nova-grid nova-grid--4">
+          {% assign nova_404_shown = 0 %}
+          {% for nova_404_product in nova_404_collection.products %}
+            {% if nova_404_shown >= 4 %}{% break %}{% endif %}
+            {% capture nova_404_head_capture %}{% render 'is-focus-showerhead', product: nova_404_product %}{% endcapture %}
+            {% assign nova_404_is_head = nova_404_head_capture | strip %}
+            {% if nova_404_is_head == 'true' %}{% render 'product-card', product: nova_404_product %}{% assign nova_404_shown = nova_404_shown | plus: 1 %}{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}{"name":"Main 404","settings":[]}{% endschema %}

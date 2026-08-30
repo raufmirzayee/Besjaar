@@ -1,0 +1,73 @@
+{% liquid
+  assign nova_delivery_region = settings.delivery_region_label
+  if settings.enable_markets_localization and localization.country != blank
+    assign nova_delivery_region = localization.country.name
+  endif
+  assign shipping_url = blank
+  if settings.delivery_info_page != blank
+    capture shipping_url
+      render 'localized-internal-url', url: settings.delivery_info_page.url
+    endcapture
+    assign shipping_url = shipping_url | strip
+  elsif shop.shipping_policy != blank
+    capture shipping_url
+      render 'localized-internal-url', url: shop.shipping_policy.url
+    endcapture
+    assign shipping_url = shipping_url | strip
+  endif
+  assign returns_url = blank
+  if shop.refund_policy != blank
+    capture returns_url
+      render 'localized-internal-url', url: shop.refund_policy.url
+    endcapture
+    assign returns_url = returns_url | strip
+  elsif settings.returns_info_page != blank
+    capture returns_url
+      render 'localized-internal-url', url: settings.returns_info_page.url
+    endcapture
+    assign returns_url = returns_url | strip
+  endif
+  assign delivery_min_days = settings.processing_business_days | plus: settings.transit_min_business_days
+  assign delivery_max_days = settings.processing_business_days | plus: settings.transit_max_business_days
+  assign warranty_url = blank
+  if settings.warranty_info_page != blank
+    capture warranty_url
+      render 'localized-internal-url', url: settings.warranty_info_page.url
+    endcapture
+    assign warranty_url = warranty_url | strip
+  endif
+%}
+<div class="nova-delivery-promise nova-delivery-promise--{{ context | default: 'default' }}" data-delivery-promise>
+  <div class="nova-delivery-promise__item nova-delivery-promise__item--primary">
+    <span class="nova-delivery-promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M3 7h11v10H3V7Zm11 3h4l3 3v4h-7v-7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="18" r="2" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="18" r="2" stroke="currentColor" stroke-width="1.7"/></svg></span>
+    <div>
+      <span>{{ 'nova.delivery.estimate_title' | t }}</span>
+      {% if settings.show_delivery_estimates %}
+        <strong data-delivery-estimate>{{ 'nova.delivery.estimate_fallback' | t: min: delivery_min_days, max: delivery_max_days }}</strong>
+      {% else %}
+        <strong>{{ 'nova.delivery.region' | t: region: nova_delivery_region }}</strong>
+      {% endif %}
+      <small>{{ 'nova.delivery.cutoff' | t: hour: settings.order_cutoff_hour }}</small>
+    </div>
+  </div>
+  <div class="nova-delivery-promise__item">
+    <span class="nova-delivery-promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 7h8a4 4 0 1 1 0 8H7m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <div><span>{{ 'nova.delivery.returns_title' | t }}</span><strong>{{ 'nova.delivery.returns_value' | t: days: settings.return_window_days }}</strong></div>
+  </div>
+  {% if settings.warranty_months > 0 %}
+    <div class="nova-delivery-promise__item">
+      <span class="nova-delivery-promise__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v5c0 4.4 2.8 8.1 7 10 4.2-1.9 7-5.6 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.7"/><path d="m9.2 12 1.8 1.8 3.8-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div><span>{{ 'nova.delivery.warranty_title' | t }}</span><strong>{{ 'nova.delivery.warranty_value' | t: months: settings.warranty_months }}</strong></div>
+    </div>
+  {% endif %}
+  {% if context == 'product' or context == 'home' %}
+    <div class="nova-delivery-promise__note">
+      <span>{{ 'nova.delivery.checkout_confirmation' | t }}</span>
+      <nav class="nova-delivery-promise__policies" aria-label="{{ 'nova.delivery.policy_links' | t | escape }}">
+        {% if shipping_url != blank %}<a href="{{ shipping_url }}">{{ 'nova.delivery.shipping_policy' | t }}</a>{% endif %}
+        {% if context == 'product' and returns_url != blank %}<a href="{{ returns_url }}">{{ 'nova.delivery.returns_policy' | t }}</a>{% endif %}
+        {% if context == 'product' and warranty_url != blank %}<a href="{{ warranty_url }}">{{ 'nova.delivery.warranty_policy_short' | t }}</a>{% endif %}
+      </nav>
+    </div>
+  {% endif %}
+</div>

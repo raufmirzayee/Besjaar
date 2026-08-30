@@ -1,0 +1,31 @@
+{% if shop.customer_accounts_enabled and settings.show_account_home_section %}
+{% assign nova_account_name = customer.first_name | default: customer.email %}
+<section class="nova-section nova-account-benefits-home">
+  <div class="nova-shell">
+    <div class="nova-account-benefits-home__card">
+      <div class="nova-account-benefits-home__intro">
+        <p class="nova-kicker">BESJAAR / ACCOUNT</p>
+        {% if customer %}
+          <h2>{{ 'nova.account.home_welcome' | t: name: nova_account_name }}</h2>
+          <p>{{ 'nova.account.home_signed_in_copy' | t }}</p>
+          <div class="nova-account-benefits-home__actions">
+            <a class="nova-button nova-button--primary" href="{{ routes.account_url }}">{{ 'nova.header.my_account' | t }}</a>
+          </div>
+        {% else %}
+          <h2>{{ 'nova.account.home_title' | t }}</h2>
+          <p>{{ 'nova.account.home_copy' | t }}</p>
+          <div class="nova-account-benefits-home__actions">
+            <a class="nova-button nova-button--primary" href="{{ routes.account_login_url }}" rel="nofollow">{{ 'nova.header.sign_in_create' | t }}</a>
+            <span>{{ 'nova.account.optional_account' | t }}</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="nova-account-benefits-home__grid">
+        <div><span>01</span><strong>{{ 'nova.account.home_benefit_orders_title' | t }}</strong><p>{{ 'nova.account.home_benefit_orders_copy' | t }}</p></div>
+        <div><span>02</span><strong>{{ 'nova.account.home_benefit_profile_title' | t }}</strong><p>{{ 'nova.account.home_benefit_profile_copy' | t }}</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}{"name":"Account benefits","settings":[],"presets":[{"name":"Account benefits"}]}{% endschema %}

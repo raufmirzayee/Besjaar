@@ -1,0 +1,141 @@
+{%- comment -%}
+  Besjaar 11.6.18 — "official webshop" signals for search engines.
+
+  1. Structured data: the Organization/Brand nodes (same @id as
+     snippets/structured-data.liquid, so Google merges them) gain the
+     Bol.com brand pages and the YouTube channel as sameAs, the Assen
+     address, and the alternate name. A WebSite node carries the site name
+     Google shows above a result, plus SearchAction so the brand can get a
+     sitelinks search box.
+  2. On-page: a line stating, in the visitor's language, that this is the
+     official Besjaar webshop and where else the brand is sold. Search
+     engines weight what the page itself says about the brand, so this
+     belongs in the copy — not only in the markup.
+
+     Placement: appended to the end of the page content, above the footer.
+     It sat between the trust strip and the product range, which interrupted
+     the path from hero to products for a line nobody shops from. Being on
+     the home page is what carries the weight; where on the page is not.
+{%- endcomment -%}
+{%- liquid
+  assign bj_org_id = shop.url | append: '#organization'
+  assign bj_brand_id = shop.url | append: '#brand'
+  assign bj_site_id = shop.url | append: '#website'
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign bj_open_brace = '{'
+  assign bj_close_brace = '}'
+  assign bj_search_target = shop.url | append: '/search?q=' | append: bj_open_brace | append: 'search_term_string' | append: bj_close_brace
+-%}
+{%- capture bj_same_as -%}["https://www.bol.com/nl/nl/b/besjaar/603580876/","https://www.bol.com/be/nl/b/besjaar/604080876/","https://www.bol.com/nl/nl/l/besjaar-douchekoppen/13337/4299078524/","https://www.youtube.com/@BESJAAR"]{%- endcapture -%}
+{%- if request.page_type == 'index' -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": {{ bj_org_id | json }},
+      "name": "Besjaar",
+      "alternateName": "Besjaar Douchekoppen",
+      "url": {{ shop.url | json }},
+      "sameAs": {{ bj_same_as }},
+      "brand": { "@id": {{ bj_brand_id | json }} },
+      "address": { "@type": "PostalAddress", "addressLocality": "Assen", "addressCountry": "NL" },
+      "areaServed": ["NL", "BE", "DE", "FR"]
+    },
+    {
+      "@type": "Brand",
+      "@id": {{ bj_brand_id | json }},
+      "name": "Besjaar",
+      "url": {{ shop.url | json }},
+      "sameAs": {{ bj_same_as }}{% if shop.brand.logo != blank %},
+      "logo": {{ shop.brand.logo | image_url: width: 600 | prepend: 'https:' | json }}{% endif %}
+    },
+    {
+      "@type": "WebSite",
+      "@id": {{ bj_site_id | json }},
+      "name": "Besjaar",
+      "alternateName": "Besjaar Douchekoppen",
+      "url": {{ shop.url | json }},
+      "publisher": { "@id": {{ bj_org_id | json }} },
+      "inLanguage": ["nl-NL", "en", "de", "fr"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": {{ bj_search_target | json }} },
+        "query-input": "required name=search_term_string"
+      }
+    }
+  ]
+}
+</script>
+{%- elsif request.page_type == 'product' and product != blank -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Brand",
+  "@id": {{ bj_brand_id | json }},
+  "name": "Besjaar",
+  "url": {{ shop.url | json }},
+  "sameAs": {{ bj_same_as }}
+}
+</script>
+{%- endif -%}
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    case bj_lang
+      when 'en'
+        assign bj_official = 'This is the official Besjaar webshop. Besjaar showerheads and shower filters are designed and sold by Besjaar in Assen, the Netherlands, and are also available on Bol.com.'
+      when 'de'
+        assign bj_official = 'Dies ist der offizielle Besjaar-Webshop. Besjaar-Duschköpfe und -Duschfilter werden von Besjaar in Assen (Niederlande) entwickelt und verkauft und sind auch auf Bol.com erhältlich.'
+      when 'fr'
+        assign bj_official = 'Ceci est la boutique officielle de Besjaar. Les pommeaux et filtres de douche Besjaar sont conçus et vendus par Besjaar à Assen, aux Pays-Bas, et sont également disponibles sur Bol.com.'
+      else
+        assign bj_official = 'Dit is de officiële webshop van Besjaar. Besjaar douchekoppen en douchefilters worden ontworpen en verkocht door Besjaar in Assen, Nederland, en zijn ook verkrijgbaar op Bol.com.'
+    endcase
+  -%}
+<style id="besjaar-official-1170">
+body[data-page-type="index"] .bj-official{box-sizing:border-box;width:min(100% - 32px,1240px);margin:0 auto;padding:22px 0 30px;border-top:1px solid var(--bj-line,rgba(21,50,82,.12))}
+body[data-page-type="index"] .bj-official p{display:flex;align-items:flex-start;justify-content:center;gap:9px;max-width:76ch;margin:0 auto;color:var(--bj-muted,#49627D);font-size:.78rem;line-height:1.55;text-align:left}
+body[data-page-type="index"] .bj-official svg{flex:0 0 auto;width:14px;height:14px;margin-top:2px;color:var(--bj-blue,#2F628F)}
+body[data-page-type="index"] .bj-official strong{color:var(--bj-navy-deep,#0F2947);font-weight:600}
+@media (min-width:901px){
+  body[data-page-type="index"] .bj-official{padding:26px 0 34px}
+  body[data-page-type="index"] .bj-official p{font-size:.82rem;text-align:center;justify-content:center}
+}
+</style>
+<template id="bj-official-line"><div class="bj-official"><p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path><path d="m9 12 2 2 4-4"></path></svg><span><strong>Besjaar®</strong> — {{ bj_official | escape }}</span></p></div></template>
+<script>
+(function () {
+  'use strict';
+  var run = function () {
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    if (document.querySelector('.bj-official')) return;
+    var tpl = document.getElementById('bj-official-line');
+    if (!tpl) return;
+    var node = tpl.content ? tpl.content.firstElementChild : tpl.firstElementChild;
+    if (!node) return;
+    var main = document.getElementById('MainContent');
+    if (main) { main.appendChild(node.cloneNode(true)); return; }
+    var foot = document.querySelector('footer.ind-foot');
+    if (foot && foot.parentNode) foot.parentNode.insertBefore(node.cloneNode(true), foot);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  document.addEventListener('shopify:section:load', run);
+})();
+</script>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar brand entity",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: structured data (Organization, Brand, WebSite with site name and search box) linking Besjaar to its Bol.com pages, YouTube channel and Assen location, plus an ‘official webshop’ line at the end of the home page in NL/EN/DE/FR. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

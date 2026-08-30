@@ -1,0 +1,239 @@
+{% liquid
+  assign use_localized = section.settings.use_localized_copy
+  assign footer_free_shipping_cents = settings.free_shipping_threshold | default: 25 | times: 100
+  assign footer_free_shipping_money = footer_free_shipping_cents | money_without_trailing_zeros
+  assign footer_filter_collection = blank
+  for footer_candidate_collection in collections
+    assign footer_collection_identity = footer_candidate_collection.title | append: ' ' | append: footer_candidate_collection.handle | downcase
+    if footer_collection_identity contains 'filter' or footer_collection_identity contains 'douchefilter'
+      assign footer_filter_collection = footer_candidate_collection
+      break
+    endif
+  endfor
+  assign footer_faq_page = settings.faq_page
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['faq']
+  endif
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['veelgestelde-vragen']
+  endif
+  assign footer_contact_page = settings.contact_page
+  if footer_contact_page == blank
+    assign footer_contact_page = pages['contact']
+  endif
+  if footer_contact_page == blank
+    assign footer_contact_page = pages['contact-us']
+  endif
+  assign footer_tracking_page = settings.tracking_page
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['track-order']
+  endif
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['order-tracking']
+  endif
+  assign footer_delivery_page = settings.delivery_info_page
+  if footer_delivery_page == blank
+    assign footer_delivery_page = settings.returns_info_page
+  endif
+  comment
+    Besjaar 11.6.18: the business page needs a real, crawlable link on every
+    page. Neither this footer nor the header reads Shopify's Main Menu, so a
+    menu entry surfaces nothing — the link belongs here in Liquid.
+  endcomment
+  assign footer_b2b_page = pages['zakelijk']
+  assign footer_lang = request.locale.iso_code | split: '-' | first | downcase
+  case footer_lang
+    when 'en'
+      assign footer_b2b_label = 'Business orders'
+    when 'de'
+      assign footer_b2b_label = 'Geschäftskunden'
+    when 'fr'
+      assign footer_b2b_label = 'Commandes professionnelles'
+    else
+      assign footer_b2b_label = 'Zakelijk bestellen'
+  endcase
+  capture footer_b2b_url
+    if footer_b2b_page != blank
+      render 'localized-internal-url', url: footer_b2b_page.url
+    else
+      render 'localized-internal-url', url: '/pages/zakelijk'
+    endif
+  endcapture
+  assign footer_b2b_url = footer_b2b_url | strip
+  capture footer_shop_url
+    render 'shower-store-url'
+  endcapture
+  assign footer_shop_url = footer_shop_url | strip
+  capture footer_filter_url
+    if footer_filter_collection != blank
+      render 'localized-internal-url', url: footer_filter_collection.url
+    else
+      echo footer_shop_url
+    endif
+  endcapture
+  assign footer_filter_url = footer_filter_url | strip
+  capture footer_shipping_url
+    if shop.shipping_policy != blank
+      render 'localized-internal-url', url: shop.shipping_policy.url
+    elsif footer_delivery_page != blank
+      render 'localized-internal-url', url: footer_delivery_page.url
+    else
+      echo footer_shop_url
+    endif
+  endcapture
+  capture footer_refund_url
+    if shop.refund_policy != blank
+      render 'localized-internal-url', url: shop.refund_policy.url
+    else
+      echo footer_shipping_url
+    endif
+  endcapture
+  assign footer_refund_url = footer_refund_url | strip
+  capture footer_faq_url
+    if footer_faq_page != blank
+      render 'localized-internal-url', url: footer_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  capture footer_contact_url
+    if footer_contact_page != blank
+      render 'localized-internal-url', url: footer_contact_page.url
+    else
+      render 'localized-internal-url', url: '/pages/contact'
+    endif
+  endcapture
+  capture footer_track_url
+    if footer_tracking_page != blank
+      render 'localized-internal-url', url: footer_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+%}
+<footer class="ind ind-foot ind-foot--editorial">
+  {% unless request.page_type == 'collection' %}
+    <div class="ind-shell ind-foot__assurance" aria-label="{{ 'nova.product.purchase_confidence' | t | escape }}">
+      {% if footer_free_shipping_cents > 0 %}
+        <div class="ind-foot__assurance-item"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h11v9H3zM14 10h3l4 4v2h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><p><strong>{{ 'nova.product.free_shipping_from' | t: amount: footer_free_shipping_money }}</strong><small>{{ 'nova.footer.nl_shipping' | t }}</small></p></div>
+      {% endif %}
+      <div class="ind-foot__assurance-item"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg></span><p><strong>{{ 'nova.product.returns_days' | t: days: settings.return_window_days }}</strong><small>{{ 'nova.footer.support' | t }}</small></p></div>
+      <div class="ind-foot__assurance-item"><span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><path d="M5 10h14v11H5z"/></svg></span><p><strong>{{ 'nova.product.secure_payment' | t }}</strong><small>{{ 'nova.footer.secure' | t }}</small></p></div>
+    </div>
+  {% endunless %}
+  <div class="ind-shell ind-foot__top">
+    <div class="ind-foot__newsletter">
+      <span class="ind-foot__brand notranslate" translate="no">BESJAAR</span>
+      <h2>{{ 'nova.home.newsletter_heading' | t }}</h2>
+      <p>{{ 'nova.home.newsletter_text' | t }}</p>
+      {% form 'customer', class: 'ind-foot__form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <label class="nova-visually-hidden" for="FooterEmail-{{ section.id }}">{{ 'nova.home.newsletter_placeholder' | t }}</label>
+        <input id="FooterEmail-{{ section.id }}" type="email" name="contact[email]" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'nova.home.newsletter_placeholder' | t }}" autocapitalize="off" autocomplete="email" required>
+        <button type="submit">{{ 'nova.home.newsletter_button' | t }} <span aria-hidden="true">→</span></button>
+        {% if form.posted_successfully? %}<p class="ind-foot__form-note" role="status">{{ 'nova.home.newsletter_success' | t }}</p>{% endif %}
+        {% if form.errors %}<div class="ind-foot__form-note ind-foot__form-note--error" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+      <small>{{ 'nova.home.newsletter_note' | t }}</small>
+    </div>
+
+    <div class="ind-foot__columns">
+      <div>
+        <h3>{{ 'nova.footer.shop' | t }}</h3>
+        <a href="{{ footer_shop_url }}">{{ 'nova.footer.all_products' | t }}</a>
+        <a href="{{ footer_filter_url }}">{{ 'nova.shower_collection.family_filter' | t }}</a>
+        <a href="{{ footer_b2b_url }}">{{ footer_b2b_label | escape }}</a>
+      </div>
+      <div>
+        <h3>{{ 'nova.footer.service' | t }}</h3>
+        <a href="{{ footer_faq_url | strip }}">{{ 'industry.footer.faq' | t }}</a>
+        <a href="{{ footer_contact_url | strip }}">{{ 'industry.footer.contact' | t }}</a>
+        <a href="{{ footer_track_url | strip }}">{{ 'industry.footer.tracking' | t }}</a>
+        <a href="{{ footer_shipping_url | strip }}">{{ 'industry.footer.shipping_returns' | t }}</a>
+      </div>
+      <div>
+        <h3>{{ 'nova.footer.info' | t }}</h3>
+        {% if shop.privacy_policy != blank %}<a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'industry.footer.privacy' | t }}</a>{% endif %}
+        {% if shop.terms_of_service != blank %}<a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'industry.footer.terms' | t }}</a>{% endif %}
+        <a href="{{ footer_refund_url }}">{{ 'nova.delivery.returns_policy' | t }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ind-shell ind-foot__bottom">
+    <span>© {{ 'now' | date: '%Y' }} Besjaar — {% if use_localized %}{{ 'industry.footer.tagline' | t }}{% else %}{{ section.settings.tagline | escape }}{% endif %}</span>
+    {%- comment -%}Besjaar 11.6: honor the existing show_footer_localization setting in the live footer, and show real payment logos instead of only a text line.{%- endcomment -%}
+    {% if settings.show_footer_localization %}{% unless request.visual_preview_mode %}<div class="nova-footer__localization">{% render 'nova-localization', context: 'footer', section_id: section.id %}</div>{% endunless %}{% endif %}
+    {% if shop.enabled_payment_types.size > 0 %}
+      <div class="nova-payments ind-foot__payments" aria-label="{{ 'nova.footer.payments_label' | t | escape }}">
+        {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}
+      </div>
+    {% endif %}
+    <span>{{ 'industry.footer.checkout' | t }}</span>
+  </div>
+</footer>
+
+<dialog class="ind-shipping-dialog" data-shipping-returns-dialog aria-labelledby="ShippingReturnsTitle-{{ section.id }}">
+  <div class="ind-shipping-dialog__head">
+    <div>
+      <p class="ind-shipping-dialog__eyebrow">BESJAAR</p>
+      <h2 id="ShippingReturnsTitle-{{ section.id }}">{{ 'industry.footer.shipping_returns' | t }}</h2>
+    </div>
+    <button type="button" class="ind-shipping-dialog__close" data-shipping-returns-close aria-label="{{ 'nova.accessibility.close' | t | escape }}">×</button>
+  </div>
+  <div class="ind-shipping-dialog__body">
+    <section>
+      <span class="ind-shipping-dialog__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h11v9H3zM14 10h3l4 4v2h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+      </span>
+      <div>
+        <h3>{{ 'nova.delivery.estimate_title' | t }}</h3>
+        <p>{% if settings.show_delivery_estimates %}{{ 'nova.delivery.estimate_fallback' | t: min: settings.transit_min_business_days, max: settings.transit_max_business_days }}. {% endif %}{{ 'nova.delivery.checkout_confirmation' | t }}</p>
+        <a class="ind-shipping-dialog__policy-link" href="{{ footer_shipping_url | strip }}">{{ 'industry.footer.shipping_returns' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+    <section>
+      <span class="ind-shipping-dialog__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg>
+      </span>
+      <div>
+        <h3>{{ 'nova.delivery.returns_title' | t }}</h3>
+        <p>{{ 'nova.delivery.returns_value' | t: days: settings.return_window_days }}. {{ 'nova.delivery.returns_note' | t }}</p>
+        <a class="ind-shipping-dialog__policy-link" href="{{ footer_refund_url }}">{{ 'nova.delivery.returns_policy' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  const section = document.currentScript?.previousElementSibling;
+  const dialog = section?.matches?.('[data-shipping-returns-dialog]') ? section : document.querySelector('[data-shipping-returns-dialog]');
+  if (!dialog) return;
+  const openers = document.querySelectorAll('[data-shipping-returns-open]');
+  const closer = dialog.querySelector('[data-shipping-returns-close]');
+  const open = () => {
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  };
+  const close = () => {
+    if (typeof dialog.close === 'function') dialog.close();
+    else dialog.removeAttribute('open');
+  };
+  openers.forEach(button => button.addEventListener('click', open));
+  closer?.addEventListener('click', close);
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) close();
+  });
+})();
+</script>
+{% schema %}
+{
+  "name": "Editorial footer",
+  "settings": [
+    {"type":"checkbox","id":"use_localized_copy","label":"Use translated storefront copy (EN/NL/DE/FR)","default":true},
+    {"type":"text","id":"tagline","label":"Custom tagline","default":"A better shower, made simple."}
+  ],
+  "presets":[{"name":"Editorial footer"}]
+}
+{% endschema %}

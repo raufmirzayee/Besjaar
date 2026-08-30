@@ -1,0 +1,156 @@
+{%- comment -%}
+  Besjaar 11.6.17 — public marketplace proof.
+
+  Shows the Bol.com figures as a sourced card: the bol wordmark, stars, three
+  stats (rating, public reviews, sold last month) and a button through to the
+  Bol page the numbers come from.
+
+  Stat labels are kept to one short word where the language allows it — a long
+  compound like "Productbeoordeling" cannot wrap inside a third of a phone
+  screen and spills past the card. The CSS below also lets any label the
+  merchant types break rather than overflow.
+
+  No aggregateRating structured data, deliberately. Google's review snippet
+  guidelines say not to aggregate ratings from other websites, so these
+  numbers stay visible, attributed and linked instead of being marked up as
+  this shop's own rating.
+
+  Translations are built into the section (NL/EN/DE/FR) rather than the
+  locale files, so the copy can change without a locale release. Every number
+  is a theme setting — they move, and a stale figure is a false claim.
+{%- endcomment -%}
+{% liquid
+  assign v_lang = request.locale.iso_code | split: '-' | first | downcase
+  if section.settings.use_localized_copy
+    case v_lang
+      when 'en'
+        assign v_kicker = 'PUBLIC MARKETPLACE PROOF'
+        assign v_heading = 'Public customer signals, with the source.'
+        assign v_note = 'Public marketplace figures with a direct link to the source.'
+        assign v_rating_label = 'Rating'
+        assign v_reviews_label = 'Public reviews'
+        assign v_sold_label = 'Sold last month'
+        assign v_cta = 'View on bol.com'
+      when 'de'
+        assign v_kicker = 'ÖFFENTLICHER MARKTPLATZ-NACHWEIS'
+        assign v_heading = 'Öffentliche Kundensignale — mit Quelle.'
+        assign v_note = 'Öffentliche Marktplatzzahlen mit direktem Link zur Quelle.'
+        assign v_rating_label = 'Bewertung'
+        assign v_reviews_label = 'Öffentliche Bewertungen'
+        assign v_sold_label = 'Letzten Monat verkauft'
+        assign v_cta = 'Auf bol.com ansehen'
+      when 'fr'
+        assign v_kicker = 'PREUVE PUBLIQUE MARKETPLACE'
+        assign v_heading = 'Des signaux clients publics, avec la source.'
+        assign v_note = 'Chiffres publics de la marketplace, avec un lien direct vers la source.'
+        assign v_rating_label = 'Note'
+        assign v_reviews_label = 'Avis publics'
+        assign v_sold_label = 'Vendus le mois dernier'
+        assign v_cta = 'Voir sur bol.com'
+      else
+        assign v_kicker = 'PUBLIEK MARKETPLACE-BEWIJS'
+        assign v_heading = 'Publieke klantsignalen, mét bron.'
+        assign v_note = 'Publieke marketplace-cijfers met een directe bronlink.'
+        assign v_rating_label = 'Beoordeling'
+        assign v_reviews_label = 'Openbare reviews'
+        assign v_sold_label = 'Verkocht vorige maand'
+        assign v_cta = 'Bekijk op bol.com'
+    endcase
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_heading = section.settings.heading
+    assign v_note = section.settings.source_note
+    assign v_rating_label = section.settings.rating_label
+    assign v_reviews_label = section.settings.reviews_label
+    assign v_sold_label = section.settings.sold_label
+    assign v_cta = section.settings.source_link
+  endif
+%}
+<section class="ind ind-reviews ind-reviews--proof" id="ind-reviews">
+  <div class="ind-shell ind-reviews__inner">
+    <div class="ind-reviews__copy">
+      <span class="ind-kicker">{{ v_kicker | escape }}</span>
+      <h2 class="ind-h2">{{ v_heading | escape }}</h2>
+      <p class="ind-reviews__note">{{ v_note | escape }}</p>
+    </div>
+
+    <div class="bj-proof">
+      <div class="bj-proof__head">
+        <span class="bj-proof__bol" aria-label="bol.com">bol<i>.</i></span>
+        <span class="bj-proof__stars" aria-hidden="true">★★★★★</span>
+      </div>
+      <div class="bj-proof__stats">
+        <div class="bj-proof__stat">
+          <strong>{{ section.settings.rating | escape }}</strong>
+          <span>{{ v_rating_label | escape }}</span>
+        </div>
+        <div class="bj-proof__stat">
+          <strong>{{ section.settings.reviews_count | escape }}</strong>
+          <span>{{ v_reviews_label | escape }}</span>
+        </div>
+        {% if section.settings.show_sold and section.settings.sold_count != blank %}
+          <div class="bj-proof__stat">
+            <strong>{{ section.settings.sold_count | escape }}</strong>
+            <span>{{ v_sold_label | escape }}</span>
+          </div>
+        {% endif %}
+      </div>
+      {% if section.settings.source_url != blank %}
+        <a class="bj-proof__cta" href="{{ section.settings.source_url }}" target="_blank" rel="noopener noreferrer">
+          {{ v_cta | escape }} <span aria-hidden="true">→</span>
+          <span class="nova-visually-hidden"> ({{ 'nova.accessibility.opens_new_tab' | t }})</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+<style>
+  .ind-reviews--proof .bj-proof{display:flex;flex-direction:column;margin:20px 0 0;border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:20px;background:#FFFFFF;overflow:hidden;box-shadow:0 18px 40px rgba(15,41,71,.08)}
+  .ind-reviews--proof .bj-proof__head{display:flex;align-items:center;justify-content:center;gap:16px;padding:20px 18px;border-bottom:1px solid var(--bj-line,rgba(21,50,82,.12))}
+  .ind-reviews--proof .bj-proof__bol{color:#0000FE;font-size:1.7rem;font-weight:800;letter-spacing:-.04em;line-height:1}
+  .ind-reviews--proof .bj-proof__bol i{font-style:normal}
+  .ind-reviews--proof .bj-proof__stars{color:var(--bj-gold,#D9A441);font-size:1.25rem;letter-spacing:.1em;line-height:1}
+  .ind-reviews--proof .bj-proof__stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ind-reviews--proof .bj-proof__stat{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;min-width:0;padding:18px 8px;text-align:center}
+  .ind-reviews--proof .bj-proof__stat + .bj-proof__stat{border-left:1px solid var(--bj-line,rgba(21,50,82,.12))}
+  .ind-reviews--proof .bj-proof__stat strong{color:var(--bj-navy-deep,#0F2947);font-size:1.4rem;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .ind-reviews--proof .bj-proof__stat span{max-width:100%;color:var(--bj-muted,#49627D);font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.35;overflow-wrap:anywhere;hyphens:auto}
+  .ind-reviews--proof .bj-proof__cta{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:0 20px;background:var(--bj-navy-deep,#0F2947);color:#FFFFFF;font-size:.98rem;font-weight:600;text-decoration:none;transition:background-color .18s var(--bj-ease,ease)}
+  .ind-reviews--proof .bj-proof__cta:hover{background:var(--bj-navy,#153252)}
+  .ind-reviews--proof .ind-reviews__note{max-width:44ch}
+  @media (min-width:560px){
+    .ind-reviews--proof .bj-proof__stat{padding:20px 10px}
+    .ind-reviews--proof .bj-proof__stat strong{font-size:1.5rem}
+    .ind-reviews--proof .bj-proof__stat span{font-size:.66rem;letter-spacing:.08em}
+  }
+  @media (min-width:901px){
+    .ind-reviews--proof .bj-proof{margin:0 0 0 auto;max-width:520px}
+    .ind-reviews--proof .bj-proof__bol{font-size:2rem}
+    .ind-reviews--proof .bj-proof__stat strong{font-size:1.75rem}
+  }
+</style>
+{% schema %}
+{
+  "name": "Marketplace proof",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik ingebouwde vertalingen (NL/EN/DE/FR)", "default": true},
+    {"type": "header", "content": "Cijfers"},
+    {"type": "paragraph", "content": "Deze cijfers komen van Bol.com en veranderen. Werk ze elke paar maanden bij — een verouderd cijfer is een onjuiste claim."},
+    {"type": "text", "id": "rating", "label": "Beoordeling", "default": "4.7/5"},
+    {"type": "text", "id": "reviews_count", "label": "Aantal openbare reviews", "default": "391"},
+    {"type": "checkbox", "id": "show_sold", "label": "Toon 'verkocht vorige maand'", "default": true},
+    {"type": "text", "id": "sold_count", "label": "Verkocht vorige maand", "default": "100+"},
+    {"type": "url", "id": "source_url", "label": "Bron-URL (Bol.com merk- of productpagina)"},
+    {"type": "header", "content": "Eigen teksten"},
+    {"type": "paragraph", "content": "Alleen gebruikt als de ingebouwde vertalingen hierboven uit staan. Houd de labels kort — lange samenstellingen passen niet in een kolom op een telefoon."},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "PUBLIEK MARKETPLACE-BEWIJS"},
+    {"type": "text", "id": "heading", "label": "Kop", "default": "Publieke klantsignalen, mét bron."},
+    {"type": "textarea", "id": "source_note", "label": "Brontekst", "default": "Publieke marketplace-cijfers met een directe bronlink."},
+    {"type": "text", "id": "rating_label", "label": "Label beoordeling", "default": "Beoordeling"},
+    {"type": "text", "id": "reviews_label", "label": "Label reviews", "default": "Openbare reviews"},
+    {"type": "text", "id": "sold_label", "label": "Label verkocht", "default": "Verkocht vorige maand"},
+    {"type": "text", "id": "source_link", "label": "Knoptekst", "default": "Bekijk op bol.com"}
+  ],
+  "presets": [{"name": "Marketplace proof"}]
+}
+{% endschema %}

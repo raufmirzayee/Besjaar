@@ -1,0 +1,69 @@
+{% capture nova_focus_capture %}{% render 'is-focus-showerhead', product: product %}{% endcapture %}
+{% assign nova_is_focus = nova_focus_capture | strip %}
+{% if settings.enable_restock_requests and nova_is_focus == 'true' %}
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign app_count = 0
+  for block in section.blocks
+    if block.type == '@app'
+      assign app_count = app_count | plus: 1
+    endif
+  endfor
+  assign show_builtin_request = section.settings.show_builtin_request
+  if app_count > 0 and section.settings.hide_builtin_when_app
+    assign show_builtin_request = false
+  endif
+%}
+<section class="nova-section nova-restock-os" id="nova-restock" data-restock-section {% if selected_variant.available %}hidden{% endif %}>
+  <div class="nova-shell">
+    <div class="nova-restock-os__surface">
+      <div class="nova-restock-os__intro">
+        <span class="nova-restock-os__status"><i></i>{{ 'nova.product.out_of_stock' | t }}</span>
+        <p class="nova-kicker">{{ 'nova.restock.kicker' | t }}</p>
+        <h2>{{ 'nova.restock.heading' | t }}</h2>
+        <p>{{ 'nova.restock.copy' | t }}</p>
+        {% if section.settings.show_alternatives_link %}<button class="nova-mini-link" type="button" data-scroll-alternatives>{{ 'nova.restock.view_alternatives' | t }} →</button>{% endif %}
+      </div>
+
+      <div class="nova-restock-os__actions">
+        {% if app_count > 0 %}
+          <div class="nova-restock-apps">
+            <div class="nova-restock-apps__head"><strong>{{ 'nova.restock.app_heading' | t }}</strong><span>{{ 'nova.restock.app_copy' | t }}</span></div>
+            {% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}
+          </div>
+        {% endif %}
+        {% if show_builtin_request %}
+          <div class="nova-restock-request">
+            <strong>{{ 'nova.restock.fallback_heading' | t }}</strong>
+            {% form 'contact', id: 'NovaRestockRequestForm', class: 'nova-restock-request__form' %}
+              {% if form.posted_successfully? %}<div class="nova-form-success" role="status">✓ {{ 'nova.restock.success' | t }}</div>{% endif %}
+              {% if form.errors %}<div id="NovaRestockErrors" class="nova-form-message nova-form-message--error" role="alert" aria-live="assertive"><strong>{{ 'nova.forms.error_heading' | t }}</strong>{{ form.errors | default_errors }}</div>{% endif %}
+              <input type="hidden" name="contact[request_type]" value="Back in stock request">
+              <input type="hidden" name="contact[product]" value="{{ product.title | escape }}">
+              <input type="hidden" name="contact[product_url]" value="{{ shop.url }}{{ product.url }}">
+              <input type="hidden" name="contact[variant_id]" value="{{ selected_variant.id }}" data-restock-variant>
+              <label><span>{{ 'nova.restock.name' | t }}</span><input class="nova-input" type="text" name="contact[name]" autocomplete="name" value="{{ form.name | default: customer.name | escape }}"></label>
+              <label><span>{{ 'nova.restock.email' | t }}</span><input class="nova-input" type="email" name="contact[email]" autocomplete="email" required aria-required="true"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="NovaRestockErrors"{% endif %} value="{{ form.email | default: customer.email | escape }}"></label>
+              <button class="nova-button nova-button--primary" type="submit">{{ 'nova.restock.submit' | t }}</button>
+            {% endform %}
+            <small>{{ 'nova.restock.privacy' | t }}</small>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Back in stock",
+  "settings":[
+    {"type":"checkbox","id":"show_builtin_request","label":"Show built-in restock interest form","default":true},
+    {"type":"checkbox","id":"hide_builtin_when_app","label":"Hide built-in form when a restock app block is connected","default":true},
+    {"type":"checkbox","id":"show_alternatives_link","label":"Link to available alternatives","default":true},
+    {"type":"paragraph","content":"The built-in form sends a genuine contact request to the store. For automatic inventory-triggered emails, add a compatible back-in-stock app block and optionally disable the built-in form."}
+  ],
+  "blocks":[{"type":"@app"}],
+  "presets":[{"name":"Back in stock"}]
+}
+{% endschema %}

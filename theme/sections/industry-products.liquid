@@ -1,0 +1,91 @@
+{% liquid
+  assign home_collection = section.settings.collection
+  if home_collection == blank
+    assign home_collection = collections['douchekoppen']
+  endif
+  if home_collection == blank
+    assign home_collection = collections['showerheads']
+  endif
+  if home_collection == blank
+    assign home_collection = collections['badkamer-douche']
+  endif
+  if home_collection == blank
+    assign home_collection = collections['shower']
+  endif
+
+  capture all_models_url
+    render 'shower-store-url'
+  endcapture
+  assign all_models_url = all_models_url | strip
+%}
+<section class="ind ind-products" id="ind-product">
+  <div class="ind-shell ind-products__inner">
+    <div class="ind-products__layout">
+      <div class="ind-products__head">
+        <span class="ind-kicker">{{ 'industry.products.kicker' | t }}</span>
+        <h2 class="ind-h2">{{ 'industry.products.heading' | t }}</h2>
+        <p class="ind-products__intro">{{ 'industry.products.text' | t }}</p>
+        <a class="ind-products__all" href="{{ all_models_url }}">{{ 'industry.products.all_models' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+
+      {% assign target_count = section.settings.products_to_show | default: 4 %}
+      {% assign rendered = 0 %}
+      {% assign rendered_handles = '|' %}
+
+      <div class="ind-products__grid" data-product-count-target="{{ target_count }}">
+        {%- comment -%}
+          First trust the merchant-selected Showerheads collection. Older versions
+          re-classified every product through is-shower-head, which could hide valid
+          showerheads when product type/metafields were incomplete.
+        {%- endcomment -%}
+        {% if home_collection != blank and home_collection.products_count > 0 %}
+          {% for product in home_collection.products %}
+            {% if rendered < target_count %}
+              {% render 'premium-home-product-card', product: product %}
+              {% capture product_marker %}|{{ product.handle }}|{% endcapture %}
+              {% assign rendered_handles = rendered_handles | append: product_marker %}
+              {% assign rendered = rendered | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {%- comment -%}
+          If that collection contains fewer than the requested number, supplement
+          from the store-wide catalogue with other products that are positively
+          identified as showerheads. This keeps the editorial four-card desktop
+          row full without duplicating products already rendered.
+        {%- endcomment -%}
+        {% if rendered < target_count %}
+          {% for product in collections['all'].products %}
+            {% if rendered < target_count %}
+              {% capture product_marker %}|{{ product.handle }}|{% endcapture %}
+              {% unless rendered_handles contains product_marker %}
+                {% capture is_head_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+                {% assign is_head = is_head_capture | strip %}
+                {% if is_head == 'true' %}
+                  {% render 'premium-home-product-card', product: product %}
+                  {% assign rendered_handles = rendered_handles | append: product_marker %}
+                  {% assign rendered = rendered | plus: 1 %}
+                {% endif %}
+              {% endunless %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      {% if rendered == 0 and request.design_mode %}
+        <div class="ind-products__empty">Select your Showerheads collection in this section to show products here.</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium shower range",
+  "settings": [
+    {"type": "collection", "id": "collection", "label": "Showerheads collection"},
+    {"type": "range", "id": "products_to_show", "label": "Products to show", "min": 2, "max": 6, "step": 1, "default": 4}
+  ],
+  "presets": [{"name": "Premium shower range"}]
+}
+{% endschema %}

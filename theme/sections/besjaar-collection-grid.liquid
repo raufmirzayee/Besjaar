@@ -1,0 +1,241 @@
+{{ 'besjaar-collection-grid.css' | asset_url | stylesheet_tag }}
+{{ 'besjaar-collection-step3.css' | asset_url | stylesheet_tag }}
+{{ 'besjaar-collection-actions-1134.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  capture root_url_localized
+    render 'localized-internal-url', url: routes.root_url
+  endcapture
+  assign root_url_localized = root_url_localized | strip
+
+  assign is_all_collection = false
+  if collection.handle == 'all'
+    assign is_all_collection = true
+  endif
+  assign current_sort = collection.sort_by | default: collection.default_sort_by
+%}
+
+<section class="bk-collection bk-collection--grouped bk-step3" data-bk-collection>
+  <div class="bk-collection__shell">
+    {% unless is_all_collection %}
+      <div class="bk-collection__crumbs-wrap">
+        <nav class="bk-breadcrumbs" aria-label="{{ 'nova.product.breadcrumbs' | t | escape }}">
+          <a href="{{ root_url_localized }}">{{ 'besjaar_grouped_collection.home' | t }}</a>
+          <span aria-hidden="true">›</span>
+          <span>{% render 'localized-collection-title', collection: collection %}</span>
+        </nav>
+      </div>
+    {% endunless %}
+
+    {% if is_all_collection %}
+      {%- comment -%}Besjaar 11.6: the grouped shop hub previously rendered no h1 at all — only per-collection h2s.{%- endcomment -%}
+      <header class="bk-collection__header bk-collection__header--single bk-collection__header--all">
+        <div class="bk-collection__heading-wrap">
+          <div>
+            <p class="bk-collection__eyebrow">BESJAAR</p>
+            <h1>{{ 'nova.shower_store.catalog.heading' | t }}</h1>
+          </div>
+        </div>
+      </header>
+      <div class="bk-collection-groups bk-collection-groups--shop-first">
+        {% assign rendered_collection_count = 0 %}
+        {% assign rendered_collection_ids = '|' %}
+
+        {% comment %}Pass 1 — Shower Heads first.{% endcomment %}
+        {% for shop_collection in collections %}
+          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
+          {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
+          {% assign is_filter_collection = false %}
+          {% if shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% assign is_filter_collection = true %}{% endif %}
+          {% if is_filter_collection %}{% continue %}{% endif %}
+
+          {% assign is_head_collection = false %}
+          {% if shop_collection.handle == 'badkamer-douche' or shop_collection.handle == 'douchekoppen' or shop_collection.handle == 'showerheads' or shop_collection.handle == 'douche' or shop_collection.handle == 'shower' %}{% assign is_head_collection = true %}{% endif %}
+          {% if shop_collection_identity contains 'shower head' or shop_collection_identity contains 'showerhead' or shop_collection_identity contains 'douchekop' or shop_collection_identity contains 'hand shower' or shop_collection_identity contains 'handdouche' %}{% assign is_head_collection = true %}{% endif %}
+          {% unless is_head_collection %}{% continue %}{% endunless %}
+
+          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
+          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
+          {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_description %}{% render 'localized-collection-description', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="bk-collection-group bk-collection-group--heads" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="bk-collection-group__head">
+              <div class="bk-collection-group__identity">
+                <span class="bk-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="bk-collection-group__count">{{ 'nova.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip }}</h2>
+                  {% if shop_collection_description != blank %}<p>{{ shop_collection_description | strip | strip_html | truncatewords: 22 }}</p>{% endif %}
+                </div>
+              </div>
+              <a class="bk-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
+            </header>
+
+            <div class="bk-product-grid bk-product-grid--grouped">
+              {% for product in shop_collection.products limit: 50 %}
+                {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if rendered_collection_count == 0 and forloop.index <= 2 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
+                {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading, image_priority: card_priority %}
+              {% endfor %}
+            </div>
+          </section>
+          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
+          {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
+        {% endfor %}
+
+        {% comment %}Pass 2 — Shower Filters second.{% endcomment %}
+        {% for shop_collection in collections %}
+          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
+          {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
+          {% unless shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% continue %}{% endunless %}
+          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
+          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
+
+          {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_description %}{% render 'localized-collection-description', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="bk-collection-group bk-collection-group--filters" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="bk-collection-group__head">
+              <div class="bk-collection-group__identity">
+                <span class="bk-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="bk-collection-group__count">{{ 'nova.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip }}</h2>
+                  {% if shop_collection_description != blank %}<p>{{ shop_collection_description | strip | strip_html | truncatewords: 22 }}</p>{% endif %}
+                </div>
+              </div>
+              <a class="bk-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
+            </header>
+
+            <div class="bk-product-grid bk-product-grid--grouped">
+              {% for product in shop_collection.products limit: 50 %}
+                {% assign card_loading = 'lazy' %}
+                {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
+              {% endfor %}
+            </div>
+          </section>
+          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
+          {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
+        {% endfor %}
+
+        {% comment %}Pass 3 — any remaining active Besjaar collection comes after the two primary ranges.{% endcomment %}
+        {% for shop_collection in collections %}
+          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
+          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
+          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
+          {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_description %}{% render 'localized-collection-description', collection: shop_collection %}{% endcapture %}
+          {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="bk-collection-group" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="bk-collection-group__head">
+              <div class="bk-collection-group__identity">
+                <span class="bk-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="bk-collection-group__count">{{ 'nova.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip }}</h2>
+                  {% if shop_collection_description != blank %}<p>{{ shop_collection_description | strip | strip_html | truncatewords: 22 }}</p>{% endif %}
+                </div>
+              </div>
+              <a class="bk-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
+            </header>
+
+            <div class="bk-product-grid bk-product-grid--grouped">
+              {% for product in shop_collection.products limit: 50 %}
+                {% assign card_loading = 'lazy' %}
+                {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
+              {% endfor %}
+            </div>
+          </section>
+          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
+          {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
+        {% endfor %}
+
+        {% if rendered_collection_count == 0 %}
+          <div class="bk-empty"><h2>{{ 'nova.collection.no_products' | t }}</h2></div>
+        {% endif %}
+      </div>
+    {% else %}
+      {% capture current_collection_title %}{% render 'localized-collection-title', collection: collection %}{% endcapture %}
+      {% capture current_collection_description %}{% render 'localized-collection-description', collection: collection %}{% endcapture %}
+
+      <header class="bk-collection__header bk-collection__header--single">
+        <div class="bk-collection__heading-wrap">
+          <div>
+            <p class="bk-collection__eyebrow">BESJAAR</p>
+            <h1>{{ current_collection_title | strip }}</h1>
+          </div>
+          {% if current_collection_description != blank %}<p class="bk-collection__intro">{{ current_collection_description | strip | strip_html | truncatewords: 34 }}</p>{% endif %}
+        </div>
+      </header>
+
+      <div class="bk-single-collection-meta bk-single-collection-toolbar">
+        <div class="bk-single-collection-toolbar__count">
+          <span aria-hidden="true">—</span>
+          <strong>{{ 'nova.collection.products_count' | t: count: collection.products_count }}</strong>
+        </div>
+        {% if section.settings.show_sort and collection.sort_options.size > 1 %}
+          <form class="bk-collection-sort" action="{{ collection.url }}" method="get" data-collection-sort>
+            <label for="BesjaarCollectionSort-{{ section.id }}">{{ 'nova.collection.sort' | t }}</label>
+            <div class="bk-collection-sort__select">
+              <select id="BesjaarCollectionSort-{{ section.id }}" name="sort_by" data-collection-sort-select>
+                {% for option in collection.sort_options %}
+                  <option value="{{ option.value | escape }}"{% if option.value == current_sort %} selected{% endif %}>{{ option.name | escape }}</option>
+                {% endfor %}
+              </select>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m3 5 4 4 4-4"></path></svg>
+            </div>
+            <button class="bk-collection-sort__submit" type="submit">{{ 'nova.collection.sort' | t }}</button>
+          </form>
+        {% endif %}
+      </div>
+
+      {% paginate collection.products by section.settings.products_per_page %}
+        {% if collection.products_count > 0 %}
+          <div class="bk-product-grid bk-product-grid--grouped">
+            {% for product in collection.products %}
+              {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if forloop.index <= 2 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
+              {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading, image_priority: card_priority %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="bk-empty"><h2>{{ 'nova.collection.no_products' | t }}</h2></div>
+        {% endif %}
+
+        {% if paginate.pages > 1 %}
+          <nav class="bk-pagination" aria-label="{{ 'nova.conversion.pagination' | t | escape }}">
+            {% if paginate.previous %}<a href="{% render 'localized-internal-url', url: paginate.previous.url %}" aria-label="{{ 'nova.conversion.previous_page' | t | escape }}">←</a>{% endif %}
+            {% for part in paginate.parts %}
+              {% if part.is_link %}<a href="{% render 'localized-internal-url', url: part.url %}">{{ part.title }}</a>
+              {% elsif part.title == paginate.current_page %}<span class="is-current" aria-current="page">{{ part.title }}</span>
+              {% else %}<span>{{ part.title }}</span>{% endif %}
+            {% endfor %}
+            {% if paginate.next %}<a href="{% render 'localized-internal-url', url: paginate.next.url %}" aria-label="{{ 'nova.conversion.next_page' | t | escape }}">→</a>{% endif %}
+          </nav>
+        {% endif %}
+      {% endpaginate %}
+    {% endif %}
+
+    <div class="bk-trust-row" aria-label="{{ 'besjaar_collection_grid.trust_label' | t | escape }}">
+      <div class="bk-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><span>{{ 'besjaar_collection_grid.shipping' | t: amount: settings.free_shipping_threshold }}</span></div>
+      <div class="bk-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10a6 6 0 1 1-5.2 9M4 7l3-3M4 7l3 3"/></svg><span>{{ 'besjaar_collection_grid.returns' | t: days: settings.return_window_days }}</span></div>
+      <div class="bk-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3"/></svg><span>{{ 'besjaar_collection_grid.secure' | t }}</span></div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Grouped collection shop",
+  "settings": [
+    {"type":"range","id":"products_per_page","label":"Products per page","min":8,"max":24,"step":4,"default":12},
+    {"type":"checkbox","id":"show_sort","label":"Show collection sorting","default":true}
+  ],
+  "presets":[{"name":"Grouped collection shop"}]
+}
+{% endschema %}

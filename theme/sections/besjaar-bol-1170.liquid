@@ -1,0 +1,120 @@
+{%- comment -%}
+  Besjaar 11.6.16 — Bol.com review attribution on product pages.
+
+  Reads three product metafields and, when they are filled, shows a small
+  card under the buy box: the score, the number of reviews, and a link to
+  the Bol.com listing the score comes from.
+
+    custom.bol_rating   number_decimal  e.g. 4.7
+    custom.bol_reviews  number_integer  e.g. 391
+    custom.bol_url      url             the Bol.com product page
+
+  The copy says the score covers the Besjaar range on Bol, not this single
+  model, because Bol pools its review set across the Besjaar variants — the
+  same 4.7 / 391 shows on the 3-mode head, the 10-mode head and the filter
+  refills. Claiming 391 reviews for one model would overstate it.
+
+  Deliberately NOT marked up as Product/aggregateRating structured data.
+  Google's review snippet guidelines say not to aggregate reviews or ratings
+  from other websites, so marking Bol's scores up as this shop's own rating
+  would risk the store's rich results. The card is visible, attributed and
+  linked instead — which is what shoppers, and AI assistants reading the
+  page, actually need.
+
+  Renders at every width: it is content, not styling.
+{%- endcomment -%}
+{%- if request.page_type == 'product' and product != blank -%}
+  {%- liquid
+    assign bj_rating = product.metafields.custom.bol_rating.value
+    assign bj_count = product.metafields.custom.bol_reviews.value
+    assign bj_url = product.metafields.custom.bol_url.value
+    assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  -%}
+  {%- if bj_rating != blank and bj_count != blank -%}
+    {%- liquid
+      case bj_lang
+        when 'en'
+          assign bj_label = 'for Besjaar on Bol.com'
+          assign bj_of = 'out of 5, average of'
+          assign bj_reviews_word = 'buyer reviews'
+          assign bj_link = 'View this model on Bol.com'
+          assign bj_note = 'Besjaar also sells on Bol.com under the seller name EenTop. Bol pools its reviews across the Besjaar models, so this score covers the range rather than this single model.'
+        when 'de'
+          assign bj_label = 'für Besjaar auf Bol.com'
+          assign bj_of = 'von 5, Durchschnitt aus'
+          assign bj_reviews_word = 'Käuferbewertungen'
+          assign bj_link = 'Dieses Modell auf Bol.com ansehen'
+          assign bj_note = 'Besjaar verkauft auch auf Bol.com unter dem Verkäufernamen EenTop. Bol fasst die Bewertungen der Besjaar-Modelle zusammen — die Note gilt also für die Serie, nicht nur für dieses Modell.'
+        when 'fr'
+          assign bj_label = 'pour Besjaar sur Bol.com'
+          assign bj_of = 'sur 5, moyenne de'
+          assign bj_reviews_word = 'avis d’acheteurs'
+          assign bj_link = 'Voir ce modèle sur Bol.com'
+          assign bj_note = 'Besjaar vend aussi sur Bol.com sous le nom de vendeur EenTop. Bol regroupe les avis des modèles Besjaar : cette note concerne donc la gamme, pas uniquement ce modèle.'
+        else
+          assign bj_label = 'voor Besjaar op Bol.com'
+          assign bj_of = 'van 5, gemiddelde van'
+          assign bj_reviews_word = 'reviews van kopers'
+          assign bj_link = 'Bekijk dit model op Bol.com'
+          assign bj_note = 'Besjaar verkoopt ook op Bol.com onder de verkopersnaam EenTop. Bol bundelt de reviews van de Besjaar-modellen, dus dit cijfer geldt voor de serie en niet alleen voor dit model.'
+      endcase
+      assign bj_rating_rounded = bj_rating | round: 1
+      assign bj_full = bj_rating | floor
+    -%}
+<style id="besjaar-bol-1170">
+body[data-page-type="product"] .bj-bol{display:flex;flex-direction:column;gap:8px;margin:16px 0 0;padding:14px 16px;border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:16px;background:var(--bj-ice-50,#F6F9FC)}
+body[data-page-type="product"] .bj-bol__top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+body[data-page-type="product"] .bj-bol__stars{color:var(--bj-gold,#D9A441);font-size:.95rem;letter-spacing:.06em;line-height:1}
+body[data-page-type="product"] .bj-bol__score{color:var(--bj-navy-deep,#0F2947);font-size:1.05rem;font-weight:700;line-height:1}
+body[data-page-type="product"] .bj-bol__count{color:var(--bj-muted,#49627D);font-size:.84rem;line-height:1.3}
+body[data-page-type="product"] .bj-bol__note{margin:0;color:var(--bj-muted,#49627D);font-size:.76rem;line-height:1.5}
+body[data-page-type="product"] .bj-bol__link{align-self:flex-start;color:var(--bj-blue,#2F628F);font-size:.82rem;font-weight:600;text-decoration:none}
+body[data-page-type="product"] .bj-bol__link:hover{text-decoration:underline;text-underline-offset:.2em}
+</style>
+<template id="bj-bol-card">
+  <aside class="bj-bol">
+    <div class="bj-bol__top">
+      <span class="bj-bol__stars" aria-hidden="true">{% for i in (1..5) %}{% if i <= bj_full %}★{% else %}☆{% endif %}{% endfor %}</span>
+      <span class="bj-bol__score">{{ bj_rating_rounded }}</span>
+      <span class="bj-bol__count">{{ bj_of }} {{ bj_count }} {{ bj_reviews_word }} {{ bj_label }}</span>
+    </div>
+    <p class="bj-bol__note">{{ bj_note | escape }}</p>
+    {% if bj_url != blank %}<a class="bj-bol__link" href="{{ bj_url }}" target="_blank" rel="noopener">{{ bj_link | escape }} ↗</a>{% endif %}
+  </aside>
+</template>
+<script>
+(function () {
+  'use strict';
+  var run = function () {
+    if (document.querySelector('.bj-bol')) return;
+    var tpl = document.getElementById('bj-bol-card');
+    if (!tpl) return;
+    var host = document.querySelector('.ind-bj-pd__trust') ||
+               document.querySelector('.ind-bj-pd__form') ||
+               document.querySelector('.ind-bj-pd__summary');
+    if (!host || !host.parentNode) return;
+    var node = tpl.content ? tpl.content.firstElementChild : tpl.firstElementChild;
+    if (!node) return;
+    host.parentNode.insertBefore(node.cloneNode(true), host.nextSibling);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  document.addEventListener('shopify:section:load', run);
+})();
+</script>
+  {%- endif -%}
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar Bol reviews",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.16: shows the Bol.com score and review count on a product page when custom.bol_rating, custom.bol_reviews and custom.bol_url are filled on that product. Attributed and linked, not marked up as this shop's own rating — Google forbids aggregating other sites' ratings. Copy notes that Bol pools reviews across the Besjaar models. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

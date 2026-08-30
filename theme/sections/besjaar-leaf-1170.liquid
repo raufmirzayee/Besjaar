@@ -1,0 +1,59 @@
+{%- comment -%}
+  Besjaar 11.6.14 — chrome mark on the About page brand card, all widths.
+  The image lives in snippets/besjaar-leaf-logo.liquid; it is rendered into
+  a <template> on page templates and mounted above the wordmark by the
+  script below. The card itself (ice gradient, sky glow, wordmark, note) is
+  styled here so phones and desktop match; the desktop-fixes carrier adds
+  only desktop sizing on top.
+{%- endcomment -%}
+{%- if request.page_type == 'page' -%}
+<template id="bj-leaf-logo">{% render 'besjaar-leaf-logo' %}</template>
+<style id="besjaar-leaf-1170">
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf{position:relative!important;isolation:isolate!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:10px!important;min-height:0!important;margin:24px 0 0!important;padding:36px 24px!important;border:1px solid var(--bj-line)!important;border-radius:22px!important;overflow:hidden!important;background:linear-gradient(160deg,var(--bj-ice-100) 0%,var(--bj-ice-50) 100%)!important;text-align:center!important;box-shadow:none!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf::before{content:none!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf::after{content:""!important;position:absolute!important;left:50%!important;top:38%!important;width:320px!important;height:320px!important;margin:-160px 0 0 -160px!important;border-radius:50%!important;background:radial-gradient(circle,rgba(140,200,236,.35) 0%,rgba(140,200,236,0) 70%)!important;z-index:-1!important;pointer-events:none!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf .nova-about-v461__monogram{display:none!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage .bj-leaf{position:relative!important;z-index:1!important;display:block!important;width:min(78%,360px)!important;height:auto!important;margin:0 auto 18px!important;overflow:visible!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf strong{position:relative!important;z-index:1!important;display:inline-block!important;margin:0!important;padding-right:.9em!important;color:var(--bj-navy-deep)!important;font-size:1.7rem!important;font-weight:700!important;letter-spacing:.26em!important;text-transform:uppercase!important;line-height:1!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf strong::after{content:"\00AE"!important;position:absolute!important;top:-.1em!important;right:0!important;font-size:.36em!important;letter-spacing:0!important}
+body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf small{position:relative!important;z-index:1!important;max-width:28ch!important;color:var(--bj-muted)!important;font-size:.86rem!important;line-height:1.45!important}
+@media (min-width:901px){
+  body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf{margin:0!important;padding:44px 32px!important;min-height:520px!important;border-radius:26px!important}
+  body[data-page-type="page"] .nova-about-v461__brand-stage .bj-leaf{width:min(72%,400px)!important;margin-bottom:24px!important}
+  body[data-page-type="page"] .nova-about-v461__brand-stage.has-leaf strong{font-size:2.2rem!important}
+}
+</style>
+<script>
+(function () {
+  'use strict';
+  var run = function () {
+    var stage = document.querySelector('.nova-about-v461__brand-stage');
+    var tpl = document.getElementById('bj-leaf-logo');
+    if (!stage || !tpl || stage.classList.contains('has-leaf')) return;
+    var source = tpl.content ? tpl.content.firstElementChild : tpl.firstElementChild;
+    if (!source) return;
+    var node = source.cloneNode(true);
+    var strong = stage.querySelector('strong');
+    stage.insertBefore(node, strong || null);
+    stage.classList.add('has-leaf');
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  document.addEventListener('shopify:section:load', run);
+})();
+</script>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar leaf mark",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.14: mounts the chrome mark (snippets/besjaar-leaf-logo.liquid) on the About page brand card at every width. Keep in the header group after the desktop fixes section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

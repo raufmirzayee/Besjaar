@@ -1,0 +1,139 @@
+{%- comment -%}
+  Besjaar 11.6.6 — runtime patches for the two slow interactions.
+
+  1. Cart drawer: /cart/change.js already returns the full cart, but
+     nova-core.js discards it and reads /cart.js again (two round trips and a
+     "Loading…" flash per quantity change or remove). This serves that
+     follow-up read from the change.js response. One-shot, 1.5 s window, and
+     the data is the same current cart either way.
+  2. Product gallery: thumbnails swap the main image to a URL that was never
+     fetched. Warm the two neighbours on idle, everything after the first
+     touch, the hovered/touched thumb immediately. Never on data-saver / 2G.
+  3. Phones: drop backdrop-filter on the drawer backdrop, toast, zoom button
+     and hero pill — each one re-composites a blur while things animate.
+
+  Temporary carrier like besjaar-tokens-1164. During the consolidation, fold
+  (1) into refreshCart(cart) in nova-core.js, (2) into the inline script of
+  sections/industry-product.liquid (set srcset before src, add 1000w/1300w
+  candidates), and (3) into the mobile section of the product/drawer CSS.
+{%- endcomment -%}
+<style id="besjaar-runtime-1166">
+@media (max-width:900px){
+  body.nova-polish-v34 .nova-drawer-backdrop{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(11,25,43,.5)!important}
+  body.nova-polish-v34 .nova-toast{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(15,32,54,.97)!important}
+  .ind-bj-pd__zoom{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#fff!important}
+  .ind-hero--editorial .ind-hero__customer-proof{backdrop-filter:none!important;background:rgba(255,255,255,.92)!important}
+}
+</style>
+<script>
+(function () {
+  'use strict';
+
+  var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var conserveData = !!(connection && (connection.saveData || /(^|-)2g$/.test(connection.effectiveType || '')));
+
+  var nativeFetch = window.fetch;
+  if (typeof nativeFetch === 'function' && typeof Response === 'function') {
+    var cachedCart = null;
+    var cachedAt = 0;
+    var pathOf = function (input) {
+      try { return new URL(typeof input === 'string' ? input : ((input && input.url) || ''), window.location.href).pathname; } catch (e) { return ''; }
+    };
+    window.fetch = function (input, init) {
+      var path = pathOf(input);
+      var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+      if (method === 'GET' && cachedCart && /\/cart\.js$/.test(path) && (Date.now() - cachedAt) < 1500) {
+        var body = cachedCart;
+        cachedCart = null;
+        return Promise.resolve(new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } }));
+      }
+      var request = nativeFetch.apply(window, arguments);
+      if (method === 'POST' && /\/cart\/change\.js$/.test(path)) {
+        request.then(function (response) {
+          if (!response || !response.ok) return;
+          response.clone().text().then(function (text) { cachedCart = text; cachedAt = Date.now(); }).catch(function () {});
+        }).catch(function () {});
+      }
+      return request;
+    };
+  }
+
+  var warmGallery = function () {
+    if (conserveData) return;
+    var root = document.querySelector('[data-besjaar-product-section]');
+    if (!root) return;
+    var main = root.querySelector('[id^="BesjaarMainImage-"]');
+    var thumbs = Array.prototype.slice.call(root.querySelectorAll('.ind-bj-pd__thumb'));
+    if (!main || thumbs.length < 2) return;
+
+    var sizes = main.getAttribute('sizes') || '';
+    var warmed = [];
+    var warm = function (btn) {
+      if (!btn || !btn.dataset || !btn.dataset.src || warmed.indexOf(btn) !== -1) return;
+      warmed.push(btn);
+      var img = new Image();
+      img.decoding = 'async';
+      if ('fetchPriority' in img) img.fetchPriority = 'low';
+      if (sizes) img.sizes = sizes;
+      if (btn.dataset.srcSmall) img.srcset = btn.dataset.srcSmall + ' 700w, ' + btn.dataset.src + ' 1600w';
+      img.src = btn.dataset.src;
+    };
+    var currentIndex = function () {
+      for (var i = 0; i < thumbs.length; i += 1) { if (thumbs[i].getAttribute('aria-current') === 'true') return i; }
+      return 0;
+    };
+    var idle = function (fn) {
+      if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout: 2500 });
+      else window.setTimeout(fn, 600);
+    };
+    var warmNeighbours = function () {
+      var i = currentIndex(), n = thumbs.length;
+      warm(thumbs[(i + 1) % n]);
+      warm(thumbs[(i - 1 + n) % n]);
+    };
+    var warmedAll = false;
+    var warmAll = function () {
+      if (warmedAll) return;
+      warmedAll = true;
+      idle(function () { thumbs.forEach(warm); });
+    };
+
+    if (document.readyState === 'complete') idle(warmNeighbours);
+    else window.addEventListener('load', function () { idle(warmNeighbours); }, { once: true });
+
+    var strip = root.querySelector('.ind-bj-pd__thumbs');
+    var stage = root.querySelector('.ind-bj-pd__stage');
+    [strip, stage].forEach(function (node) {
+      if (!node) return;
+      ['pointerdown', 'touchstart', 'pointerover'].forEach(function (type) {
+        node.addEventListener(type, warmAll, { passive: true, once: true });
+      });
+    });
+    if (strip) {
+      var warmTarget = function (event) {
+        var btn = event.target && event.target.closest ? event.target.closest('.ind-bj-pd__thumb') : null;
+        if (btn) warm(btn);
+      };
+      strip.addEventListener('pointerover', warmTarget, { passive: true });
+      strip.addEventListener('touchstart', warmTarget, { passive: true });
+    }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', warmGallery, { once: true });
+  else warmGallery();
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar runtime patches",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.6 interaction patches: one-round-trip cart updates, gallery image warming, no blur during animations on phones. Keep this section in the header group, after the colour tokens."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

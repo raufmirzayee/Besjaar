@@ -1,0 +1,107 @@
+<script src="{{ 'nova-collection-filters.js' | asset_url }}" defer="defer"></script>
+
+{% liquid
+  capture localized_collection_title_capture
+    render 'localized-collection-title', collection: collection
+  endcapture
+  assign display_title = localized_collection_title_capture | strip
+
+  capture localized_description_capture
+    render 'localized-collection-description', collection: collection
+  endcapture
+  assign display_description = localized_description_capture | strip
+%}
+
+<section class="ind ba-collection" data-collection-root data-section-id="{{ section.id }}">
+  <div class="ind-shell">
+    <nav class="ba-collection__breadcrumbs" aria-label="{{ 'nova.product.breadcrumbs' | t | escape }}">
+      <a href="{{ routes.root_url }}">{{ 'nova.collection.home' | t }}</a><span aria-hidden="true">/</span><strong>{{ display_title }}</strong>
+    </nav>
+
+    <header class="ba-collection__hero" data-reveal>
+      <div class="ba-collection__hero-copy">
+        <span class="ind-kicker">{{ 'nova.shower_collection.eyebrow' | t }}</span>
+        <h1>{{ display_title }}</h1>
+        {% if display_description != blank %}<div class="ba-collection__description">{{ display_description | strip_html | truncatewords: 38 }}</div>{% endif %}
+      </div>
+      <div class="ba-collection__hero-meta">
+        <strong data-collection-part="count" role="status" aria-live="polite">{{ collection.products_count }}</strong>
+        <span>{{ 'nova.collection.products' | t }}</span>
+      </div>
+    </header>
+
+    <div class="ba-collection__controls">
+      {% if section.settings.show_tag_filters and collection.all_tags.size > 0 %}
+        <nav class="ba-collection__filters" aria-label="{{ 'nova.collection.filters' | t | escape }}">
+          <a data-collection-link {% if current_tags == blank %}aria-current="page"{% endif %} href="{% render 'localized-internal-url', url: collection.url %}">{{ 'nova.collection.all' | t }}</a>
+          {% for tag in collection.all_tags limit: 6 %}
+            {% assign tag_url = collection.url | append: '/' | append: tag | handleize %}
+            <a data-collection-link {% if current_tags contains tag %}aria-current="page"{% endif %} href="{% render 'localized-internal-url', url: tag_url %}">{{ tag | escape }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+
+      {% if section.settings.show_sort and collection.sort_options.size > 0 %}
+        <form method="get" class="ba-collection__sort" data-collection-form>
+          <label for="IndSort-{{ section.id }}">{{ 'nova.collection.sort' | t }}</label>
+          <select id="IndSort-{{ section.id }}" name="sort_by">
+            {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+            {% for option in collection.sort_options %}<option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>{% endfor %}
+          </select>
+          <noscript><button type="submit">{{ 'nova.collection.apply_filters' | t }}</button></noscript>
+        </form>
+      {% endif %}
+    </div>
+
+    <div data-collection-part="results" data-collection-anchor>
+      {% paginate collection.products by 12 %}
+        {% if collection.products_count > 0 %}
+          <div class="ba-collection__grid">
+            {% for product in collection.products %}
+              {% render 'besjaar-shop-card', product: product %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="ba-collection__empty">{{ 'nova.collection.no_products' | t }}</div>
+        {% endif %}
+
+        {% if paginate.pages > 1 %}
+          <nav class="ba-pagination" aria-label="{{ 'nova.conversion.pagination' | t | escape }}">
+            {% if paginate.previous %}<a href="{{ paginate.previous.url }}" data-collection-link data-collection-scroll aria-label="{{ 'nova.conversion.previous_page' | t | escape }}">←</a>{% endif %}
+            {% for part in paginate.parts %}
+              {% if part.is_link %}<a href="{{ part.url }}" data-collection-link data-collection-scroll>{{ part.title }}</a>
+              {% elsif part.title == paginate.current_page %}<span class="is-current" aria-current="page">{{ part.title }}</span>
+              {% else %}<span>{{ part.title }}</span>{% endif %}
+            {% endfor %}
+            {% if paginate.next %}<a href="{{ paginate.next.url }}" data-collection-link data-collection-scroll aria-label="{{ 'nova.conversion.next_page' | t | escape }}">→</a>{% endif %}
+          </nav>
+        {% endif %}
+      {% endpaginate %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Industry collectie",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_tag_filters",
+      "label": "Toon tag-filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Toon sorteren",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Industry collectie"
+    }
+  ]
+}
+{% endschema %}

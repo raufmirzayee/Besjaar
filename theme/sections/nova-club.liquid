@@ -1,0 +1,93 @@
+{% liquid
+  assign nova_club_enabled = settings.enable_besjaar_club
+  if request.page_type == 'index' and settings.show_club_home_section == false
+    assign nova_club_enabled = false
+  endif
+  assign club_target = routes.account_login_url
+  if customer
+    assign club_target = routes.account_url
+  endif
+  if settings.club_page != blank
+    assign club_target = settings.club_page.url
+  endif
+  assign club_name = settings.club_name | default: 'Besjaar Club'
+%}
+{% if nova_club_enabled %}
+<section class="nova-section nova-club" data-nova-club>
+  <div class="nova-shell">
+    <div class="nova-club__surface">
+      <div class="nova-club__intro">
+        <p class="nova-kicker">{{ 'nova.club.kicker' | t }}</p>
+        {% if customer %}
+          {% assign nova_club_customer_name = customer.first_name | default: customer.email %}
+          <span class="nova-club__status"><i></i>{{ 'nova.club.signed_in' | t }}</span>
+          <h2>{{ 'nova.club.welcome' | t: name: nova_club_customer_name }}</h2>
+          <p>{{ 'nova.club.member_copy' | t }}</p>
+        {% else %}
+          <span class="nova-club__status nova-club__status--guest"><i></i>{{ 'nova.club.optional' | t }}</span>
+          <h2>{{ club_name | escape }}</h2>
+          <p>{{ 'nova.club.guest_copy' | t }}</p>
+        {% endif %}
+        <div class="nova-club__actions">
+          <a class="nova-button nova-button--primary" href="{{ club_target }}"{% unless customer %} rel="nofollow"{% endunless %}>
+            {% if customer %}{{ 'nova.club.open_club' | t }}{% else %}{{ 'nova.club.join_sign_in' | t }}{% endif %}
+          </a>
+          {% if settings.club_referral_page != blank %}<a class="nova-button nova-button--ghost" href="{% render 'localized-internal-url', url: settings.club_referral_page.url %}">{{ 'nova.club.referrals' | t }}</a>{% endif %}
+        </div>
+        <small class="nova-club__fineprint">{{ 'nova.club.no_fake_points' | t }}</small>
+      </div>
+
+      <div class="nova-club__benefits">
+        {% assign benefit_count = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'benefit' %}
+            {% assign benefit_count = benefit_count | plus: 1 %}
+            <article class="nova-club-benefit" {{ block.shopify_attributes }}>
+              <span class="nova-club-benefit__index">0{{ benefit_count }}</span>
+              <div class="nova-club-benefit__icon" aria-hidden="true">{{ block.settings.icon | escape }}</div>
+              {% if section.settings.use_localized_copy %}
+                {% case benefit_count %}
+                  {% when 1 %}<h3>{{ 'nova.club.benefit_1_title' | t }}</h3><p>{{ 'nova.club.benefit_1_copy' | t }}</p>
+                  {% when 2 %}<h3>{{ 'nova.club.benefit_2_title' | t }}</h3><p>{{ 'nova.club.benefit_2_copy' | t }}</p>
+                  {% else %}<h3>{{ 'nova.club.benefit_3_title' | t }}</h3><p>{{ 'nova.club.benefit_3_copy' | t }}</p>
+                {% endcase %}
+              {% else %}
+                <h3>{{ block.settings.title | escape }}</h3>
+                <p>{{ block.settings.text | escape }}</p>
+              {% endif %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {% assign has_app_block = false %}
+    {% for block in section.blocks %}{% if block.type == '@app' %}{% assign has_app_block = true %}{% endif %}{% endfor %}
+    {% if has_app_block %}
+      <div class="nova-club__apps nova-app-surface">
+        <div class="nova-section-head nova-section-head--compact"><div><p class="nova-kicker">{{ 'nova.club.live_kicker' | t }}</p><h2>{{ 'nova.club.rewards_dashboard' | t }}</h2></div></div>
+        {% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Besjaar Club",
+  "settings":[{"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized benefit copy (EN / NL / DE / FR)","default":true}],
+  "blocks":[
+    {"type":"benefit","name":"Club benefit","settings":[
+      {"type":"text","id":"icon","label":"Icon / short mark","default":"✓"},
+      {"type":"text","id":"title","label":"Title","default":"Member account"},
+      {"type":"textarea","id":"text","label":"Text","default":"Keep orders, saved shopping and account details together."}
+    ]},
+    {"type":"@app"}
+  ],
+  "presets":[{"name":"Besjaar Club","blocks":[
+    {"type":"benefit","settings":{"icon":"◎","title":"Member hub","text":"Keep orders, profile details and saved shopping together."}},
+    {"type":"benefit","settings":{"icon":"◇","title":"Rewards ready","text":"Connect a loyalty app to surface real points, rewards or tiers here."}},
+    {"type":"benefit","settings":{"icon":"↗","title":"Referral ready","text":"Link a real referral program when you are ready to reward recommendations."}}
+  ]}]
+}
+{% endschema %}

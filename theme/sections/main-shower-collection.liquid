@@ -1,0 +1,587 @@
+{{ 'nova-shower-collection.css' | asset_url | stylesheet_tag }}
+{{ 'nova-conversion-qa.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'nova-collection-filters.js' | asset_url }}" defer="defer"></script>
+
+{% liquid
+  assign hero_image = collection.image
+  if hero_image == blank
+    for hero_candidate in collection.products limit: 20
+      capture hero_is_head_capture
+        render 'is-shower-head', product: hero_candidate
+      endcapture
+      assign hero_is_head = hero_is_head_capture | strip
+      if hero_is_head == 'true' and hero_candidate.featured_image != blank
+        assign hero_image = hero_candidate.featured_image
+        break
+      endif
+    endfor
+  endif
+
+  assign active_filters = 0
+  assign shower_filter_count = 0
+  assign has_family_filter = false
+  assign has_modes_filter = false
+  assign has_filter_filter = false
+  assign has_hose_filter = false
+  assign shower_head_count = 0
+  for focus_product in collection.products limit: 50
+    capture focus_is_head_capture
+      render 'is-shower-head', product: focus_product
+    endcapture
+    assign focus_is_head = focus_is_head_capture | strip
+    if focus_is_head == 'true'
+      assign shower_head_count = shower_head_count | plus: 1
+    endif
+  endfor
+
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != nil or filter.max_value.value != nil
+        assign active_filters = active_filters | plus: 1
+      endif
+    else
+      assign active_filters = active_filters | plus: filter.active_values.size
+    endif
+
+    if filter.param_name contains 'm.custom.shower_family'
+      assign shower_filter_count = shower_filter_count | plus: 1
+      assign has_family_filter = true
+    elsif filter.param_name contains 'm.custom.spray_modes'
+      assign shower_filter_count = shower_filter_count | plus: 1
+      assign has_modes_filter = true
+    elsif filter.param_name contains 'm.custom.filter_included'
+      assign shower_filter_count = shower_filter_count | plus: 1
+      assign has_filter_filter = true
+    elsif filter.param_name contains 'm.custom.hose_included'
+      assign shower_filter_count = shower_filter_count | plus: 1
+      assign has_hose_filter = true
+    endif
+  endfor
+%}
+
+<section class="nova-shower-collection" data-shower-collection data-collection-root data-section-id="{{ section.id }}">
+  <div class="nova-shell">
+    {% if section.settings.show_breadcrumbs %}
+      <nav class="nova-shower-collection__breadcrumbs" aria-label="{{ 'nova.product.breadcrumbs' | t | escape }}" data-reveal>
+        <a href="{{ routes.root_url }}">{{ 'nova.collection.home' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ routes.collections_url }}">{{ 'nova.collection.collections' | t }}</a>
+        <span aria-hidden="true">/</span>
+        <strong>{% render 'localized-collection-title', collection: collection %}</strong>
+      </nav>
+    {% endif %}
+
+    {% if section.settings.show_confidence_strip %}
+      <section class="nova-shower-confidence" aria-label="{{ 'nova.shower_collection.confidence_label' | t | escape }}" data-reveal>
+        <div class="nova-shower-confidence__summary">
+          <span class="nova-shower-confidence__dot" aria-hidden="true"></span>
+          <strong>{{ 'nova.shower_collection.confidence_kicker' | t }}</strong>
+          <span>{{ 'nova.shower_collection.confidence_summary' | t }}</span>
+        </div>
+        <div class="nova-shower-confidence__grid">
+          <div class="nova-shower-confidence__item">
+            <span class="nova-shower-confidence__icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5h15v13h-15z"/><path d="M18.5 13h5.5l4.5 5v3.5h-10z"/><circle cx="9" cy="24" r="2.5"/><circle cx="24" cy="24" r="2.5"/><path d="M6.5 12h7"/></svg>
+            </span>
+            <div><strong>{{ 'nova.delivery.estimate_fallback' | t }}</strong><small>{{ 'nova.delivery.cutoff' | t: hour: settings.order_cutoff_hour }}</small></div>
+          </div>
+          <div class="nova-shower-confidence__item">
+            <span class="nova-shower-confidence__icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4.5 26 8v7.5c0 6-4.2 10.2-10 12-5.8-1.8-10-6-10-12V8z"/><path d="m11.5 16 3 3 6-7"/></svg>
+            </span>
+            <div><strong>{{ 'nova.product.return' | t }}</strong><small>{{ 'nova.shower_collection.confidence_returns_note' | t }}</small></div>
+          </div>
+          <div class="nova-shower-confidence__item">
+            <span class="nova-shower-confidence__icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="24" height="18" rx="3"/><path d="M4 12h24"/><path d="M9 20h5"/><path d="M22 17.5v5"/><path d="m19.5 20 2.5 2.5 4-5"/></svg>
+            </span>
+            <div><strong>{{ 'nova.product.secure_payment' | t }}</strong><small>{{ 'nova.shower_collection.confidence_payment_note' | t }}</small></div>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    <header class="nova-shower-collection__hero{% if hero_image == blank %} is-image-empty{% endif %}" data-reveal>
+      <div class="nova-shower-collection__hero-copy">
+        <p class="nova-shower-collection__eyebrow"><span translate="no">Besjaar</span> · {{ 'nova.shower_collection.eyebrow' | t }}</p>
+        <h1>{% if section.settings.heading != blank %}{{ section.settings.heading }}{% else %}{% render 'localized-collection-title', collection: collection %}{% endif %}</h1>
+        {% if section.settings.intro != blank %}
+          <p class="nova-shower-collection__lead">{{ section.settings.intro }}</p>
+        {% else %}
+          {% capture nova_shower_collection_description %}{% render 'localized-collection-description', collection: collection %}{% endcapture %}{% assign nova_shower_collection_description = nova_shower_collection_description | strip %}
+          {% if nova_shower_collection_description != blank %}<div class="nova-shower-collection__lead">{{ nova_shower_collection_description | truncatewords: 42 }}</div>{% else %}<p class="nova-shower-collection__lead">{{ 'nova.shower_collection.default_intro' | t }}</p>{% endif %}
+        {% endif %}
+        <div class="nova-shower-collection__hero-actions">
+          <a class="nova-button nova-button--primary" href="#NovaShowerProducts-{{ section.id }}">{{ 'nova.shower_collection.shop_models' | t }}</a>
+        </div>
+        <div class="nova-shower-collection__hero-meta" aria-label="{{ 'nova.shower_collection.collection_summary' | t }}">
+          <div><strong>{{ shower_head_count }}</strong><span>{{ 'nova.shower_collection.models' | t }}</span></div>
+          <div><strong>1</strong><span>{{ 'nova.shower_collection.focused_range' | t }}</span></div>
+        </div>
+      </div>
+      <div class="nova-shower-collection__hero-media" aria-hidden="true">
+        {% if hero_image != blank %}
+          {{ hero_image | image_url: width: 1400 | image_tag: loading: 'eager', fetchpriority: 'high', decoding: 'async', widths: '520,760,1000,1400', sizes: '(max-width: 900px) 100vw, 46vw', alt: '' }}
+        {% else %}
+          <div class="nova-shower-collection__hero-placeholder">
+            <span class="nova-shower-collection__drop"></span>
+            <span class="nova-shower-collection__ring"></span>
+          </div>
+        {% endif %}
+      </div>
+    </header>
+
+    {% if section.settings.show_bol_proof %}
+      <section class="nova-bol-proof nova-bol-proof--credible" aria-labelledby="NovaBolProofTitle-{{ section.id }}" data-reveal>
+        <div class="nova-bol-proof__credible-intro">
+          <p class="nova-kicker">{{ 'nova.shower_collection.bol_proof_kicker' | t }}</p>
+          <h2 id="NovaBolProofTitle-{{ section.id }}">{{ 'nova.shower_collection.bol_proof_heading' | t }}</h2>
+          <p>{{ 'nova.shower_collection.bol_proof_copy' | t }}</p>
+        </div>
+        <div class="nova-bol-proof__credible-panel">
+          <div class="nova-bol-proof__credible-brand"><span aria-label="bol.com">bol.</span><small>{{ 'nova.shower_collection.bol_proof_public' | t }}</small></div>
+          <div class="nova-bol-proof__credible-stat"><strong>{{ section.settings.bol_rating }}/5</strong><span>{{ 'nova.shower_collection.bol_proof_stat_rating' | t }}</span></div>
+          <div class="nova-bol-proof__credible-stat"><strong>{{ section.settings.bol_review_count }}</strong><span>{{ 'nova.shower_collection.bol_proof_stat_reviews' | t }}</span></div>
+          <div class="nova-bol-proof__credible-stat"><strong>{{ section.settings.bol_sold_last_month }}</strong><span>{{ 'nova.shower_collection.bol_proof_stat_sales' | t }}</span></div>
+          {% if section.settings.bol_link != blank %}<a class="nova-bol-proof__credible-link" href="{{ section.settings.bol_link }}" target="_blank" rel="noopener noreferrer">{{ 'nova.shower_collection.bol_proof_view' | t }} <span aria-hidden="true">↗</span><span class="nova-visually-hidden"> ({{ 'nova.accessibility.opens_new_tab' | t }})</span></a>{% endif %}
+        </div>
+        <p class="nova-bol-proof__note">{{ 'nova.shower_collection.bol_proof_note' | t }}</p>
+      </section>
+    {% endif %}
+
+    {% if section.settings.show_quick_finder and shower_filter_count > 0 %}
+      <section class="nova-shower-finder" aria-labelledby="NovaShowerFinderTitle-{{ section.id }}" data-reveal>
+        <div class="nova-shower-finder__head">
+          <div>
+            <p class="nova-shower-finder__kicker">{{ 'nova.shower_collection.finder_kicker' | t }}</p>
+            <h2 id="NovaShowerFinderTitle-{{ section.id }}">{{ 'nova.shower_collection.finder_title' | t }}</h2>
+          </div>
+          <p>{{ 'nova.shower_collection.finder_text' | t }}</p>
+        </div>
+        <div class="nova-shower-finder__rows">
+          {% if has_family_filter %}
+            {% for filter in collection.filters %}
+              {% if filter.param_name contains 'm.custom.shower_family' %}
+                <div class="nova-shower-finder__row">
+                  <span>{{ 'nova.shower_collection.choose_type' | t }}</span>
+                  <div class="nova-shower-finder__chips" role="list">
+                    {% for value in filter.values %}
+                      {% liquid
+                        assign family_label = value.label
+                        assign family_value = value.value | downcase | strip
+                        assign family_is_head = true
+                        case family_value
+                          when 'shower_head'
+                            assign family_label = 'nova.shower_collection.family_shower_head' | t
+                          when 'filtered_shower_head'
+                            assign family_label = 'nova.shower_collection.family_filtered' | t
+                          when 'hand_shower'
+                            assign family_label = 'nova.shower_collection.family_hand_shower' | t
+                          when 'shower_set'
+                            assign family_label = 'nova.shower_collection.family_set' | t
+                          when 'shower_filter', 'replacement_filter', 'filter', 'shower_hose', 'hose', 'shower_accessory', 'accessory'
+                            assign family_is_head = false
+                        endcase
+                      %}
+                      {% if family_is_head %}
+                        <a role="listitem" class="nova-shower-finder__chip{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}" href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}" aria-pressed="{% if value.active %}true{% else %}false{% endif %}"{% if value.count == 0 and value.active == false %} aria-disabled="true"{% endif %}>
+                          <span>{{ family_label }}</span><small>{{ value.count }}</small>
+                        </a>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if has_modes_filter %}
+            {% for filter in collection.filters %}
+              {% if filter.param_name contains 'm.custom.spray_modes' %}
+                <div class="nova-shower-finder__row">
+                  <span>{{ 'nova.shower_collection.choose_modes' | t }}</span>
+                  <div class="nova-shower-finder__chips" role="list">
+                    {% for value in filter.values %}
+                      <a role="listitem" class="nova-shower-finder__chip{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}" href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}" aria-pressed="{% if value.active %}true{% else %}false{% endif %}">
+                        <span>{{ 'nova.shower_collection.mode_count' | t: count: value.label }}</span><small>{{ value.count }}</small>
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if has_filter_filter or has_hose_filter %}
+            <div class="nova-shower-finder__row">
+              <span>{{ 'nova.shower_collection.choose_features' | t }}</span>
+              <div class="nova-shower-finder__chips" role="list">
+                {% for filter in collection.filters %}
+                  {% if filter.param_name contains 'm.custom.filter_included' and filter.true_value != blank %}
+                    {% assign value = filter.true_value %}
+                    <a role="listitem" class="nova-shower-finder__chip{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}" href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}" aria-pressed="{% if value.active %}true{% else %}false{% endif %}">
+                      <span>{{ 'nova.shower_collection.filter_included' | t }}</span><small>{{ value.count }}</small>
+                    </a>
+                  {% elsif filter.param_name contains 'm.custom.hose_included' and filter.true_value != blank %}
+                    {% assign value = filter.true_value %}
+                    <a role="listitem" class="nova-shower-finder__chip{% if value.active %} is-active{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}" href="{% if value.active %}{{ value.url_to_remove }}{% else %}{{ value.url_to_add }}{% endif %}" aria-pressed="{% if value.active %}true{% else %}false{% endif %}">
+                      <span>{{ 'nova.shower_collection.hose_included' | t }}</span><small>{{ value.count }}</small>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    {% paginate collection.products by section.settings.products_per_page %}
+      <section id="NovaShowerProducts-{{ section.id }}" class="nova-shower-products" aria-labelledby="NovaShowerProductsTitle-{{ section.id }}" data-shower-choice-root>
+        {% if section.settings.show_need_filters %}
+          <div class="nova-shower-needs" data-reveal>
+            <div class="nova-shower-needs__head">
+              <div>
+                <p class="nova-kicker">{{ 'nova.shower_collection.need_kicker' | t }}</p>
+                <h2>{{ 'nova.shower_collection.need_heading' | t }}</h2>
+              </div>
+              <p>{{ 'nova.shower_collection.need_copy' | t }}</p>
+            </div>
+            <div class="nova-shower-needs__chips" role="group" aria-label="{{ 'nova.shower_collection.need_label' | t | escape }}">
+              <button type="button" class="is-active" data-shower-need="all" aria-pressed="true">{{ 'nova.shower_collection.need_all' | t }}</button>
+              <button type="button" data-shower-need="filter" aria-pressed="false">{{ 'nova.shower_collection.need_filter' | t }}</button>
+              <button type="button" data-shower-need="hose" aria-pressed="false">{{ 'nova.shower_collection.need_hose' | t }}</button>
+              <button type="button" data-shower-need="versatile" aria-pressed="false">{{ 'nova.shower_collection.need_modes' | t }}</button>
+              <button type="button" data-shower-need="simple" aria-pressed="false">{{ 'nova.shower_collection.need_simple' | t }}</button>
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="nova-shower-products__toolbar" data-reveal>
+          <div class="nova-shower-products__toolbar-copy">
+            <p class="nova-shower-products__kicker">{{ 'nova.shower_collection.lineup_kicker' | t }}</p>
+            <h2 id="NovaShowerProductsTitle-{{ section.id }}">{{ 'nova.shower_collection.lineup_title' | t }}</h2>
+            <span data-collection-part="count" role="status" aria-live="polite" data-shower-choice-status data-result-label="{{ 'nova.collection.results' | t | escape }}">{{ shower_head_count }} {{ 'nova.collection.results' | t }}</span>
+          </div>
+          <div class="nova-shower-products__toolbar-actions">
+            {% if section.settings.show_filters and collection.filters.size > 0 %}
+              <button class="nova-shower-filter-toggle" type="button" data-shower-filter-toggle aria-expanded="false" aria-controls="NovaShowerFilters-{{ section.id }}">
+                <span>{{ 'nova.collection.filters' | t }}</span>
+                {% if active_filters > 0 %}<b>{{ active_filters }}</b>{% endif %}
+              </button>
+            {% endif %}
+            <form method="get" class="nova-shower-sort" data-collection-form data-collection-part="sort">
+              {% for filter in collection.filters %}
+                {% if filter.type == 'price_range' %}
+                  {% if filter.min_value.value != nil %}<input type="hidden" name="{{ filter.min_value.param_name }}" value="{% render 'price-filter-input-value', value: filter.min_value.value %}">{% endif %}
+                  {% if filter.max_value.value != nil %}<input type="hidden" name="{{ filter.max_value.param_name }}" value="{% render 'price-filter-input-value', value: filter.max_value.value %}">{% endif %}
+                {% else %}
+                  {% for value in filter.active_values %}<input type="hidden" name="{{ value.param_name }}" value="{{ value.value | escape }}">{% endfor %}
+                {% endif %}
+              {% endfor %}
+              <label for="NovaShowerSort-{{ section.id }}">{{ 'nova.collection.sort' | t }}</label>
+              <select id="NovaShowerSort-{{ section.id }}" name="sort_by">
+                {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+                {% for option in collection.sort_options %}
+                  <option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>
+                {% endfor %}
+              </select>
+              <noscript><button type="submit">{{ 'nova.collection.apply_filters' | t }}</button></noscript>
+            </form>
+          </div>
+        </div>
+
+        <div data-collection-part="active">
+        {% if active_filters > 0 %}
+          <div class="nova-shower-active-filters" data-reveal>
+            <span class="nova-shower-active-filters__label">{{ 'nova.shower_collection.active_filters' | t }}</span>
+            <div class="nova-shower-active-filters__list">
+              {% for filter in collection.filters %}
+                {% if filter.type == 'price_range' %}
+                  {% if filter.min_value.value != nil or filter.max_value.value != nil %}
+                    {% liquid
+                      assign minimum = filter.min_value.value | default: 0
+                      assign maximum = filter.max_value.value | default: filter.range_max
+                    %}
+                    <a data-collection-link href="{% render 'localized-internal-url', url: filter.url_to_remove %}"><span>{{ filter.label }}: {{ minimum | money }} – {{ maximum | money }}</span><b aria-hidden="true">×</b></a>
+                  {% endif %}
+                {% else %}
+                  {% for value in filter.active_values %}
+                    <a data-collection-link href="{% render 'localized-internal-url', url: value.url_to_remove %}"><span>{{ value.label }}</span><b aria-hidden="true">×</b></a>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+              <a class="nova-shower-active-filters__clear" data-collection-link href="{% render 'localized-internal-url', url: collection.url %}">{{ 'nova.collection.clear_all' | t }}</a>
+            </div>
+          </div>
+        {% endif %}
+        </div>
+
+        <div class="nova-shower-catalog">
+          {% if section.settings.show_filters and collection.filters.size > 0 %}
+            <aside class="nova-shower-filters" id="NovaShowerFilters-{{ section.id }}" data-shower-filter-panel aria-label="{{ 'nova.collection.refine' | t }}" tabindex="-1">
+              <form method="get" data-collection-form data-collection-part="filters">
+                {% if collection.sort_by != blank %}<input type="hidden" name="sort_by" value="{{ collection.sort_by }}">{% endif %}
+                <div class="nova-shower-filters__head">
+                  <div><p>{{ 'nova.shower_collection.refine_kicker' | t }}</p><strong>{{ 'nova.collection.refine' | t }}</strong></div>
+                  <button type="button" data-shower-filter-close aria-label="{{ 'nova.collection.close' | t }}">×</button>
+                </div>
+                <div class="nova-shower-filters__groups">
+                  {% for filter in collection.filters %}
+                    <details class="nova-shower-filter-group"{% if forloop.index <= 4 %} open{% endif %}>
+                      <summary>
+                        <span>{{ filter.label }}</span>
+                        {% if filter.active_values.size > 0 %}<b>{{ filter.active_values.size }}</b>{% endif %}
+                        <i aria-hidden="true">+</i>
+                      </summary>
+                      <div class="nova-shower-filter-group__body" data-filter-values>
+                        {% case filter.type %}
+                          {% when 'boolean', 'list' %}
+                            {% for value in filter.values %}
+                              {% liquid
+                                assign render_filter_value = true
+                                if filter.param_name contains 'm.custom.shower_family'
+                                  assign filter_family_value = value.value | downcase | strip
+                                  case filter_family_value
+                                    when 'shower_filter', 'replacement_filter', 'filter', 'shower_hose', 'hose', 'shower_accessory', 'accessory'
+                                      assign render_filter_value = false
+                                  endcase
+                                endif
+                              %}
+                              {% if render_filter_value %}
+                                <label class="nova-shower-filter-option{% if value.active %} is-active{% endif %}{% if forloop.index > 8 %} is-overflow{% endif %}{% if value.count == 0 and value.active == false %} is-disabled{% endif %}">
+                                  <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value | escape }}"{% if value.active %} checked{% endif %}{% if value.count == 0 and value.active == false %} disabled{% endif %}>
+                                  {% if value.image != blank %}
+                                    <span class="nova-shower-filter-option__visual nova-shower-filter-option__visual--image">{{ value.image | image_url: width: 80 | image_tag: loading: 'lazy', widths: '40,80', sizes: '40px', alt: '' }}</span>
+                                  {% elsif value.swatch != blank %}
+                                    <span class="nova-shower-filter-option__visual nova-shower-filter-option__visual--swatch"{% if value.swatch.color != blank %} style="--nova-filter-swatch:{{ value.swatch.color }}"{% endif %}>
+                                      {% if value.swatch.image != blank %}{{ value.swatch.image | image_url: width: 80 | image_tag: loading: 'lazy', widths: '40,80', sizes: '40px', alt: '' }}{% endif %}
+                                    </span>
+                                  {% else %}
+                                    <span class="nova-shower-filter-option__check" aria-hidden="true"></span>
+                                  {% endif %}
+                                  <span class="nova-shower-filter-option__label">{{ value.label }}</span>
+                                  <small>{{ value.count }}</small>
+                                </label>
+                              {% endif %}
+                            {% endfor %}
+                            {% if filter.values.size > 8 %}<button class="nova-shower-filter-more" type="button" data-filter-more aria-expanded="false" data-more="{{ 'nova.shower_collection.show_more' | t }}" data-less="{{ 'nova.shower_collection.show_less' | t }}">{{ 'nova.shower_collection.show_more' | t }}</button>{% endif %}
+                          {% when 'price_range' %}
+                            <div class="nova-shower-price-filter">
+                              <label><span>{{ 'nova.collection.from' | t }}</span><div><b>{{ cart.currency.symbol }}</b><input name="{{ filter.min_value.param_name }}" inputmode="decimal" value="{% render 'price-filter-input-value', value: filter.min_value.value %}" placeholder="0"></div></label>
+                              <label><span>{{ 'nova.collection.to' | t }}</span><div><b>{{ cart.currency.symbol }}</b><input name="{{ filter.max_value.param_name }}" inputmode="decimal" value="{% render 'price-filter-input-value', value: filter.max_value.value %}" placeholder="{% render 'price-filter-input-value', value: filter.range_max %}"></div></label>
+                            </div>
+                        {% endcase %}
+                      </div>
+                    </details>
+                  {% endfor %}
+                </div>
+                <div class="nova-shower-filters__actions">
+                  <button class="nova-button nova-button--primary" type="submit">{{ 'nova.collection.apply_filters' | t }}</button>
+                  {% if active_filters > 0 %}<a data-collection-link href="{% render 'localized-internal-url', url: collection.url %}">{{ 'nova.collection.clear_all' | t }}</a>{% endif %}
+                </div>
+              </form>
+            </aside>
+            <button class="nova-shower-filter-backdrop" type="button" data-shower-filter-backdrop aria-label="{{ 'nova.collection.close' | t }}"></button>
+          {% endif %}
+
+          <div class="nova-shower-catalog__main" data-collection-part="results" data-collection-anchor>
+            {% assign visible_shower_products = 0 %}
+            {% for product in collection.products %}
+              {% capture is_head_count_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+              {% assign is_head_count = is_head_count_capture | strip %}
+              {% if is_head_count == 'true' %}
+                {% if section.settings.show_sold_out or product.available %}{% assign visible_shower_products = visible_shower_products | plus: 1 %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if visible_shower_products > 0 %}
+              <div class="nova-shower-grid" style="--nova-shower-columns:{{ section.settings.columns_desktop }}">
+                {% for product in collection.products %}
+                  {% capture is_head_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+                  {% assign is_head = is_head_capture | strip %}
+                  {% if is_head == 'true' %}
+                    {% if section.settings.show_sold_out or product.available %}
+                      {% render 'shower-product-card', product: product %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="nova-shower-choice-empty" data-shower-choice-empty hidden>
+                <span aria-hidden="true">○</span>
+                <h3>{{ 'nova.shower_collection.need_empty_title' | t }}</h3>
+                <p>{{ 'nova.shower_collection.need_empty_copy' | t }}</p>
+                <button type="button" class="nova-button nova-button--secondary" data-shower-need-reset>{{ 'nova.shower_collection.need_reset' | t }}</button>
+              </div>
+              {% if paginate.pages > 1 %}
+                <nav class="nova-shower-pagination" aria-label="{{ 'nova.conversion.pagination' | t | escape }}">
+                  {% if paginate.previous %}<a data-collection-link data-collection-scroll href="{% render 'localized-internal-url', url: paginate.previous.url %}" aria-label="{{ 'nova.conversion.previous_page' | t | escape }}">←</a>{% endif %}
+                  {% for part in paginate.parts %}
+                    {% if part.is_link %}<a data-collection-link data-collection-scroll href="{% render 'localized-internal-url', url: part.url %}">{{ part.title }}</a>{% else %}<span{% if part.title == paginate.current_page %} class="is-current" aria-current="page"{% endif %}>{{ part.title }}</span>{% endif %}
+                  {% endfor %}
+                  {% if paginate.next %}<a data-collection-link data-collection-scroll href="{% render 'localized-internal-url', url: paginate.next.url %}" aria-label="{{ 'nova.conversion.next_page' | t | escape }}">→</a>{% endif %}
+                </nav>
+              {% endif %}
+            {% else %}
+              <div class="nova-shower-empty">
+                <span aria-hidden="true">○</span>
+                <h3>{{ 'nova.shower_collection.no_match_title' | t }}</h3>
+                <p>{{ 'nova.shower_collection.no_match_text' | t }}</p>
+                <a class="nova-button nova-button--primary" data-collection-link href="{% render 'localized-internal-url', url: collection.url %}">{{ 'nova.shower_collection.reset_filters' | t }}</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    {% endpaginate %}
+
+
+  </div>
+</section>
+
+<script>
+(() => {
+  const section = document.currentScript.closest('.shopify-section');
+  if (!section) return;
+  const root = section.querySelector('[data-shower-collection]');
+  if (!root) return;
+
+  /* Filtering re-renders the panel body and the product grid in place, so
+     nothing here may hold a reference to an element inside a swapped region.
+     Every handler is delegated off `root` and every lookup is done at call
+     time. `nova:collection:updated` fires after each swap. */
+
+  const panel = root.querySelector('[data-shower-filter-panel]');
+  const backdrop = root.querySelector('[data-shower-filter-backdrop]');
+  const toggleButton = () => root.querySelector('[data-shower-filter-toggle]');
+  const mobile = () => window.matchMedia('(max-width: 900px)').matches;
+  let returnFocus = null;
+  const focusable = () => panel ? [...panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')].filter(el => !el.hidden && el.offsetParent !== null) : [];
+
+  const setOpen = open => {
+    if (!panel) return;
+    const isMobile = mobile();
+    panel.classList.toggle('is-open', open);
+    backdrop?.classList.toggle('is-open', open);
+    toggleButton()?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.documentElement.classList.toggle('nova-shower-filter-open', Boolean(open && isMobile));
+    panel.toggleAttribute('inert', Boolean(isMobile && !open));
+    if (isMobile) {
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-modal', open ? 'true' : 'false');
+    } else {
+      panel.removeAttribute('role');
+      panel.removeAttribute('aria-modal');
+    }
+    if (open && isMobile) {
+      returnFocus = document.activeElement;
+      window.setTimeout(() => focusable()[0]?.focus() || panel.focus(), 40);
+    } else if (!open && returnFocus) {
+      const target = returnFocus; returnFocus = null; window.setTimeout(() => target?.focus?.(), 0);
+    }
+  };
+
+  root.addEventListener('click', event => {
+    if (event.target.closest('[data-shower-filter-toggle]')) {
+      setOpen(!panel?.classList.contains('is-open'));
+      return;
+    }
+    if (event.target.closest('[data-shower-filter-close]') || event.target.closest('[data-shower-filter-backdrop]')) {
+      setOpen(false);
+      return;
+    }
+    const more = event.target.closest('[data-filter-more]');
+    if (more) {
+      const values = more.closest('[data-filter-values]');
+      if (!values) return;
+      const expanded = values.classList.toggle('is-expanded');
+      more.textContent = expanded ? more.dataset.less : more.dataset.more;
+      more.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && panel?.classList.contains('is-open')) { setOpen(false); return; }
+    if (event.key !== 'Tab' || !mobile() || !panel?.classList.contains('is-open')) return;
+    const items = focusable(); if (!items.length) { event.preventDefault(); panel.focus(); return; }
+    const first = items[0], last = items[items.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+  window.addEventListener('resize', () => { setOpen(Boolean(panel?.classList.contains('is-open') && mobile())); }, { passive: true });
+
+  setOpen(false);
+
+  const choiceRoot = root.querySelector('[data-shower-choice-root]');
+  if (choiceRoot) {
+    /* "Shop by need" narrows the rendered page client-side. It sits on top of
+       the storefront filters, so it has to be re-applied to the fresh cards
+       after every server-side refresh or it would silently reset to All. */
+    let currentNeed = 'all';
+
+    const matchesNeed = (card, need) => {
+      const hasFilter = card.dataset.choiceFilter === 'true';
+      const hasHose = card.dataset.choiceHose === 'true';
+      const spray = Number(card.dataset.choiceSpray || 0);
+      if (need === 'filter') return hasFilter;
+      if (need === 'hose') return hasHose;
+      if (need === 'versatile') return spray >= 5;
+      if (need === 'simple') return spray > 0 && spray <= 3 && !hasFilter;
+      return true;
+    };
+
+    const applyNeed = (need = 'all', { emit = true } = {}) => {
+      currentNeed = need;
+      const choiceStatus = choiceRoot.querySelector('[data-shower-choice-status]');
+      const choiceEmpty = choiceRoot.querySelector('[data-shower-choice-empty]');
+      let visible = 0;
+      choiceRoot.querySelectorAll('[data-shower-choice-card]').forEach(card => {
+        const show = matchesNeed(card, need);
+        card.hidden = !show;
+        card.classList.toggle('is-choice-hidden', !show);
+        if (show) visible += 1;
+      });
+      choiceRoot.querySelectorAll('[data-shower-need]').forEach(button => {
+        const active = button.dataset.showerNeed === need;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      if (choiceStatus) choiceStatus.textContent = `${visible} ${choiceStatus.dataset.resultLabel || ''}`.trim();
+      if (choiceEmpty) choiceEmpty.hidden = visible > 0;
+      if (emit) window.NovaMeasurement?.emit?.('shower_need_filter', { need, visible });
+    };
+
+    choiceRoot.addEventListener('click', event => {
+      const button = event.target.closest('[data-shower-need]');
+      if (button) { applyNeed(button.dataset.showerNeed || 'all'); return; }
+      if (event.target.closest('[data-shower-need-reset]')) applyNeed('all');
+    });
+
+    /* emit:false - a filter refresh is not the visitor picking a need again. */
+    root.addEventListener('nova:collection:updated', () => applyNeed(currentNeed, { emit: false }));
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Shower collection",
+  "settings": [
+    {"type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true},
+    {"type": "text", "id": "heading", "label": "Custom heading", "info": "Leave blank to use the collection title."},
+    {"type": "textarea", "id": "intro", "label": "Intro text", "info": "Leave blank to use the collection description."},
+    {"type": "checkbox", "id": "show_confidence_strip", "label": "Show delivery / returns / payment strip", "default": true},
+    {"type": "checkbox", "id": "show_bol_proof", "label": "Show bol.com social proof", "default": true},
+    {"type": "text", "id": "bol_rating", "label": "bol.com product rating", "default": "4.7"},
+    {"type": "text", "id": "bol_review_count", "label": "bol.com review count", "default": "340+"},
+    {"type": "text", "id": "bol_sold_last_month", "label": "Public sales / customer figure", "default": "20,000+"},
+    {"type": "url", "id": "bol_link", "label": "bol.com proof / product link"},
+    {"type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 32, "step": 4, "default": 12},
+    {"type": "range", "id": "columns_desktop", "label": "Desktop product columns", "min": 2, "max": 4, "step": 1, "default": 3},
+    {"type": "checkbox", "id": "show_need_filters", "label": "Show Shop by need filters", "default": true},
+    {"type": "checkbox", "id": "show_quick_finder", "label": "Show Shopify metafield quick finder", "default": true},
+    {"type": "checkbox", "id": "show_filters", "label": "Show storefront filters", "default": true},
+    {"type": "checkbox", "id": "show_sold_out", "label": "Show sold-out products", "default": true},
+    {"type": "paragraph", "content": "For the quick finder, add the shower metafields as filters in Shopify Search & Discovery. Nova uses Shopify's native filter URLs and never invents filter results."}
+  ]
+}
+{% endschema %}

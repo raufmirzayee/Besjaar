@@ -1,0 +1,347 @@
+/* Besjaar 11.2.22 — Step 1: foundation + desktop/mobile header */
+:root{
+  --nova-bg:#ffffff!important;
+  --nova-surface:#ffffff!important;
+  --nova-text:#10231c!important;
+  --nova-muted:#657382!important;
+  --nova-accent:#173555!important;
+  --nova-accent-2:#173555!important;
+  --nova-teal:#173555!important;
+  --nova-sage:#173555!important;
+  --besjaar-ink:#10231c;
+  --besjaar-navy:#173555;
+  --besjaar-navy-deep:#102b48;
+  --besjaar-muted:#657382;
+  --besjaar-line:#e4e9ed;
+  --besjaar-soft:#f6f8f9;
+  --besjaar-white:#ffffff;
+  --besjaar-radius-sm:10px;
+  --besjaar-radius-md:16px;
+  --besjaar-radius-lg:24px;
+  --besjaar-shadow-sm:0 8px 24px rgba(16,43,72,.08);
+  --besjaar-shadow-md:0 18px 50px rgba(16,43,72,.12);
+}
+
+html{scroll-behavior:smooth;overflow-x:clip;background:#fff!important}
+body.nova-polish-v34{
+  color:var(--besjaar-ink)!important;
+  background:var(--besjaar-white)!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body.nova-polish-v34 *{box-sizing:border-box}
+body.nova-polish-v34 img{max-width:100%}
+body.nova-polish-v34 a,body.nova-polish-v34 button{transition:color .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+body.nova-polish-v34 :where(a,button,input,select,textarea,summary):focus-visible{outline:3px solid rgba(23,53,85,.22);outline-offset:3px}
+body.nova-polish-v34 .nova-shell{width:min(1440px,calc(100% - 64px))!important;margin-inline:auto!important}
+
+/* Announcement: compact, premium, readable. */
+body.nova-polish-v34 .nova-announcement{
+  min-height:34px!important;
+  padding:0 24px!important;
+  display:flex;
+  align-items:center;
+  background:var(--besjaar-navy)!important;
+  border:0!important;
+  color:#fff!important;
+  font-size:.66rem;
+  font-weight:760;
+  letter-spacing:.065em;
+}
+body.nova-polish-v34 .nova-announcement__inner{min-height:34px;justify-content:center;gap:18px}
+body.nova-polish-v34 .nova-announcement a{color:#fff;text-decoration:none}
+
+/* Desktop header */
+body.nova-polish-v34 .nova-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:150!important;
+  background:rgba(255,255,255,.96)!important;
+  border-bottom:1px solid var(--besjaar-line)!important;
+  box-shadow:0 1px 0 rgba(16,43,72,.02)!important;
+  backdrop-filter:blur(18px) saturate(145%);
+}
+body.nova-polish-v34 .nova-header__row{
+  min-height:72px!important;
+  display:grid!important;
+  grid-template-columns:auto auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:0 38px!important;
+}
+body.nova-polish-v34 .nova-brand{
+  display:inline-flex;
+  align-items:center;
+  min-width:max-content;
+  color:var(--besjaar-ink)!important;
+  font-size:1.18rem!important;
+  font-weight:820!important;
+  letter-spacing:.16em!important;
+  text-decoration:none;
+}
+body.nova-polish-v34 .nova-brand span{-webkit-text-fill-color:currentColor;background:none;color:currentColor}
+body.nova-polish-v34 .nova-brand img{display:block;max-height:34px;width:auto}
+body.nova-polish-v34 .nova-nav{
+  justify-self:start!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:30px!important;
+  min-width:0;
+  margin:0;
+}
+body.nova-polish-v34 .nova-nav__link,
+body.nova-polish-v34 .nova-nav a{
+  position:relative;
+  min-height:44px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  padding:0!important;
+  border:0;
+  background:transparent;
+  color:var(--besjaar-navy)!important;
+  font:inherit!important;
+  font-size:.88rem!important;
+  font-weight:650!important;
+  letter-spacing:-.01em;
+  text-decoration:none;
+  cursor:pointer;
+  opacity:1;
+}
+body.nova-polish-v34 .nova-nav__link>span,
+body.nova-polish-v34 .nova-shop-mega__trigger>span,
+body.nova-polish-v34 .nova-more-menu__trigger>span{font-size:1em;color:inherit;font-weight:inherit;letter-spacing:inherit}
+body.nova-polish-v34 .nova-nav__link:after,
+body.nova-polish-v34 .nova-nav>a:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:100%;
+  bottom:4px!important;
+  height:2px!important;
+  border-radius:999px;
+  background:var(--besjaar-navy);
+  transition:right .2s ease;
+}
+body.nova-polish-v34 .nova-nav__link:hover:after,
+body.nova-polish-v34 .nova-nav>a:hover:after,
+body.nova-polish-v34 .nova-nav__link[aria-current="page"]:after{right:0}
+body.nova-polish-v34 .nova-nav__link:hover,body.nova-polish-v34 .nova-nav a:hover{color:var(--besjaar-navy-deep)}
+body.nova-polish-v34 .nova-header__actions{
+  grid-column:3!important;
+  justify-self:end!important;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:max-content;
+}
+body.nova-polish-v34 .nova-menu-toggle{display:none}
+body.nova-polish-v34 .nova-icon-btn,
+body.nova-polish-v34 .nova-account-trigger{
+  width:40px!important;
+  min-width:40px!important;
+  height:40px!important;
+  min-height:40px!important;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:var(--besjaar-navy)!important;
+  box-shadow:none!important;
+}
+body.nova-polish-v34 .nova-icon-btn:hover,
+body.nova-polish-v34 .nova-account-trigger:hover{background:var(--besjaar-soft)!important;border-color:#e8edf1!important;color:var(--besjaar-navy)!important;transform:translateY(-1px)!important}
+body.nova-polish-v34 .nova-icon-btn svg,body.nova-polish-v34 .nova-account-trigger svg{width:20px;height:20px}
+body.nova-polish-v34 .nova-count{
+  right:-2px;
+  top:-4px;
+  min-width:18px;
+  height:18px;
+  padding:0 4px;
+  border:2px solid #fff;
+  background:var(--besjaar-navy);
+  color:#fff;
+  box-shadow:none;
+  font-size:.56rem;
+  font-weight:800;
+}
+body.nova-polish-v34 .nova-localization-slot--desktop .nova-localization__trigger{
+  min-height:40px;
+  border-color:var(--besjaar-line);
+  border-radius:999px;
+  background:#fff;
+  box-shadow:none;
+}
+
+/* Shop mega + More dropdown: lighter retail surface. */
+body.nova-polish-v34 .nova-shop-mega{
+  top:100%;
+  border-top:1px solid var(--besjaar-line);
+  border-bottom:1px solid var(--besjaar-line);
+  background:rgba(255,255,255,.985);
+  box-shadow:var(--besjaar-shadow-md);
+  backdrop-filter:blur(18px);
+}
+body.nova-polish-v34 .nova-shop-mega__inner{padding-top:28px;padding-bottom:30px}
+body.nova-polish-v34 .nova-shop-mega__item{border-radius:14px}
+body.nova-polish-v34 .nova-shop-mega__item:hover{background:var(--besjaar-soft)}
+body.nova-polish-v34 .nova-more-menu__panel{
+  top:calc(100% + 8px);
+  min-width:230px;
+  padding:9px;
+  border:1px solid var(--besjaar-line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:var(--besjaar-shadow-md);
+}
+body.nova-polish-v34 .nova-more-menu__panel a{min-height:42px;padding:10px 12px;border-radius:10px}
+body.nova-polish-v34 .nova-more-menu__panel a:hover{background:var(--besjaar-soft)}
+body.nova-polish-v34 .nova-account-popover__snapshot{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+
+/* Remove wishlist completely from customer-facing UI. */
+body.nova-polish-v34 :is([data-open-drawer="wishlist"],[data-wish-product],[data-wishlist-button],[data-wishlist-toggle],#NovaWishlistDrawer,[data-account-wishlist-preview],[data-account-saved-count]){display:none!important}
+
+
+/* Foundation controls: remove the legacy purple accent without redesigning page content yet. */
+body.nova-polish-v34 .nova-button--primary,body.nova-polish-v34 .ind-btn--primary{background:var(--besjaar-navy)!important;border-color:var(--besjaar-navy)!important;color:#fff!important}
+body.nova-polish-v34 .nova-button--primary:hover,body.nova-polish-v34 .ind-btn--primary:hover{background:var(--besjaar-navy-deep)!important;border-color:var(--besjaar-navy-deep)!important}
+body.nova-polish-v34 .nova-button,body.nova-polish-v34 .ind-btn{border-radius:999px!important}
+@media (max-width:1100px){body.besjaar-mobile-menu-open{overflow:hidden}}
+
+/* Mobile/tablet */
+@media (max-width:1100px){
+  body.nova-polish-v34 .nova-shell{width:min(100% - 40px,1440px)!important}
+  body.nova-polish-v34 .nova-header__row{grid-template-columns:minmax(0,1fr) auto!important;min-height:64px!important;gap:14px!important}
+  body.nova-polish-v34 .nova-nav{display:none!important}
+  body.nova-polish-v34 .nova-header__actions{grid-column:2!important;gap:5px!important}
+  body.nova-polish-v34 .nova-menu-toggle{display:grid!important;order:4!important}
+  body.nova-polish-v34 .nova-localization-slot--desktop{display:none}
+  body.nova-polish-v34 .nova-account-action{display:none!important}
+  body.nova-polish-v34 .nova-brand{font-size:1.08rem!important;letter-spacing:.145em!important}
+  body.nova-polish-v34 .nova-brand img{max-height:31px}
+  body.nova-polish-v34 .nova-icon-btn{width:40px;min-width:40px;height:40px;min-height:40px}
+
+  body.nova-polish-v34 .nova-mobile-menu{
+    display:block;
+    position:absolute;
+    left:0;
+    right:0;
+    top:100%;
+    max-height:calc(100dvh - 64px);
+    padding:18px 20px calc(28px + env(safe-area-inset-bottom));
+    overflow:auto;
+    border-top:1px solid var(--besjaar-line);
+    border-bottom:1px solid var(--besjaar-line);
+    background:rgba(255,255,255,.99);
+    box-shadow:0 28px 54px rgba(16,43,72,.15);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translateY(-10px);
+    transition:opacity .2s ease,transform .2s ease,visibility .2s ease;
+  }
+  body.nova-polish-v34 .nova-mobile-menu.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+  body.nova-polish-v34 .nova-mobile-menu>a,
+  body.nova-polish-v34 .nova-mobile-menu__shop-title,
+  body.nova-polish-v34 .nova-mobile-menu__account{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    min-height:50px;
+    padding:0 4px;
+    border-bottom:1px solid #edf0f2;
+    color:var(--besjaar-navy);
+    font-size:1rem;
+    font-weight:650;
+  }
+  body.nova-polish-v34 .nova-mobile-menu__shop{padding-bottom:10px}
+  body.nova-polish-v34 .nova-mobile-menu__shop-title{font-size:1.04rem}
+  body.nova-polish-v34 .nova-mobile-menu__products{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 0 4px}
+  body.nova-polish-v34 .nova-mobile-menu__product{
+    display:grid;
+    grid-template-columns:48px minmax(0,1fr) auto;
+    align-items:center;
+    gap:9px;
+    min-height:66px;
+    padding:8px;
+    border:1px solid #e8ecef;
+    border-radius:12px;
+    background:#fff;
+    color:var(--besjaar-navy);
+    font-size:.74rem;
+    line-height:1.25;
+  }
+  body.nova-polish-v34 .nova-mobile-menu__product img{width:48px;height:48px;object-fit:contain;border-radius:8px;background:var(--besjaar-soft)}
+  body.nova-polish-v34 .nova-mobile-menu__more{display:grid;gap:0;margin-top:8px;border-top:1px solid var(--besjaar-line);padding-top:12px}
+  body.nova-polish-v34 .nova-mobile-menu__more>span{padding:4px 4px 8px;color:var(--besjaar-muted);font-size:.66rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+  body.nova-polish-v34 .nova-mobile-menu__more a{min-height:44px;display:flex;align-items:center;padding:0 4px;border-bottom:1px solid #edf0f2;color:var(--besjaar-navy);font-size:.9rem;font-weight:600}
+  body.nova-polish-v34 .nova-mobile-menu__localization{padding-top:14px}
+  body.nova-polish-v34 .nova-localization--mobile .nova-localization__trigger{min-height:46px;border:1px solid var(--besjaar-line);border-radius:12px;background:var(--besjaar-soft)}
+}
+
+@media (max-width:700px){
+  body.nova-polish-v34 .nova-shell{width:calc(100% - 28px)!important}
+  body.nova-polish-v34 .nova-announcement{min-height:30px;padding:0 12px;font-size:.55rem;letter-spacing:.045em}
+  body.nova-polish-v34 .nova-announcement__inner{min-height:30px;white-space:nowrap;overflow:hidden}
+  body.nova-polish-v34 .nova-announcement__inner>a{overflow:hidden;text-overflow:ellipsis}
+  body.nova-polish-v34 .nova-header__row{min-height:60px!important;gap:8px!important}
+  body.nova-polish-v34 .nova-brand{font-size:1rem!important;letter-spacing:.13em!important}
+  body.nova-polish-v34 .nova-header__actions{gap:2px}
+  body.nova-polish-v34 .nova-icon-btn{width:38px;min-width:38px;height:38px;min-height:38px}
+  body.nova-polish-v34 .nova-icon-btn svg{width:19px;height:19px}
+  body.nova-polish-v34 .nova-mobile-menu{max-height:calc(100dvh - 60px);padding:14px 14px calc(88px + env(safe-area-inset-bottom))}
+  body.nova-polish-v34 .nova-mobile-menu__products{grid-template-columns:1fr}
+
+  body.nova-polish-v34 .nova-bottom-nav,
+  body.nova-polish-v34 .nova-bottom-nav--v21,
+  body.nova-polish-v34 .nova-bottom-nav--v33{
+    position:fixed;
+    z-index:170;
+    left:10px;
+    right:10px;
+    bottom:calc(8px + env(safe-area-inset-bottom));
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:2px;
+    padding:6px;
+    border:1px solid rgba(23,53,85,.10);
+    border-radius:18px;
+    background:rgba(255,255,255,.96);
+    box-shadow:0 16px 38px rgba(16,43,72,.15);
+    backdrop-filter:blur(18px) saturate(150%);
+  }
+  body.nova-polish-v34 .nova-bottom-nav a,
+  body.nova-polish-v34 .nova-bottom-nav button{
+    position:relative;
+    min-height:50px;
+    display:grid;
+    place-items:center;
+    align-content:center;
+    gap:3px;
+    padding:5px 2px;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:#667483;
+    font-size:.58rem;
+    font-weight:650;
+  }
+  body.nova-polish-v34 .nova-bottom-nav svg{width:19px;height:19px;color:currentColor}
+  body.nova-polish-v34 .nova-bottom-nav :is(a,button).is-active{background:#eef3f7;color:var(--besjaar-navy)}
+  body.nova-polish-v34 .nova-bottom-nav :is(a,button).is-active:after{display:none}
+  body.nova-polish-v34 .nova-bottom-nav__count{top:2px;right:calc(50% - 19px);min-width:16px;height:16px;padding:0 4px;border:2px solid #fff;background:var(--besjaar-navy);color:#fff;font-size:.5rem}
+  body.nova-polish-v34 .nova-footer{padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+}
+
+@media (max-width:390px){
+  body.nova-polish-v34 .nova-shell{width:calc(100% - 22px)!important}
+  body.nova-polish-v34 .nova-brand{font-size:.94rem!important;letter-spacing:.115em!important}
+  body.nova-polish-v34 .nova-header__actions{gap:0}
+  body.nova-polish-v34 .nova-icon-btn{width:36px;min-width:36px;height:36px;min-height:36px}
+  body.nova-polish-v34 .nova-bottom-nav{left:7px;right:7px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.nova-polish-v34 *,body.nova-polish-v34 *::before,body.nova-polish-v34 *::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}

@@ -1,0 +1,28 @@
+{%- liquid
+  assign nova_shower_candidate = product
+  assign nova_is_shower_head = false
+  capture nova_candidate_family_capture
+    render 'product-family', product: nova_shower_candidate
+  endcapture
+  assign nova_candidate_family = nova_candidate_family_capture | strip
+
+  if nova_candidate_family == 'shower'
+    assign nova_shower_subtype = nova_shower_candidate.metafields.custom.shower_family.value | default: '' | downcase | strip | replace: '-', '_'
+    case nova_shower_subtype
+      when 'shower_filter', 'replacement_filter', 'filter', 'shower_hose', 'hose', 'shower_accessory', 'accessory'
+        assign nova_is_shower_head = false
+      when 'shower_head', 'filtered_shower_head', 'hand_shower', 'shower_set', 'showerhead'
+        assign nova_is_shower_head = true
+      else
+        assign nova_candidate_title = nova_shower_candidate.title | downcase
+        assign nova_candidate_type = nova_shower_candidate.type | downcase
+        if nova_candidate_title contains 'douchekop' or nova_candidate_title contains 'shower head' or nova_candidate_title contains 'showerhead' or nova_candidate_title contains 'handdouche' or nova_candidate_title contains 'hand shower' or nova_candidate_type contains 'douchekop' or nova_candidate_type contains 'shower head'
+          assign nova_is_shower_head = true
+        elsif nova_candidate_title contains 'filter' or nova_candidate_title contains 'slang' or nova_candidate_title contains 'hose'
+          assign nova_is_shower_head = false
+        else
+          assign nova_is_shower_head = true
+        endif
+    endcase
+  endif
+-%}{{- nova_is_shower_head -}}

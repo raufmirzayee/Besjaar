@@ -1,0 +1,65 @@
+{% unless request.page_type == 'product' %}{{ 'nova-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endunless %}
+{% liquid
+  assign connection = product.metafields.custom.connection_size.value | default: '' | strip
+  assign compatibility_note = ''
+  if product.metafields.custom.compatibility_note != blank
+    assign compatibility_note = product.metafields.custom.compatibility_note.value
+  endif
+  assign has_compatibility = false
+  if connection != blank or compatibility_note != blank or product.metafields.custom.compatible_hoses != blank or product.metafields.custom.compatible_filters != blank or product.metafields.custom.compatible_accessories != blank
+    assign has_compatibility = true
+  endif
+  assign support_page = settings.account_support_page
+  capture nova_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign nova_is_focus = nova_focus_capture | strip
+%}
+{% if nova_is_focus == 'true' %}
+<section class="nova-section nova-shower-trust nova-shower-trust-education" id="nova-product-fit-proof" data-reveal>
+  <div class="nova-shell">
+    <header class="nova-shower-trust__head">
+      <div><p class="nova-kicker"><span translate="no">Besjaar</span> · {{ 'nova.shower_trust.eyebrow' | t }}</p><h2>{{ 'nova.shower_trust.heading' | t }}</h2></div>
+      <p>{{ 'nova.shower_trust.copy' | t }}</p>
+    </header>
+
+    <div class="nova-shower-trust__grid nova-shower-trust__grid--focused">
+      <article class="nova-shower-trust-card">
+        <span class="nova-shower-trust-card__icon" aria-hidden="true">✓</span>
+        <div><h3>{{ 'nova.shower_trust.verified_heading' | t }}</h3><p>{{ 'nova.shower_trust.verified_copy' | t }}</p></div>
+      </article>
+
+      {% if has_compatibility %}
+        <article class="nova-shower-trust-card">
+          <span class="nova-shower-trust-card__icon" aria-hidden="true">⌁</span>
+          <div><h3>{{ 'nova.shower_trust.fit_heading' | t }}</h3><p>{{ 'nova.shower_trust.fit_known_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+
+      {% if section.settings.show_support_card %}
+        <article class="nova-shower-trust-card">
+          <span class="nova-shower-trust-card__icon" aria-hidden="true">?</span>
+          <div><h3>{{ 'nova.shower_trust.support_heading' | t }}</h3><p>{{ 'nova.shower_trust.support_copy' | t }}{% if support_page != blank %} <a href="{% render 'localized-internal-url', url: support_page.url %}">{{ 'nova.shower_trust.contact_support' | t }}</a>{% endif %}</p></div>
+        </article>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_claim_standard %}
+      <div class="nova-shower-trust__standard">
+        <span aria-hidden="true">i</span>
+        <div><strong>{{ 'nova.shower_trust.standard_heading' | t }}</strong><p>{{ 'nova.shower_trust.standard_copy' | t }}</p></div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Shower trust standard",
+  "settings":[
+    {"type":"checkbox","id":"show_support_card","label":"Show support card","default":true},
+    {"type":"checkbox","id":"show_claim_standard","label":"Show verified-claims standard","default":true}
+  ],
+  "presets":[{"name":"Shower trust standard"}]
+}
+{% endschema %}

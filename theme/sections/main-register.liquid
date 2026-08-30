@@ -1,0 +1,33 @@
+<section class="nova-section nova-auth-page nova-auth-v41 nova-auth-v41--register">
+  <div class="nova-shell nova-auth-v41__shell">
+    <div class="nova-auth-v41__intro">
+      <div>
+        <p class="nova-kicker">{{ 'nova.account.customer_space' | t }}</p>
+        <h1>{{ 'nova.account.create_title_v41' | t }}</h1>
+        <p>{{ 'nova.account.create_copy_v41' | t }}</p>
+      </div>
+      <div class="nova-auth-v41__benefits">
+        <div><span aria-hidden="true">01</span><strong>{{ 'nova.account.orders_tracking' | t }}</strong><p>{{ 'nova.account.orders_tracking_copy' | t }}</p></div>
+        <div><span aria-hidden="true">02</span><strong>{{ 'nova.account.delivery_details' | t }}</strong><p>{{ 'nova.account.delivery_details_copy' | t }}</p></div>
+      </div>
+    </div>
+
+    <div class="nova-auth-v41__card">
+      <div class="nova-auth-v41__card-head"><span>{{ 'nova.account.create' | t }}</span><h2>{{ 'nova.account.join_besjaar' | t }}</h2><p>{{ 'nova.account.create_copy' | t }}</p></div>
+      {% form 'create_customer' %}
+        <div class="nova-auth-fields">
+          <div class="nova-form-grid nova-form-grid--2"><div><label class="nova-label" for="RegisterFirstName">{{ 'nova.account.first_name' | t }}</label><input class="nova-input" id="RegisterFirstName" type="text" name="customer[first_name]" autocomplete="given-name"></div><div><label class="nova-label" for="RegisterLastName">{{ 'nova.account.last_name' | t }}</label><input class="nova-input" id="RegisterLastName" type="text" name="customer[last_name]" autocomplete="family-name"></div></div>
+          <div><label class="nova-label" for="RegisterEmail">Email</label><input class="nova-input" id="RegisterEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+          <div><label class="nova-label" for="RegisterPassword">{{ 'nova.account.password' | t }}</label><input class="nova-input" id="RegisterPassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+          <button class="nova-button nova-button--primary nova-auth-v41__submit" type="submit">{{ 'nova.account.create' | t }}</button>
+        </div>
+        {% if form.errors %}<div class="nova-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+      <div class="nova-auth-v41__join"><span>{{ 'nova.account.already_member' | t }}</span><a href="{{ routes.account_login_url }}">{{ 'nova.account.login' | t }} →</a></div>
+      <p class="nova-auth-v41__guest">{{ 'nova.account.guest_checkout_note' | t }}</p>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Register","settings":[]}
+{% endschema %}

@@ -1,0 +1,37 @@
+{% if settings.enable_measurement_layer and settings.show_cookie_preferences %}
+<dialog class="nova-privacy-center" data-nova-privacy-dialog aria-labelledby="NovaPrivacyTitle">
+  <div class="nova-privacy-center__head">
+    <div>
+      <span class="nova-eyebrow"><span class="notranslate" translate="no" data-nova-brand>BESJAAR</span> · {{ 'nova.catalog.privacy' | t }}</span>
+      <h2 id="NovaPrivacyTitle">{{ 'nova.analytics.privacy_title' | t }}</h2>
+      <p>{{ 'nova.analytics.privacy_intro' | t }}</p>
+    </div>
+    <button class="nova-icon-button" type="button" data-nova-privacy-close aria-label="{{ 'nova.analytics.cancel' | t }}">×</button>
+  </div>
+  <div class="nova-privacy-center__options">
+    <div class="nova-privacy-option nova-privacy-option--essential">
+      <div><strong>{{ 'nova.analytics.essential' | t }}</strong><span>{{ 'nova.analytics.essential_copy' | t }}</span></div>
+      <b>{{ 'nova.analytics.always_on' | t }}</b>
+    </div>
+    <label class="nova-privacy-option">
+      <span><strong>{{ 'nova.analytics.preferences' | t }}</strong><small>{{ 'nova.analytics.preferences_copy' | t }}</small></span>
+      <input type="checkbox" data-nova-consent="preferences"><i aria-hidden="true"></i>
+    </label>
+    <label class="nova-privacy-option">
+      <span><strong>{{ 'nova.analytics.analytics' | t }}</strong><small>{{ 'nova.analytics.analytics_copy' | t }}</small></span>
+      <input type="checkbox" data-nova-consent="analytics"><i aria-hidden="true"></i>
+    </label>
+    <label class="nova-privacy-option">
+      <span><strong>{{ 'nova.analytics.marketing' | t }}</strong><small>{{ 'nova.analytics.marketing_copy' | t }}</small></span>
+      <input type="checkbox" data-nova-consent="marketing"><i aria-hidden="true"></i>
+    </label>
+  </div>
+  <p class="nova-privacy-center__status" data-nova-privacy-status role="status"></p>
+  <div class="nova-privacy-center__actions">
+    {% if shop.privacy_policy != blank %}<a class="nova-mini-link" href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'nova.analytics.privacy_policy' | t }}</a>{% endif %}
+    <span></span>
+    <button class="nova-button nova-button--ghost" type="button" data-nova-privacy-close>{{ 'nova.analytics.cancel' | t }}</button>
+    <button class="nova-button nova-button--primary" type="button" data-nova-privacy-save>{{ 'nova.analytics.save' | t }}</button>
+  </div>
+</dialog>
+{% endif %}

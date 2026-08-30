@@ -1,0 +1,11 @@
+<section class="nova-section nova-section--tight nova-home-section nova-home-section--delivery"{% unless settings.show_home_delivery_section %} hidden{% endunless %}>
+  <div class="nova-shell nova-delivery-home" data-reveal>
+    <div class="nova-delivery-home__intro">
+      <p class="nova-kicker">{{ 'nova.delivery.eyebrow' | t }}</p>
+      <h2 class="nova-title">{{ 'nova.delivery.home_heading' | t }}</h2>
+      <p class="nova-copy">{{ 'nova.delivery.home_copy' | t }}</p>
+    </div>
+    {% render 'delivery-promise', context: 'home' %}
+  </div>
+</section>
+{% schema %}{"name":"Delivery & returns","settings":[],"presets":[{"name":"Delivery & returns"}]}{% endschema %}

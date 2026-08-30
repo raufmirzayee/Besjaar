@@ -1,0 +1,59 @@
+/* Besjaar Nova 7.5.4 — customer proof / UGC */
+.nova-customer-proof{padding:clamp(72px,8vw,112px) 0;background:#f7f8f5;border-top:1px solid #e7ebe5;border-bottom:1px solid #e7ebe5}
+.nova-customer-proof__head{display:flex;align-items:flex-end;justify-content:space-between;gap:36px;margin-bottom:36px}
+.nova-customer-proof__head-copy{max-width:720px}
+.nova-customer-proof__head .nova-copy{max-width:620px;margin-top:14px}
+.nova-customer-proof__source{display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;padding:11px 0;border-bottom:1px solid rgba(31,61,52,.28);color:#1f3d34;font-size:.72rem;font-weight:800;text-decoration:none;transition:border-color .18s ease,color .18s ease}
+.nova-customer-proof__source:hover{color:#245e57;border-color:#245e57}
+.nova-customer-proof__rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.nova-customer-proof__card{min-width:0;overflow:hidden;border:1px solid #e1e6df;border-radius:18px;background:#fff;box-shadow:0 10px 28px rgba(27,44,36,.045);transition:transform .22s ease,box-shadow .22s ease}
+.nova-customer-proof__card:hover{transform:translateY(-2px);box-shadow:0 15px 34px rgba(27,44,36,.075)}
+.nova-customer-proof__media{aspect-ratio:4/3;background:#e8ede8;overflow:hidden}
+.nova-customer-proof__media img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
+.nova-customer-proof__card:hover .nova-customer-proof__media img{transform:scale(1.015)}
+.nova-customer-proof__media--text{display:flex;align-items:flex-end;padding:22px;background:linear-gradient(135deg,#dfe8e2,#f2f5f1)}
+.nova-customer-proof__media--text span{font-family:Georgia,"Times New Roman",serif;font-size:5rem;line-height:.7;color:#1f3d34;opacity:.55}
+.nova-customer-proof__body{padding:22px}
+.nova-customer-proof__rating{margin-bottom:14px;color:#1f3d34;font-size:.78rem;letter-spacing:.12em}
+.nova-customer-proof__quote{margin:0;color:#203028;font-family:Georgia,"Times New Roman",serif;font-size:1.16rem;line-height:1.5;letter-spacing:-.015em}
+.nova-customer-proof__meta{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-top:20px;padding-top:17px;border-top:1px solid #edf0eb}
+.nova-customer-proof__meta>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.nova-customer-proof__meta strong{font-size:.74rem;color:#26382f}
+.nova-customer-proof__meta span{font-size:.66rem;color:#7b8881}
+.nova-customer-proof__verified{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;color:#1f3d34;font-size:.62rem;font-weight:800;text-decoration:none}
+.nova-customer-proof__verified--source{font-weight:700;color:#68786f}
+.nova-customer-proof__product{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:11px;margin-top:18px;padding:10px;border-radius:12px;background:#f6f8f5;color:#24342c;text-decoration:none}
+.nova-customer-proof__product img{width:40px;height:40px;object-fit:contain;border-radius:8px;background:#fff}
+.nova-customer-proof__product span{min-width:0}
+.nova-customer-proof__product small{display:block;margin-bottom:2px;color:#7a8780;font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.nova-customer-proof__product strong{display:block;overflow:hidden;color:#26372f;font-size:.66rem;line-height:1.3;text-overflow:ellipsis;white-space:nowrap}
+.nova-customer-proof__product-arrow{color:#1f3d34;font-size:1rem}
+.nova-customer-proof__product--label{grid-template-columns:1fr}
+.nova-customer-proof__note{max-width:760px;margin:22px 0 0;color:#7a8780;font-size:.67rem;line-height:1.6}
+.nova-customer-proof__editor-note{padding:24px;border:1px dashed #b8c5bc;border-radius:14px;background:#fff;color:#526159}
+.nova-customer-proof__editor-note strong{display:block;margin-bottom:7px;color:#24352d}
+.nova-customer-proof__editor-note p{margin:0;font-size:.8rem;line-height:1.6}
+
+body[data-page-type="index"] .nova-customer-proof .nova-shell{width:min(calc(100% - 56px),1240px)}
+body[data-page-type="index"] .nova-customer-proof .nova-title{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.15rem,4vw,3.4rem);font-weight:500;line-height:1.03;letter-spacing:-.04em;color:#17211d}
+body[data-page-type="index"] .nova-customer-proof .nova-copy{color:#69756f;font-size:.92rem;line-height:1.75}
+
+@media(max-width:980px){
+  .nova-customer-proof__rail{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:749px){
+  .nova-customer-proof{padding:68px 0}
+  body[data-page-type="index"] .nova-customer-proof .nova-shell{width:min(calc(100% - 28px),1240px)}
+  .nova-customer-proof__head{align-items:flex-start;flex-direction:column;gap:10px;margin-bottom:26px}
+  .nova-customer-proof__rail{display:flex;gap:13px;margin-inline:-14px;padding:0 14px 8px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:14px;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nova-customer-proof__rail::-webkit-scrollbar{display:none}
+  .nova-customer-proof__card{flex:0 0 min(84vw,340px);scroll-snap-align:start}
+  .nova-customer-proof__body{padding:18px}
+  .nova-customer-proof__quote{font-size:1.07rem}
+  .nova-customer-proof__meta{align-items:flex-start;flex-direction:column}
+}
+@media(prefers-reduced-motion:reduce){
+  .nova-customer-proof__card,.nova-customer-proof__media img{transition:none}
+  .nova-customer-proof__card:hover{transform:none}
+  .nova-customer-proof__card:hover .nova-customer-proof__media img{transform:none}
+}

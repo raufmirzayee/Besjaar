@@ -1,0 +1,39 @@
+{%- liquid
+  assign shop_url = '/collections/all'
+  if settings.shower_collection != blank
+    assign shop_url = settings.shower_collection.url
+  endif
+-%}
+<header class="ind ind-head">
+  <div class="ind-shell ind-head__row">
+    <a class="ind-head__brand" href="{{ routes.root_url }}">
+      <span class="ind-head__mark">B</span>
+      <span class="ind-head__name">BESJAAR</span>
+      <span class="ind-head__reg">{{ section.settings.reg_label | escape }}</span>
+    </a>
+    <nav class="ind-head__nav" aria-label="{{ 'nova.accessibility.main_navigation' | t | escape }}">
+      <a class="ind-head__link" href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{{ section.settings.nav_home | escape }}</a>
+      <a class="ind-head__link" href="{{ shop_url }}"{% if request.page_type == 'collection' %} aria-current="page"{% endif %}>{{ section.settings.nav_shop | escape }}</a>
+      {%- if section.settings.nav_extra_label != blank -%}
+      <a class="ind-head__link" href="{{ section.settings.nav_extra_link | default: '/pages/faq' }}">{{ section.settings.nav_extra_label | escape }}</a>
+      {%- endif -%}
+      <a class="ind-head__cart" href="{{ routes.cart_url }}">
+        {{ section.settings.nav_cart | escape }}
+        <span class="ind-head__count" data-ind-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </nav>
+  </div>
+</header>
+{% schema %}
+{
+  "name": "Industry header",
+  "settings": [
+    { "type": "text", "id": "reg_label", "label": "Registratie-label", "default": "REG. NL-2026 — DOUCHEKOPPEN" },
+    { "type": "text", "id": "nav_home", "label": "Nav: home", "default": "Home" },
+    { "type": "text", "id": "nav_shop", "label": "Nav: collectie", "default": "Collectie" },
+    { "type": "text", "id": "nav_extra_label", "label": "Nav: extra link (leeg = verbergen)", "default": "Veelgestelde vragen" },
+    { "type": "url", "id": "nav_extra_link", "label": "Extra link URL" },
+    { "type": "text", "id": "nav_cart", "label": "Nav: winkelwagen", "default": "Winkelwagen" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_kicker = 'industry.scene.kicker' | t
+    assign v_quote = 'industry.scene.quote' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_quote = section.settings.quote
+  endif
+
+  comment
+    Besjaar 11.6.20: the scene photo used alt="" — correct for a decorative
+    background, but this one is a full-bleed shot of the product in use and
+    the desktop carrier swaps it for a second photo, so it carries meaning.
+    A real description now, localised, describing what both photos show:
+    a Besjaar showerhead running in a bathroom. A merchant-picked image uses
+    its own alt text from the media library when one is set.
+  endcomment
+  assign v_lang = request.locale.iso_code | split: '-' | first | downcase
+  case v_lang
+    when 'en'
+      assign v_alt = 'A Besjaar showerhead running in a bathroom'
+    when 'de'
+      assign v_alt = 'Ein Besjaar-Duschkopf im Betrieb in einem Badezimmer'
+    when 'fr'
+      assign v_alt = 'Un pommeau de douche Besjaar en fonctionnement dans une salle de bain'
+    else
+      assign v_alt = 'Een Besjaar douchekop in gebruik in een badkamer'
+  endcase
+%}
+<section class="ind ind-scene">
+  <div class="ind-scene__media">
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 2200 | image_tag: alt: section.settings.image.alt | default: v_alt, loading: 'lazy' }}
+    {% else %}
+      <img src="{{ 'besjaar-lifestyle-shower.webp' | asset_url }}" alt="{{ v_alt | escape }}" width="1672" height="941" loading="lazy" decoding="async">
+    {% endif %}
+  </div>
+  <div class="ind-scene__veil"></div>
+  <div class="ind-shell ind-scene__inner">
+    <span class="ind-kicker">{{ v_kicker | escape }}</span>
+    <p class="ind-scene__quote">{{ v_quote | escape }}</p>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium lifestyle scene",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true},
+    {"type": "image_picker", "id": "image", "label": "Achtergrond"},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "EVERYDAY, ELEVATED"},
+    {"type": "text", "id": "quote", "label": "Quote", "default": "Turn an everyday shower into the best part of your routine."}
+  ],
+  "presets": [{"name": "Premium lifestyle scene"}]
+}
+{% endschema %}

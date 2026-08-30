@@ -1,0 +1,31 @@
+{%- comment -%}
+  Besjaar 11.6 — Recently viewed products.
+  Renders client-side from localStorage (module in besjaar-1150.js), so the
+  strip is personal to the visitor's browser, needs no app, and stays hidden
+  (section [hidden]) until at least one other product has been viewed.
+{%- endcomment -%}
+<section class="nova-section b116-recent" data-besjaar-recent-section data-empty-label="{{ 'nova.intelligence.no_recent' | t | escape }}" hidden>
+  <div class="nova-shell">
+    <div class="nova-heading-row">
+      <div>
+        <p class="nova-kicker">{{ 'nova.intelligence.recent_kicker' | t }}</p>
+        <h2 class="nova-subtitle">{{ 'nova.intelligence.recent_heading' | t }}</h2>
+        <p class="nova-copy">{{ 'nova.intelligence.recent_copy' | t }}</p>
+      </div>
+    </div>
+    <div class="b116-recent__grid" data-besjaar-recent-grid></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Recently viewed",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the visitor's recently viewed products (stored in their own browser). The section stays hidden until there is something to show."
+    }
+  ],
+  "presets": [{ "name": "Recently viewed", "category": "Besjaar" }]
+}
+{% endschema %}

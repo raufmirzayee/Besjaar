@@ -1,0 +1,17 @@
+<section class="nova-section nova-custom-liquid{% if section.settings.narrow %} nova-custom-liquid--narrow{% endif %}">
+  <div class="nova-shell">
+    {% if section.settings.heading != blank %}<h2 class="nova-title">{{ section.settings.heading }}</h2>{% endif %}
+    <div class="nova-custom-liquid__content rte">{{ section.settings.custom_liquid }}</div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Custom Liquid",
+  "settings": [
+    {"type":"text","id":"heading","label":"Optional heading"},
+    {"type":"liquid","id":"custom_liquid","label":"Custom Liquid"},
+    {"type":"checkbox","id":"narrow","label":"Use narrow content width","default":false}
+  ],
+  "presets": [{"name":"Custom Liquid"}]
+}
+{% endschema %}

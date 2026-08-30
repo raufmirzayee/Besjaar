@@ -1,0 +1,42 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign newsletter_heading = 'nova.home.newsletter_heading' | t
+    assign newsletter_text = 'nova.home.newsletter_text' | t
+  else
+    assign newsletter_heading = section.settings.heading
+    assign newsletter_text = section.settings.text
+  endif
+%}
+<section class="nova-section nova-home-section nova-home-section--newsletter">
+  <div class="nova-shell">
+    <div class="nova-newsletter" data-reveal>
+      <div class="nova-newsletter__grid">
+        <div class="nova-newsletter__copy"><p class="nova-kicker">{{ 'nova.home.newsletter_eyebrow' | t }}</p><h2 class="nova-title">{{ newsletter_heading }}</h2><p class="nova-copy">{{ newsletter_text }}</p></div>
+        <div class="nova-newsletter__form-wrap">
+          <div class="nova-newsletter__signal"><span></span>{{ 'nova.home.newsletter_signal' | t }}</div>
+          {% assign nova_newsletter_form_id = 'NovaNewsletterForm-' | append: section.id %}
+          {% form 'customer', id: nova_newsletter_form_id %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <label class="nova-visually-hidden" for="NovaNewsletterEmail-{{ section.id }}">{{ 'nova.home.newsletter_placeholder' | t }}</label>
+            <input class="nova-input" id="NovaNewsletterEmail-{{ section.id }}" type="email" name="contact[email]" autocorrect="off" autocapitalize="off" autocomplete="email" placeholder="{{ 'nova.home.newsletter_placeholder' | t }}" required aria-required="true"{% if form.errors %} aria-invalid="true" aria-describedby="NovaNewsletterErrors-{{ section.id }}"{% endif %} value="{{ form.email | escape }}">
+            <button class="nova-button nova-button--primary" type="submit">{{ 'nova.home.newsletter_button' | t }}</button>
+            {% if form.posted_successfully? %}<p class="nova-form-message nova-form-message--success" role="status" aria-live="polite">{{ 'nova.home.newsletter_success' | t }}</p>{% endif %}
+            {% if form.errors %}<div id="NovaNewsletterErrors-{{ section.id }}" class="nova-form-message nova-form-message--error" role="alert" aria-live="assertive"><strong>{{ 'nova.forms.error_heading' | t }}</strong>{{ form.errors | default_errors }}</div>{% endif %}
+          {% endform %}
+          <p class="nova-newsletter__note">{{ 'nova.home.newsletter_note' | t }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Newsletter",
+  "settings":[
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"text","id":"heading","label":"Custom heading","default":"Blijf op de hoogte van Besjaar douchekoppen."},
+    {"type":"textarea","id":"text","label":"Custom text","default":"Ontvang nuttige douche- en onderhoudstips, productupdates en geselecteerde aanbiedingen."}
+  ],
+  "presets":[{"name":"Newsletter"}]
+}
+{% endschema %}

@@ -1,0 +1,130 @@
+{% liquid
+  assign shower_family = product.metafields.custom.shower_family.value | default: '' | downcase
+  assign shower_type = product.metafields.custom.shower_type.value | default: ''
+  assign spray_modes = product.metafields.custom.spray_modes.value | default: ''
+  if spray_modes == blank
+    capture spray_modes_capture
+      render 'shower-spray-modes', product: product
+    endcapture
+    assign spray_modes = spray_modes_capture | strip
+  endif
+  assign diameter = product.metafields.custom.diameter_mm.value | default: ''
+  assign material = product.metafields.custom.material.value | default: ''
+  if material == blank and product.metafields.custom.materials != blank
+    assign material = product.metafields.custom.materials.value
+  endif
+  assign colour = product.metafields.custom.colour.value | default: ''
+  assign filter_defined = false
+  assign filter_included = false
+  if product.metafields.custom.filter_included != blank
+    assign filter_defined = true
+    assign filter_included = product.metafields.custom.filter_included.value
+  else
+    capture filter_capture
+      render 'shower-filter-state', product: product
+    endcapture
+    assign filter_capture = filter_capture | strip
+    if filter_capture == 'true'
+      assign filter_defined = true
+      assign filter_included = true
+    endif
+  endif
+  assign filter_type = product.metafields.custom.filter_type.value | default: ''
+  assign hose_defined = false
+  assign hose_included = false
+  if product.metafields.custom.hose_included != blank
+    assign hose_defined = true
+    assign hose_included = product.metafields.custom.hose_included.value
+  else
+    capture hose_capture
+      render 'shower-hose-state', product: product
+    endcapture
+    assign hose_capture = hose_capture | strip
+    if hose_capture == 'true'
+      assign hose_defined = true
+      assign hose_included = true
+    endif
+  endif
+  assign hose_length = product.metafields.custom.hose_length_cm.value | default: ''
+  assign connection = product.metafields.custom.connection_size.value | default: ''
+  assign anti_defined = false
+  assign anti = false
+  if product.metafields.custom.anti_limescale != blank
+    assign anti_defined = true
+    assign anti = product.metafields.custom.anti_limescale.value
+  endif
+  assign install_time = product.metafields.custom.installation_time_min.value | default: ''
+  assign warranty = product.metafields.custom.warranty_months.value | default: ''
+  assign package_contents = ''
+  if product.metafields.custom.package_contents != blank
+    assign package_contents = product.metafields.custom.package_contents.value
+  elsif product.metafields.custom.box_contents != blank
+    assign package_contents = product.metafields.custom.box_contents.value
+  endif
+  assign care = ''
+  if product.metafields.custom.care_instructions != blank
+    assign care = product.metafields.custom.care_instructions.value
+  endif
+  assign replacement = ''
+  if product.metafields.custom.filter_replacement_interval != blank
+    assign replacement = product.metafields.custom.filter_replacement_interval.value
+  endif
+  assign has_specs = false
+  if shower_type != blank or spray_modes != blank or diameter != blank or material != blank or colour != blank or filter_defined or filter_type != blank or hose_defined or hose_length != blank or connection != blank or anti_defined or install_time != blank or warranty != blank
+    assign has_specs = true
+  endif
+  assign has_content = false
+  if has_specs or package_contents != blank or care != blank or replacement != blank
+    assign has_content = true
+  endif
+  capture nova_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign nova_is_focus = nova_focus_capture | strip
+%}
+
+{% if nova_is_focus == 'true' and has_content %}
+<section class="nova-shower-section nova-shower-specification-section" id="nova-product-specs" data-reveal>
+  <div class="nova-shell">
+    <div class="nova-shower-heading nova-shower-heading--center">
+      <p class="nova-kicker">{{ 'nova.shower.spec_eyebrow' | t }}</p>
+      <h2>{{ 'nova.shower.spec_heading' | t }}</h2>
+      <p>{{ 'nova.shower.spec_copy' | t }}</p>
+    </div>
+
+    <div class="nova-shower-spec-layout">
+      {% if has_specs %}
+        <div class="nova-shower-spec-table">
+          {% if shower_type != blank %}<div><span>{{ 'nova.product.shower_type' | t }}</span><strong>{{ shower_type }}</strong></div>{% endif %}
+          {% if spray_modes != blank %}<div><span>{{ 'nova.product.shower_spray_modes' | t }}</span><strong>{{ spray_modes }}</strong></div>{% endif %}
+          {% if diameter != blank %}<div><span>{{ 'nova.product.shower_diameter' | t }}</span><strong>Ø {{ diameter }} mm</strong></div>{% endif %}
+          {% if material != blank %}<div><span>{{ 'nova.product.shower_material' | t }}</span><strong>{{ material }}</strong></div>{% endif %}
+          {% if colour != blank %}<div><span>{{ 'nova.product.shower_colour' | t }}</span><strong>{{ colour }}</strong></div>{% endif %}
+          {% if filter_defined %}<div><span>{{ 'nova.product.shower_filter' | t }}</span><strong>{% if filter_included %}{{ 'nova.common.included' | t }}{% else %}{{ 'nova.common.no' | t }}{% endif %}</strong></div>{% endif %}
+          {% if filter_type != blank %}<div><span>{{ 'nova.product.shower_filter_type' | t }}</span><strong>{{ filter_type }}</strong></div>{% endif %}
+          {% if hose_defined %}<div><span>{{ 'nova.product.shower_hose' | t }}</span><strong>{% if hose_included %}{{ 'nova.common.included' | t }}{% else %}{{ 'nova.common.no' | t }}{% endif %}</strong></div>{% endif %}
+          {% if hose_length != blank %}<div><span>{{ 'nova.product.shower_hose_length' | t }}</span><strong>{{ hose_length }} cm</strong></div>{% endif %}
+          {% if connection != blank %}<div><span>{{ 'nova.product.shower_connection' | t }}</span><strong>{{ connection }}</strong></div>{% endif %}
+          {% if anti_defined %}<div><span>{{ 'nova.product.shower_anti_limescale' | t }}</span><strong>{% if anti %}{{ 'nova.common.yes' | t }}{% else %}{{ 'nova.common.no' | t }}{% endif %}</strong></div>{% endif %}
+          {% if install_time != blank %}<div><span>{{ 'nova.product.shower_installation' | t }}</span><strong>{{ 'nova.product.shower_minutes' | t: count: install_time }}</strong></div>{% endif %}
+          {% if warranty != blank %}<div><span>{{ 'nova.product.spec_warranty' | t }}</span><strong>{{ 'nova.product.shower_months' | t: count: warranty }}</strong></div>{% endif %}
+        </div>
+      {% endif %}
+
+      <div class="nova-shower-info-stack">
+        {% if package_contents != blank %}<article><span class="nova-shower-info-stack__icon" aria-hidden="true">□</span><div><strong>{{ 'nova.shower.box_heading' | t }}</strong><p>{{ package_contents | newline_to_br }}</p></div></article>{% endif %}
+        {% if care != blank %}<article><span class="nova-shower-info-stack__icon" aria-hidden="true">✦</span><div><strong>{{ 'nova.shower.care_heading' | t }}</strong><p>{{ care | newline_to_br }}</p></div></article>{% endif %}
+        {% if replacement != blank %}<article><span class="nova-shower-info-stack__icon" aria-hidden="true">↻</span><div><strong>{{ 'nova.shower.filter_care_heading' | t }}</strong><p>{{ replacement }}</p></div></article>{% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shower specifications",
+  "settings": [],
+  "presets": [{"name":"Shower specifications"}]
+}
+{% endschema %}

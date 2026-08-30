@@ -1,0 +1,133 @@
+/* Besjaar — customer reviews: submission form + published review list.
+   Re-declares .nova-rating-meter because the stylesheet that defines it
+   (nova-shower-trust-education.css) only loads on the shower template, and
+   reviews now render on every product. */
+
+.besjaar-reviews,
+.besjaar-review-form{
+  --rv-ink:var(--besjaar-navy,#153252);
+  --rv-line:rgba(21,50,82,.12);
+  --rv-muted:#5b7089;
+  --rv-star:#d79545;
+  color:var(--rv-ink);
+}
+
+/* ---------------------------------------------------------- star meter */
+.nova-rating-meter{
+  position:relative;display:inline-block;
+  letter-spacing:.08em;font-size:1rem;line-height:1;color:#d9ddd9;
+}
+.nova-rating-meter__base{white-space:nowrap}
+.nova-rating-meter__fill{
+  position:absolute;inset:0 auto 0 0;width:var(--nova-rating-percent,0%);
+  overflow:hidden;white-space:nowrap;color:var(--rv-star,#d79545);
+}
+
+/* ------------------------------------------------------- published list */
+.besjaar-reviews{margin-top:26px}
+.besjaar-reviews__summary{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-bottom:18px;border-bottom:1px solid var(--rv-line);
+}
+.besjaar-reviews__average{
+  font-size:2rem;line-height:1;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.besjaar-reviews__summary small{color:var(--rv-muted);font-size:.82rem}
+
+.besjaar-reviews__list{list-style:none;margin:0;padding:0;display:grid;gap:18px;margin-top:22px}
+.besjaar-reviews__item{
+  padding:20px 22px;border:1px solid var(--rv-line);border-radius:18px;background:#fff;
+  box-shadow:var(--lux-shadow-xs,0 1px 2px rgba(15,41,71,.05));
+}
+.besjaar-reviews__item-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.besjaar-reviews__item-stars{font-size:.9rem}
+.besjaar-reviews__verified{
+  font-size:.68rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:#1c6b45;background:rgba(28,107,69,.09);
+  padding:3px 9px;border-radius:99px;
+}
+.besjaar-reviews__item-title{margin:10px 0 0;font-size:1rem;font-weight:650;line-height:1.35}
+.besjaar-reviews__item-body{margin:8px 0 0;font-size:.9rem;line-height:1.65;color:#33404f}
+.besjaar-reviews__item-meta{
+  margin:12px 0 0;display:flex;gap:10px;flex-wrap:wrap;
+  font-size:.76rem;color:var(--rv-muted);
+}
+.besjaar-reviews__item-meta span{font-weight:600;color:var(--rv-ink)}
+
+/* --------------------------------------------------------- write a review */
+.besjaar-review-form{margin-top:26px}
+.besjaar-review-form__disclosure{
+  border:1px solid var(--rv-line);border-radius:18px;background:#fff;overflow:hidden;
+}
+.besjaar-review-form__toggle{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 20px;cursor:pointer;list-style:none;
+  font-weight:650;font-size:.92rem;
+}
+.besjaar-review-form__toggle::-webkit-details-marker{display:none}
+.besjaar-review-form__toggle:hover{background:rgba(21,50,82,.03)}
+.besjaar-review-form__chevron{transition:transform .2s ease;font-size:1.1rem;line-height:1}
+.besjaar-review-form__disclosure[open] .besjaar-review-form__chevron{transform:rotate(180deg)}
+.besjaar-review-form__body{padding:4px 20px 22px;border-top:1px solid var(--rv-line)}
+.besjaar-review-form__intro{margin:16px 0 18px;font-size:.84rem;line-height:1.6;color:var(--rv-muted)}
+.besjaar-review-form__form{display:grid;gap:16px}
+.besjaar-review-form__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+
+.besjaar-review-form__rating{border:0;margin:0;padding:0}
+.besjaar-review-form__rating .nova-label{display:block;margin-bottom:6px;padding:0}
+
+/* Radios sit in DOM order 5→1 and render row-reverse, so `:checked ~ label`
+   paints the checked star and every star visually to its left. */
+.besjaar-stars-input{display:inline-flex;flex-direction:row-reverse;justify-content:flex-end;gap:2px}
+.besjaar-stars-input input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.besjaar-stars-input label{
+  color:#d9ddd9;cursor:pointer;font-size:1.7rem;line-height:1;
+  transition:color .12s ease,transform .12s ease;
+}
+.besjaar-stars-input input:checked ~ label,
+.besjaar-stars-input label:hover,
+.besjaar-stars-input label:hover ~ label{color:var(--rv-star)}
+.besjaar-stars-input label:hover{transform:scale(1.08)}
+.besjaar-stars-input input:focus-visible + label{outline:2px solid var(--rv-ink);outline-offset:3px;border-radius:4px}
+
+.besjaar-review-form__hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+.besjaar-review-form__actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.besjaar-review-form__submit{
+  border:0;border-radius:99px;cursor:pointer;
+  padding:13px 30px;font-size:.82rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;color:#fff;
+  background:linear-gradient(180deg,#1d4067,var(--rv-ink));
+  box-shadow:var(--lux-shadow-sm,0 2px 6px rgba(15,41,71,.05));
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+.besjaar-review-form__submit:hover{transform:translateY(-1px);box-shadow:var(--lux-shadow-md,0 4px 12px rgba(15,41,71,.12))}
+.besjaar-review-form__submit:active{transform:translateY(0)}
+.besjaar-review-form__note{margin:0;font-size:.72rem;line-height:1.5;color:var(--rv-muted);max-width:34ch}
+
+@media (max-width:640px){
+  .besjaar-review-form__grid{grid-template-columns:minmax(0,1fr)}
+  .besjaar-review-form__body{padding:4px 16px 20px}
+  .besjaar-review-form__toggle{padding:14px 16px}
+  .besjaar-reviews__item{padding:16px 16px;border-radius:14px}
+  .besjaar-reviews__average{font-size:1.7rem}
+  .besjaar-review-form__submit{width:100%}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .besjaar-stars-input label,
+  .besjaar-review-form__submit,
+  .besjaar-review-form__chevron{transition:none}
+  .besjaar-stars-input label:hover,
+  .besjaar-review-form__submit:hover{transform:none}
+}
+
+/* besjaar-premium-lux.css now overrides the old violet focus ring globally
+   (navy ring on .nova-input/.nova-select/.nova-textarea). This scoped rule
+   stays only for contexts where the lux layer classes are absent. */
+.besjaar-review-form .nova-input:focus,
+.besjaar-review-form .nova-textarea:focus{
+  border-color:var(--rv-ink)!important;
+  box-shadow:0 0 0 3px rgba(21,50,82,.10)!important;
+}

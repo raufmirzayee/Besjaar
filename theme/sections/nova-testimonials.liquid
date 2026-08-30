@@ -1,0 +1,40 @@
+{% if section.blocks.size > 0 %}
+<section class="nova-section nova-testimonials" data-reveal>
+  <div class="nova-shell">
+    <div class="nova-heading-row">
+      <div><p class="nova-kicker">{{ 'nova.reviews.stories_kicker' | t }}</p><h2 class="nova-title">{% if section.settings.heading != blank %}{{ section.settings.heading }}{% else %}{{ 'nova.reviews.stories_heading' | t }}{% endif %}</h2></div>
+    </div>
+    <div class="nova-testimonials__grid">
+      {% for block in section.blocks %}
+        <article class="nova-testimonial" {{ block.shopify_attributes }}>
+          {% if block.settings.image %}<div class="nova-testimonial__image">{{ block.settings.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: block.settings.author }}</div>{% endif %}
+          <div class="nova-testimonial__body">
+            <div class="nova-testimonial__rating" aria-label="{{ block.settings.rating }} / 5">{% for i in (1..5) %}<span{% if i > block.settings.rating %} class="is-muted"{% endif %}>★</span>{% endfor %}</div>
+            {% if block.settings.title != blank %}<h3>{{ block.settings.title }}</h3>{% endif %}
+            <div class="nova-testimonial__quote">{{ block.settings.text }}</div>
+            <footer><strong>{{ block.settings.author }}</strong>{% if block.settings.verified %}<span>✓ {{ 'nova.reviews.verified_purchase' | t }}</span>{% endif %}</footer>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Customer stories",
+  "settings":[{"type":"text","id":"heading","label":"Heading","default":"Customer stories"}],
+  "blocks":[{
+    "type":"testimonial","name":"Customer testimonial","settings":[
+      {"type":"image_picker","id":"image","label":"Customer / product photo"},
+      {"type":"range","id":"rating","min":1,"max":5,"step":1,"label":"Rating","default":5},
+      {"type":"text","id":"title","label":"Review title"},
+      {"type":"richtext","id":"text","label":"Review text"},
+      {"type":"text","id":"author","label":"Customer name"},
+      {"type":"checkbox","id":"verified","label":"Verified purchase","default":false}
+    ]
+  }],
+  "max_blocks":6,
+  "presets":[{"name":"Customer stories"}]
+}
+{% endschema %}
