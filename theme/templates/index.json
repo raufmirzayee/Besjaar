@@ -113,6 +113,10 @@
         "primary_link": "",
         "secondary_label": "EXPLORE THE DETAILS"
       }
+    },
+    "seo_topic_hub": {
+      "type": "nova-seo-topic-hub",
+      "settings": {}
     }
   },
   "order": [
@@ -122,6 +126,7 @@
     "ind_scene",
     "ind_features",
     "ind_reviews",
+    "seo_topic_hub",
     "ind_cta"
   ]
 }

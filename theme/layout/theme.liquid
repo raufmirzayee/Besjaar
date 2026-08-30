@@ -16,6 +16,29 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap"></noscript>
     <link rel="canonical" href="{{ canonical_url }}">
+    {%- liquid
+      # hreflang alternates for every published language, mirroring the canonical path
+      assign bj_alt_path = canonical_url | remove: request.origin
+      unless request.locale.primary
+        if bj_alt_path == request.locale.root_url
+          assign bj_alt_path = '/'
+        else
+          assign bj_alt_path = bj_alt_path | remove_first: request.locale.root_url
+        endif
+      endunless
+    -%}
+    {%- if shop.published_locales.size > 1 -%}
+      {%- for bj_locale in shop.published_locales -%}
+        {%- if bj_locale.primary -%}
+          <link rel="alternate" hreflang="{{ bj_locale.iso_code }}" href="{{ request.origin }}{{ bj_alt_path }}">
+        {%- elsif bj_alt_path == '/' -%}
+          <link rel="alternate" hreflang="{{ bj_locale.iso_code }}" href="{{ request.origin }}{{ bj_locale.root_url }}">
+        {%- else -%}
+          <link rel="alternate" hreflang="{{ bj_locale.iso_code }}" href="{{ request.origin }}{{ bj_locale.root_url }}{{ bj_alt_path }}">
+        {%- endif -%}
+      {%- endfor -%}
+      <link rel="alternate" hreflang="x-default" href="{{ request.origin }}{{ bj_alt_path }}">
+    {%- endif -%}
     {% if request.page_type == 'index' %}
       <link rel="preload" as="image" href="{{ 'besjaar-premium-hero-pressure-v3.webp' | asset_url }}" fetchpriority="high">
     {% elsif request.page_type == 'product' and product.featured_image != blank %}
