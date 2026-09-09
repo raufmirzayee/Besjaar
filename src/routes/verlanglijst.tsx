@@ -43,8 +43,9 @@ function WishlistPage() {
         .from("wishlist_items")
         .select(
           `product_id,
-           products ( id, name, slug, short_description, regular_price, sale_price, stock_quantity,
-                      featured, bestseller, rating_average, rating_count, translations,
+           products ( id, name, slug, short_description, full_description, regular_price, sale_price,
+                      stock_quantity, featured, bestseller, rating_average, rating_count,
+                      translations, bol_product_id, selling_points,
                       brands ( name, translations ),
                       product_images ( image_url, is_main, sort_order ) )`,
         )
@@ -60,8 +61,10 @@ function WishlistPage() {
           );
           return {
             id: p.id,
+            product_id: p.bol_product_id ?? null,
             name: p.name,
             slug: p.slug,
+            full_title: p.full_description ?? null,
             short_description: p.short_description,
             regular_price: Number(p.regular_price),
             sale_price: p.sale_price === null ? null : Number(p.sale_price),
@@ -74,6 +77,9 @@ function WishlistPage() {
             category: null,
             category_slug: null,
             image_url: images[0]?.image_url ?? null,
+            availability: (p.stock_quantity ?? 0) > 0 ? "Op voorraad" : "Tijdelijk niet beschikbaar",
+            source_url: null,
+            highlights: Array.isArray(p.selling_points) ? p.selling_points : [],
             translations: p.translations ?? null,
             brand_translations: p.brands?.translations ?? null,
             category_translations: null,

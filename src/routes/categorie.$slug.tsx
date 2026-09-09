@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n";
 function categoryProductsQuery(slug: string) {
   return queryOptions({
     queryKey: ["products", "categorie", slug],
-    queryFn: () => getProducts({ data: { categorySlug: slug } }),
+    queryFn: () => getProducts({ data: { categorySlugs: [slug] } }),
   });
 }
 
