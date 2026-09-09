@@ -203,7 +203,7 @@ function DesktopNav() {
   }, [openMenu]);
 
   const linkClass =
-    "whitespace-nowrap rounded-md px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:text-primary";
+    "whitespace-nowrap rounded-md px-2 py-2 text-sm font-semibold text-foreground transition-colors hover:text-primary xl:px-3";
 
   return (
     <nav
@@ -236,7 +236,7 @@ function DesktopNav() {
       <Link to="/aanbiedingen" className={cn(linkClass, "text-sale hover:text-sale")}>
         {t("nav.deals")}
       </Link>
-      <Link to="/over-ons" className={linkClass}>
+      <Link to="/over-ons" className={cn(linkClass, "hidden xl:block")}>
         {t("nav.about")}
       </Link>
 
@@ -262,7 +262,7 @@ function MegaMenuTrigger({
       aria-haspopup="true"
       onClick={onToggle}
       className={cn(
-        "flex items-center gap-1 whitespace-nowrap rounded-md px-3 py-2 text-sm font-semibold transition-colors",
+        "flex items-center gap-1 whitespace-nowrap rounded-md px-2 py-2 text-sm font-semibold transition-colors xl:px-3",
         expanded ? "text-primary" : "text-foreground hover:text-primary",
       )}
     >
