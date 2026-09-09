@@ -53,10 +53,10 @@ function BrandsIndexPage() {
               className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-shadow hover:shadow-lift"
             >
               <div className="grid grid-cols-3 gap-px bg-border">
-                {preview.map((product) => (
-                  <div key={product.slug} className="aspect-square bg-white p-2">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={preview[index]?.slug ?? index} className="aspect-square bg-white p-2">
                     <ProductImage
-                      src={product.imageUrl}
+                      src={preview[index]?.imageUrl}
                       alt=""
                       width={240}
                       height={240}
