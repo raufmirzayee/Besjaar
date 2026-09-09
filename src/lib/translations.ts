@@ -68,7 +68,7 @@ const nl = {
   "card.noImage": "Geen afbeelding",
   "card.inStock": "Op voorraad",
   "card.soldOut": "Tijdelijk uitverkocht",
-  "card.bestseller": "Bestseller",
+  "card.bestseller": "Populair",
   "card.addToCart": "{name} in winkelwagen",
 
   "cart.title": "Winkelwagen",
@@ -190,7 +190,7 @@ const en: Record<CoreKey, string> = {
   "card.noImage": "No image",
   "card.inStock": "In stock",
   "card.soldOut": "Temporarily sold out",
-  "card.bestseller": "Bestseller",
+  "card.bestseller": "Popular",
   "card.addToCart": "Add {name} to cart",
 
   "cart.title": "Cart",
@@ -301,7 +301,7 @@ const de: Record<CoreKey, string> = {
   "card.noImage": "Kein Bild",
   "card.inStock": "Auf Lager",
   "card.soldOut": "Vorübergehend ausverkauft",
-  "card.bestseller": "Bestseller",
+  "card.bestseller": "Beliebt",
   "card.addToCart": "{name} in den Warenkorb",
 
   "cart.title": "Warenkorb",
@@ -413,7 +413,7 @@ const fr: Record<CoreKey, string> = {
   "card.noImage": "Pas d'image",
   "card.inStock": "En stock",
   "card.soldOut": "Momentanément épuisé",
-  "card.bestseller": "Meilleure vente",
+  "card.bestseller": "Populaire",
   "card.addToCart": "Ajouter {name} au panier",
 
   "cart.title": "Panier",

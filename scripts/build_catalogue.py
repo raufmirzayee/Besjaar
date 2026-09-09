@@ -652,15 +652,29 @@ def assign_names(products: list[dict]) -> None:
         p.pop("_details", None)
 
 def assign_flags(products: list[dict]) -> None:
-    """Marks bestsellers and featured products from real catalogue signals only.
+    """Marks popular and featured products from real catalogue signals only.
 
-    Bestseller = the highest review counts the workbook actually reports.
-    Featured = one product per category, the best reviewed of that category.
-    No product is given a badge that its own data does not support.
+    "Popular" means the workbook reports a high review count for that listing.
+    It is not a sales figure — the store has none — so the badge says Populair
+    rather than Bestseller.
+
+    The selection is capped at two products per category. Review counts in the
+    source are shared across a product family (every flashlight reports 507),
+    so an uncapped top-8 would be eight near-identical torches and would tell a
+    shopper nothing.
     """
     ranked = sorted(products, key=lambda p: (-p["review_count"], p["price"]))
     reviewed = [p for p in ranked if p["review_count"] > 0]
-    bestseller_ids = {p["product_id"] for p in reviewed[:8]}
+
+    per_category: Counter = Counter()
+    bestseller_ids: set[str] = set()
+    for product in reviewed:
+        if len(bestseller_ids) >= 8:
+            break
+        if per_category[product["category"]] >= 2:
+            continue
+        per_category[product["category"]] += 1
+        bestseller_ids.add(product["product_id"])
 
     by_category: dict[str, list[dict]] = defaultdict(list)
     for p in products:

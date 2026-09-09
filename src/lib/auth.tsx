@@ -25,15 +25,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
+    // Without Supabase configured the storefront is still fully browsable as a
+    // guest, so a missing client resolves to "signed out" instead of throwing
+    // and taking the whole tree down with it.
+    let unsubscribe: (() => void) | undefined;
+    try {
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+        setSession(next);
+        setLoading(false);
+      });
+      unsubscribe = () => sub.subscription.unsubscribe();
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          setSession(data.session);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.warn("[auth] no session available:", error);
+          setLoading(false);
+        });
+    } catch (error) {
+      console.warn("[auth] authentication is unavailable:", error);
+      setSession(null);
       setLoading(false);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    return () => sub.subscription.unsubscribe();
+    }
+    return () => unsubscribe?.();
   }, []);
 
   const value = useMemo<AuthContextValue>(

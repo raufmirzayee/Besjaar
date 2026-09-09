@@ -1,109 +1,80 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, notFound } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { ProductCard } from "@/components/product-card";
-import { getCategories, getProducts } from "@/lib/catalog.functions";
-import { localize } from "@/lib/content-i18n";
+import { Breadcrumbs } from "@/components/breadcrumbs";
+import { ProductListing } from "@/components/product-listing";
+import { getCategoryBySlug } from "@/data/catalogue";
+import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
+import { breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
-
-function categoryProductsQuery(slug: string) {
-  return queryOptions({
-    queryKey: ["products", "categorie", slug],
-    queryFn: () => getProducts({ data: { categorySlugs: [slug] } }),
-  });
-}
-
-const categoriesQuery = queryOptions({
-  queryKey: ["categories"],
-  queryFn: () => getCategories(),
-});
+import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/categorie/$slug")({
+  validateSearch: (search: Record<string, unknown>): ListingSearch => parseListingSearch(search),
   loader: async ({ context, params }) => {
-    const categories = await context.queryClient.ensureQueryData(categoriesQuery);
-    const category = categories.find((c) => c.slug === params.slug);
+    const category = getCategoryBySlug(params.slug);
     if (!category) throw notFound();
-    await context.queryClient.ensureQueryData(categoryProductsQuery(params.slug));
-    return { name: category.name, description: category.description };
+    await context.queryClient.ensureQueryData(allProductsQuery);
+    return { name: category.name, description: category.description, slug: category.slug };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
-      return {
-        meta: [
-          { title: "Categorie niet beschikbaar — Besjaar" },
-          { name: "robots", content: "noindex" },
-        ],
-      };
+      return seo({
+        title: "Categorie niet gevonden",
+        description: "Deze categorie bestaat niet.",
+        path: "/winkel",
+        noindex: true,
+      });
     }
-    const title = `${loaderData.name} — Besjaar`;
-    const description = loaderData.description ?? `Bekijk alle producten in ${loaderData.name}.`;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-      ],
-    };
+    return seo({
+      title: loaderData.name,
+      description: loaderData.description,
+      path: `/categorie/${loaderData.slug}`,
+    });
   },
   component: CategoryPage,
 });
 
 function CategoryPage() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const { slug } = Route.useParams();
-  const loaderData = Route.useLoaderData();
-  const { data: products } = useSuspenseQuery(categoryProductsQuery(slug));
-  const { data: categories } = useSuspenseQuery(categoriesQuery);
+  const { name, description } = Route.useLoaderData();
+  const { data: allProducts } = useSuspenseQuery(allProductsQuery);
+  // The route already scopes to one category, so any category filter in the
+  // URL is ignored rather than intersected with it.
+  const search = { ...Route.useSearch(), categorie: undefined };
 
-  const current = categories.find((c) => c.slug === slug);
-  const children = categories.filter((c) => c.parent_id === current?.id);
-  const name = current ? localize(current, "name", locale) : loaderData.name;
-  const description = current
-    ? localize(current, "description", locale) || null
-    : loaderData.description;
+  const products = allProducts.filter((product) => product.category_slug === slug);
 
   return (
-    <div className="container-page py-10">
-      <nav className="mb-4 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary">
-          {t("category.home")}
-        </Link>
-        <span className="px-2">/</span>
-        <Link to="/winkel" className="hover:text-primary">
-          {t("category.shop")}
-        </Link>
-        <span className="px-2">/</span>
-        <span className="text-foreground">{name}</span>
-      </nav>
+    <div className="container-page py-8 md:py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            breadcrumbSchema([
+              { name: "Home", path: "/" },
+              { name: t("shop.title"), path: "/winkel" },
+              { name, path: `/categorie/${slug}` },
+            ]),
+          ),
+        }}
+      />
+      <Breadcrumbs
+        trail={[{ name: "Home", to: "/" }, { name: t("shop.title"), to: "/winkel" }, { name }]}
+      />
 
-      <h1 className="text-3xl font-bold sm:text-4xl">{name}</h1>
-      {description ? <p className="mt-2 max-w-2xl text-muted-foreground">{description}</p> : null}
+      <header className="mb-8 max-w-2xl">
+        <h1 className="font-display text-3xl font-extrabold sm:text-4xl">{name}</h1>
+        <p className="mt-2 text-muted-foreground">{description}</p>
+      </header>
 
-      {children.length > 0 ? (
-        <div className="mt-6 flex flex-wrap gap-2">
-          {children.map((c) => (
-            <Link
-              key={c.id}
-              to="/categorie/$slug"
-              params={{ slug: c.slug }}
-              className="rounded-full border px-3 py-1.5 text-sm transition-colors hover:bg-muted"
-            >
-              {localize(c, "name", locale)}
-            </Link>
-          ))}
-        </div>
-      ) : null}
-
-      {products.length === 0 ? (
-        <p className="mt-12 text-muted-foreground">{t("category.empty")}</p>
-      ) : (
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+      {/* The category is fixed by the route, so that facet is not offered again. */}
+      <ProductListing
+        products={products}
+        search={search}
+        facets={["brand", "price", "availability", "sale"]}
+      />
     </div>
   );
 }

@@ -10,11 +10,15 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AanbiedingenRouteImport } from './routes/aanbiedingen'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AfrekenenRouteImport } from './routes/afrekenen'
 import { Route as BeheerRouteImport } from './routes/beheer'
+import { Route as CategorieenRouteImport } from './routes/categorieen'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as InloggenRouteImport } from './routes/inloggen'
+import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RetourenRouteImport } from './routes/retouren'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -24,6 +28,7 @@ import { Route as VerzendingRouteImport } from './routes/verzending'
 import { Route as VoorwaardenRouteImport } from './routes/voorwaarden'
 import { Route as WinkelRouteImport } from './routes/winkel'
 import { Route as WinkelwagenRouteImport } from './routes/winkelwagen'
+import { Route as ZoekenRouteImport } from './routes/zoeken'
 import { Route as BeheerIndexRouteImport } from './routes/beheer.index'
 import { Route as BeheerAuditRouteImport } from './routes/beheer.audit'
 import { Route as BeheerBeoordelingenRouteImport } from './routes/beheer.beoordelingen'
@@ -44,12 +49,19 @@ import { Route as BeheerVertalingenRouteImport } from './routes/beheer.vertaling
 import { Route as BeheerVoorraadRouteImport } from './routes/beheer.voorraad'
 import { Route as BestellingOrderNumberRouteImport } from './routes/bestelling.$orderNumber'
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
+import { Route as MerkenIndexRouteImport } from './routes/merken.index'
+import { Route as MerkenSlugRouteImport } from './routes/merken.$slug'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicBolSyncRouteImport } from './routes/api/public/bol-sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AanbiedingenRoute = AanbiedingenRouteImport.update({
+  id: '/aanbiedingen',
+  path: '/aanbiedingen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -67,14 +79,29 @@ const BeheerRoute = BeheerRouteImport.update({
   path: '/beheer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CategorieenRoute = CategorieenRouteImport.update({
+  id: '/categorieen',
+  path: '/categorieen',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InloggenRoute = InloggenRouteImport.update({
   id: '/inloggen',
   path: '/inloggen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OverOnsRoute = OverOnsRouteImport.update({
+  id: '/over-ons',
+  path: '/over-ons',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -120,6 +147,11 @@ const WinkelRoute = WinkelRouteImport.update({
 const WinkelwagenRoute = WinkelwagenRouteImport.update({
   id: '/winkelwagen',
   path: '/winkelwagen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ZoekenRoute = ZoekenRouteImport.update({
+  id: '/zoeken',
+  path: '/zoeken',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BeheerIndexRoute = BeheerIndexRouteImport.update({
@@ -222,6 +254,16 @@ const CategorieSlugRoute = CategorieSlugRouteImport.update({
   path: '/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MerkenIndexRoute = MerkenIndexRouteImport.update({
+  id: '/merken/',
+  path: '/merken/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerkenSlugRoute = MerkenSlugRouteImport.update({
+  id: '/merken/$slug',
+  path: '/merken/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
   id: '/product/$slug',
   path: '/product/$slug',
@@ -235,11 +277,15 @@ const ApiPublicBolSyncRoute = ApiPublicBolSyncRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aanbiedingen': typeof AanbiedingenRoute
   '/account': typeof AccountRoute
   '/afrekenen': typeof AfrekenenRoute
   '/beheer': typeof BeheerRouteWithChildren
+  '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/inloggen': typeof InloggenRoute
+  '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
   '/retouren': typeof RetourenRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -249,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/voorwaarden': typeof VoorwaardenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
+  '/zoeken': typeof ZoekenRoute
   '/beheer/audit': typeof BeheerAuditRoute
   '/beheer/beoordelingen': typeof BeheerBeoordelingenRoute
   '/beheer/berichten': typeof BeheerBerichtenRoute
@@ -268,16 +315,22 @@ export interface FileRoutesByFullPath {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer/': typeof BeheerIndexRoute
+  '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aanbiedingen': typeof AanbiedingenRoute
   '/account': typeof AccountRoute
   '/afrekenen': typeof AfrekenenRoute
+  '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/inloggen': typeof InloggenRoute
+  '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
   '/retouren': typeof RetourenRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -287,6 +340,7 @@ export interface FileRoutesByTo {
   '/voorwaarden': typeof VoorwaardenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
+  '/zoeken': typeof ZoekenRoute
   '/beheer/audit': typeof BeheerAuditRoute
   '/beheer/beoordelingen': typeof BeheerBeoordelingenRoute
   '/beheer/berichten': typeof BeheerBerichtenRoute
@@ -306,18 +360,24 @@ export interface FileRoutesByTo {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer': typeof BeheerIndexRoute
+  '/merken': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aanbiedingen': typeof AanbiedingenRoute
   '/account': typeof AccountRoute
   '/afrekenen': typeof AfrekenenRoute
   '/beheer': typeof BeheerRouteWithChildren
+  '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/inloggen': typeof InloggenRoute
+  '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
   '/retouren': typeof RetourenRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -327,6 +387,7 @@ export interface FileRoutesById {
   '/voorwaarden': typeof VoorwaardenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
+  '/zoeken': typeof ZoekenRoute
   '/beheer/audit': typeof BeheerAuditRoute
   '/beheer/beoordelingen': typeof BeheerBeoordelingenRoute
   '/beheer/berichten': typeof BeheerBerichtenRoute
@@ -346,19 +407,25 @@ export interface FileRoutesById {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer/': typeof BeheerIndexRoute
+  '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/aanbiedingen'
     | '/account'
     | '/afrekenen'
     | '/beheer'
+    | '/categorieen'
     | '/contact'
+    | '/cookies'
     | '/inloggen'
+    | '/over-ons'
     | '/privacy'
     | '/retouren'
     | '/sitemap.xml'
@@ -368,6 +435,7 @@ export interface FileRouteTypes {
     | '/voorwaarden'
     | '/winkel'
     | '/winkelwagen'
+    | '/zoeken'
     | '/beheer/audit'
     | '/beheer/beoordelingen'
     | '/beheer/berichten'
@@ -387,16 +455,22 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/merken/$slug'
     | '/product/$slug'
     | '/beheer/'
+    | '/merken/'
     | '/api/public/bol-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/aanbiedingen'
     | '/account'
     | '/afrekenen'
+    | '/categorieen'
     | '/contact'
+    | '/cookies'
     | '/inloggen'
+    | '/over-ons'
     | '/privacy'
     | '/retouren'
     | '/sitemap.xml'
@@ -406,6 +480,7 @@ export interface FileRouteTypes {
     | '/voorwaarden'
     | '/winkel'
     | '/winkelwagen'
+    | '/zoeken'
     | '/beheer/audit'
     | '/beheer/beoordelingen'
     | '/beheer/berichten'
@@ -425,17 +500,23 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/merken/$slug'
     | '/product/$slug'
     | '/beheer'
+    | '/merken'
     | '/api/public/bol-sync'
   id:
     | '__root__'
     | '/'
+    | '/aanbiedingen'
     | '/account'
     | '/afrekenen'
     | '/beheer'
+    | '/categorieen'
     | '/contact'
+    | '/cookies'
     | '/inloggen'
+    | '/over-ons'
     | '/privacy'
     | '/retouren'
     | '/sitemap.xml'
@@ -445,6 +526,7 @@ export interface FileRouteTypes {
     | '/voorwaarden'
     | '/winkel'
     | '/winkelwagen'
+    | '/zoeken'
     | '/beheer/audit'
     | '/beheer/beoordelingen'
     | '/beheer/berichten'
@@ -464,18 +546,24 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/merken/$slug'
     | '/product/$slug'
     | '/beheer/'
+    | '/merken/'
     | '/api/public/bol-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AanbiedingenRoute: typeof AanbiedingenRoute
   AccountRoute: typeof AccountRoute
   AfrekenenRoute: typeof AfrekenenRoute
   BeheerRoute: typeof BeheerRouteWithChildren
+  CategorieenRoute: typeof CategorieenRoute
   ContactRoute: typeof ContactRoute
+  CookiesRoute: typeof CookiesRoute
   InloggenRoute: typeof InloggenRoute
+  OverOnsRoute: typeof OverOnsRoute
   PrivacyRoute: typeof PrivacyRoute
   RetourenRoute: typeof RetourenRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -485,9 +573,12 @@ export interface RootRouteChildren {
   VoorwaardenRoute: typeof VoorwaardenRoute
   WinkelRoute: typeof WinkelRoute
   WinkelwagenRoute: typeof WinkelwagenRoute
+  ZoekenRoute: typeof ZoekenRoute
   BestellingOrderNumberRoute: typeof BestellingOrderNumberRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
+  MerkenSlugRoute: typeof MerkenSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  MerkenIndexRoute: typeof MerkenIndexRoute
   ApiPublicBolSyncRoute: typeof ApiPublicBolSyncRoute
 }
 
@@ -498,6 +589,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aanbiedingen': {
+      id: '/aanbiedingen'
+      path: '/aanbiedingen'
+      fullPath: '/aanbiedingen'
+      preLoaderRoute: typeof AanbiedingenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -521,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BeheerRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/categorieen': {
+      id: '/categorieen'
+      path: '/categorieen'
+      fullPath: '/categorieen'
+      preLoaderRoute: typeof CategorieenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -528,11 +633,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inloggen': {
       id: '/inloggen'
       path: '/inloggen'
       fullPath: '/inloggen'
       preLoaderRoute: typeof InloggenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/over-ons': {
+      id: '/over-ons'
+      path: '/over-ons'
+      fullPath: '/over-ons'
+      preLoaderRoute: typeof OverOnsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -596,6 +715,13 @@ declare module '@tanstack/react-router' {
       path: '/winkelwagen'
       fullPath: '/winkelwagen'
       preLoaderRoute: typeof WinkelwagenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/zoeken': {
+      id: '/zoeken'
+      path: '/zoeken'
+      fullPath: '/zoeken'
+      preLoaderRoute: typeof ZoekenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/beheer/': {
@@ -738,6 +864,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/merken/': {
+      id: '/merken/'
+      path: '/merken'
+      fullPath: '/merken/'
+      preLoaderRoute: typeof MerkenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merken/$slug': {
+      id: '/merken/$slug'
+      path: '/merken/$slug'
+      fullPath: '/merken/$slug'
+      preLoaderRoute: typeof MerkenSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$slug': {
       id: '/product/$slug'
       path: '/product/$slug'
@@ -802,11 +942,15 @@ const BeheerRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AanbiedingenRoute: AanbiedingenRoute,
   AccountRoute: AccountRoute,
   AfrekenenRoute: AfrekenenRoute,
   BeheerRoute: BeheerRouteWithChildren,
+  CategorieenRoute: CategorieenRoute,
   ContactRoute: ContactRoute,
+  CookiesRoute: CookiesRoute,
   InloggenRoute: InloggenRoute,
+  OverOnsRoute: OverOnsRoute,
   PrivacyRoute: PrivacyRoute,
   RetourenRoute: RetourenRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -816,9 +960,12 @@ const rootRouteChildren: RootRouteChildren = {
   VoorwaardenRoute: VoorwaardenRoute,
   WinkelRoute: WinkelRoute,
   WinkelwagenRoute: WinkelwagenRoute,
+  ZoekenRoute: ZoekenRoute,
   BestellingOrderNumberRoute: BestellingOrderNumberRoute,
   CategorieSlugRoute: CategorieSlugRoute,
+  MerkenSlugRoute: MerkenSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
+  MerkenIndexRoute: MerkenIndexRoute,
   ApiPublicBolSyncRoute: ApiPublicBolSyncRoute,
 }
 export const routeTree = rootRouteImport

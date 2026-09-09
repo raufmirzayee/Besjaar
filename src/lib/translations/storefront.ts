@@ -17,7 +17,7 @@ const nl = {
   // Header / navigation ---------------------------------------------------
   "nav.shop": "Shop",
   "nav.brands": "Merken",
-  "nav.bestsellers": "Bestsellers",
+  "nav.bestsellers": "Populair",
   "nav.deals": "Aanbiedingen",
   "nav.about": "Over Besjaar",
   "nav.service": "Klantenservice",
@@ -134,8 +134,9 @@ const nl = {
   "home.trustShippingText": "Op werkdagen verzonden",
   "home.categoriesTitle": "Shop per categorie",
   "home.categoriesText": "Tien categorieën, van outdoorverlichting tot badkamercomfort.",
-  "home.bestsellersTitle": "Meest bekeken producten",
-  "home.bestsellersText": "De producten met de meeste beoordelingen uit ons assortiment.",
+  "home.bestsellersTitle": "Populair bij klanten",
+  "home.bestsellersText":
+    "De producten met de meeste beoordelingen, verdeeld over onze categorieën.",
   "home.dealsTitle": "Nu in de aanbieding",
   "home.dealsText": "Producten met een actuele actieprijs.",
   "home.brandsTitle": "Onze merken",
@@ -206,6 +207,25 @@ const nl = {
   "common.errorTitle": "Er ging iets mis",
   "common.errorText": "We konden dit onderdeel niet laden. Probeer het opnieuw.",
   "common.skipToContent": "Naar de inhoud",
+
+  // Footer, legal and about ----------------------------------------------
+  "footer.cookies": "Cookiebeleid",
+  "footer.about": "Over ons",
+  "footer.brands": "Merken",
+  "footer.deals": "Aanbiedingen",
+  "footer.bestsellers": "Populair",
+  "footer.orders": "Bestellingen",
+  "footer.trackOrder": "Bestelling volgen",
+  "footer.allProducts": "Alle producten",
+  "footer.categories": "Categorieën",
+  "footer.company": "Over Besjaar",
+  "footer.legal": "Juridisch",
+  "footer.paymentTitle": "Betaalmethoden",
+  "footer.operatedBy": "Besjaar is een handelsnaam van {entity}.",
+  "footer.newsletterTitle": "Nieuwsbrief",
+  "about.title": "Over Besjaar",
+  "about.intro":
+    "Besjaar is een Nederlandse webwinkel met een compact, zorgvuldig samengesteld assortiment praktische producten.",
 } as const;
 
 type Key = keyof typeof nl;
@@ -328,8 +348,8 @@ const en: Record<Key, string> = {
   "home.trustShippingText": "Dispatched on working days",
   "home.categoriesTitle": "Shop by category",
   "home.categoriesText": "Ten categories, from outdoor lighting to bathroom comfort.",
-  "home.bestsellersTitle": "Most reviewed products",
-  "home.bestsellersText": "The products with the most reviews in our range.",
+  "home.bestsellersTitle": "Popular with customers",
+  "home.bestsellersText": "The products with the most reviews, spread across our categories.",
   "home.dealsTitle": "On sale now",
   "home.dealsText": "Products with a current promotional price.",
   "home.brandsTitle": "Our brands",
@@ -394,6 +414,25 @@ const en: Record<Key, string> = {
   "common.errorTitle": "Something went wrong",
   "common.errorText": "We could not load this section. Please try again.",
   "common.skipToContent": "Skip to content",
+
+  // Footer, legal and about ----------------------------------------------
+  "footer.cookies": "Cookie policy",
+  "footer.about": "About us",
+  "footer.brands": "Brands",
+  "footer.deals": "Deals",
+  "footer.bestsellers": "Bestsellers",
+  "footer.orders": "Orders",
+  "footer.trackOrder": "Track order",
+  "footer.allProducts": "All products",
+  "footer.categories": "Categories",
+  "footer.company": "About Besjaar",
+  "footer.legal": "Legal",
+  "footer.paymentTitle": "Payment methods",
+  "footer.operatedBy": "Besjaar is a trading name of {entity}.",
+  "footer.newsletterTitle": "Newsletter",
+  "about.title": "About Besjaar",
+  "about.intro":
+    "Besjaar is a Dutch online shop with a compact, carefully curated range of practical products.",
 };
 
 const de: Record<Key, string> = {
@@ -404,7 +443,7 @@ const de: Record<Key, string> = {
 
   "nav.shop": "Shop",
   "nav.brands": "Marken",
-  "nav.bestsellers": "Bestseller",
+  "nav.bestsellers": "Beliebt",
   "nav.deals": "Angebote",
   "nav.about": "Über Besjaar",
   "nav.service": "Kundenservice",
@@ -514,8 +553,9 @@ const de: Record<Key, string> = {
   "home.trustShippingText": "Versand an Werktagen",
   "home.categoriesTitle": "Nach Kategorie einkaufen",
   "home.categoriesText": "Zehn Kategorien, von Outdoor-Beleuchtung bis Badkomfort.",
-  "home.bestsellersTitle": "Meistbewertete Produkte",
-  "home.bestsellersText": "Die Produkte mit den meisten Bewertungen in unserem Sortiment.",
+  "home.bestsellersTitle": "Beliebt bei Kunden",
+  "home.bestsellersText":
+    "Die Produkte mit den meisten Bewertungen, über unsere Kategorien verteilt.",
   "home.dealsTitle": "Jetzt im Angebot",
   "home.dealsText": "Produkte mit einem aktuellen Aktionspreis.",
   "home.brandsTitle": "Unsere Marken",
@@ -581,6 +621,25 @@ const de: Record<Key, string> = {
   "common.errorTitle": "Etwas ist schiefgelaufen",
   "common.errorText": "Wir konnten diesen Bereich nicht laden. Bitte versuchen Sie es erneut.",
   "common.skipToContent": "Zum Inhalt springen",
+
+  // Footer, legal and about ----------------------------------------------
+  "footer.cookies": "Cookie-Richtlinie",
+  "footer.about": "Über uns",
+  "footer.brands": "Marken",
+  "footer.deals": "Angebote",
+  "footer.bestsellers": "Beliebt",
+  "footer.orders": "Bestellungen",
+  "footer.trackOrder": "Bestellung verfolgen",
+  "footer.allProducts": "Alle Produkte",
+  "footer.categories": "Kategorien",
+  "footer.company": "Über Besjaar",
+  "footer.legal": "Rechtliches",
+  "footer.paymentTitle": "Zahlungsarten",
+  "footer.operatedBy": "Besjaar ist ein Handelsname von {entity}.",
+  "footer.newsletterTitle": "Newsletter",
+  "about.title": "Über Besjaar",
+  "about.intro":
+    "Besjaar ist ein niederländischer Onlineshop mit einem kompakten, sorgfältig zusammengestellten Sortiment praktischer Produkte.",
 };
 
 const fr: Record<Key, string> = {
@@ -591,7 +650,7 @@ const fr: Record<Key, string> = {
 
   "nav.shop": "Boutique",
   "nav.brands": "Marques",
-  "nav.bestsellers": "Meilleures ventes",
+  "nav.bestsellers": "Populaire",
   "nav.deals": "Promotions",
   "nav.about": "À propos de Besjaar",
   "nav.service": "Service client",
@@ -701,8 +760,8 @@ const fr: Record<Key, string> = {
   "home.categoriesTitle": "Acheter par catégorie",
   "home.categoriesText":
     "Dix catégories, de l'éclairage d'extérieur au confort de la salle de bain.",
-  "home.bestsellersTitle": "Produits les plus commentés",
-  "home.bestsellersText": "Les produits avec le plus d'avis de notre gamme.",
+  "home.bestsellersTitle": "Populaire auprès des clients",
+  "home.bestsellersText": "Les produits avec le plus d'avis, répartis sur nos catégories.",
   "home.dealsTitle": "En promotion",
   "home.dealsText": "Produits avec un prix promotionnel en cours.",
   "home.brandsTitle": "Nos marques",
@@ -767,6 +826,25 @@ const fr: Record<Key, string> = {
   "common.errorTitle": "Une erreur est survenue",
   "common.errorText": "Nous n'avons pas pu charger cette section. Veuillez réessayer.",
   "common.skipToContent": "Aller au contenu",
+
+  // Footer, legal and about ----------------------------------------------
+  "footer.cookies": "Politique de cookies",
+  "footer.about": "À propos",
+  "footer.brands": "Marques",
+  "footer.deals": "Promotions",
+  "footer.bestsellers": "Populaire",
+  "footer.orders": "Commandes",
+  "footer.trackOrder": "Suivre la commande",
+  "footer.allProducts": "Tous les produits",
+  "footer.categories": "Catégories",
+  "footer.company": "À propos de Besjaar",
+  "footer.legal": "Mentions légales",
+  "footer.paymentTitle": "Moyens de paiement",
+  "footer.operatedBy": "Besjaar est un nom commercial de {entity}.",
+  "footer.newsletterTitle": "Newsletter",
+  "about.title": "À propos de Besjaar",
+  "about.intro":
+    "Besjaar est une boutique en ligne néerlandaise proposant une gamme compacte et soigneusement sélectionnée de produits pratiques.",
 };
 
 export const storefrontMessages: Record<Locale, Record<Key, string>> = { nl, en, de, fr };

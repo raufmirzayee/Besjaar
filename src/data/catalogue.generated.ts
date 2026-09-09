@@ -91,7 +91,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-militaire-zaklamp-2000-lumen-ip65-waterdicht-noodpakket-zwart/9300000222829255/",
     highlights: ["Krachtige Militaire Zaklamp", "IP65 Waterdicht", "Werkt op Batterijen", "Voor Buiten & Noodpakket"],
     specifications: { "Beschermingsklasse": "IP65", "Voeding": "Batterijen", "Waterbestendig": "Ja" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -131,7 +131,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-militaire-zaklamp-kinderen-volwassenen-zaklamp-militaire-1200-lumen-waterproof-zwart-2-stuks/9300000169890829/",
     highlights: ["Militaire Zaklamp", "2 Stuks Zaklampen", "2000 Lumen", "IP65 Waterdicht", "Zwart"],
     specifications: { "Lichtopbrengst": "2000 lumen", "Beschermingsklasse": "IP65", "Aantal": "2 stuks", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -151,7 +151,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-militaire-zaklampen-kinderen-volwassenen-1200-lumen-waterdicht-zwart-2-stuks-inclusief-batterijen/9300000180841337/",
     highlights: ["Militaire Zaklamp", "2000 Lumen", "Waterdicht", "Zwart", "2 stuks", "Inclusief Batterijen", "Set", "Noodpakket"],
     specifications: { "Lichtopbrengst": "2000 lumen", "Aantal": "2 stuks", "Voeding": "Batterijen", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -171,7 +171,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-militaire-zaklamp-zaklamp-op-batterijen-2000-lumen-ip65-waterdicht-noodpakket-zwart/9300000222856856/",
     highlights: ["Militaire Zaklamp", "zaklamp op batterijen", "2000 Lumen", "IP65 Waterdicht", "Noodpakket", "Zwart"],
     specifications: { "Lichtopbrengst": "2000 lumen", "Beschermingsklasse": "IP65", "Voeding": "Batterijen", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -271,7 +271,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-led-oplaadbaar-militaire-zaklamp-3000-lumen-inclusief-opladerbare-batterijen-kabel-usb-oplaadbaar-waterdicht-camping/9300000169891054/",
     highlights: ["Militaire zaklamp", "5000 Lumen", "USB-C oplaadbaar", "inclusief opladerbare batterijen en kabel", "waterdicht", "camping"],
     specifications: { "Lichtopbrengst": "5000 lumen", "Aansluiting": "USB-C", "Voeding": "Oplaadbaar", "Waterbestendig": "Ja" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -351,7 +351,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-zaklamp-led-oplaadbaar-militaire-zaklamp-2500-lumen-ip65-waterdicht-cob-verlichting/9300000227310512/",
     highlights: ["Zaklamp LED Oplaadbaar", "IP67 Waterdicht", "COB Verlichting", "Zwart"],
     specifications: { "Beschermingsklasse": "IP67", "Voeding": "Oplaadbaar", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: true,
+    bestseller: false,
     featured: false,
   },
   {
@@ -371,7 +371,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-douchefilter-waterfilter-voor-douchekop-model-1002025-2-stuks-filters-wit/9300000233170088/",
     highlights: ["Waterfilter Voor Douchekop", "Model 1002026", "2 Stuks filters", "Wit"],
     specifications: { "Aantal": "2 stuks", "Modelnummer": "1002026", "Kleur": "Wit" },
-    bestseller: false,
+    bestseller: true,
     featured: true,
   },
   {
@@ -391,7 +391,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-douchekop-regendouche-wellness-3-sproeistanden-hoge-druk-betere-huid-handdouche-luxe-moderne-handdouche-chrome/9300000354153803/",
     highlights: ["Regendouche", "Wellness", "3 Sproeistanden", "Hoge Druk", "Betere Huid", "Handdouche", "Luxe Moderne Handdouche", "Chrome"],
     specifications: { "Sproeistanden": "3", "Kleur": "Chrome" },
-    bestseller: false,
+    bestseller: true,
     featured: false,
   },
   {
@@ -611,7 +611,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-sigarettendoosje-zwart-aluminium-sigarettenhouder-weerbestendig-stevige-en-luxe-sigarettendoosjes/9300000224540054/",
     highlights: ["Zilver", "Aluminium", "Sigarettenhouder", "Weerbestendig", "Stevige en Luxe Sigarettendoosjes"],
     specifications: { "Materiaal": "Aluminium", "Kleur": "Zilver" },
-    bestseller: false,
+    bestseller: true,
     featured: true,
   },
   {
@@ -711,7 +711,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-sigarettendoosjes-sigarettenhouder-met-aansteker-sigaretten-box-zwart-aluminium-weerbestendig-stevig-en-luxe/9300000187838168/",
     highlights: ["Sigaretten Box", "Aluminium", "Weerbestendig", "Stevig en Luxe", "Zwart"],
     specifications: { "Materiaal": "Aluminium", "Kleur": "Zwart" },
-    bestseller: false,
+    bestseller: true,
     featured: false,
   },
   {
@@ -751,7 +751,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/deurbel-draadloze-deurbel-deurbel-draadloos-2-ontvangers-deurbellen-bel-beldrukker-zwart-ip44-waterdicht-inclusief-batterijen-bereik-300-meter/9300000183429595/",
     highlights: ["Deurbel Draadloos", "Draadloze Deurbel", "Met 2 Ontvangers", "Ontvangers Op Batterijen", "Beldrukker", "Inclusief Batterijen", "IP44 Waterdicht", "Zwart"],
     specifications: { "Beschermingsklasse": "IP44", "Ontvangers": "2", "Voeding": "Batterijen", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: false,
+    bestseller: true,
     featured: false,
   },
   {
@@ -771,7 +771,7 @@ export const CATALOGUE_PRODUCTS: CatalogueProduct[] = [
     sourceUrl: "https://www.bol.com/nl/nl/p/besjaar-deurbel-deurbel-draadloos-draadloze-deurbel-ontvanger-op-batterijen-beldrukker-inclusief-batterijen-ip44-waterdicht-zwart/9300000227825516/",
     highlights: ["deurbel draadloos", "Draadloze Deurbel", "Inclusief Batterijen", "Deurbellen", "IP44 Waterdicht", "Zwart"],
     specifications: { "Beschermingsklasse": "IP44", "Voeding": "Batterijen", "Waterbestendig": "Ja", "Kleur": "Zwart" },
-    bestseller: false,
+    bestseller: true,
     featured: true,
   },
   {

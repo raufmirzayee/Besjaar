@@ -18,6 +18,9 @@ import { ConsentScripts } from "@/components/consent-scripts";
 
 import { Toaster } from "@/components/ui/sonner";
 import { CartProvider } from "@/lib/cart";
+import { WishlistProvider } from "@/lib/wishlist";
+import { CartDrawer } from "@/components/cart-drawer";
+import { RecentlyViewedProvider } from "@/lib/recently-viewed";
 import { AuthProvider } from "@/lib/auth";
 import { getCategories } from "@/lib/catalog.functions";
 import { I18nProvider } from "@/lib/i18n";
@@ -124,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -166,19 +169,27 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
-          <CartProvider>
-            <div className="flex min-h-screen flex-col">
-              <SiteHeader />
-              <main className="flex-1">
-                {/* Required: nested routes render here. */}
-                <Outlet />
-              </main>
-              <SiteFooter />
-            </div>
-            <CookieConsent />
-            <ConsentScripts />
-            <Toaster position="top-center" richColors />
-          </CartProvider>
+          <WishlistProvider>
+            <RecentlyViewedProvider>
+              <CartProvider>
+                <a href="#hoofdinhoud" className="skip-link">
+                  Naar de inhoud
+                </a>
+                <div className="flex min-h-screen flex-col">
+                  <SiteHeader />
+                  <main id="hoofdinhoud" tabIndex={-1} className="flex-1 outline-none">
+                    {/* Required: nested routes render here. */}
+                    <Outlet />
+                  </main>
+                  <SiteFooter />
+                </div>
+                <CartDrawer />
+                <CookieConsent />
+                <ConsentScripts />
+                <Toaster position="top-center" richColors />
+              </CartProvider>
+            </RecentlyViewedProvider>
+          </WishlistProvider>
         </AuthProvider>
       </I18nProvider>
     </QueryClientProvider>
