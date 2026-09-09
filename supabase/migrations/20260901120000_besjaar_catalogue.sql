@@ -41,8 +41,19 @@ ON CONFLICT (slug) DO UPDATE SET
 
 -- Products -----------------------------------------------------------
 -- bol_product_id is the workbook Product ID and the deduplication key.
-CREATE UNIQUE INDEX IF NOT EXISTS products_bol_product_id_key
-  ON public.products (bol_product_id) WHERE bol_product_id IS NOT NULL;
+--
+-- A plain UNIQUE constraint, not a partial index: Postgres already allows
+-- many NULLs in a unique constraint, and ON CONFLICT inference (plus
+-- PostgREST's on_conflict used by the admin importer) cannot target a
+-- partial index without repeating its predicate.
+DO $$
+BEGIN
+  ALTER TABLE public.products
+    ADD CONSTRAINT products_bol_product_id_key UNIQUE (bol_product_id);
+EXCEPTION
+  WHEN duplicate_table THEN NULL;
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 WITH incoming (name, slug, brand_slug, category_slug, bol_product_id,
                regular_price, sale_price, stock_quantity, short_description,
@@ -148,4 +159,10 @@ SELECT u.id, r.image_url, r.name, true, 0
 FROM upserted u
 JOIN resolved r ON r.bol_product_id = u.bol_product_id
 WHERE r.image_url IS NOT NULL
-ON CONFLICT DO NOTHING;
+  -- product_images has no unique constraint on (product_id, image_url),
+  -- so ON CONFLICT would match nothing and re-running the seed would
+  -- stack a second copy of every image. Check for the row instead.
+  AND NOT EXISTS (
+    SELECT 1 FROM public.product_images existing
+    WHERE existing.product_id = u.id AND existing.image_url = r.image_url
+  );
