@@ -99,7 +99,10 @@ function CookiePolicyPage() {
 
         <p className="mt-8 text-sm text-muted-foreground">
           Meer over hoe wij met persoonsgegevens omgaan lees je in de{" "}
-          <Link to="/privacy" className="text-primary underline-offset-4 hover:underline">
+          <Link
+            to="/privacy"
+            className="text-primary underline underline-offset-4 hover:text-primary-hover"
+          >
             {t("footer.privacy")}
           </Link>
           .

@@ -90,18 +90,26 @@ function AuthPage() {
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="mt-4 space-y-4">
               <div>
-                <Label className="mb-1.5 block">{t("auth.email")}</Label>
+                <Label htmlFor="login-email" className="mb-1.5 block">
+                  {t("auth.email")}
+                </Label>
                 <Input
+                  id="login-email"
                   type="email"
+                  autoComplete="email"
                   required
                   value={login.email}
                   onChange={(e) => setLogin({ ...login, email: e.target.value })}
                 />
               </div>
               <div>
-                <Label className="mb-1.5 block">{t("auth.password")}</Label>
+                <Label htmlFor="login-password" className="mb-1.5 block">
+                  {t("auth.password")}
+                </Label>
                 <Input
+                  id="login-password"
                   type="password"
+                  autoComplete="current-password"
                   required
                   value={login.password}
                   onChange={(e) => setLogin({ ...login, password: e.target.value })}
@@ -117,16 +125,24 @@ function AuthPage() {
             <form onSubmit={handleRegister} className="mt-4 space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="mb-1.5 block">{t("auth.firstName")}</Label>
+                  <Label htmlFor="register-first-name" className="mb-1.5 block">
+                    {t("auth.firstName")}
+                  </Label>
                   <Input
+                    id="register-first-name"
+                    autoComplete="given-name"
                     required
                     value={register.firstName}
                     onChange={(e) => setRegister({ ...register, firstName: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label className="mb-1.5 block">{t("auth.lastName")}</Label>
+                  <Label htmlFor="register-last-name" className="mb-1.5 block">
+                    {t("auth.lastName")}
+                  </Label>
                   <Input
+                    id="register-last-name"
+                    autoComplete="family-name"
                     required
                     value={register.lastName}
                     onChange={(e) => setRegister({ ...register, lastName: e.target.value })}
@@ -134,18 +150,26 @@ function AuthPage() {
                 </div>
               </div>
               <div>
-                <Label className="mb-1.5 block">{t("auth.email")}</Label>
+                <Label htmlFor="register-email" className="mb-1.5 block">
+                  {t("auth.email")}
+                </Label>
                 <Input
+                  id="register-email"
                   type="email"
+                  autoComplete="email"
                   required
                   value={register.email}
                   onChange={(e) => setRegister({ ...register, email: e.target.value })}
                 />
               </div>
               <div>
-                <Label className="mb-1.5 block">{t("auth.password")}</Label>
+                <Label htmlFor="register-password" className="mb-1.5 block">
+                  {t("auth.password")}
+                </Label>
                 <Input
+                  id="register-password"
                   type="password"
+                  autoComplete="new-password"
                   required
                   minLength={8}
                   value={register.password}

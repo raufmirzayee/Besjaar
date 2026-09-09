@@ -71,7 +71,10 @@ function ShippingPage() {
           <p>
             <span className="font-semibold text-foreground">{t("shipping.trackLabel")}</span>
             {t("shipping.trackTextPrefix")}
-            <Link to="/account" className="text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/account"
+              className="text-primary underline underline-offset-4 hover:text-primary-hover"
+            >
               {t("shipping.trackLink")}
             </Link>
             .
@@ -83,7 +86,10 @@ function ShippingPage() {
           <p>
             <span className="font-semibold text-foreground">{t("shipping.returnLabel")}</span>
             {t("shipping.returnTextPrefix")}
-            <Link to="/retouren" className="text-primary underline-offset-4 hover:underline">
+            <Link
+              to="/retouren"
+              className="text-primary underline underline-offset-4 hover:text-primary-hover"
+            >
               {t("shipping.returnLink")}
             </Link>
             {t("shipping.returnTextSuffix")}

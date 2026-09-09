@@ -247,7 +247,9 @@
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.022em;
-    color: var(--color-foreground);
+    /* Inherit, so headings stay readable on the dark navy bands. Forcing the
+       ink colour here silently broke contrast on every dark surface. */
+    color: inherit;
     text-wrap: balance;
   }
 

@@ -426,7 +426,7 @@ function ProductPage() {
             {t("pdp.buyNow")}
           </Button>
 
-          <dl className="mt-7 grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
+          <ul className="mt-7 grid gap-3 border-t border-border pt-5 sm:grid-cols-3">
             {[
               { icon: Truck, label: t("home.trustShipping"), text: t("home.trustShippingText") },
               {
@@ -440,15 +440,15 @@ function ProductPage() {
                 text: t("home.trustSecureText"),
               },
             ].map(({ icon: Icon, label, text }) => (
-              <div key={label} className="flex gap-2">
+              <li key={label} className="flex gap-2">
                 <Icon className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
                 <div>
-                  <dt className="text-xs font-bold">{label}</dt>
-                  <dd className="text-xs text-muted-foreground">{text}</dd>
+                  <p className="text-xs font-bold">{label}</p>
+                  <p className="text-xs text-muted-foreground">{text}</p>
                 </div>
-              </div>
+              </li>
             ))}
-          </dl>
+          </ul>
         </div>
       </div>
 

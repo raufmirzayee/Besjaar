@@ -37,7 +37,10 @@ function TermsPage() {
         <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">{t("terms.title")}</h1>
         <p className="mt-3 text-muted-foreground">
           {t("terms.introPrefix")}
-          <Link to="/privacy" className="text-primary underline-offset-4 hover:underline">
+          <Link
+            to="/privacy"
+            className="text-primary underline underline-offset-4 hover:text-primary-hover"
+          >
             {t("terms.introLink")}
           </Link>
           .

@@ -89,7 +89,7 @@ function ContactMessagesPage() {
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <a
                 href={`mailto:${message.email}?subject=${encodeURIComponent(`Re: ${message.subject}`)}`}
-                className="text-sm text-primary underline-offset-4 hover:underline"
+                className="text-sm text-primary underline underline-offset-4 hover:text-primary-hover"
               >
                 Beantwoorden
               </a>

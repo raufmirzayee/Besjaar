@@ -37,8 +37,11 @@ export function ProductImage({
           "flex h-full w-full items-center justify-center bg-ice-100 text-primary/35",
           className,
         )}
-        role="img"
-        aria-label={alt}
+        // An empty alt means the image is decorative, so the placeholder is
+        // hidden from assistive tech rather than announced as an unnamed image.
+        role={alt ? "img" : "presentation"}
+        aria-label={alt || undefined}
+        aria-hidden={alt ? undefined : true}
       >
         <svg viewBox="0 0 48 48" className="h-1/4 w-1/4 min-h-8 min-w-8" fill="none">
           <rect x="3" y="3" width="42" height="42" rx="12" className="fill-current opacity-25" />

@@ -83,7 +83,10 @@ function ContactPage() {
         <p className="mt-3 text-muted-foreground">
           Houd je ordernummer bij de hand, dan kunnen we je het snelst helpen. Voor retouren gebruik
           je het{" "}
-          <Link to="/retouren" className="text-primary underline-offset-4 hover:underline">
+          <Link
+            to="/retouren"
+            className="text-primary underline underline-offset-4 hover:text-primary-hover"
+          >
             retourportaal
           </Link>
           .

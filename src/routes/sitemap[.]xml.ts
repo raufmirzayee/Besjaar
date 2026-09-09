@@ -1,15 +1,26 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+/**
+ * XML sitemap.
+ *
+ * Only indexable pages are listed. Cart, checkout, account, wishlist, search
+ * results and the admin area are excluded — they carry a noindex tag, and
+ * listing them would contradict it.
+ */
 const STATIC_PATHS = [
   "/",
   "/winkel",
-  "/winkelwagen",
-  "/inloggen",
-  "/veelgestelde-vragen",
+  "/categorieen",
+  "/merken",
+  "/aanbiedingen",
+  "/over-ons",
   "/contact",
+  "/veelgestelde-vragen",
   "/verzending",
+  "/retouren",
   "/voorwaarden",
   "/privacy",
+  "/cookies",
 ];
 
 function escapeXml(value: string) {
@@ -18,32 +29,54 @@ function escapeXml(value: string) {
   );
 }
 
+type SitemapUrl = { loc: string; lastmod: string | null; priority: string };
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const origin = new URL(request.url).origin;
+        const origin = (process.env.VITE_SITE_URL ?? new URL(request.url).origin).replace(
+          /\/$/,
+          "",
+        );
         const { fetchCategories, fetchProducts } = await import("@/lib/catalog.server");
+        const { brands } = await import("@/data/catalogue");
 
-        let urls = STATIC_PATHS.map((path) => ({
+        const urls: SitemapUrl[] = STATIC_PATHS.map((path) => ({
           loc: `${origin}${path}`,
-          lastmod: null as string | null,
+          lastmod: null,
+          priority: path === "/" ? "1.0" : "0.7",
         }));
+
+        urls.push(
+          ...brands.map((brand) => ({
+            loc: `${origin}/merken/${brand.slug}`,
+            lastmod: null,
+            priority: "0.6",
+          })),
+        );
 
         try {
           const [categories, products] = await Promise.all([
             fetchCategories(),
-            fetchProducts({ limit: 500 }),
+            fetchProducts({ limit: 200 }),
           ]);
-          urls = urls.concat(
-            categories.map((c) => ({ loc: `${origin}/categorie/${c.slug}`, lastmod: null })),
-            products.map((p) => ({
+          urls.push(
+            ...categories.map((c) => ({
+              loc: `${origin}/categorie/${c.slug}`,
+              lastmod: null,
+              priority: "0.8",
+            })),
+            ...products.map((p) => ({
               loc: `${origin}/product/${p.slug}`,
               lastmod: (p as { updated_at?: string }).updated_at ?? null,
+              priority: "0.9",
             })),
           );
         } catch (error) {
-          console.error("sitemap generation failed", error);
+          // A catalogue outage must not produce a broken sitemap; the static
+          // pages are still served.
+          console.error("sitemap: catalogue unavailable", error);
         }
 
         const body = `<?xml version="1.0" encoding="UTF-8"?>
@@ -51,7 +84,9 @@ export const Route = createFileRoute("/sitemap.xml")({
 ${urls
   .map(
     (u) =>
-      `  <url><loc>${escapeXml(u.loc)}</loc>${u.lastmod ? `<lastmod>${escapeXml(u.lastmod.slice(0, 10))}</lastmod>` : ""}</url>`,
+      `  <url><loc>${escapeXml(u.loc)}</loc>${
+        u.lastmod ? `<lastmod>${escapeXml(u.lastmod.slice(0, 10))}</lastmod>` : ""
+      }<priority>${u.priority}</priority></url>`,
   )
   .join("\n")}
 </urlset>`;
