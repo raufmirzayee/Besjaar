@@ -1,5 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import { createPayment, isPaymentProviderConfigured } from "./payments.server";
+
 export type ShippingMethod = {
   id: string;
   name: string;
@@ -100,23 +102,10 @@ export async function fetchShippingMethods(): Promise<ShippingMethod[]> {
   }));
 }
 
-/**
- * Mollie is not connected yet: this returns a simulated "paid" result so the
- * order flow is fully testable. When the Mollie API key is added we replace
- * this with a real payment creation + webhook confirmation.
- */
-function simulatePayment(method: string) {
-  return {
-    payment_status: "paid" as const,
-    status: "paid" as const,
-    payment_reference: `TEST-${method.toUpperCase()}-${Date.now()}`,
-  };
-}
-
 export async function createOrder(
   input: CheckoutInput,
   verifiedUserId: string | null = null,
-): Promise<{ order_number: string }> {
+): Promise<{ order_number: string; checkoutUrl: string | null; paymentConfigured: boolean }> {
   if (input.lines.length === 0) throw new Error("Je winkelwagen is leeg.");
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
@@ -125,8 +114,13 @@ export async function createOrder(
     .select("order_number")
     .eq("idempotency_key", input.idempotencyKey)
     .maybeSingle();
-  if (existing.data)
-    return { order_number: (existing.data as { order_number: string }).order_number };
+  if (existing.data) {
+    return {
+      order_number: (existing.data as { order_number: string }).order_number,
+      checkoutUrl: null,
+      paymentConfigured: isPaymentProviderConfigured(),
+    };
+  }
 
   const productIds = input.lines.map((l) => l.productId);
   const { data: products, error: productError } = await supabaseAdmin
@@ -183,8 +177,28 @@ export async function createOrder(
   const freeAbove = methodRow.free_above === null ? null : Number(methodRow.free_above);
   const shippingCost = freeAbove !== null && subtotal >= freeAbove ? 0 : Number(methodRow.price);
   const total = Number((subtotal + shippingCost).toFixed(2));
-  const vatAmount = Number((total - total / 1.21).toFixed(2));
-  const payment = simulatePayment(input.paymentMethod);
+  // VAT is derived per line from each product's own rate rather than assuming
+  // 21% across the order, so a reduced-rate product is accounted for correctly.
+  const itemVat = items.reduce((sum, item) => {
+    const rate = item.vat_rate / 100;
+    return sum + (item.line_total - item.line_total / (1 + rate));
+  }, 0);
+  const shippingVat = shippingCost - shippingCost / 1.21;
+  const vatAmount = Number((itemVat + shippingVat).toFixed(2));
+
+  /**
+   * Payment. Without a provider API key the order is stored as pending and no
+   * payment reference is invented — the store never reports a payment it did
+   * not take.
+   */
+  const origin = (process.env.VITE_SITE_URL ?? "").replace(/\/$/, "");
+  const payment = await createPayment({
+    orderNumber: "pending",
+    amount: total,
+    method: input.paymentMethod,
+    description: `Besjaar bestelling`,
+    redirectUrl: `${origin}/bestelling/pending`,
+  });
 
   const { data: order, error: orderError } = await supabaseAdmin
     .from("orders")
@@ -207,7 +221,9 @@ export async function createOrder(
       customer_note: input.customerNote ?? null,
       payment_method: input.paymentMethod,
       idempotency_key: input.idempotencyKey,
-      ...payment,
+      payment_status: payment.paymentStatus,
+      status: payment.status,
+      payment_reference: payment.paymentReference,
     })
     .select("id, order_number")
     .single();
@@ -223,9 +239,13 @@ export async function createOrder(
   await supabaseAdmin.from("order_status_history").insert({
     order_id: orderRow.id,
     status: payment.status,
-    note: "Bestelling geplaatst en betaling geregistreerd (testmodus).",
+    note: payment.configured
+      ? "Bestelling geplaatst; wacht op bevestiging van de betaalprovider."
+      : "Bestelling geplaatst. Er is nog geen betaalprovider gekoppeld, dus er is niet betaald.",
   });
 
+  // Stock is reserved when the order is placed; the movement is recorded now
+  // so the warehouse sees committed demand, and is reversed if payment fails.
   await supabaseAdmin.from("stock_movements").insert(
     items.map((i) => ({
       product_id: i.product_id,
@@ -237,7 +257,11 @@ export async function createOrder(
     })),
   );
 
-  return { order_number: orderRow.order_number };
+  return {
+    order_number: orderRow.order_number,
+    checkoutUrl: payment.checkoutUrl,
+    paymentConfigured: payment.configured,
+  };
 }
 
 export async function fetchOrderByNumber(

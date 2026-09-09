@@ -57,8 +57,24 @@ export function parseCsv(input: string, separator = ";"): string[][] {
   return rows.filter((r) => r.some((c) => c.length > 0));
 }
 
-export function csvToObjects(input: string, separator = ";"): Record<string, string>[] {
-  const rows = parseCsv(input, separator);
+/**
+ * Picks the delimiter from the header line.
+ *
+ * Dutch Excel exports use semicolons; most other tools use commas. Detecting it
+ * means a customer's export imports either way instead of parsing as one giant
+ * column.
+ */
+export function detectSeparator(input: string): string {
+  const firstLine = input.replace(/^\uFEFF/, "").split(/\r?\n/, 1)[0] ?? "";
+  const semicolons = (firstLine.match(/;/g) ?? []).length;
+  const commas = (firstLine.match(/,/g) ?? []).length;
+  const tabs = (firstLine.match(/\t/g) ?? []).length;
+  if (tabs > semicolons && tabs > commas) return "\t";
+  return commas > semicolons ? "," : ";";
+}
+
+export function csvToObjects(input: string, separator?: string): Record<string, string>[] {
+  const rows = parseCsv(input, separator ?? detectSeparator(input));
   if (rows.length === 0) return [];
   const header = rows[0].map((h) => h.toLowerCase().trim());
   return rows.slice(1).map((row) => {

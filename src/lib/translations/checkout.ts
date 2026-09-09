@@ -28,7 +28,7 @@ const nl = {
   "checkout.toPayment": "Naar betaling",
   "checkout.free": "Gratis",
   "checkout.testMode":
-    "Testmodus: betalingen worden gesimuleerd en direct als betaald geregistreerd.",
+    "Er is nog geen betaalprovider gekoppeld. Je kunt de bestelling plaatsen, maar er wordt niets afgeschreven en de bestelling blijft op 'wacht op betaling' staan.",
   "checkout.idealHint": "Direct betalen via je eigen bank",
   "checkout.bancontactHint": "Voor klanten in België",
   "checkout.creditcardHint": "Visa, Mastercard",
@@ -102,7 +102,8 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "checkout.back": "Back",
     "checkout.toPayment": "Continue to payment",
     "checkout.free": "Free",
-    "checkout.testMode": "Test mode: payments are simulated and registered as paid right away.",
+    "checkout.testMode":
+      "No payment provider is connected yet. You can place the order, but nothing is charged and the order stays as awaiting payment.",
     "checkout.idealHint": "Pay directly with your own bank",
     "checkout.bancontactHint": "For customers in Belgium",
     "checkout.creditcardHint": "Visa, Mastercard",
@@ -171,7 +172,8 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "checkout.back": "Zurück",
     "checkout.toPayment": "Weiter zur Bezahlung",
     "checkout.free": "Gratis",
-    "checkout.testMode": "Testmodus: Zahlungen werden simuliert und direkt als bezahlt erfasst.",
+    "checkout.testMode":
+      "Es ist noch kein Zahlungsanbieter angebunden. Sie können die Bestellung aufgeben, es wird jedoch nichts abgebucht und die Bestellung bleibt offen.",
     "checkout.idealHint": "Direkt über deine eigene Bank bezahlen",
     "checkout.bancontactHint": "Für Kunden in Belgien",
     "checkout.creditcardHint": "Visa, Mastercard",
@@ -242,7 +244,7 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "checkout.toPayment": "Continuer vers le paiement",
     "checkout.free": "Gratuit",
     "checkout.testMode":
-      "Mode test : les paiements sont simulés et enregistrés immédiatement comme payés.",
+      "Aucun prestataire de paiement n'est encore connecté. Vous pouvez passer commande, mais rien n'est débité et la commande reste en attente de paiement.",
     "checkout.idealHint": "Payez directement via votre banque",
     "checkout.bancontactHint": "Pour les clients en Belgique",
     "checkout.creditcardHint": "Visa, Mastercard",

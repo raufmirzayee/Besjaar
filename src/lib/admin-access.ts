@@ -123,6 +123,13 @@ export const ADMIN_NAV: AdminNavItem[] = [
   },
   { to: "/beheer/merken", label: "Merken", module: "brands", icon: "Tags", group: "Catalogus" },
   {
+    to: "/beheer/catalogus-import",
+    label: "Catalogus importeren",
+    module: "products",
+    icon: "FileUp",
+    group: "Catalogus",
+  },
+  {
     to: "/beheer/import",
     label: "Import & export",
     module: "products",

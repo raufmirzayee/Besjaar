@@ -12,6 +12,16 @@ export const getShippingMethods = createServerFn({ method: "GET" }).handler(asyn
   return fetchShippingMethods();
 });
 
+/**
+ * Whether live payments are available. The API key itself never leaves the
+ * server; only this boolean does, so checkout can tell the customer the truth
+ * about what will happen when they place the order.
+ */
+export const getPaymentAvailability = createServerFn({ method: "GET" }).handler(async () => {
+  const { isPaymentProviderConfigured } = await import("./payments.server");
+  return { configured: isPaymentProviderConfigured() };
+});
+
 /** Resolve the caller's user id from the bearer token, if any. Guest checkout stays allowed. */
 async function verifiedUserId(): Promise<string | null> {
   const header = getRequestHeader("authorization") ?? "";

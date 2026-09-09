@@ -35,6 +35,7 @@ import { Route as BeheerBeoordelingenRouteImport } from './routes/beheer.beoorde
 import { Route as BeheerBerichtenRouteImport } from './routes/beheer.berichten'
 import { Route as BeheerBestellingenRouteImport } from './routes/beheer.bestellingen'
 import { Route as BeheerBolcomRouteImport } from './routes/beheer.bolcom'
+import { Route as BeheerCatalogusImportRouteImport } from './routes/beheer.catalogus-import'
 import { Route as BeheerCategorieenRouteImport } from './routes/beheer.categorieen'
 import { Route as BeheerGebruikersRouteImport } from './routes/beheer.gebruikers'
 import { Route as BeheerImportRouteImport } from './routes/beheer.import'
@@ -53,6 +54,7 @@ import { Route as MerkenIndexRouteImport } from './routes/merken.index'
 import { Route as MerkenSlugRouteImport } from './routes/merken.$slug'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicBolSyncRouteImport } from './routes/api/public/bol-sync'
+import { Route as ApiPublicMollieWebhookRouteImport } from './routes/api/public/mollie-webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -184,6 +186,11 @@ const BeheerBolcomRoute = BeheerBolcomRouteImport.update({
   path: '/bolcom',
   getParentRoute: () => BeheerRoute,
 } as any)
+const BeheerCatalogusImportRoute = BeheerCatalogusImportRouteImport.update({
+  id: '/catalogus-import',
+  path: '/catalogus-import',
+  getParentRoute: () => BeheerRoute,
+} as any)
 const BeheerCategorieenRoute = BeheerCategorieenRouteImport.update({
   id: '/categorieen',
   path: '/categorieen',
@@ -274,6 +281,11 @@ const ApiPublicBolSyncRoute = ApiPublicBolSyncRouteImport.update({
   path: '/api/public/bol-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMollieWebhookRoute = ApiPublicMollieWebhookRouteImport.update({
+  id: '/api/public/mollie-webhook',
+  path: '/api/public/mollie-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -301,6 +313,7 @@ export interface FileRoutesByFullPath {
   '/beheer/berichten': typeof BeheerBerichtenRoute
   '/beheer/bestellingen': typeof BeheerBestellingenRoute
   '/beheer/bolcom': typeof BeheerBolcomRoute
+  '/beheer/catalogus-import': typeof BeheerCatalogusImportRoute
   '/beheer/categorieen': typeof BeheerCategorieenRoute
   '/beheer/gebruikers': typeof BeheerGebruikersRoute
   '/beheer/import': typeof BeheerImportRoute
@@ -320,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/beheer/': typeof BeheerIndexRoute
   '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
+  '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -346,6 +360,7 @@ export interface FileRoutesByTo {
   '/beheer/berichten': typeof BeheerBerichtenRoute
   '/beheer/bestellingen': typeof BeheerBestellingenRoute
   '/beheer/bolcom': typeof BeheerBolcomRoute
+  '/beheer/catalogus-import': typeof BeheerCatalogusImportRoute
   '/beheer/categorieen': typeof BeheerCategorieenRoute
   '/beheer/gebruikers': typeof BeheerGebruikersRoute
   '/beheer/import': typeof BeheerImportRoute
@@ -365,6 +380,7 @@ export interface FileRoutesByTo {
   '/beheer': typeof BeheerIndexRoute
   '/merken': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
+  '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -393,6 +409,7 @@ export interface FileRoutesById {
   '/beheer/berichten': typeof BeheerBerichtenRoute
   '/beheer/bestellingen': typeof BeheerBestellingenRoute
   '/beheer/bolcom': typeof BeheerBolcomRoute
+  '/beheer/catalogus-import': typeof BeheerCatalogusImportRoute
   '/beheer/categorieen': typeof BeheerCategorieenRoute
   '/beheer/gebruikers': typeof BeheerGebruikersRoute
   '/beheer/import': typeof BeheerImportRoute
@@ -412,6 +429,7 @@ export interface FileRoutesById {
   '/beheer/': typeof BeheerIndexRoute
   '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
+  '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -441,6 +459,7 @@ export interface FileRouteTypes {
     | '/beheer/berichten'
     | '/beheer/bestellingen'
     | '/beheer/bolcom'
+    | '/beheer/catalogus-import'
     | '/beheer/categorieen'
     | '/beheer/gebruikers'
     | '/beheer/import'
@@ -460,6 +479,7 @@ export interface FileRouteTypes {
     | '/beheer/'
     | '/merken/'
     | '/api/public/bol-sync'
+    | '/api/public/mollie-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -486,6 +506,7 @@ export interface FileRouteTypes {
     | '/beheer/berichten'
     | '/beheer/bestellingen'
     | '/beheer/bolcom'
+    | '/beheer/catalogus-import'
     | '/beheer/categorieen'
     | '/beheer/gebruikers'
     | '/beheer/import'
@@ -505,6 +526,7 @@ export interface FileRouteTypes {
     | '/beheer'
     | '/merken'
     | '/api/public/bol-sync'
+    | '/api/public/mollie-webhook'
   id:
     | '__root__'
     | '/'
@@ -532,6 +554,7 @@ export interface FileRouteTypes {
     | '/beheer/berichten'
     | '/beheer/bestellingen'
     | '/beheer/bolcom'
+    | '/beheer/catalogus-import'
     | '/beheer/categorieen'
     | '/beheer/gebruikers'
     | '/beheer/import'
@@ -551,6 +574,7 @@ export interface FileRouteTypes {
     | '/beheer/'
     | '/merken/'
     | '/api/public/bol-sync'
+    | '/api/public/mollie-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -580,6 +604,7 @@ export interface RootRouteChildren {
   ProductSlugRoute: typeof ProductSlugRoute
   MerkenIndexRoute: typeof MerkenIndexRoute
   ApiPublicBolSyncRoute: typeof ApiPublicBolSyncRoute
+  ApiPublicMollieWebhookRoute: typeof ApiPublicMollieWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -766,6 +791,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BeheerBolcomRouteImport
       parentRoute: typeof BeheerRoute
     }
+    '/beheer/catalogus-import': {
+      id: '/beheer/catalogus-import'
+      path: '/catalogus-import'
+      fullPath: '/beheer/catalogus-import'
+      preLoaderRoute: typeof BeheerCatalogusImportRouteImport
+      parentRoute: typeof BeheerRoute
+    }
     '/beheer/categorieen': {
       id: '/beheer/categorieen'
       path: '/categorieen'
@@ -892,6 +924,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBolSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mollie-webhook': {
+      id: '/api/public/mollie-webhook'
+      path: '/api/public/mollie-webhook'
+      fullPath: '/api/public/mollie-webhook'
+      preLoaderRoute: typeof ApiPublicMollieWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -901,6 +940,7 @@ interface BeheerRouteChildren {
   BeheerBerichtenRoute: typeof BeheerBerichtenRoute
   BeheerBestellingenRoute: typeof BeheerBestellingenRoute
   BeheerBolcomRoute: typeof BeheerBolcomRoute
+  BeheerCatalogusImportRoute: typeof BeheerCatalogusImportRoute
   BeheerCategorieenRoute: typeof BeheerCategorieenRoute
   BeheerGebruikersRoute: typeof BeheerGebruikersRoute
   BeheerImportRoute: typeof BeheerImportRoute
@@ -922,6 +962,7 @@ const BeheerRouteChildren: BeheerRouteChildren = {
   BeheerBerichtenRoute: BeheerBerichtenRoute,
   BeheerBestellingenRoute: BeheerBestellingenRoute,
   BeheerBolcomRoute: BeheerBolcomRoute,
+  BeheerCatalogusImportRoute: BeheerCatalogusImportRoute,
   BeheerCategorieenRoute: BeheerCategorieenRoute,
   BeheerGebruikersRoute: BeheerGebruikersRoute,
   BeheerImportRoute: BeheerImportRoute,
@@ -967,6 +1008,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductSlugRoute: ProductSlugRoute,
   MerkenIndexRoute: MerkenIndexRoute,
   ApiPublicBolSyncRoute: ApiPublicBolSyncRoute,
+  ApiPublicMollieWebhookRoute: ApiPublicMollieWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

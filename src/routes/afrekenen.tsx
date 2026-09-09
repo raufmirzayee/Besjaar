@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { getShippingMethods, placeOrder } from "@/lib/checkout.functions";
+import { getPaymentAvailability, getShippingMethods, placeOrder } from "@/lib/checkout.functions";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
@@ -65,6 +65,14 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [methodId, setMethodId] = useState<string | null>(null);
   const [payment, setPayment] = useState("ideal");
+  // Reports whether a payment provider is connected, so the customer is told
+  // up front when placing the order will not take a payment.
+  const { data: paymentAvailability } = useQuery({
+    queryKey: ["payment-availability"],
+    queryFn: () => getPaymentAvailability(),
+    staleTime: 10 * 60 * 1000,
+  });
+  const paymentsConfigured = paymentAvailability?.configured;
   const [form, setForm] = useState<FormState>({
     email: user?.email ?? "",
     first_name: "",
@@ -140,6 +148,14 @@ function CheckoutPage() {
         },
       });
       clear();
+
+      // With a payment provider connected the customer completes payment on
+      // the provider's page; the order stays unpaid until its webhook confirms.
+      if (result.checkoutUrl) {
+        window.location.assign(result.checkoutUrl);
+        return;
+      }
+
       navigate({
         to: "/bestelling/$orderNumber",
         params: { orderNumber: result.order_number },
@@ -329,9 +345,11 @@ function CheckoutPage() {
 
           {step === 3 ? (
             <div className="space-y-4">
-              <p className="rounded-xl border border-accent/40 bg-accent/10 p-3 text-sm">
-                {t("checkout.testMode")}
-              </p>
+              {paymentsConfigured === false ? (
+                <p className="rounded-lg border border-sale/30 bg-sale/5 p-3 text-sm text-foreground">
+                  {t("checkout.testMode")}
+                </p>
+              ) : null}
               <RadioGroup value={payment} onValueChange={setPayment} className="space-y-3">
                 {PAYMENT_METHODS.map((m) => (
                   <label
