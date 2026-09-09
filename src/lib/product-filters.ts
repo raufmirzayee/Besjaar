@@ -113,7 +113,9 @@ export function sortProducts(items: ProductListItem[], sort: SortOption): Produc
       sorted.sort((a, b) => a.name.localeCompare(b.name, "nl"));
       break;
     case "korting":
-      sorted.sort((a, b) => discountOf(b) - discountOf(a) || effectivePriceOf(a) - effectivePriceOf(b));
+      sorted.sort(
+        (a, b) => discountOf(b) - discountOf(a) || effectivePriceOf(a) - effectivePriceOf(b),
+      );
       break;
     case "nieuwste":
       // The catalogue has no publication dates, so "newest" falls back to the

@@ -77,7 +77,8 @@ function WishlistPage() {
             category: null,
             category_slug: null,
             image_url: images[0]?.image_url ?? null,
-            availability: (p.stock_quantity ?? 0) > 0 ? "Op voorraad" : "Tijdelijk niet beschikbaar",
+            availability:
+              (p.stock_quantity ?? 0) > 0 ? "Op voorraad" : "Tijdelijk niet beschikbaar",
             source_url: null,
             highlights: Array.isArray(p.selling_points) ? p.selling_points : [],
             translations: p.translations ?? null,

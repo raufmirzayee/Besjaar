@@ -6,11 +6,7 @@
  * side-effect-free derivation of it, so it is safe on the server and the client.
  */
 
-import {
-  CATALOGUE_BRANDS,
-  CATALOGUE_CATEGORIES,
-  CATALOGUE_PRODUCTS,
-} from "./catalogue.generated";
+import { CATALOGUE_BRANDS, CATALOGUE_CATEGORIES, CATALOGUE_PRODUCTS } from "./catalogue.generated";
 import type { CatalogueBrand, CatalogueCategory, CatalogueProduct } from "./catalogue-types";
 
 export type { CatalogueBrand, CatalogueCategory, CatalogueProduct };
@@ -68,9 +64,7 @@ export function isOnSale(product: CatalogueProduct): boolean {
 }
 
 export function saleProducts(): CatalogueProduct[] {
-  return products
-    .filter(isOnSale)
-    .sort((a, b) => b.discountPercentage - a.discountPercentage);
+  return products.filter(isOnSale).sort((a, b) => b.discountPercentage - a.discountPercentage);
 }
 
 export function bestsellers(limit = 8): CatalogueProduct[] {
