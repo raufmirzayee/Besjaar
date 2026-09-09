@@ -199,6 +199,8 @@ const nl = {
   "pdp.closeZoom": "Vergroting sluiten",
   "pdp.breadcrumb": "Kruimelpad",
   "pdp.vat": "Incl. btw",
+  "pdp.warranty": "Garantie",
+  "pdp.warrantyValue": "{months} maanden",
 
   // Generic ---------------------------------------------------------------
   "common.close": "Sluiten",
@@ -407,6 +409,8 @@ const en: Record<Key, string> = {
   "pdp.closeZoom": "Close enlargement",
   "pdp.breadcrumb": "Breadcrumb",
   "pdp.vat": "Incl. VAT",
+  "pdp.warranty": "Warranty",
+  "pdp.warrantyValue": "{months} months",
 
   "common.close": "Close",
   "common.loading": "Loading…",
@@ -614,6 +618,8 @@ const de: Record<Key, string> = {
   "pdp.closeZoom": "Vergrößerung schließen",
   "pdp.breadcrumb": "Brotkrumennavigation",
   "pdp.vat": "Inkl. MwSt.",
+  "pdp.warranty": "Garantie",
+  "pdp.warrantyValue": "{months} Monate",
 
   "common.close": "Schließen",
   "common.loading": "Wird geladen…",
@@ -819,6 +825,8 @@ const fr: Record<Key, string> = {
   "pdp.closeZoom": "Fermer l'agrandissement",
   "pdp.breadcrumb": "Fil d'Ariane",
   "pdp.vat": "TVA incluse",
+  "pdp.warranty": "Garantie",
+  "pdp.warrantyValue": "{months} mois",
 
   "common.close": "Fermer",
   "common.loading": "Chargement…",
