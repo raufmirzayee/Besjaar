@@ -44,7 +44,7 @@ const nl = {
   "faq.introSuffix": " — we reageren op werkdagen binnen 1 dag.",
   "faq.q1": "Hoe snel wordt mijn bestelling geleverd?",
   "faq.a1":
-    "Bestel je op werkdagen voor 22:00 uur? Dan verzenden we dezelfde dag vanuit ons eigen magazijn in Nederland. Levering in Nederland en België duurt doorgaans 1 werkdag, in Duitsland 2 werkdagen.",
+    "Wij verzenden op werkdagen vanuit Nederland. Je ontvangt een track-en-tracecode zodra je pakket is overgedragen aan de vervoerder. Wij leveren in Nederland, België en Duitsland.",
   "faq.q2": "Wat kost de verzending?",
   "faq.a2":
     "Verzending binnen Nederland is gratis vanaf € 50. Onder dat bedrag rekenen we een vaste bijdrage. Voor België en Duitsland gelden aparte tarieven die je in de laatste stap van het afrekenen ziet.",
@@ -67,7 +67,7 @@ const nl = {
   "shipping.eyebrow": "Bezorging",
   "shipping.title": "Verzending & levering",
   "shipping.intro":
-    "Alles wat je bij ons bestelt ligt op voorraad in ons eigen magazijn. Bestel je op een werkdag voor 22:00 uur, dan gaat je pakket dezelfde dag de deur uit.",
+    "Producten die als “op voorraad” staan vermeld, zijn direct leverbaar. Bestellingen worden op werkdagen verwerkt en verzonden.",
   "shipping.thCountry": "Land",
   "shipping.thTime": "Levertijd",
   "shipping.thCost": "Verzendkosten",
@@ -191,7 +191,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "faq.introSuffix": " — we reply within 1 working day.",
     "faq.q1": "How quickly is my order delivered?",
     "faq.a1":
-      "Order on a working day before 10 pm and we ship the same day from our own warehouse in the Netherlands. Delivery usually takes 1 working day in the Netherlands and Belgium, and 2 working days in Germany.",
+      "We dispatch on working days from the Netherlands. You receive a track-and-trace code as soon as your parcel is handed to the carrier. We deliver to the Netherlands, Belgium and Germany.",
     "faq.q2": "What does shipping cost?",
     "faq.a2":
       "Shipping within the Netherlands is free from €50. Below that amount we charge a fixed contribution. Separate rates apply to Belgium and Germany, which you'll see in the final checkout step.",
@@ -214,7 +214,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "shipping.eyebrow": "Delivery",
     "shipping.title": "Shipping & delivery",
     "shipping.intro":
-      "Everything you order from us is in stock in our own warehouse. Order on a working day before 10 pm and your parcel leaves the same day.",
+      "Products listed as “in stock” are available to ship. Orders are processed and dispatched on working days.",
     "shipping.thCountry": "Country",
     "shipping.thTime": "Delivery time",
     "shipping.thCost": "Shipping cost",
@@ -333,7 +333,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "faq.introSuffix": " — wir antworten an Werktagen innerhalb eines Tages.",
     "faq.q1": "Wie schnell wird meine Bestellung geliefert?",
     "faq.a1":
-      "Bestellst du an Werktagen bis 22:00 Uhr? Dann versenden wir noch am selben Tag aus unserem eigenen Lager in den Niederlanden. Die Lieferung dauert in den Niederlanden und Belgien in der Regel 1 Werktag, in Deutschland 2 Werktage.",
+      "Wir versenden an Werktagen aus den Niederlanden. Sie erhalten einen Track-and-Trace-Code, sobald Ihr Paket an den Versanddienstleister übergeben wurde. Wir liefern in die Niederlande, nach Belgien und Deutschland.",
     "faq.q2": "Was kostet der Versand?",
     "faq.a2":
       "Der Versand innerhalb der Niederlande ist ab 50 € gratis. Darunter berechnen wir einen festen Beitrag. Für Belgien und Deutschland gelten eigene Tarife, die du im letzten Schritt der Kasse siehst.",
@@ -356,7 +356,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "shipping.eyebrow": "Zustellung",
     "shipping.title": "Versand & Lieferung",
     "shipping.intro":
-      "Alles, was du bei uns bestellst, liegt in unserem eigenen Lager auf Vorrat. Bestellst du an einem Werktag bis 22:00 Uhr, geht dein Paket noch am selben Tag raus.",
+      "Produkte, die als „auf Lager“ ausgewiesen sind, sind sofort lieferbar. Bestellungen werden an Werktagen bearbeitet und versendet.",
     "shipping.thCountry": "Land",
     "shipping.thTime": "Lieferzeit",
     "shipping.thCost": "Versandkosten",
@@ -476,7 +476,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "faq.introSuffix": " — nous répondons sous 1 jour ouvré.",
     "faq.q1": "Sous quel délai ma commande est-elle livrée ?",
     "faq.a1":
-      "Vous commandez un jour ouvré avant 22h ? Nous expédions le jour même depuis notre propre entrepôt aux Pays-Bas. La livraison prend généralement 1 jour ouvré aux Pays-Bas et en Belgique, et 2 jours ouvrés en Allemagne.",
+      "Nous expédions les jours ouvrés depuis les Pays-Bas. Vous recevez un code de suivi dès que votre colis est remis au transporteur. Nous livrons aux Pays-Bas, en Belgique et en Allemagne.",
     "faq.q2": "Combien coûte la livraison ?",
     "faq.a2":
       "La livraison aux Pays-Bas est gratuite dès 50 €. En dessous de ce montant, nous facturons une participation fixe. Des tarifs distincts s'appliquent à la Belgique et à l'Allemagne ; ils s'affichent à la dernière étape du paiement.",
@@ -499,7 +499,7 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "shipping.eyebrow": "Livraison",
     "shipping.title": "Expédition & livraison",
     "shipping.intro":
-      "Tout ce que vous commandez chez nous est en stock dans notre propre entrepôt. Commandez un jour ouvré avant 22h et votre colis part le jour même.",
+      "Les produits indiqués « en stock » sont disponibles à l'expédition. Les commandes sont traitées et expédiées les jours ouvrés.",
     "shipping.thCountry": "Pays",
     "shipping.thTime": "Délai de livraison",
     "shipping.thCost": "Frais de livraison",

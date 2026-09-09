@@ -1,17 +1,40 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, Star } from "lucide-react";
+import { Check, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProductImage } from "@/components/product-image";
+import { WishlistButton } from "@/components/wishlist-button";
 import { useCart } from "@/lib/cart";
 import type { ProductListItem } from "@/lib/catalog.server";
-import { discountPercentage, effectivePrice, formatPrice } from "@/lib/format";
+import { discountOf, effectivePriceOf, isOnSale } from "@/lib/product-filters";
+import { formatPrice } from "@/lib/format";
 import { localize } from "@/lib/content-i18n";
 import { useI18n } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
-export function ProductCard({ product }: { product: ProductListItem }) {
+/**
+ * The product card used by every listing.
+ *
+ * Cards are a fixed shape: square image, brand, two-line name, one spec line,
+ * then price and action pinned to the bottom, so a grid stays even whatever the
+ * copy length. Badges only appear when the product's own data supports them,
+ * and no star rating is shown for products that have review counts but no
+ * genuine rating value.
+ */
+export function ProductCard({
+  product,
+  priority = false,
+  className,
+}: {
+  product: ProductListItem;
+  priority?: boolean;
+  className?: string;
+}) {
   const { addItem } = useCart();
   const { t, locale } = useI18n();
+
   const name = localize(product, "name", locale);
   const shortDescription = localize(product, "short_description", locale);
   const brand = localize(
@@ -20,92 +43,148 @@ export function ProductCard({ product }: { product: ProductListItem }) {
     locale,
     product.brand ?? "Besjaar",
   );
-  const price = effectivePrice(product.regular_price, product.sale_price);
-  const discount = discountPercentage(product.regular_price, product.sale_price);
+
+  const price = effectivePriceOf(product);
+  const onSale = isOnSale(product);
+  const discount = discountOf(product);
+  const inStock = product.stock_quantity > 0;
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-soft transition-shadow hover:shadow-lift">
-      <Link
-        to="/product/$slug"
-        params={{ slug: product.slug }}
-        className="relative block aspect-square overflow-hidden bg-surface"
-      >
-        {product.image_url ? (
-          <img
+    <article
+      className={cn(
+        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card",
+        "shadow-soft transition-shadow duration-200 ease-brand hover:shadow-lift",
+        "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+        className,
+      )}
+    >
+      <div className="relative aspect-square overflow-hidden bg-white">
+        <Link
+          to="/product/$slug"
+          params={{ slug: product.slug }}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="block h-full w-full p-4"
+        >
+          <ProductImage
             src={product.image_url}
             alt={name}
-            loading="lazy"
-            width={1024}
-            height={1024}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={priority}
+            sizes="(min-width: 1280px) 20vw, (min-width: 768px) 30vw, 45vw"
+            className="transition-transform duration-500 ease-brand group-hover:scale-[1.04]"
           />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-            {t("card.noImage")}
-          </div>
-        )}
-        <div className="absolute left-3 top-3 flex flex-col gap-1">
-          {discount ? <Badge className="bg-sale text-sale-foreground">-{discount}%</Badge> : null}
-          {product.bestseller ? (
-            <Badge className="bg-accent text-accent-foreground">{t("card.bestseller")}</Badge>
-          ) : null}
-        </div>
-      </Link>
+        </Link>
 
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{brand}</p>
-        <h3 className="text-base font-semibold leading-snug">
-          <Link to="/product/$slug" params={{ slug: product.slug }} className="hover:underline">
+        <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-start gap-1.5">
+          {onSale ? <Badge variant="sale">-{discount}%</Badge> : null}
+          {product.bestseller ? <Badge variant="bestseller">{t("card.bestseller")}</Badge> : null}
+        </div>
+
+        <div className="absolute right-3 top-3">
+          <WishlistButton productId={product.id} productName={name} />
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1.5 border-t border-border p-4">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          {brand}
+        </p>
+
+        <h3 className="text-sm font-semibold leading-snug text-foreground">
+          <Link
+            to="/product/$slug"
+            params={{ slug: product.slug }}
+            className="line-clamp-2 outline-none after:absolute after:inset-0 after:content-['']"
+          >
             {name}
           </Link>
         </h3>
+
         {shortDescription ? (
-          <p className="line-clamp-2 text-sm text-muted-foreground">{shortDescription}</p>
+          <p className="line-clamp-1 text-xs text-muted-foreground">{shortDescription}</p>
+        ) : null}
+
+        {/* Review counts come from the source listing; there is no rating value
+            in that data, so the card reports the count without inventing stars. */}
+        {product.rating_count > 0 ? (
+          <p className="text-xs text-muted-foreground">
+            {t("card.reviewCount", { count: product.rating_count })}
+          </p>
         ) : null}
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-3">
-          <div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-semibold">{formatPrice(price)}</span>
-              {discount ? (
-                <span className="text-sm text-muted-foreground line-through">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span
+                className={cn(
+                  "font-display text-lg font-extrabold tabular-nums",
+                  onSale ? "text-sale" : "text-foreground",
+                )}
+              >
+                {formatPrice(price)}
+              </span>
+              {onSale ? (
+                <span className="text-xs text-muted-foreground line-through tabular-nums">
                   {formatPrice(product.regular_price)}
                 </span>
               ) : null}
             </div>
-            <p className="text-xs text-muted-foreground">
-              {product.stock_quantity > 0 ? (
-                <span className="text-success">{t("card.inStock")}</span>
+            <p className="mt-0.5 flex items-center gap-1 text-xs">
+              {inStock ? (
+                <>
+                  <Check className="size-3 shrink-0 text-success" aria-hidden="true" />
+                  <span className="text-success">{t("card.inStock")}</span>
+                </>
               ) : (
-                t("card.soldOut")
+                <span className="text-muted-foreground">{t("card.soldOut")}</span>
               )}
             </p>
           </div>
+
+          {/* Sits above the card-wide link overlay so it stays clickable. */}
           <Button
+            type="button"
             size="icon"
             aria-label={t("card.addToCart", { name })}
-            disabled={product.stock_quantity <= 0}
-            onClick={() =>
+            title={t("card.addToCart", { name })}
+            disabled={!inStock}
+            className="relative z-10 shrink-0"
+            onClick={() => {
               addItem({
                 productId: product.id,
                 slug: product.slug,
                 name,
+                brand,
                 price,
+                compareAtPrice: onSale ? product.regular_price : null,
                 imageUrl: product.image_url,
-              })
-            }
+                maxQuantity: product.stock_quantity,
+              });
+              toast.success(t("cart.added", { name }));
+            }}
           >
-            <ShoppingBag className="h-4 w-4" />
+            <ShoppingBag className="size-4" />
           </Button>
         </div>
-
-        {product.rating_count > 0 ? (
-          <p className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Star className="h-3 w-3 fill-accent text-accent" />
-            {product.rating_average.toFixed(1)} ({product.rating_count})
-          </p>
-        ) : null}
       </div>
     </article>
+  );
+}
+
+/** Matching skeleton so grids do not jump while products load. */
+export function ProductCardSkeleton() {
+  return (
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft">
+      <div className="aspect-square animate-pulse bg-muted" />
+      <div className="flex flex-1 flex-col gap-2 border-t border-border p-4">
+        <div className="h-2.5 w-16 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-full animate-pulse rounded bg-muted" />
+        <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+        <div className="mt-auto flex items-end justify-between pt-3">
+          <div className="h-6 w-20 animate-pulse rounded bg-muted" />
+          <div className="size-10 animate-pulse rounded-lg bg-muted" />
+        </div>
+      </div>
+    </div>
   );
 }

@@ -3,10 +3,11 @@ import { accountMessages } from "@/lib/translations/account";
 import { checkoutMessages } from "@/lib/translations/checkout";
 import { pageMessages } from "@/lib/translations/pages";
 import { productMessages } from "@/lib/translations/product";
+import { storefrontMessages } from "@/lib/translations/storefront";
 
 const nl = {
   "banner.freeShipping": "Gratis verzending vanaf € 50 in NL & BE",
-  "banner.cutoff": "Voor 22:00 besteld, morgen in huis",
+  "banner.cutoff": "Op werkdagen verzonden vanuit Nederland",
   "banner.returns": "30 dagen retourrecht",
 
   "nav.allProducts": "Alle producten",
@@ -20,13 +21,13 @@ const nl = {
   "header.language": "Taal kiezen",
 
   "footer.delivery.title": "Snelle levering",
-  "footer.delivery.text": "Voor 22:00 besteld, morgen in huis",
+  "footer.delivery.text": "Op werkdagen verzonden",
   "footer.returns.title": "30 dagen retour",
   "footer.returns.text": "Niet tevreden? Gratis retourneren",
   "footer.warranty.title": "2 jaar garantie",
   "footer.warranty.text": "Op het volledige assortiment",
   "footer.warehouse.title": "Eigen magazijn",
-  "footer.warehouse.text": "Alles op voorraad in Nederland",
+  "footer.warehouse.text": "Verzending vanuit Nederland",
   "footer.tagline":
     "Slimme huishoud- en outdoorproducten voor Nederland, België en Duitsland. Eigen merken Besjaar, RYNEX en LYNEX.",
   "footer.shopping": "Winkelen",
@@ -123,11 +124,12 @@ export type TranslationKey =
   | keyof (typeof productMessages)["nl"]
   | keyof (typeof checkoutMessages)["nl"]
   | keyof (typeof accountMessages)["nl"]
-  | keyof (typeof pageMessages)["nl"];
+  | keyof (typeof pageMessages)["nl"]
+  | keyof (typeof storefrontMessages)["nl"];
 
 const en: Record<CoreKey, string> = {
   "banner.freeShipping": "Free shipping from €50 in NL & BE",
-  "banner.cutoff": "Order before 10 pm, delivered tomorrow",
+  "banner.cutoff": "Dispatched on working days from the Netherlands",
   "banner.returns": "30-day right of return",
 
   "nav.allProducts": "All products",
@@ -141,13 +143,13 @@ const en: Record<CoreKey, string> = {
   "header.language": "Choose language",
 
   "footer.delivery.title": "Fast delivery",
-  "footer.delivery.text": "Order before 10 pm, delivered tomorrow",
+  "footer.delivery.text": "Dispatched on working days",
   "footer.returns.title": "30-day returns",
   "footer.returns.text": "Not happy? Return free of charge",
   "footer.warranty.title": "2-year warranty",
   "footer.warranty.text": "On our entire range",
   "footer.warehouse.title": "Own warehouse",
-  "footer.warehouse.text": "Everything in stock in the Netherlands",
+  "footer.warehouse.text": "Shipped from the Netherlands",
   "footer.tagline":
     "Smart household and outdoor products for the Netherlands, Belgium and Germany. Own brands Besjaar, RYNEX and LYNEX.",
   "footer.shopping": "Shopping",
@@ -238,7 +240,7 @@ const en: Record<CoreKey, string> = {
 
 const de: Record<CoreKey, string> = {
   "banner.freeShipping": "Gratis Versand ab 50 € in NL & BE",
-  "banner.cutoff": "Bis 22:00 bestellt, morgen geliefert",
+  "banner.cutoff": "Versand an Werktagen aus den Niederlanden",
   "banner.returns": "30 Tage Rückgaberecht",
 
   "nav.allProducts": "Alle Produkte",
@@ -252,13 +254,13 @@ const de: Record<CoreKey, string> = {
   "header.language": "Sprache wählen",
 
   "footer.delivery.title": "Schnelle Lieferung",
-  "footer.delivery.text": "Bis 22:00 bestellt, morgen geliefert",
+  "footer.delivery.text": "Versand an Werktagen",
   "footer.returns.title": "30 Tage Rückgabe",
   "footer.returns.text": "Nicht zufrieden? Kostenlos zurücksenden",
   "footer.warranty.title": "2 Jahre Garantie",
   "footer.warranty.text": "Auf das gesamte Sortiment",
   "footer.warehouse.title": "Eigenes Lager",
-  "footer.warehouse.text": "Alles vorrätig in den Niederlanden",
+  "footer.warehouse.text": "Versand aus den Niederlanden",
   "footer.tagline":
     "Smarte Haushalts- und Outdoorprodukte für die Niederlande, Belgien und Deutschland. Eigene Marken Besjaar, RYNEX und LYNEX.",
   "footer.shopping": "Einkaufen",
@@ -350,7 +352,7 @@ const de: Record<CoreKey, string> = {
 
 const fr: Record<CoreKey, string> = {
   "banner.freeShipping": "Livraison gratuite dès 50 € aux Pays-Bas et en Belgique",
-  "banner.cutoff": "Commandé avant 22h, livré demain",
+  "banner.cutoff": "Expédié les jours ouvrés depuis les Pays-Bas",
   "banner.returns": "30 jours pour changer d'avis",
 
   "nav.allProducts": "Tous les produits",
@@ -364,13 +366,13 @@ const fr: Record<CoreKey, string> = {
   "header.language": "Choisir la langue",
 
   "footer.delivery.title": "Livraison rapide",
-  "footer.delivery.text": "Commandé avant 22h, livré demain",
+  "footer.delivery.text": "Expédié les jours ouvrés",
   "footer.returns.title": "Retour sous 30 jours",
   "footer.returns.text": "Pas satisfait ? Retour gratuit",
   "footer.warranty.title": "2 ans de garantie",
   "footer.warranty.text": "Sur toute la gamme",
   "footer.warehouse.title": "Notre propre entrepôt",
-  "footer.warehouse.text": "Tout en stock aux Pays-Bas",
+  "footer.warehouse.text": "Expédié depuis les Pays-Bas",
   "footer.tagline":
     "Produits malins pour la maison et l'extérieur, aux Pays-Bas, en Belgique et en Allemagne. Marques propres Besjaar, RYNEX et LYNEX.",
   "footer.shopping": "Boutique",
@@ -471,6 +473,8 @@ export const translations = Object.fromEntries(
       ...checkoutMessages[locale],
       ...accountMessages[locale],
       ...pageMessages[locale],
+      // Storefront copy is merged last so it can supersede older wording.
+      ...storefrontMessages[locale],
     },
   ]),
 ) as Record<Locale, Record<TranslationKey, string>>;

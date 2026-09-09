@@ -8,7 +8,7 @@ const nl = {
   "product.reviewsSummary": "{average} · {count} beoordelingen",
   "product.noReviewsYet": "Nog geen beoordelingen",
   "product.vatNote": "Incl. btw, excl. verzendkosten",
-  "product.inStock": "Op voorraad ({count} stuks) · voor 22:00 besteld, morgen in huis",
+  "product.inStock": "Op voorraad · op werkdagen verzonden",
   "product.soldOut": "Tijdelijk uitverkocht",
   "product.addToCart": "In winkelwagen",
   "product.added": "Toegevoegd aan winkelwagen",
@@ -22,7 +22,7 @@ const nl = {
   "product.noDescription": "Geen omschrijving beschikbaar.",
   "product.noSpecs": "Geen specificaties beschikbaar.",
   "product.shippingText":
-    "Bestellingen die op werkdagen voor 22:00 uur binnenkomen, verzenden wij dezelfde dag vanuit ons magazijn in Nederland. Levering in Nederland en België duurt doorgaans 1 werkdag, Duitsland 2 werkdagen. Verzending is gratis vanaf € 50. Je hebt 30 dagen bedenktijd en kunt kosteloos retourneren.",
+    "Wij verzenden op werkdagen vanuit Nederland en leveren in Nederland, België en Duitsland. Verzending is gratis vanaf € 50; daaronder rekenen wij een vast tarief. Je hebt 30 dagen bedenktijd en kunt je bestelling in die periode retourneren.",
 
   "reviews.title": "Beoordelingen",
   "reviews.based": "Gebaseerd op {count} beoordelingen",
@@ -78,7 +78,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.reviewsSummary": "{average} · {count} reviews",
     "product.noReviewsYet": "No reviews yet",
     "product.vatNote": "Incl. VAT, excl. shipping",
-    "product.inStock": "In stock ({count} pcs) · order before 10 pm, delivered tomorrow",
+    "product.inStock": "In stock · dispatched on working days",
     "product.soldOut": "Temporarily sold out",
     "product.addToCart": "Add to cart",
     "product.added": "Added to your cart",
@@ -92,7 +92,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.noDescription": "No description available.",
     "product.noSpecs": "No specifications available.",
     "product.shippingText":
-      "Orders placed on working days before 10 pm ship the same day from our warehouse in the Netherlands. Delivery usually takes 1 working day in the Netherlands and Belgium, and 2 working days in Germany. Shipping is free from €50. You have 30 days to change your mind and can return free of charge.",
+      "We dispatch on working days from the Netherlands and deliver to the Netherlands, Belgium and Germany. Shipping is free from €50; below that we charge a flat rate. You have 30 days to change your mind and can return your order within that period.",
 
     "reviews.title": "Reviews",
     "reviews.based": "Based on {count} reviews",
@@ -143,7 +143,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.reviewsSummary": "{average} · {count} Bewertungen",
     "product.noReviewsYet": "Noch keine Bewertungen",
     "product.vatNote": "Inkl. MwSt., zzgl. Versandkosten",
-    "product.inStock": "Auf Lager ({count} Stück) · bis 22:00 bestellt, morgen geliefert",
+    "product.inStock": "Auf Lager · Versand an Werktagen",
     "product.soldOut": "Vorübergehend ausverkauft",
     "product.addToCart": "In den Warenkorb",
     "product.added": "Zum Warenkorb hinzugefügt",
@@ -157,7 +157,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.noDescription": "Keine Beschreibung verfügbar.",
     "product.noSpecs": "Keine Spezifikationen verfügbar.",
     "product.shippingText":
-      "Bestellungen, die an Werktagen bis 22:00 Uhr eingehen, versenden wir am selben Tag aus unserem Lager in den Niederlanden. Die Lieferung dauert in den Niederlanden und Belgien in der Regel 1 Werktag, in Deutschland 2 Werktage. Der Versand ist ab 50 € gratis. Du hast 30 Tage Widerrufsrecht und kannst kostenlos zurücksenden.",
+      "Wir versenden an Werktagen aus den Niederlanden und liefern in die Niederlande, nach Belgien und Deutschland. Der Versand ist ab 50 € gratis; darunter berechnen wir einen Pauschalbetrag. Sie haben 30 Tage Bedenkzeit und können Ihre Bestellung in diesem Zeitraum zurücksenden.",
 
     "reviews.title": "Bewertungen",
     "reviews.based": "Basierend auf {count} Bewertungen",
@@ -208,7 +208,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.reviewsSummary": "{average} · {count} avis",
     "product.noReviewsYet": "Pas encore d'avis",
     "product.vatNote": "TVA incluse, hors frais de livraison",
-    "product.inStock": "En stock ({count} pièces) · commandé avant 22h, livré demain",
+    "product.inStock": "En stock · expédié les jours ouvrés",
     "product.soldOut": "Momentanément épuisé",
     "product.addToCart": "Ajouter au panier",
     "product.added": "Ajouté au panier",
@@ -222,7 +222,7 @@ export const productMessages: Record<Locale, Record<Key, string>> = {
     "product.noDescription": "Aucune description disponible.",
     "product.noSpecs": "Aucune spécification disponible.",
     "product.shippingText":
-      "Les commandes passées les jours ouvrés avant 22h sont expédiées le même jour depuis notre entrepôt aux Pays-Bas. La livraison prend généralement 1 jour ouvré aux Pays-Bas et en Belgique, et 2 jours ouvrés en Allemagne. La livraison est gratuite dès 50 €. Vous disposez de 30 jours pour changer d'avis et le retour est gratuit.",
+      "Nous expédions les jours ouvrés depuis les Pays-Bas et livrons aux Pays-Bas, en Belgique et en Allemagne. La livraison est gratuite dès 50 € ; en dessous, un tarif forfaitaire s'applique. Vous disposez de 30 jours pour changer d'avis et retourner votre commande.",
 
     "reviews.title": "Avis",
     "reviews.based": "Basé sur {count} avis",

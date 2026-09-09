@@ -14,7 +14,7 @@ export const Route = createFileRoute("/verzending")({
       { property: "og:title", content: "Verzending & levering — Besjaar" },
       {
         property: "og:description",
-        content: "Voor 22:00 besteld, dezelfde dag verzonden vanuit ons eigen magazijn.",
+        content: "Verzending, levertijden en retourvoorwaarden van Besjaar.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
