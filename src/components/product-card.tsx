@@ -80,7 +80,8 @@ export function ProductCard({
           {product.bestseller ? <Badge variant="bestseller">{t("card.bestseller")}</Badge> : null}
         </div>
 
-        <div className="absolute right-3 top-3">
+        {/* Above the card-wide link overlay, so it stays clickable. */}
+        <div className="absolute right-3 top-3 z-10">
           <WishlistButton productId={product.id} productName={name} />
         </div>
       </div>
