@@ -52,7 +52,6 @@ export async function applyBulkProducts(
     if (row.regular_price !== null) patch.regular_price = row.regular_price;
     if (row.sale_price !== null) patch.sale_price = row.sale_price;
     if (row.status) patch.status = row.status;
-    if (row.stock_quantity !== null) patch.stock_quantity = row.stock_quantity;
 
     const { error: updateError } = await supabase
       .from("products")
@@ -68,14 +67,18 @@ export async function applyBulkProducts(
     const previousStock = Number(product.stock_quantity ?? 0);
     if (row.stock_quantity !== null && row.stock_quantity !== previousStock) {
       stockChanges += 1;
-      await supabase.from("stock_movements").insert({
-        product_id: product.id,
-        quantity_change: row.stock_quantity - previousStock,
+      // The CSV column is an absolute figure. set_stock_level writes the
+      // difference to the ledger and lets the trigger apply it; assigning the
+      // column here as well used to apply the change a second time.
+      const { setStockLevel } = await import("./inventory.server");
+      await setStockLevel({
+        productId: product.id,
+        target: row.stock_quantity,
         reason: "correctie",
-        reference_type: "import",
+        referenceType: "import",
         note: `Bulkimport CSV (${row.sku})`,
-        created_by: userId,
-      } as never);
+        createdBy: userId,
+      });
     }
   }
 

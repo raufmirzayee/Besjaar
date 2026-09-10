@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
+import { requirePermission } from "./admin-core.server";
 import {
   fetchAdminReviews,
   fetchProductReviews,
@@ -13,7 +16,7 @@ import {
 } from "./reviews.server";
 
 export const getProductReviews = createServerFn({ method: "GET" })
-  .inputValidator((input: { slug: string }) => input)
+  .inputValidator(v.validator(z.object({ slug: v.text(140).min(1) })))
   .handler(async ({ data }) => fetchProductReviews(data.slug));
 
 export const submitReview = createServerFn({ method: "POST" })
@@ -31,35 +34,39 @@ export const submitReview = createServerFn({ method: "POST" })
 
 export const getAdminReviews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { status?: ReviewStatus }) => input ?? {})
+  .inputValidator(v.validator(z.object({ status: v.reviewStatus.optional() }).strict()))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, [
-      "super_admin",
-      "store_manager",
-      "customer_service",
-      "content_editor",
-    ]);
+    await requirePermission(context, "reviews", "view");
     return fetchAdminReviews(context.supabase, data?.status);
   });
 
 export const setReviewStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; status: ReviewStatus; moderatorNote?: string }) => input)
+  .inputValidator(
+    v.validator(
+      z.object({
+        id: v.uuid,
+        status: v.reviewStatus,
+        // The downstream helper takes undefined, not null.
+        moderatorNote: v.text(1000).optional(),
+      }),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
+    await requirePermission(context, "reviews", "approve");
     return moderateReview(context.supabase, data);
   });
 
 export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(v.validator(z.object({ id: v.uuid })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager"]);
+    await requirePermission(context, "reviews", "archive");
     return removeReview(context.supabase, data.id);
   });
 
 export const joinNewsletter = createServerFn({ method: "POST" })
-  .inputValidator((input: { email: string; company?: string }) => input)
+  .inputValidator(v.validator(z.object({ email: v.email, company: v.optionalText(120) })))
   .handler(async ({ data }) => {
     // Honeypot: hidden field must stay empty for real visitors.
     if (data.company) throw new Error("Inschrijving geweigerd.");

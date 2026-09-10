@@ -1574,7 +1574,75 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      // Hand-maintained: the live Supabase project is not reachable from this
+      // environment, so these mirror the SQL definitions in
+      // supabase/migrations/2026091109*.sql and 2026091110*.sql.
+      record_stock_movement: {
+        Args: {
+          p_product_id: string | null;
+          p_quantity_change: number;
+          p_reason: string;
+          p_reference_type?: string | null;
+          p_reference_id?: string | null;
+          p_note?: string | null;
+          p_created_by?: string | null;
+          p_variant_id?: string | null;
+        };
+        Returns: number;
+      };
+      set_stock_level: {
+        Args: {
+          p_product_id: string;
+          p_target: number;
+          p_reason?: string;
+          p_reference_type?: string | null;
+          p_reference_id?: string | null;
+          p_note?: string | null;
+          p_created_by?: string | null;
+        };
+        Returns: number;
+      };
+      set_variant_stock_level: {
+        Args: {
+          p_variant_id: string;
+          p_target: number;
+          p_reason?: string;
+          p_reference_type?: string | null;
+          p_reference_id?: string | null;
+          p_note?: string | null;
+          p_created_by?: string | null;
+        };
+        Returns: number;
+      };
+      reserve_stock_for_order: {
+        Args: { p_order_id: string };
+        Returns: undefined;
+      };
+      release_stock_for_order: {
+        Args: { p_order_id: string; p_reason?: string; p_note?: string | null };
+        Returns: undefined;
+      };
+      create_order_with_items: {
+        Args: { p_order: Json; p_items: Json };
+        Returns: { order_id: string; order_number: string; access_token: string }[];
+      };
+      attach_payment_reference: {
+        Args: {
+          p_order_id: string;
+          p_reference: string | null;
+          p_payment_status?: string | null;
+          p_status?: string | null;
+        };
+        Returns: undefined;
+      };
+      abandon_order: {
+        Args: { p_order_id: string; p_note?: string | null };
+        Returns: undefined;
+      };
+      has_permission: {
+        Args: { _user_id: string; _module: string; _action: string };
+        Returns: boolean;
+      };
     };
     Enums: {
       app_role:

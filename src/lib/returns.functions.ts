@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
+import { requirePermission } from "./admin-core.server";
 import {
   createReturn,
   fetchAllReturns,
@@ -10,13 +13,6 @@ import {
   type CreateReturnInput,
   type ReturnStatus,
 } from "./returns.server";
-
-const STAFF: Parameters<typeof requireRoles>[1] = [
-  "super_admin",
-  "store_manager",
-  "warehouse",
-  "customer_service",
-];
 
 export const getMyReturns = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -28,12 +24,24 @@ export const getReturnableOrders = createServerFn({ method: "GET" })
 
 export const requestReturn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: CreateReturnInput) => input)
+  .inputValidator(
+    v.validator(
+      z.object({
+        orderId: v.uuid,
+        reason: v.text(60).min(2),
+        customerNote: v.optionalText(1000),
+        items: z
+          .array(z.object({ orderItemId: v.uuid, quantity: v.quantity }))
+          .min(1, "Kies minimaal één product")
+          .max(50),
+      }),
+    ),
+  )
   .handler(async ({ context, data }) => createReturn(context.supabase, context.userId, data));
 
 export const cancelMyReturn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { returnId: string }) => input)
+  .inputValidator(v.validator(z.object({ returnId: v.uuid })))
   .handler(async ({ context, data }) => {
     const { error } = await context.supabase
       .from("returns")
@@ -47,26 +55,36 @@ export const cancelMyReturn = createServerFn({ method: "POST" })
 
 export const getAdminReturns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { status?: string }) => input ?? {})
+  .inputValidator(
+    // "alle" is the no-filter sentinel the admin list sends; the query layer
+    // already knows to ignore it.
+    v.validator(
+      z.object({ status: z.union([v.returnStatus, z.literal("alle")]).optional() }).strict(),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, STAFF);
+    await requirePermission(context, "returns", "view");
     return fetchAllReturns(context.supabase, data?.status);
   });
 
 export const updateReturn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: {
-      returnId: string;
-      status?: ReturnStatus;
-      staffNote?: string | null;
-      refundAmount?: number | null;
-      trackingCode?: string | null;
-      restock?: boolean;
-    }) => input,
+    v.validator(
+      z
+        .object({
+          returnId: v.uuid,
+          status: v.returnStatus.optional(),
+          staffNote: v.optionalText(1000),
+          refundAmount: v.price.nullish(),
+          trackingCode: v.optionalText(100),
+          restock: z.boolean().optional(),
+        })
+        .strict(),
+    ),
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, STAFF);
+    await requirePermission(context, "returns", "edit");
 
     const patch: Record<string, unknown> = {};
     if (data.status) patch.status = data.status;
@@ -90,25 +108,22 @@ export const updateReturn = createServerFn({ method: "POST" })
         .eq("return_id", data.returnId);
       if (itemsError) throw new Error(itemsError.message);
 
+      const { recordMovement } = await import("./inventory.server");
+
       for (const item of (items ?? []) as { product_id: string | null; quantity: number }[]) {
         if (!item.product_id) continue;
-        const { data: product } = await supabaseAdmin
-          .from("products")
-          .select("stock_quantity")
-          .eq("id", item.product_id)
-          .maybeSingle();
-        const next = Number(product?.stock_quantity ?? 0) + Number(item.quantity);
-        await supabaseAdmin
-          .from("products")
-          .update({ stock_quantity: next, updated_at: new Date().toISOString() })
-          .eq("id", item.product_id);
-        await supabaseAdmin.from("stock_movements").insert({
-          product_id: item.product_id,
-          quantity_change: Number(item.quantity),
-          reason: "Retour ontvangen",
-          reference_type: "return",
-          reference_id: data.returnId,
-          created_by: context.userId,
+        // Keyed on the return, so booking the same return in twice — a
+        // double-clicked button, or a status set back and forth — restocks
+        // once. This used to update the column and insert a movement, which
+        // put the goods back on the shelf twice over.
+        await recordMovement({
+          productId: item.product_id,
+          change: Number(item.quantity),
+          reason: "return_restocked",
+          referenceType: "return",
+          referenceId: data.returnId,
+          note: "Retour ontvangen",
+          createdBy: context.userId,
         });
       }
     }

@@ -5,10 +5,14 @@ import { globSync } from "node:fs";
 /**
  * Two-factor authentication is only worth anything if it covers everything.
  *
- * Every authenticated server function must route through requireRoles or
- * requirePermission, because that is where the aal2 assertion lives. A new
- * admin function that forgets the guard would be an unprotected hole, and the
- * mistake is invisible in review — so this test finds it instead.
+ * Every authenticated server function must route through requirePermission,
+ * because that is where the aal2 assertion lives. A new admin function that
+ * forgets the guard would be an unprotected hole, and the mistake is invisible
+ * in review — so this test finds it instead.
+ *
+ * requirePermission is now the only guard. It used to share the job with
+ * requireRoles, whose hand-written role lists drifted from the permission
+ * matrix that the navigation and the RLS policies were already using.
  *
  * The exemptions below are deliberate and each is justified. Adding to this
  * list should take a good reason.
@@ -51,7 +55,7 @@ function serverFunctions(): Fn[] {
       if (!body.includes("requireSupabaseAuth")) continue;
       found.push({
         key: `${name}:${match[1]}`,
-        guarded: body.includes("requireRoles(") || body.includes("requirePermission("),
+        guarded: body.includes("requirePermission("),
       });
     }
   }
@@ -75,8 +79,8 @@ describe("two-factor coverage", () => {
 
     expect(
       unguarded,
-      `These authenticated server functions call neither requireRoles nor requirePermission, ` +
-        `so they run on a password-only session. Add a guard, or add a justified entry to EXEMPT.`,
+      `These authenticated server functions never call requirePermission, so they ` +
+        `run on a password-only session. Add a guard, or add a justified entry to EXEMPT.`,
     ).toEqual([]);
   });
 
@@ -94,12 +98,19 @@ describe("two-factor coverage", () => {
     expect(pointless, "EXEMPT lists functions that are in fact guarded").toEqual([]);
   });
 
-  it("asserts the second factor inside both guards", () => {
-    expect(readFileSync("src/lib/admin.server.ts", "utf8")).toMatch(
-      /export async function requireRoles[\s\S]{0,200}assertStaffMfa\(/,
-    );
+  it("asserts the second factor inside the guard", () => {
     expect(readFileSync("src/lib/admin-core.server.ts", "utf8")).toMatch(
       /export async function requirePermission[\s\S]{0,240}assertStaffMfa\(/,
     );
+  });
+
+  it("keeps requirePermission the only authorisation guard", () => {
+    // A reintroduced requireRoles would be a second, hand-written authority
+    // that nobody keeps in step with role_permissions. That drift is the bug
+    // this consolidation removed.
+    const callers = globSync("src/lib/*.ts").filter((path) =>
+      readFileSync(path, "utf8").includes("requireRoles("),
+    );
+    expect(callers, "requireRoles is gone; authorise through requirePermission").toEqual([]);
   });
 });

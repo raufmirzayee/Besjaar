@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
+import { requirePermission } from "./admin-core.server";
 
 /**
  * Catalogue import endpoint.
@@ -12,13 +15,9 @@ import { requireRoles } from "./admin.server";
  */
 export const importCatalogueCsv = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { csv: string }) => {
-    if (!input || typeof input.csv !== "string") throw new Error("Geen bestand ontvangen");
-    if (input.csv.length > 5_000_000) throw new Error("Bestand is te groot (max 5 MB)");
-    return { csv: input.csv };
-  })
+  .inputValidator(v.validator(z.object({ csv: v.csvPayload })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
+    await requirePermission(context, "products", "create");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { runCatalogueImport } = await import("./catalogue-import.server");
@@ -31,13 +30,9 @@ export const importCatalogueCsv = createServerFn({ method: "POST" })
  */
 export const validateCatalogueCsv = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { csv: string }) => {
-    if (!input || typeof input.csv !== "string") throw new Error("Geen bestand ontvangen");
-    if (input.csv.length > 5_000_000) throw new Error("Bestand is te groot (max 5 MB)");
-    return { csv: input.csv };
-  })
+  .inputValidator(v.validator(z.object({ csv: v.csvPayload })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
+    await requirePermission(context, "products", "create");
 
     const { parseCatalogueImport } = await import("./catalogue-import");
     const parsed = parseCatalogueImport(data.csv);

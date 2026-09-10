@@ -427,7 +427,11 @@ async function uniqueSlug(supabase: Client, base: string, ignoreId?: string) {
   return `${base}-${Date.now()}`;
 }
 
-export async function saveProductFull(supabase: Client, input: ProductInput) {
+export async function saveProductFull(
+  supabase: Client,
+  input: ProductInput,
+  actorId?: string | null,
+) {
   if (!input.name?.trim()) throw new Error("Naam is verplicht");
   if (!Number.isFinite(input.regular_price) || input.regular_price < 0) {
     throw new Error("Voer een geldige prijs in");
@@ -487,14 +491,32 @@ export async function saveProductFull(supabase: Client, input: ProductInput) {
     return { id: input.id, slug };
   }
 
-  payload.stock_quantity = input.stock_quantity ?? 0;
   const { data, error } = await supabase
     .from("products")
     .insert(payload as never)
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  return { id: (data as any).id as string, slug };
+  const id = (data as any).id as string;
+
+  // Opening stock goes through the ledger like every other movement. Assigning
+  // the column here would create stock with no row explaining where it came
+  // from, and the reconciliation report would flag the product forever.
+  const opening = Math.max(0, Math.trunc(Number(input.stock_quantity ?? 0)));
+  if (opening > 0) {
+    const { recordMovement } = await import("./inventory.server");
+    await recordMovement({
+      productId: id,
+      change: opening,
+      reason: "beginvoorraad",
+      referenceType: "product",
+      referenceId: id,
+      note: "Beginvoorraad bij aanmaken",
+      createdBy: actorId ?? null,
+    });
+  }
+
+  return { id, slug };
 }
 
 export async function setProductStatus(supabase: Client, id: string, status: string) {
@@ -543,6 +565,10 @@ export async function duplicateProduct(supabase: Client, id: string) {
       rating_average: 0,
       rating_count: 0,
       published_at: null,
+      // A duplicate is a new product with nothing on the shelf. Copying the
+      // original's stock invented units that were never bought or received,
+      // and the ledger had no row to account for them.
+      stock_quantity: 0,
     } as never)
     .select("id")
     .single();
@@ -557,6 +583,8 @@ export async function duplicateProduct(supabase: Client, id: string) {
       ean: null,
       bol_offer_id: null,
       sku: v.sku ? `${v.sku}-COPY` : null,
+      // Same reason as the product above: a copy starts empty.
+      warehouse_stock: 0,
     };
   });
   if (variantRows.length) {
@@ -597,7 +625,7 @@ export type VariantInput = {
   status?: string;
 };
 
-export async function saveVariant(supabase: Client, input: VariantInput) {
+export async function saveVariant(supabase: Client, input: VariantInput, actorId?: string | null) {
   if (!input.variant_name?.trim()) throw new Error("Variantnaam is verplicht");
   if (!Number.isFinite(input.regular_price) || input.regular_price < 0) {
     throw new Error("Voer een geldige variantprijs in");
@@ -626,11 +654,27 @@ export async function saveVariant(supabase: Client, input: VariantInput) {
 
   const { data, error } = await supabase
     .from("product_variants")
-    .insert({ ...payload, warehouse_stock: input.warehouse_stock ?? 0 } as never)
+    .insert(payload as never)
     .select("id")
     .single();
   if (error) throw new Error(error.message);
-  return { id: (data as any).id as string };
+  const id = (data as any).id as string;
+
+  const opening = Math.max(0, Math.trunc(Number(input.warehouse_stock ?? 0)));
+  if (opening > 0) {
+    const { recordMovement } = await import("./inventory.server");
+    await recordMovement({
+      variantId: id,
+      change: opening,
+      reason: "beginvoorraad",
+      referenceType: "variant",
+      referenceId: id,
+      note: "Beginvoorraad bij aanmaken",
+      createdBy: actorId ?? null,
+    });
+  }
+
+  return { id };
 }
 
 export async function deleteVariant(supabase: Client, id: string) {
@@ -999,7 +1043,7 @@ export async function applyProductImport(
 
   const { data: variants, error: vError } = await supabase
     .from("product_variants")
-    .select("id, product_id, sku, ean")
+    .select("id, product_id, sku, ean, warehouse_stock")
     .in("product_id", ids);
   if (vError) throw new Error(vError.message);
   const variantList = (variants ?? []) as any[];
@@ -1021,7 +1065,6 @@ export async function applyProductImport(
     try {
       // 1. Stock status on the product itself
       const productPatch: Record<string, unknown> = {};
-      if (data.voorraad !== undefined) productPatch["stock_quantity"] = data.voorraad;
       if (data.lage_voorraad_drempel !== undefined)
         productPatch["low_stock_threshold"] = data.lage_voorraad_drempel;
       if (data.veiligheidsvoorraad !== undefined)
@@ -1035,22 +1078,26 @@ export async function applyProductImport(
           .eq("id", data.product_id);
         if (error) throw new Error(error.message);
         result.productsUpdated += 1;
+      }
 
-        const before = Number(product.stock_quantity ?? 0);
-        if (data.voorraad !== undefined && data.voorraad !== before) {
-          const delta = data.voorraad - before;
-          const { error: mError } = await supabase.from("stock_movements").insert({
-            product_id: data.product_id,
-            quantity_change: delta,
-            reason: "correctie",
-            reference_type: "csv_import",
-            note: `CSV-import regel ${line}`,
-            created_by: userId,
-          } as never);
-          if (mError) throw new Error(mError.message);
-          product.stock_quantity = data.voorraad;
-          result.stockMutations += 1;
-        }
+      // Outside the block above on purpose. The stock update used to sit
+      // inside it, so a CSV that set only `voorraad` — the common case, a
+      // stock-only import — changed nothing at all and reported success.
+      const before = Number(product.stock_quantity ?? 0);
+      if (data.voorraad !== undefined && data.voorraad !== before) {
+        // Absolute figure from the CSV. The ledger writes the difference and
+        // the trigger applies it once; the column is no longer assigned here.
+        const { setStockLevel } = await import("./inventory.server");
+        await setStockLevel({
+          productId: data.product_id,
+          target: data.voorraad,
+          reason: "correctie",
+          referenceType: "csv_import",
+          note: `CSV-import regel ${line}`,
+          createdBy: userId,
+        });
+        product.stock_quantity = data.voorraad;
+        result.stockMutations += 1;
       }
 
       // 2. Variant lookup + update
@@ -1082,8 +1129,6 @@ export async function applyProductImport(
         if (data.variant_actieprijs !== undefined)
           variantPatch["sale_price"] = data.variant_actieprijs;
         if (data.variant_status !== undefined) variantPatch["status"] = data.variant_status;
-        if (data.variant_voorraad !== undefined)
-          variantPatch["warehouse_stock"] = data.variant_voorraad;
         if (Object.keys(variantPatch).length) {
           variantPatch["updated_at"] = new Date().toISOString();
           const { error } = await supabase
@@ -1092,6 +1137,23 @@ export async function applyProductImport(
             .eq("id", variant.id);
           if (error) throw new Error(error.message);
           result.variantsUpdated += 1;
+        }
+
+        // warehouse_stock is ledger-owned like stock_quantity. It used to be
+        // set in the patch above, which both skipped the audit trail and is
+        // now refused outright by the guard trigger.
+        if (data.variant_voorraad !== undefined) {
+          const { setVariantStockLevel } = await import("./inventory.server");
+          const moved = await setVariantStockLevel({
+            variantId: variant.id,
+            target: data.variant_voorraad,
+            reason: "correctie",
+            referenceType: "csv_import",
+            note: `CSV-import regel ${line}`,
+            createdBy: userId,
+          });
+          if (moved !== Number(variant.warehouse_stock ?? 0)) result.stockMutations += 1;
+          variant.warehouse_stock = moved;
         }
       }
 

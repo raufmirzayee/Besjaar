@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
+import { requirePermission } from "./admin-core.server";
 
 /** Roles a super admin can hand out. "customer" is not one of them. */
 const ASSIGNABLE_ROLES = [
@@ -16,7 +19,7 @@ const ASSIGNABLE_ROLES = [
 export const getStaffAccounts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, ["super_admin"]);
+    await requirePermission(context, "users", "view");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { listStaffAccounts } = await import("./staff.server");
     return listStaffAccounts(supabaseAdmin);
@@ -24,28 +27,26 @@ export const getStaffAccounts = createServerFn({ method: "GET" })
 
 export const createStaff = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { email: string; fullName: string; role: string; password: string }) => {
-    const email = String(input?.email ?? "")
-      .trim()
-      .toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      throw new Error("Vul een geldig e-mailadres in.");
-    }
-    const fullName = String(input?.fullName ?? "").trim();
-    if (fullName.length < 2) throw new Error("Vul de naam van de medewerker in.");
-    if (!(ASSIGNABLE_ROLES as readonly string[]).includes(input?.role)) {
-      throw new Error("Kies een geldige rol.");
-    }
-    const password = String(input?.password ?? "");
-    if (password.length < 12) {
-      // Staff hold the keys to the shop, so their passwords are held to more
-      // than the customer minimum.
-      throw new Error("Kies een wachtwoord van minimaal 12 tekens.");
-    }
-    return { email, fullName, role: input.role, password };
-  })
+  .inputValidator(
+    v.validator(
+      z.object({
+        email: v.email,
+        fullName: v.text(120).min(2, "Vul de naam van de medewerker in."),
+        role: z.enum(ASSIGNABLE_ROLES as unknown as [string, ...string[]], {
+          message: "Kies een geldige rol.",
+        }),
+        // Staff hold the keys to the shop, so their passwords are held to more
+        // than the customer minimum. Not trimmed: spaces are legitimate
+        // characters in a passphrase.
+        password: z
+          .string()
+          .min(12, "Kies een wachtwoord van minimaal 12 tekens.")
+          .max(200, "Wachtwoord is te lang."),
+      }),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin"]);
+    await requirePermission(context, "users", "manage_settings");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createStaffAccount } = await import("./staff.server");
     return createStaffAccount(supabaseAdmin, data, context.userId);
@@ -53,12 +54,9 @@ export const createStaff = createServerFn({ method: "POST" })
 
 export const setStaffAccountActive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string; active: boolean }) => {
-    if (!input?.userId) throw new Error("Geen account opgegeven.");
-    return { userId: String(input.userId), active: input.active === true };
-  })
+  .inputValidator(v.validator(z.object({ userId: v.uuid, active: z.boolean() })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin"]);
+    await requirePermission(context, "users", "manage_settings");
     if (data.userId === context.userId && !data.active) {
       // Locking yourself out would leave the shop with no way back in.
       throw new Error("Je kunt je eigen account niet deactiveren.");
@@ -88,12 +86,9 @@ export const getIsStaffAccount = createServerFn({ method: "GET" })
  */
 export const resetStaffMfaFactors = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string }) => {
-    if (!input?.userId) throw new Error("Geen account opgegeven.");
-    return { userId: String(input.userId) };
-  })
+  .inputValidator(v.validator(z.object({ userId: v.uuid })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin"]);
+    await requirePermission(context, "users", "manage_settings");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { resetStaffMfa } = await import("./staff.server");
     return resetStaffMfa(supabaseAdmin, data.userId);

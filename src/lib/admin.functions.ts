@@ -1,6 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requirePermission } from "./admin-core.server";
 import {
   fetchAdminOrders,
   fetchAdminProducts,
@@ -9,7 +13,6 @@ import {
   fetchLowStock,
   fetchMyRoles,
   fetchStockMovements,
-  requireRoles,
   updateProduct,
   type AppRole,
   type ProductPatch,
@@ -24,112 +27,98 @@ export const getMyRoles = createServerFn({ method: "GET" })
 export const getAdminDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, [
-      "super_admin",
-      "store_manager",
-      "financial",
-      "customer_service",
-      "warehouse",
-      "content_editor",
-    ]);
+    await requirePermission(context, "dashboard", "view");
     return fetchDashboard(context.supabase);
   });
 
 export const getAdminProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { search?: string }) => input ?? {})
+  .inputValidator(v.validator(v.searchOnly))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "content_editor", "warehouse"]);
+    await requirePermission(context, "products", "view");
     return fetchAdminProducts(context.supabase, data?.search);
   });
 
 export const saveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: ProductPatch) => input)
+  .inputValidator(v.validator(v.productPatch))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
+    await requirePermission(context, "products", "edit");
     return updateProduct(context.supabase, data);
   });
 
 export const getAdminOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { status?: string }) => input ?? {})
+  .inputValidator(
+    // "alle" is the no-filter sentinel the admin list sends.
+    v.validator(
+      z.object({ status: z.union([v.orderStatus, z.literal("alle")]).optional() }).strict(),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-      "customer_service",
-      "financial",
-    ]);
+    await requirePermission(context, "orders", "view");
     return fetchAdminOrders(context.supabase, data?.status);
   });
 
 export const getLowStock = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "low_stock", "view");
     return fetchLowStock(context.supabase);
   });
 
 export const getStockMovements = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "stock_movements", "view");
     return fetchStockMovements(context.supabase);
   });
 
 export const adjustStock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { productId: string; change: number; reason: string; note?: string | null }) => input,
+    v.validator(
+      z.object({
+        productId: v.uuid,
+        change: v.stockDelta,
+        reason: z.enum(["correctie", "supplier_receipt", "stocktake"]).default("correctie"),
+        note: v.optionalText(500),
+      }),
+    ),
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "stock_movements", "edit");
     if (!Number.isFinite(data.change) || data.change === 0) {
       throw new Error("Voer een aantal in dat niet 0 is");
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: product, error: readError } = await supabaseAdmin
-      .from("products")
-      .select("stock_quantity")
-      .eq("id", data.productId)
-      .maybeSingle();
-    if (readError) throw new Error(readError.message);
-    if (!product) throw new Error("Product niet gevonden");
+    const { recordMovement } = await import("./inventory.server");
 
-    const next = Math.max(0, Number(product.stock_quantity ?? 0) + data.change);
-    const { error: updateError } = await supabaseAdmin
-      .from("products")
-      .update({ stock_quantity: next, updated_at: new Date().toISOString() })
-      .eq("id", data.productId);
-    if (updateError) throw new Error(updateError.message);
-
-    await supabaseAdmin.from("stock_movements").insert({
-      product_id: data.productId,
-      quantity_change: data.change,
+    // One ledger row; the database trigger applies it. This used to update
+    // stock_quantity here as well, so every correction landed twice.
+    const stock = await recordMovement({
+      productId: data.productId,
+      change: data.change,
       reason: data.reason,
-      reference_type: "manual",
       note: data.note ?? null,
-      created_by: context.userId,
+      createdBy: context.userId,
     });
 
-    return { stock_quantity: next };
+    return { stock_quantity: stock };
   });
 
 export const getAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, ["super_admin", "store_manager"]);
+    await requirePermission(context, "users", "view");
     return fetchAdminUsers(context.supabase);
   });
 
 export const setUserRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { userId: string; role: AppRole; grant: boolean }) => input)
+  .inputValidator(v.validator(z.object({ userId: v.uuid, role: v.appRole, grant: z.boolean() })))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin"]);
+    await requirePermission(context, "users", "manage_settings");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.grant) {
       if (data.role !== "customer") {

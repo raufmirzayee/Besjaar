@@ -93,25 +93,24 @@ export const Route = createFileRoute("/api/public/mollie-webhook")({
           }
         }
 
-        // A failed or cancelled payment releases the stock the order reserved.
-        if (mapped.payment_status === "failed" || mapped.payment_status === "cancelled") {
-          const { data: items } = await supabaseAdmin
-            .from("order_items")
-            .select("product_id, quantity")
-            .eq("order_id", row.id);
-
-          const movements = ((items ?? []) as { product_id: string; quantity: number }[])
-            .filter((item) => item.product_id)
-            .map((item) => ({
-              product_id: item.product_id,
-              quantity_change: item.quantity,
-              reason: "order_cancelled",
-              reference_type: "order",
-              reference_id: row.id,
-              note: `Betaling mislukt voor bestelling ${row.order_number}`,
-            }));
-          if (movements.length) {
-            await supabaseAdmin.from("stock_movements").insert(movements);
+        // Any state the payment cannot recover from returns the reservation to
+        // stock — failed, cancelled *and* expired. Expiry used to be missing,
+        // so every abandoned iDEAL payment held its goods hostage indefinitely.
+        //
+        // The database keys the release on the order, so Mollie's retries land
+        // here repeatedly and only the first one moves anything.
+        const { shouldReleaseStock } = await import("@/lib/payment-lifecycle");
+        if (shouldReleaseStock(mapped.payment_status)) {
+          const { releaseStockForOrder } = await import("@/lib/inventory.server");
+          try {
+            await releaseStockForOrder(
+              row.id,
+              "order_cancelled",
+              `Betaling ${payment.status} voor bestelling ${row.order_number}`,
+            );
+          } catch (releaseError) {
+            // Never fail the webhook over this, or Mollie retries forever.
+            console.error("[mollie] stock release failed:", releaseError);
           }
         }
 

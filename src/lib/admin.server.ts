@@ -46,20 +46,19 @@ function assertRole(roles: AppRole[], allowed: AppRole[]) {
   }
 }
 
-/**
- * The authorisation choke point for role-gated admin work.
+/*
+ * requireRoles used to live here.
  *
- * Takes the whole request context rather than a client and a user id, so the
- * two-factor assertion below cannot be forgotten at a call site: every admin
- * function already calls this, and now none of them can run on a password-only
- * session.
+ * It was a second authorisation authority: a hand-written role list at each
+ * call site, next to a `role_permissions` matrix that the navigation, the
+ * dashboard and the RLS policies were already consulting. The two drifted —
+ * the bulk importer let warehouse staff change prices they had no
+ * products:edit for, and the user-and-roles endpoint answered store managers
+ * whom the navigation had never shown the screen to.
+ *
+ * requirePermission() in ./admin-core.server.ts is now the only guard, and
+ * mfa-coverage.test.ts fails the build if a second one reappears.
  */
-export async function requireRoles(context: AuthContext, allowed: AppRole[]) {
-  assertStaffMfa(context.claims);
-  const roles = await fetchMyRoles(context.supabase, context.userId);
-  assertRole(roles, allowed);
-  return roles;
-}
 
 export type DashboardStats = {
   revenue30d: number;

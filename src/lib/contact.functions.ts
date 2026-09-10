@@ -1,18 +1,26 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
-import { createContactMessage, type ContactInput, type ContactMessage } from "./contact.server";
+import { requirePermission } from "./admin-core.server";
+import { contactSchema, createContactMessage, type ContactMessage } from "./contact.server";
 
 export const sendContactMessage = createServerFn({ method: "POST" })
-  .inputValidator((input: ContactInput) => input)
+  .inputValidator(v.validator(contactSchema))
   .handler(async ({ data }) => createContactMessage(data));
 
 export const getContactMessages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { status?: string } | undefined) => input ?? {})
+  .inputValidator(
+    // "all" is this list's no-filter sentinel.
+    v.validator(
+      z.object({ status: z.union([v.contactStatus, z.literal("all")]).optional() }).strict(),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
+    await requirePermission(context, "support", "view");
     let query = context.supabase
       .from("contact_messages")
       .select(
@@ -28,9 +36,13 @@ export const getContactMessages = createServerFn({ method: "POST" })
 
 export const setContactMessageStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string; status: string; staffNote?: string }) => input)
+  .inputValidator(
+    v.validator(
+      z.object({ id: v.uuid, status: v.contactStatus, staffNote: v.text(2000).optional() }),
+    ),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
+    await requirePermission(context, "support", "edit");
     const { error } = await context.supabase
       .from("contact_messages")
       .update({

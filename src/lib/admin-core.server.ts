@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { assertStaffMfa, type AuthContext } from "./admin.server";
 
+import { can } from "./admin-access";
 import type { AdminAccess, AdminAction, AdminModule, PermissionKey } from "./admin-access";
 import type { AppRole } from "./admin.server";
 
@@ -115,9 +116,24 @@ export type AdminBadges = {
   unreadNotifications: number;
 };
 
-export async function fetchBadges(supabase: Client, userId: string): Promise<AdminBadges> {
+/**
+ * Sidebar counts, restricted to what the caller may see.
+ *
+ * A badge is a number, but it is still information: "7 open support tickets"
+ * tells a content editor about a workload they have no access to, and the
+ * low-stock and failed-payment counts leak the shape of the business to roles
+ * with no claim on it. Each count is now only queried when the permission for
+ * its module is held; the rest come back as zero and their badges disappear.
+ */
+export async function fetchBadges(
+  supabase: Client,
+  userId: string,
+  access: AdminAccess,
+): Promise<AdminBadges> {
   const count = (table: string, build: (q: any) => any) =>
     build(supabase.from(table).select("id", { count: "exact", head: true }));
+  const zero = Promise.resolve({ count: 0, data: [] as unknown[] });
+  const may = (module: AdminModule) => can(access, module, "view");
 
   const [
     newOrders,
@@ -130,14 +146,20 @@ export async function fetchBadges(supabase: Client, userId: string): Promise<Adm
     pendingReviews,
     notifications,
   ] = await Promise.all([
-    count("orders", (q) => q.in("status", ["pending", "paid"])),
-    count("orders", (q) => q.in("status", ["processing", "packed"])),
-    supabase.from("products").select("stock_quantity, low_stock_threshold"),
-    count("returns", (q) => q.in("status", ["requested", "approved", "received"])),
-    count("contact_messages", (q) => q.in("status", ["new", "open"])),
-    count("orders", (q) => q.in("payment_status", ["failed", "expired"])),
-    count("sync_jobs", (q) => q.eq("status", "failed")),
-    count("product_reviews", (q) => q.eq("status", "pending")),
+    may("orders") ? count("orders", (q) => q.in("status", ["pending", "paid"])) : zero,
+    may("shipments") || may("orders")
+      ? count("orders", (q) => q.in("status", ["processing", "packed"]))
+      : zero,
+    may("inventory") || may("low_stock")
+      ? supabase.from("products").select("stock_quantity, low_stock_threshold")
+      : zero,
+    may("returns")
+      ? count("returns", (q) => q.in("status", ["requested", "approved", "received"]))
+      : zero,
+    may("support") ? count("contact_messages", (q) => q.in("status", ["new", "open"])) : zero,
+    may("orders") ? count("orders", (q) => q.in("payment_status", ["failed", "expired"])) : zero,
+    may("sync") || may("bol") ? count("sync_jobs", (q) => q.eq("status", "failed")) : zero,
+    may("reviews") ? count("product_reviews", (q) => q.eq("status", "pending")) : zero,
     supabase.from("admin_notifications").select("read_by").limit(200),
   ]);
 
@@ -145,19 +167,21 @@ export async function fetchBadges(supabase: Client, userId: string): Promise<Adm
     (p) => Number(p.stock_quantity ?? 0) <= Number(p.low_stock_threshold ?? 5),
   ).length;
 
+  // Notifications are already filtered by RLS to the modules this user may
+  // view, so the unread count reflects only what they can actually open.
   const unread = ((notifications.data ?? []) as any[]).filter(
     (n) => !((n.read_by ?? []) as string[]).includes(userId),
   ).length;
 
   return {
-    newOrders: newOrders.count ?? 0,
-    readyToShip: readyToShip.count ?? 0,
+    newOrders: (newOrders as any).count ?? 0,
+    readyToShip: (readyToShip as any).count ?? 0,
     lowStock,
-    pendingReturns: pendingReturns.count ?? 0,
-    openSupport: openSupport.count ?? 0,
-    failedPayments: failedPayments.count ?? 0,
-    syncErrors: syncErrors.count ?? 0,
-    pendingReviews: pendingReviews.count ?? 0,
+    pendingReturns: (pendingReturns as any).count ?? 0,
+    openSupport: (openSupport as any).count ?? 0,
+    failedPayments: (failedPayments as any).count ?? 0,
+    syncErrors: (syncErrors as any).count ?? 0,
+    pendingReviews: (pendingReviews as any).count ?? 0,
     unreadNotifications: unread,
   };
 }
@@ -227,32 +251,56 @@ export type GlobalSearchResult = {
   hint: string | null;
 };
 
-export async function globalSearch(supabase: Client, term: string): Promise<GlobalSearchResult[]> {
+/**
+ * Cross-module search for the admin bar.
+ *
+ * Queries only the modules the caller may actually view. It used to run all
+ * four regardless — gated on nothing but `dashboard:view`, which a
+ * content_editor holds — so typing a surname into the product search returned
+ * customers and orders to someone with no business seeing either.
+ *
+ * The unauthorised queries are not run and then filtered; they are not run.
+ */
+export async function globalSearch(
+  supabase: Client,
+  term: string,
+  access: AdminAccess,
+): Promise<GlobalSearchResult[]> {
   const q = term.trim();
   if (q.length < 2) return [];
   const like = `%${q}%`;
 
+  const may = (module: AdminModule) => can(access, module, "view");
+
   const [products, orders, customers, returns] = await Promise.all([
-    supabase
-      .from("products")
-      .select("id, name, internal_sku, ean")
-      .or(`name.ilike.${like},internal_sku.ilike.${like},ean.ilike.${like}`)
-      .limit(5),
-    supabase
-      .from("orders")
-      .select("id, order_number, email, first_name, last_name")
-      .or(`order_number.ilike.${like},email.ilike.${like},last_name.ilike.${like}`)
-      .limit(5),
-    supabase
-      .from("profiles")
-      .select("id, email, first_name, last_name")
-      .or(`email.ilike.${like},last_name.ilike.${like},first_name.ilike.${like}`)
-      .limit(5),
-    supabase
-      .from("returns")
-      .select("id, return_number, email")
-      .ilike("return_number", like)
-      .limit(5),
+    may("products")
+      ? supabase
+          .from("products")
+          .select("id, name, internal_sku, ean")
+          .or(`name.ilike.${like},internal_sku.ilike.${like},ean.ilike.${like}`)
+          .limit(5)
+      : Promise.resolve({ data: [] as unknown[] }),
+    may("orders")
+      ? supabase
+          .from("orders")
+          .select("id, order_number, email, first_name, last_name")
+          .or(`order_number.ilike.${like},email.ilike.${like},last_name.ilike.${like}`)
+          .limit(5)
+      : Promise.resolve({ data: [] as unknown[] }),
+    may("customers")
+      ? supabase
+          .from("profiles")
+          .select("id, email, first_name, last_name")
+          .or(`email.ilike.${like},last_name.ilike.${like},first_name.ilike.${like}`)
+          .limit(5)
+      : Promise.resolve({ data: [] as unknown[] }),
+    may("returns")
+      ? supabase
+          .from("returns")
+          .select("id, return_number, email")
+          .ilike("return_number", like)
+          .limit(5)
+      : Promise.resolve({ data: [] as unknown[] }),
   ]);
 
   const out: GlobalSearchResult[] = [];
@@ -359,10 +407,33 @@ function metric(current: number, previous: number): MetricValue {
 
 const CANCELLED = ["cancelled", "refunded"];
 
+/** Stands in for a query the caller may not run, so the shape stays the same. */
+const EMPTY = Promise.resolve({ data: [] as any[], error: null }) as any;
+
+/**
+ * Dashboard figures, restricted to what the caller may see.
+ *
+ * `dashboard:view` used to be enough for the whole picture: revenue, customer
+ * names and e-mail addresses in the activity feed, failed payments, support
+ * load. A content editor holds `dashboard:view`, so a role scoped to product
+ * copy was reading the shop's trading position and its customers' details.
+ *
+ * The queries a role is not entitled to are skipped, so a content editor's
+ * dashboard shows catalogue information and nothing that belongs to finance,
+ * support or the customer list.
+ */
 export async function fetchDashboardOverview(
   supabase: Client,
   period: DashboardPeriod,
+  access: AdminAccess,
 ): Promise<DashboardOverview> {
+  const may = (module: AdminModule) => can(access, module, "view");
+  const mayOrders = may("orders") || may("reports");
+  const mayCustomers = may("customers");
+  const mayReturns = may("returns");
+  const maySupport = may("support");
+  const maySync = may("sync") || may("bol");
+  const mayInventory = may("inventory") || may("low_stock") || may("products");
   const now = new Date();
   const { start, end } = periodRange(period, now);
   const span = end.getTime() - start.getTime();
@@ -375,25 +446,35 @@ export async function fetchDashboardOverview(
 
   const [ordersRes, itemsRes, productsRes, returnsRes, supportRes, syncRes, profilesRes] =
     await Promise.all([
-      supabase
-        .from("orders")
-        .select(
-          "id, order_number, status, payment_status, payment_method, total, created_at, sales_channel, user_id, email, first_name, last_name",
-        )
-        .gte("created_at", prevStart.toISOString()),
-      supabase
-        .from("order_items")
-        .select("product_id, product_name, quantity, line_total, created_at")
-        .gte("created_at", start.toISOString()),
-      supabase
-        .from("products")
-        .select(
-          "id, name, status, stock_quantity, low_stock_threshold, sales_count, purchase_cost, regular_price, brand_id, category_id, brands ( name ), categories!products_category_id_fkey ( name )",
-        ),
-      supabase.from("returns").select("id, return_number, status, created_at, email"),
-      supabase.from("contact_messages").select("id, status"),
-      supabase.from("sync_jobs").select("id, status, channel, created_at"),
-      supabase.from("profiles").select("id, created_at, first_name, last_name, email"),
+      mayOrders
+        ? supabase
+            .from("orders")
+            .select(
+              "id, order_number, status, payment_status, payment_method, total, created_at, sales_channel, user_id, email, first_name, last_name",
+            )
+            .gte("created_at", prevStart.toISOString())
+        : EMPTY,
+      mayOrders
+        ? supabase
+            .from("order_items")
+            .select("product_id, product_name, quantity, line_total, created_at")
+            .gte("created_at", start.toISOString())
+        : EMPTY,
+      mayInventory
+        ? supabase
+            .from("products")
+            .select(
+              "id, name, status, stock_quantity, low_stock_threshold, sales_count, purchase_cost, regular_price, brand_id, category_id, brands ( name ), categories!products_category_id_fkey ( name )",
+            )
+        : EMPTY,
+      mayReturns
+        ? supabase.from("returns").select("id, return_number, status, created_at, email")
+        : EMPTY,
+      maySupport ? supabase.from("contact_messages").select("id, status") : EMPTY,
+      maySync ? supabase.from("sync_jobs").select("id, status, channel, created_at") : EMPTY,
+      mayCustomers
+        ? supabase.from("profiles").select("id, created_at, first_name, last_name, email")
+        : EMPTY,
     ]);
 
   for (const res of [

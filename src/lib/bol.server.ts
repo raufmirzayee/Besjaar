@@ -467,24 +467,19 @@ async function importOrders(admin: Client, jobId: string, token: string) {
         } as any);
 
         if (productId) {
-          await admin.from("stock_movements").insert({
-            product_id: productId,
-            quantity_change: -quantity,
+          // The ledger row is the whole change. This used to insert the
+          // movement and then decrement the column as well, taking the goods
+          // off the shelf twice for every bol.com sale. Keyed on the order, so
+          // a re-run of the sync does not deduct again.
+          const { recordMovement } = await import("./inventory.server");
+          await recordMovement({
+            productId,
+            change: -quantity,
             reason: "bol_order",
-            reference_type: "order",
-            reference_id: orderId,
+            referenceType: "order",
+            referenceId: orderId,
             note: `bol.com bestelling ${order.orderId}`,
-          } as any);
-          const { data: product } = await admin
-            .from("products")
-            .select("stock_quantity")
-            .eq("id", productId)
-            .maybeSingle();
-          const current = Number((product as any)?.stock_quantity ?? 0);
-          await admin
-            .from("products")
-            .update({ stock_quantity: Math.max(0, current - quantity) } as any)
-            .eq("id", productId);
+          });
         } else if (ean) {
           await log(admin, jobId, "warn", `Geen productkoppeling voor EAN ${ean}`, {
             orderId: order.orderId,

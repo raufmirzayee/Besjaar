@@ -1,4 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { logAudit, requirePermission } from "./admin-core.server";
@@ -27,7 +30,7 @@ export const getAdminCategories = createServerFn({ method: "GET" })
 
 export const upsertCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: CategoryInput) => input)
+  .inputValidator(v.validator(v.categoryInput))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "categories", data.id ? "edit" : "create");
     const result = await saveCategory(context.supabase, data);
@@ -45,7 +48,7 @@ export const upsertCategory = createServerFn({ method: "POST" })
 
 export const archiveCategoryFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(v.validator(v.idOnly))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "categories", "archive");
     const result = await archiveCategory(context.supabase, data.id);
@@ -68,7 +71,7 @@ export const getAdminBrands = createServerFn({ method: "GET" })
 
 export const upsertBrand = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: BrandInput) => input)
+  .inputValidator(v.validator(v.brandInput))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "brands", data.id ? "edit" : "create");
     const result = await saveBrand(context.supabase, data);
@@ -85,7 +88,7 @@ export const upsertBrand = createServerFn({ method: "POST" })
 
 export const getMovements = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: MovementFilters) => input ?? {})
+  .inputValidator(v.validator(v.movementFilters))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "stock_movements", "view");
     return fetchMovements(context.supabase, data ?? {});
@@ -100,7 +103,7 @@ export const getLowStockAlerts = createServerFn({ method: "GET" })
 
 export const getCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { search?: string | null }) => input ?? {})
+  .inputValidator(v.validator(v.searchOnly))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "customers", "view");
     return fetchCustomers(context.supabase, data?.search ?? null);
@@ -108,7 +111,7 @@ export const getCustomers = createServerFn({ method: "POST" })
 
 export const getCustomerDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(v.validator(v.idOnly))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "customers", "view");
     return fetchCustomerDetail(context.supabase, data.id);
@@ -117,7 +120,16 @@ export const getCustomerDetail = createServerFn({ method: "POST" })
 export const getAuditLogs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: { module?: string | null; search?: string | null; page?: number }) => input ?? {},
+    v.validator(
+      z
+        .object({
+          module: v.optionalText(40),
+          search: v.optionalText(200),
+          page: z.number().int().min(1).max(10_000).optional(),
+        })
+        .strict()
+        .partial(),
+    ),
   )
   .handler(async ({ context, data }) => {
     await requirePermission(context, "audit", "view");

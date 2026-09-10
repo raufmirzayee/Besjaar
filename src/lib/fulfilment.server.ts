@@ -135,25 +135,16 @@ export async function transitionOrder(
     changed_by: actorId,
   });
 
-  // Cancelling puts the reserved stock back on the shelf. The trigger on
-  // stock_movements applies it to the product.
+  // Cancelling returns the reservation to the shelf, once. Keyed on the order,
+  // so cancelling an order that a failed payment already released does not put
+  // the goods back a second time.
   if (input.status === "cancelled") {
-    const { data: items } = await admin
-      .from("order_items")
-      .select("product_id, quantity")
-      .eq("order_id", input.orderId);
-    const movements = ((items ?? []) as any[])
-      .filter((item) => item.product_id)
-      .map((item) => ({
-        product_id: item.product_id,
-        quantity_change: Number(item.quantity),
-        reason: "order_cancelled",
-        reference_type: "order",
-        reference_id: input.orderId,
-        note: `Bestelling ${row.order_number} geannuleerd`,
-        created_by: actorId,
-      }));
-    if (movements.length) await admin.from("stock_movements").insert(movements);
+    const { releaseStockForOrder } = await import("./inventory.server");
+    await releaseStockForOrder(
+      input.orderId,
+      "order_cancelled",
+      `Bestelling ${row.order_number} geannuleerd`,
+    );
   }
 
   const result: TransitionResult = {

@@ -13,10 +13,12 @@ import { COVERAGE_LOCALES, COVERAGE_FIELDS, type CoverageEntity } from "./transl
 
 const ENTITIES: CoverageEntity[] = ["product", "category", "brand"];
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function parseTarget(input: unknown) {
   const data = input as { entity?: string; id?: string };
   if (!data || !ENTITIES.includes(data.entity as CoverageEntity)) throw new Error("Ongeldig type");
-  if (typeof data.id !== "string" || data.id.length === 0) throw new Error("Ongeldig id");
+  if (typeof data.id !== "string" || !UUID_RE.test(data.id)) throw new Error("Ongeldig id");
   return { entity: data.entity as CoverageEntity, id: data.id };
 }
 

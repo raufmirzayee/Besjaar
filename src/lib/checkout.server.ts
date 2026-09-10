@@ -222,23 +222,15 @@ export async function createOrder(
   const vatAmount = Number((itemVat + shippingVat).toFixed(2));
 
   /**
-   * Payment. Without a provider API key the order is stored as pending and no
-   * payment reference is invented — the store never reports a payment it did
-   * not take.
+   * Order, lines and stock reservation, in one transaction.
+   *
+   * The database function raises if any line exceeds available stock, and
+   * because the insert and the reservation share a transaction, a refused
+   * order leaves nothing behind — no half-order, no orphan lines, no stock
+   * taken for goods that were never sold.
    */
-  const origin = (process.env.VITE_SITE_URL ?? "").replace(/\/$/, "");
-  const payment = await createPayment({
-    orderNumber: "pending",
-    amount: total,
-    method: input.paymentMethod,
-    description: `Besjaar bestelling`,
-    redirectUrl: `${origin}/bestelling/pending`,
-  });
-
-  const { data: order, error: orderError } = await supabaseAdmin
-    .from("orders")
-    .insert({
-      // Never trust a client-supplied user id; only a server-verified session id is used.
+  const { data: created, error: createError } = await supabaseAdmin.rpc("create_order_with_items", {
+    p_order: {
       user_id: verifiedUserId,
       email: input.email,
       first_name: input.shipping.first_name,
@@ -258,59 +250,88 @@ export async function createOrder(
       idempotency_key: input.idempotencyKey,
       terms_accepted_at: new Date().toISOString(),
       terms_version: TERMS_VERSION,
-      payment_status: payment.paymentStatus,
-      status: payment.status,
-      payment_reference: payment.paymentReference,
-    })
-    .select("id, order_number")
-    .single();
-  if (orderError) throw new Error(orderError.message);
-
-  const orderRow = order as { id: string; order_number: string };
-
-  const { error: itemsError } = await supabaseAdmin
-    .from("order_items")
-    .insert(items.map((i) => ({ ...i, order_id: orderRow.id })));
-  if (itemsError) throw new Error(itemsError.message);
-
-  await supabaseAdmin.from("order_status_history").insert({
-    order_id: orderRow.id,
-    status: payment.status,
-    note: payment.configured
-      ? "Bestelling geplaatst; wacht op bevestiging van de betaalprovider."
-      : "Bestelling geplaatst. Er is nog geen betaalprovider gekoppeld, dus er is niet betaald.",
+      payment_status: "open",
+      status: "pending",
+    },
+    p_items: items,
   });
 
-  // Stock is reserved when the order is placed; the movement is recorded now
-  // so the warehouse sees committed demand, and is reversed if payment fails.
-  await supabaseAdmin.from("stock_movements").insert(
-    items.map((i) => ({
-      product_id: i.product_id,
-      quantity_change: -i.quantity,
-      reason: "order",
-      reference_type: "order",
-      reference_id: orderRow.id,
-      note: `Bestelling ${orderRow.order_number}`,
-    })),
-  );
+  if (createError) {
+    const message = String(createError.message ?? "");
+    // Turn the database's constraint message into something a shopper can act
+    // on, rather than leaking SQL at them.
+    if (/Onvoldoende voorraad/i.test(message)) {
+      throw new Error(message.replace(/^.*?(Onvoldoende voorraad)/i, "$1"));
+    }
+    throw new Error(message);
+  }
+
+  const orderRow = (Array.isArray(created) ? created[0] : created) as {
+    order_id: string;
+    order_number: string;
+    access_token: string;
+  };
+  if (!orderRow?.order_id) throw new Error("Bestelling kon niet worden aangemaakt.");
+
+  /**
+   * Payment comes second, now that a real order number exists.
+   *
+   * It used to be created first, with the literal string "pending" as the
+   * order reference and a redirect to /bestelling/pending — so Mollie's record
+   * named an order that did not exist, and the customer was returned to a page
+   * that could not show them anything. It also meant a payment could be taken
+   * for an order that then failed to save.
+   *
+   * Without a provider key this stays inert: the order is stored as awaiting
+   * payment and no reference is invented.
+   */
+  const origin = (process.env.VITE_SITE_URL ?? "").replace(/\/$/, "");
+  let payment;
+  try {
+    payment = await createPayment({
+      orderNumber: orderRow.order_number,
+      amount: total,
+      method: input.paymentMethod,
+      description: `Besjaar bestelling ${orderRow.order_number}`,
+      redirectUrl: `${origin}/bestelling/${encodeURIComponent(orderRow.order_number)}?token=${orderRow.access_token}`,
+    });
+  } catch (paymentError) {
+    // The order exists and holds stock, but nobody can pay for it. Give the
+    // stock back rather than leaving it reserved for an order that is dead.
+    await supabaseAdmin.rpc("abandon_order", {
+      p_order_id: orderRow.order_id,
+      p_note: "Betaling kon niet worden aangemaakt bij de provider",
+    });
+    throw paymentError;
+  }
+
+  if (payment.paymentReference || payment.paymentStatus !== "open") {
+    const { error: refError } = await supabaseAdmin.rpc("attach_payment_reference", {
+      p_order_id: orderRow.order_id,
+      p_reference: payment.paymentReference,
+      p_payment_status: payment.paymentStatus,
+      p_status: payment.status,
+    });
+    if (refError) console.error("[checkout] payment reference not stored:", refError.message);
+  }
 
   // Confirmation of the contract on a durable medium is required under EU
   // consumer law, so it is sent as soon as the order exists — not only once
   // payment clears. A failed send never fails the order.
   try {
     const { orderEmailData, sendTransactionalEmail } = await import("./email.server");
-    const data = await orderEmailData(supabaseAdmin, orderRow.id);
+    const data = await orderEmailData(supabaseAdmin, orderRow.order_id);
     if (data) {
       const result = await sendTransactionalEmail({
         template: "order_confirmation",
         data,
-        orderId: orderRow.id,
+        orderId: orderRow.order_id,
       });
       if (result.sent) {
         await supabaseAdmin
           .from("orders")
           .update({ confirmation_sent_at: new Date().toISOString() })
-          .eq("id", orderRow.id);
+          .eq("id", orderRow.order_id);
       }
     }
   } catch (error) {

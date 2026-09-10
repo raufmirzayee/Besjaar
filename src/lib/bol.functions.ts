@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requireRoles } from "./admin.server";
+import { requirePermission } from "./admin-core.server";
 import {
   deleteListing,
   fetchChannelListings,
@@ -14,7 +17,7 @@ import {
 export const getBolOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "bol", "view");
     const [status, listings, jobs, logs] = await Promise.all([
       fetchConnectionStatus(context.supabase),
       fetchChannelListings(context.supabase),
@@ -27,35 +30,41 @@ export const getBolOverview = createServerFn({ method: "GET" })
 export const saveBolListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(
-    (input: {
-      id?: string;
-      product_id?: string | null;
-      ean?: string | null;
-      external_offer_id?: string | null;
-      channel_price?: number | null;
-      price_sync_enabled?: boolean;
-      stock_sync_enabled?: boolean;
-      is_active?: boolean;
-    }) => input,
+    v.validator(
+      z
+        .object({
+          id: v.uuid.optional(),
+          product_id: v.uuid.nullish(),
+          ean: v.optionalText(20),
+          external_offer_id: v.optionalText(80),
+          channel_price: v.price.nullish(),
+          price_sync_enabled: z.boolean().optional(),
+          stock_sync_enabled: z.boolean().optional(),
+          is_active: z.boolean().optional(),
+        })
+        .strict(),
+    ),
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "bol", "edit");
     return upsertListing(context.supabase, data);
   });
 
 export const removeBolListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { id: string }) => input)
+  .inputValidator(v.validator(v.idOnly))
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager"]);
+    await requirePermission(context, "bol", "archive");
     return deleteListing(context.supabase, data.id);
   });
 
 export const startBolSync = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { jobType: "orders" | "stock" | "offers" | "shipments" }) => input)
+  .inputValidator(
+    v.validator(z.object({ jobType: z.enum(["orders", "stock", "offers", "shipments"]) })),
+  )
   .handler(async ({ context, data }) => {
-    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
+    await requirePermission(context, "sync", "edit");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { runSyncJob } = await import("./bol.server");
     return runSyncJob(supabaseAdmin as never, data.jobType, { triggeredBy: context.userId });

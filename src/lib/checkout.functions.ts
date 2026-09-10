@@ -1,4 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import * as v from "./validation";
 import { getRequestHeader } from "@tanstack/react-start/server";
 
 import {
@@ -36,14 +39,53 @@ async function verifiedUserId(): Promise<string | null> {
   return data.user.id;
 }
 
+/**
+ * Everything the checkout accepts, checked at runtime.
+ *
+ * Prices and totals are never taken from here — the server recalculates them
+ * from the database — but the identifiers, quantities and address fields are,
+ * and all of them arrive from a browser.
+ */
+const checkoutSchema = z.object({
+  email: v.email,
+  phone: v.optionalText(40),
+  shipping: v.address,
+  billing: v.address.nullable().optional(),
+  shippingMethodId: v.uuid,
+  customerNote: v.optionalText(1000),
+  paymentMethod: z.enum(["ideal", "bancontact", "creditcard", "paypal"]),
+  idempotencyKey: z.string().uuid("Ongeldige aanvraag"),
+  acceptedTerms: z.literal(true, {
+    errorMap: () => ({
+      message: "Je moet de algemene voorwaarden accepteren om te kunnen bestellen.",
+    }),
+  }),
+  lines: z
+    .array(z.object({ productId: v.uuid, quantity: v.quantity }))
+    .min(1, "Je winkelwagen is leeg.")
+    .max(50, "Te veel verschillende producten in één bestelling"),
+  // Accepted for backwards compatibility and then ignored: ownership comes
+  // from the verified session, never from the request body.
+  userId: z.string().nullish(),
+});
+
 export const placeOrder = createServerFn({ method: "POST" })
-  .inputValidator((input: CheckoutInput) => input)
+  .inputValidator(v.validator(checkoutSchema))
   .handler(async ({ data }) => {
     return createOrder(data, await verifiedUserId());
   });
 
 export const getOrderByNumber = createServerFn({ method: "POST" })
-  .inputValidator((input: { orderNumber: string; email: string }) => input)
+  .inputValidator(
+    v.validator(
+      z.object({
+        orderNumber: v.text(32).min(3),
+        email: v.email,
+        // Guests follow the unguessable link from their confirmation e-mail.
+        token: z.string().trim().length(64).optional(),
+      }),
+    ),
+  )
   .handler(async ({ data }) => {
     return fetchOrderByNumber(data.orderNumber, data.email);
   });
