@@ -387,7 +387,29 @@ async function importOrders(admin: Client, jobId: string, token: string) {
         .eq("sales_channel", "bol")
         .eq("external_order_id", order.orderId)
         .maybeSingle();
-      if (existing) continue;
+
+      if (existing) {
+        // Already imported — but ingestion is not one transaction, so an order
+        // whose lines failed halfway leaves a header with no items. Skipping
+        // it on every later run would strand it there permanently, invisible
+        // except as an order totalling something with nothing in it.
+        const { count } = await admin
+          .from("order_items")
+          .select("id", { count: "exact", head: true })
+          .eq("order_id", (existing as any).id);
+
+        if ((count ?? 0) > 0) continue;
+
+        await log(
+          admin,
+          jobId,
+          "warn",
+          `Bestelling ${order.orderId} bestond al zonder regels; regels worden alsnog aangemaakt.`,
+        );
+        await importBolOrderItems(admin, jobId, (existing as any).id, order);
+        processed++;
+        continue;
+      }
 
       const ship = order.shipmentDetails ?? {};
       const bill = order.billingDetails ?? ship;
@@ -431,61 +453,19 @@ async function importOrders(admin: Client, jobId: string, token: string) {
         } as any)
         .select("id")
         .single();
-      if (error) throw new Error(error.message);
+      if (error) {
+        // The unique index on (sales_channel, external_order_id) is what makes
+        // the check above race-proof: two syncs running at once both pass it,
+        // and one of them lands here. That is a duplicate, not a failure.
+        if (/duplicate key|unique constraint/i.test(error.message)) {
+          await log(admin, jobId, "info", `Bestelling ${order.orderId} was al geïmporteerd.`);
+          continue;
+        }
+        throw new Error(error.message);
+      }
       const orderId = (inserted as any).id as string;
 
-      for (const item of items) {
-        const ean = item.ean ?? item.product?.ean ?? null;
-        let productId: string | null = null;
-        if (ean) {
-          const { data: listing } = await admin
-            .from("channel_listings")
-            .select("product_id")
-            .eq("channel", "bol")
-            .eq("ean", ean)
-            .maybeSingle();
-          productId = (listing as any)?.product_id ?? null;
-          if (!productId) {
-            const { data: product } = await admin
-              .from("products")
-              .select("id")
-              .eq("ean", ean)
-              .maybeSingle();
-            productId = (product as any)?.id ?? null;
-          }
-        }
-        const quantity = Number(item.quantity ?? 1);
-        const unitPrice = Number(item.unitPrice ?? 0);
-        await admin.from("order_items").insert({
-          order_id: orderId,
-          product_id: productId,
-          product_name: item.product?.title ?? "bol.com artikel",
-          sku: ean,
-          unit_price: unitPrice,
-          quantity,
-          line_total: unitPrice * quantity,
-        } as any);
-
-        if (productId) {
-          // The ledger row is the whole change. This used to insert the
-          // movement and then decrement the column as well, taking the goods
-          // off the shelf twice for every bol.com sale. Keyed on the order, so
-          // a re-run of the sync does not deduct again.
-          const { recordMovement } = await import("./inventory.server");
-          await recordMovement({
-            productId,
-            change: -quantity,
-            reason: "bol_order",
-            referenceType: "order",
-            referenceId: orderId,
-            note: `bol.com bestelling ${order.orderId}`,
-          });
-        } else if (ean) {
-          await log(admin, jobId, "warn", `Geen productkoppeling voor EAN ${ean}`, {
-            orderId: order.orderId,
-          });
-        }
-      }
+      await importBolOrderItems(admin, jobId, orderId, order);
 
       await admin.from("order_status_history").insert({
         order_id: orderId,
@@ -629,4 +609,75 @@ async function pushShipments(admin: Client, jobId: string, token: string) {
     }
   }
   return { processed, failed };
+}
+
+/**
+ * Writes one bol.com order's lines, and takes the stock they sold.
+ *
+ * Split out so a header that was created without its lines — an ingestion that
+ * failed halfway — can be repaired on the next sync instead of being skipped
+ * forever by the already-imported check.
+ *
+ * The stock movement is keyed on the order, so running this twice against the
+ * same order deducts once.
+ */
+async function importBolOrderItems(
+  admin: any,
+  jobId: string,
+  orderId: string,
+  order: BolOrder,
+): Promise<void> {
+  const items = order.orderItems ?? [];
+  for (const item of items) {
+    const ean = item.ean ?? item.product?.ean ?? null;
+    let productId: string | null = null;
+    if (ean) {
+      const { data: listing } = await admin
+        .from("channel_listings")
+        .select("product_id")
+        .eq("channel", "bol")
+        .eq("ean", ean)
+        .maybeSingle();
+      productId = (listing as any)?.product_id ?? null;
+      if (!productId) {
+        const { data: product } = await admin
+          .from("products")
+          .select("id")
+          .eq("ean", ean)
+          .maybeSingle();
+        productId = (product as any)?.id ?? null;
+      }
+    }
+    const quantity = Number(item.quantity ?? 1);
+    const unitPrice = Number(item.unitPrice ?? 0);
+    await admin.from("order_items").insert({
+      order_id: orderId,
+      product_id: productId,
+      product_name: item.product?.title ?? "bol.com artikel",
+      sku: ean,
+      unit_price: unitPrice,
+      quantity,
+      line_total: unitPrice * quantity,
+    } as any);
+
+    if (productId) {
+      // The ledger row is the whole change. This used to insert the
+      // movement and then decrement the column as well, taking the goods
+      // off the shelf twice for every bol.com sale. Keyed on the order, so
+      // a re-run of the sync does not deduct again.
+      const { recordMovement } = await import("./inventory.server");
+      await recordMovement({
+        productId,
+        change: -quantity,
+        reason: "bol_order",
+        referenceType: "order",
+        referenceId: orderId,
+        note: `bol.com bestelling ${order.orderId}`,
+      });
+    } else if (ean) {
+      await log(admin, jobId, "warn", `Geen productkoppeling voor EAN ${ean}`, {
+        orderId: order.orderId,
+      });
+    }
+  }
 }

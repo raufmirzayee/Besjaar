@@ -15,6 +15,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getPaymentAvailability, getShippingMethods, placeOrder } from "@/lib/checkout.functions";
 import { useAuth } from "@/lib/auth";
 import { useCart } from "@/lib/cart";
+import { checkoutAttemptKey, clearCheckoutAttempt } from "@/lib/checkout-attempt";
 import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 
@@ -147,11 +148,18 @@ function CheckoutPage() {
           customerNote: parsed.customer_note ?? null,
           paymentMethod: payment,
           acceptedTerms,
-          idempotencyKey: crypto.randomUUID(),
+          // One key per attempt, not per press. A new key on every press meant
+          // the server's idempotency check had nothing to match, so a
+          // double-click or a retry after a timeout created a second order
+          // holding a second stock reservation.
+          idempotencyKey: checkoutAttemptKey(lines),
           userId: user?.id ?? null,
           lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
         },
       });
+      // The attempt is finished, so the next purchase of the same items is a
+      // new order rather than a replay of this one.
+      clearCheckoutAttempt(lines);
       clear();
 
       // With a payment provider connected the customer completes payment on

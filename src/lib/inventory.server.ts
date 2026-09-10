@@ -30,6 +30,8 @@ export type StockReason =
   | "correctie"
   | "stocktake"
   | "beginvoorraad"
+  // An absolute figure arriving from a catalogue or CSV import.
+  | "inventory_import"
   | "bol_order"
   | "supplier_receipt";
 

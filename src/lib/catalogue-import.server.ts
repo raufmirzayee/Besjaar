@@ -137,7 +137,11 @@ export async function runCatalogueImport(admin: any, csv: string): Promise<Catal
       // discount; otherwise the selling price stands alone.
       regular_price: row.compareAtPrice ?? row.price,
       sale_price: row.compareAtPrice ? row.price : null,
-      stock_quantity: row.stock,
+      // stock_quantity is deliberately absent. It is ledger-owned, so this
+      // upsert would be refused outright on an existing product — re-importing
+      // the catalogue failed with "stock_quantity is ledger-owned" — and on a
+      // new one it would create stock with no movement explaining it. The
+      // figure is applied below, through the ledger.
       rating_count: row.reviewCount,
       short_description: row.shortDescription,
       full_description: row.fullTitle,
@@ -162,6 +166,34 @@ export async function runCatalogueImport(admin: any, csv: string): Promise<Catal
 
     if (isUpdate) report.updated += 1;
     else report.imported += 1;
+
+    // The CSV column is an absolute figure, so the ledger writes the
+    // difference: importing 20 onto a product holding 10 lands on 20, not 30,
+    // and re-running the same file is a no-op because the difference is zero.
+    // A brand-new product goes from 0 to its figure, which is its opening
+    // balance and reads that way in the ledger.
+    if (upserted?.id && Number.isFinite(row.stock)) {
+      try {
+        const { setStockLevel } = await import("./inventory.server");
+        await setStockLevel({
+          productId: upserted.id,
+          target: Math.max(0, Math.trunc(row.stock)),
+          reason: isUpdate ? "inventory_import" : "beginvoorraad",
+          referenceType: "catalogue_import",
+          note: `Catalogusimport ${row.productId}`,
+        });
+      } catch (stockError) {
+        // The product itself imported. Report the stock failure against that
+        // row rather than losing the whole import over it.
+        report.errors.push({
+          line: 0,
+          product_id: row.productId,
+          message: `Voorraad niet bijgewerkt: ${
+            stockError instanceof Error ? stockError.message : String(stockError)
+          }`,
+        });
+      }
+    }
 
     if (row.imageUrl && upserted?.id) {
       // One main image per product; re-importing replaces it rather than

@@ -130,6 +130,24 @@ export async function createOrder(
     // trail worthless, so refuse the order instead of assuming consent.
     throw new Error("Je moet de algemene voorwaarden accepteren om te kunnen bestellen.");
   }
+  // Before anything is created or reserved: may this deployment take an order
+  // at all? Checkout used to proceed with no payment provider configured,
+  // creating a real order that held real stock nobody could pay for. A shop
+  // deployed before its payment account was ready would sell out of
+  // everything and never take a euro.
+  const { checkoutGate } = await import("./checkout-mode");
+  const gate = checkoutGate({
+    mode: process.env.CHECKOUT_MODE,
+    mollieApiKey: process.env.MOLLIE_API_KEY,
+    nodeEnv: process.env.NODE_ENV,
+  });
+  if (!gate.allowed) {
+    // The operator detail names the variable to fix and never reaches the
+    // browser; the customer gets a plain "not right now".
+    console.error(`[checkout] refused: ${gate.operatorMessage}`);
+    throw new Error(gate.reason);
+  }
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   // Staff and customers are separate pools; the database refuses an order that
@@ -168,6 +186,17 @@ export async function createOrder(
     .from("product_images")
     .select("product_id, image_url, is_main, sort_order")
     .in("product_id", productIds);
+
+  // The shop declares which countries it ships to. That was a display list
+  // only: nothing checked it server-side, so an order could name any country
+  // and the warehouse would find out at the packing bench.
+  const { storeConfig } = await import("./store-config");
+  const destination = input.shipping.country.trim().toUpperCase();
+  if (!(storeConfig.shippingCountries as readonly string[]).includes(destination)) {
+    throw new Error(
+      `We bezorgen op dit moment niet in ${destination}. We versturen naar ${storeConfig.shippingCountries.join(", ")}.`,
+    );
+  }
 
   const { data: method, error: methodError } = await supabaseAdmin
     .from("shipping_methods")
@@ -313,7 +342,16 @@ export async function createOrder(
       p_payment_status: payment.paymentStatus,
       p_status: payment.status,
     });
-    if (refError) console.error("[checkout] payment reference not stored:", refError.message);
+    if (refError) {
+      // Mollie has created the payment; the shop failed to write its reference
+      // onto the order. Nothing is lost — the payment carries the order id in
+      // its metadata and the webhook recovers from that — but this is worth
+      // shouting about, because until the webhook lands the order looks
+      // unpaid and unreachable by reference.
+      console.error(
+        `[checkout] payment reference NOT stored for ${orderRow.order_number} (payment ${payment.paymentReference}): ${refError.message}. The webhook will recover it through payment metadata.`,
+      );
+    }
   }
 
   // Confirmation of the contract on a durable medium is required under EU

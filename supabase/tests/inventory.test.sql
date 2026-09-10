@@ -89,6 +89,78 @@ END;
 $$;
 
 -- ---------------------------------------------------------------------------
+-- 2b. A movement that would go below zero is refused, not clamped
+-- ---------------------------------------------------------------------------
+--
+-- The applier used to end with GREATEST(0, stock + change). Stock 5 with a
+-- -20 movement left the shelf at 0 and the ledger at -15, and they never
+-- agreed again — a loud error turned into a quiet, unrecoverable one.
+
+DO $$
+DECLARE
+  v_product uuid := (SELECT id FROM ids WHERE name = 'a');
+  v_before integer;
+  v_after integer;
+  v_ledger_before integer;
+  v_ledger_after integer;
+  v_refused boolean := false;
+BEGIN
+  SELECT stock_quantity INTO v_before FROM public.products WHERE id = v_product;
+  SELECT COALESCE(SUM(quantity_change), 0) INTO v_ledger_before
+  FROM public.stock_movements WHERE product_id = v_product;
+
+  BEGIN
+    PERFORM public.record_stock_movement(v_product, -(v_before + 15), 'correctie');
+  EXCEPTION WHEN check_violation THEN
+    v_refused := true;
+  END;
+
+  SELECT stock_quantity INTO v_after FROM public.products WHERE id = v_product;
+  SELECT COALESCE(SUM(quantity_change), 0) INTO v_ledger_after
+  FROM public.stock_movements WHERE product_id = v_product;
+
+  IF NOT v_refused THEN
+    RAISE EXCEPTION 'FAIL: a movement of -% against % in stock was accepted',
+      v_before + 15, v_before;
+  END IF;
+  IF v_after IS DISTINCT FROM v_before THEN
+    RAISE EXCEPTION 'FAIL: refused movement still changed stock (% -> %)', v_before, v_after;
+  END IF;
+  IF v_ledger_after IS DISTINCT FROM v_ledger_before THEN
+    RAISE EXCEPTION 'FAIL: refused movement still wrote a ledger row (% -> %)',
+      v_ledger_before, v_ledger_after;
+  END IF;
+  RAISE NOTICE 'ok  oversized negative refused, shelf and ledger both still at %', v_after;
+END;
+$$;
+
+-- Reducing to exactly zero is legitimate and still works.
+DO $$
+DECLARE
+  v_product uuid := (SELECT id FROM ids WHERE name = 'a');
+  v_before integer;
+BEGIN
+  SELECT stock_quantity INTO v_before FROM public.products WHERE id = v_product;
+  PERFORM public.record_stock_movement(v_product, -v_before, 'correctie');
+  PERFORM pg_temp.assert_eq('reduced to exactly zero',
+    (SELECT stock_quantity FROM public.products WHERE id = v_product), 0);
+  -- Put it back for the scenarios below.
+  PERFORM public.set_stock_level(v_product, 10);
+END;
+$$;
+
+-- A physical count is still the truth, whatever it says.
+DO $$
+DECLARE v_product uuid := (SELECT id FROM ids WHERE name = 'a');
+BEGIN
+  PERFORM public.apply_stocktake(v_product, 3, NULL, 'geteld');
+  PERFORM pg_temp.assert_eq('stocktake sets the counted figure',
+    (SELECT stock_quantity FROM public.products WHERE id = v_product), 3);
+  PERFORM public.set_stock_level(v_product, 10);
+END;
+$$;
+
+-- ---------------------------------------------------------------------------
 -- 3. A return restocks once, however many times it is booked in
 -- ---------------------------------------------------------------------------
 
