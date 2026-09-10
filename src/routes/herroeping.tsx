@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 
 import { CompanyDetails } from "@/components/company-details";
 import { storeConfig } from "@/lib/store-config";
@@ -16,23 +17,7 @@ import { storeConfig } from "@/lib/store-config";
  * keeps a copy of what they sent.
  */
 export const Route = createFileRoute("/herroeping")({
-  head: () => ({
-    meta: [
-      { title: "Modelformulier voor herroeping — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Gebruik dit modelformulier om je aankoop bij Besjaar binnen de bedenktijd te herroepen. Invullen en terugsturen per e-mail.",
-      },
-      { property: "og:title", content: "Modelformulier voor herroeping — Besjaar" },
-      {
-        property: "og:description",
-        content: "Het wettelijke modelformulier waarmee je je aankoop kunt herroepen.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: (ctx) => localisedSeo("withdrawal", { path: "/herroeping", locale: localeFromHead(ctx) }),
   component: WithdrawalPage,
 });
 

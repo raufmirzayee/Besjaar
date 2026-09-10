@@ -10,19 +10,14 @@ import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { effectivePriceOf, isOnSale } from "@/lib/product-filters";
-import { seo } from "@/lib/seo";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useWishlist } from "@/lib/wishlist";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/verlanglijst")({
   loader: ({ context }) => context.queryClient.ensureQueryData(allProductsQuery),
-  head: () =>
-    seo({
-      title: "Verlanglijst",
-      description: "Bewaar je favoriete Besjaar producten om ze later terug te vinden.",
-      path: "/verlanglijst",
-      noindex: true,
-    }),
+  head: (ctx) =>
+    localisedSeo("wishlist", { path: "/verlanglijst", locale: localeFromHead(ctx), noindex: true }),
   component: WishlistPage,
 });
 

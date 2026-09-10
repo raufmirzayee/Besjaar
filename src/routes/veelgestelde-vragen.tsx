@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 
 import {
   Accordion,
@@ -12,40 +13,7 @@ import { pageMessages } from "@/lib/translations/pages";
 const FAQ_KEYS = ["1", "2", "3", "4", "5", "6", "7"] as const;
 
 export const Route = createFileRoute("/veelgestelde-vragen")({
-  head: () => ({
-    meta: [
-      { title: "Veelgestelde vragen — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Antwoorden over levertijden, verzendkosten, retourneren, garantie en betalen bij Besjaar.",
-      },
-      { property: "og:title", content: "Veelgestelde vragen — Besjaar" },
-      {
-        property: "og:description",
-        content: "Alles over bezorging, retourneren, garantie en betalen bij Besjaar.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: FAQ_KEYS.map((key) => ({
-            "@type": "Question",
-            name: pageMessages.nl[`faq.q${key}` as keyof typeof pageMessages.nl],
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: pageMessages.nl[`faq.a${key}` as keyof typeof pageMessages.nl],
-            },
-          })),
-        }),
-      },
-    ],
-  }),
+  head: (ctx) => localisedSeo("faq", { path: "/veelgestelde-vragen", locale: localeFromHead(ctx) }),
   component: FaqPage,
 });
 

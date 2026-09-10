@@ -26,6 +26,9 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { RecentlyViewedProvider } from "@/lib/recently-viewed";
 import { AuthProvider } from "@/lib/auth";
 import { getCategories } from "@/lib/catalog.functions";
+import { getInitialLocale } from "@/lib/i18n.functions";
+import { localeFromHead } from "@/lib/seo";
+import { pageSeo } from "@/lib/page-seo";
 import { I18nProvider } from "@/lib/i18n";
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
@@ -69,49 +72,57 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 const OG_IMAGE = `${storeConfig.origin.replace(/\/$/, "")}/images/brand/og-besjaar.png`;
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Besjaar — Slimme producten voor huis, tuin en onderweg" },
-      {
-        name: "description",
-        content:
-          "Ontdek zaklampen, douchekoppen, powerbanks en airstylers van Besjaar, RYNEX en LYNEX. Snel geleverd in NL, BE en DE.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:title", content: "Besjaar — Slimme producten voor huis, tuin en onderweg" },
-      { name: "twitter:title", content: "Besjaar — Slimme producten voor huis, tuin en onderweg" },
-      {
-        property: "og:description",
-        content:
-          "Ontdek zaklampen, douchekoppen, powerbanks en airstylers van Besjaar, RYNEX en LYNEX. Snel geleverd in NL, BE en DE.",
-      },
-      {
-        name: "twitter:description",
-        content:
-          "Ontdek zaklampen, douchekoppen, powerbanks en airstylers van Besjaar, RYNEX en LYNEX. Snel geleverd in NL, BE en DE.",
-      },
-      // Served from this site. It used to point at a screenshot of a preview
-      // build in a third-party bucket, so every share of the shop depended on
-      // storage nobody here controls.
-      { property: "og:image", content: OG_IMAGE },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { name: "twitter:image", content: OG_IMAGE },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-    ],
-  }),
+  head: (ctx) => {
+    // The root supplies the defaults every route inherits and the fallback for
+    // any route that sets none of its own. Localised like the rest: leaving
+    // this Dutch meant a German visitor's browser tab and every shared link
+    // stayed Dutch, however well the page itself translated.
+    const locale = localeFromHead(ctx) ?? "nl";
+    const copy = pageSeo("home", locale);
+    const title = copy.title;
+    const description = copy.description;
+
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title },
+        { name: "description", content: description },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:title", content: title },
+        { name: "twitter:title", content: title },
+        { property: "og:description", content: description },
+        { name: "twitter:description", content: description },
+        // Served from this site. It used to point at a screenshot of a preview
+        // build in a third-party bucket, so every share of the shop depended on
+        // storage nobody here controls.
+        { property: "og:image", content: OG_IMAGE },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { name: "twitter:image", content: OG_IMAGE },
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap",
+        },
+        { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      ],
+    };
+  },
+  beforeLoad: async () => {
+    // Decided on the server from the CDN country header and Accept-Language,
+    // and serialised into the HTML with the rest of the router state — so the
+    // first paint is already in the visitor's language rather than flashing
+    // Dutch. It lands in the route context, which is the one place both the
+    // component tree and every route's head() can read.
+    const { locale } = await getInitialLocale();
+    return { locale };
+  },
   loader: async ({ context }) => {
     // Returned from the loader (not just cached) so the header renders identically
     // on server and client — loader data is serialised into the HTML.
@@ -129,8 +140,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // `lang` is what a screen reader picks a voice from and what a search engine
+  // reads the page as, so it has to be right in the served HTML — correcting
+  // it from an effect after hydration is already too late for both. The root
+  // match carries the locale that beforeLoad detected, which is available here
+  // on the server as well as in the browser.
+  const locale = useRouterState({
+    select: (state) => (state.matches[0]?.context as { locale?: string } | undefined)?.locale,
+  });
+
   return (
-    <html lang="nl">
+    <html lang={locale ?? "nl"}>
       <head>
         <HeadContent />
       </head>
@@ -143,13 +163,13 @@ function RootShell({ children }: { children: ReactNode }) {
 }
 
 function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
+  const { queryClient, locale } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isAdminArea = pathname === "/beheer" || pathname.startsWith("/beheer/");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nProvider>
+      <I18nProvider initialLocale={locale}>
         <AuthProvider>
           <WishlistProvider>
             <RecentlyViewedProvider>

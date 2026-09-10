@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
@@ -13,24 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { sendContactMessage } from "@/lib/contact.functions";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact & klantenservice — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Neem contact op met de klantenservice van Besjaar: e-mail, telefoon, openingstijden en bedrijfsgegevens.",
-      },
-      { property: "og:title", content: "Contact & klantenservice — Besjaar" },
-      {
-        property: "og:description",
-        content:
-          "Vragen over je bestelling? Onze klantenservice helpt je op werkdagen van 9 tot 17 uur.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: (ctx) => localisedSeo("contact", { path: "/contact", locale: localeFromHead(ctx) }),
   component: ContactPage,
 });
 

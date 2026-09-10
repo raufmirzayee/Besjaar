@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
 import { cloneElement, isValidElement, useId, useState } from "react";
 import { toast } from "sonner";
@@ -18,18 +19,8 @@ import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/afrekenen")({
-  head: () => ({
-    meta: [
-      { title: "Afrekenen — Besjaar" },
-      {
-        name: "description",
-        content: "Rond je bestelling bij Besjaar veilig af: adres, verzending en betaling.",
-      },
-      { property: "og:title", content: "Afrekenen — Besjaar" },
-      { property: "og:description", content: "Rond je Besjaar bestelling veilig af." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("checkout", { path: "/afrekenen", locale: localeFromHead(ctx), noindex: true }),
   component: CheckoutPage,
 });
 

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -12,19 +13,8 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/inloggen")({
-  head: () => ({
-    meta: [
-      { title: "Inloggen of registreren — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Log in op je Besjaar account of maak een nieuw account aan om je bestellingen te volgen.",
-      },
-      { property: "og:title", content: "Inloggen of registreren — Besjaar" },
-      { property: "og:description", content: "Log in of maak een Besjaar account aan." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("login", { path: "/inloggen", locale: localeFromHead(ctx), noindex: true }),
   component: AuthPage,
 });
 

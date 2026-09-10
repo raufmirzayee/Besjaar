@@ -4,18 +4,12 @@ import { Boxes, MapPin, PackageCheck, Sparkles } from "lucide-react";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { brands, categories, products } from "@/data/catalogue";
-import { seo } from "@/lib/seo";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { storeConfig } from "@/lib/store-config";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/over-ons")({
-  head: () =>
-    seo({
-      title: "Over Besjaar",
-      description:
-        "Besjaar is een Nederlandse webwinkel met een compact, zorgvuldig samengesteld assortiment praktische producten voor huis, badkamer, tuin en onderweg.",
-      path: "/over-ons",
-    }),
+  head: (ctx) => localisedSeo("about", { path: "/over-ons", locale: localeFromHead(ctx) }),
   component: AboutPage,
 });
 

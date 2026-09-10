@@ -9,17 +9,12 @@ import { categories } from "@/data/catalogue";
 import { useCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
-import { seo } from "@/lib/seo";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { storeConfig } from "@/lib/store-config";
 
 export const Route = createFileRoute("/winkelwagen")({
-  head: () =>
-    seo({
-      title: "Winkelwagen",
-      description: "Bekijk en bewerk de producten in je Besjaar winkelwagen.",
-      path: "/winkelwagen",
-      noindex: true,
-    }),
+  head: (ctx) =>
+    localisedSeo("cart", { path: "/winkelwagen", locale: localeFromHead(ctx), noindex: true }),
   component: CartPage,
 });
 

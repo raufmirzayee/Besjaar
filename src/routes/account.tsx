@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
@@ -10,15 +11,8 @@ import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/account")({
-  head: () => ({
-    meta: [
-      { title: "Mijn account — Besjaar" },
-      { name: "description", content: "Beheer je Besjaar account, bestellingen en retouren." },
-      { property: "og:title", content: "Mijn account — Besjaar" },
-      { property: "og:description", content: "Bekijk je bestellingen en accountgegevens." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("account", { path: "/account", locale: localeFromHead(ctx), noindex: true }),
   component: AccountPage,
 });
 

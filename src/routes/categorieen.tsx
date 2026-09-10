@@ -3,17 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ProductImage } from "@/components/product-image";
 import { categories, countByCategory, productsInCategory } from "@/data/catalogue";
-import { breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
+import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/categorieen")({
-  head: () =>
-    seo({
-      title: "Categorieën",
-      description:
-        "Alle categorieën van Besjaar: kamperen en outdoor, badkamer, persoonlijke verzorging, tuin, keuken, elektronica en meer.",
-      path: "/categorieen",
-    }),
+  head: (ctx) => localisedSeo("categories", { path: "/categorieen", locale: localeFromHead(ctx) }),
   component: CategoriesPage,
 });
 

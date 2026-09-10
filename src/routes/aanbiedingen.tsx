@@ -5,20 +5,14 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ProductListing } from "@/components/product-listing";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
 import { isOnSale } from "@/lib/product-filters";
-import { breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
+import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/aanbiedingen")({
   validateSearch: (search: Record<string, unknown>): ListingSearch => parseListingSearch(search),
   loader: ({ context }) => context.queryClient.ensureQueryData(allProductsQuery),
-  head: () =>
-    seo({
-      title: "Aanbiedingen",
-      description:
-        "Producten met een actuele actieprijs bij Besjaar. Elke korting is berekend uit de reguliere prijs van het product zelf.",
-      path: "/aanbiedingen",
-    }),
+  head: (ctx) => localisedSeo("deals", { path: "/aanbiedingen", locale: localeFromHead(ctx) }),
   component: DealsPage,
 });
 

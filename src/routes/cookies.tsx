@@ -2,19 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Button } from "@/components/ui/button";
-import { seo } from "@/lib/seo";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
 import { clearConsent } from "@/lib/consent";
 import type { TranslationKey } from "@/lib/translations";
 
 export const Route = createFileRoute("/cookies")({
-  head: () =>
-    seo({
-      title: "Cookiebeleid",
-      description:
-        "Welke cookies Besjaar gebruikt, waarvoor ze dienen en hoe je je keuze op elk moment aanpast.",
-      path: "/cookies",
-    }),
+  head: (ctx) => localisedSeo("cookies", { path: "/cookies", locale: localeFromHead(ctx) }),
   component: CookiePolicyPage,
 });
 

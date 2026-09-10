@@ -1,25 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/verzending")({
-  head: () => ({
-    meta: [
-      { title: "Verzending & levering — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Levertijden en verzendkosten van Besjaar voor Nederland, België en Duitsland, inclusief track & trace.",
-      },
-      { property: "og:title", content: "Verzending & levering — Besjaar" },
-      {
-        property: "og:description",
-        content: "Verzending, levertijden en retourvoorwaarden van Besjaar.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: (ctx) => localisedSeo("shipping", { path: "/verzending", locale: localeFromHead(ctx) }),
   component: ShippingPage,
 });
 

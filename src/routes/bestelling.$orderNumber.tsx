@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, Truck } from "lucide-react";
 import { z } from "zod";
@@ -19,15 +20,12 @@ export const Route = createFileRoute("/bestelling/$orderNumber")({
     email: z.string().optional(),
     token: z.string().optional(),
   }),
-  head: () => ({
-    meta: [
-      { title: "Bestelling bevestigd — Besjaar" },
-      { name: "description", content: "Overzicht en status van je Besjaar bestelling." },
-      { property: "og:title", content: "Bestelling bevestigd — Besjaar" },
-      { property: "og:description", content: "Bekijk het overzicht van je bestelling." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("orderConfirmed", {
+      path: "/bestelling",
+      locale: localeFromHead(ctx),
+      noindex: true,
+    }),
   component: OrderPage,
 });
 

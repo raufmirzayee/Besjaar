@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,16 +18,12 @@ import { useI18n } from "@/lib/i18n";
  * silently on submit.
  */
 export const Route = createFileRoute("/wachtwoord-herstellen")({
-  head: () => ({
-    meta: [
-      { title: "Nieuw wachtwoord instellen — Besjaar" },
-      {
-        name: "description",
-        content: "Stel een nieuw wachtwoord in voor je Besjaar account.",
-      },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("passwordReset", {
+      path: "/wachtwoord-herstellen",
+      locale: localeFromHead(ctx),
+      noindex: true,
+    }),
   component: ResetPasswordPage,
 });
 

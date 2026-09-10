@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
@@ -29,22 +30,8 @@ import {
 import { RETURN_REASONS, type ReturnStatus } from "@/lib/returns.server";
 
 export const Route = createFileRoute("/retouren")({
-  head: () => ({
-    meta: [
-      { title: "Retouren aanmelden — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Meld eenvoudig een retour aan voor je Besjaar bestelling en volg de status van je terugbetaling.",
-      },
-      { property: "og:title", content: "Retouren aanmelden — Besjaar" },
-      {
-        property: "og:description",
-        content: "Meld je retour aan binnen de bedenktijd en volg de status van je terugbetaling.",
-      },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: (ctx) =>
+    localisedSeo("returns", { path: "/retouren", locale: localeFromHead(ctx), noindex: true }),
   component: ReturnsPage,
 });
 

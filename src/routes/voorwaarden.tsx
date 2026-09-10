@@ -1,25 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/voorwaarden")({
-  head: () => ({
-    meta: [
-      { title: "Algemene voorwaarden — Besjaar" },
-      {
-        name: "description",
-        content:
-          "De algemene voorwaarden van Besjaar: bestellen, prijzen, levering, herroepingsrecht, garantie en klachten.",
-      },
-      { property: "og:title", content: "Algemene voorwaarden — Besjaar" },
-      {
-        property: "og:description",
-        content: "Voorwaarden voor bestellingen, levering, retourneren en garantie bij Besjaar.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: (ctx) => localisedSeo("terms", { path: "/voorwaarden", locale: localeFromHead(ctx) }),
   component: TermsPage,
 });
 

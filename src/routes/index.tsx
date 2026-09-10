@@ -24,19 +24,13 @@ import type { ProductListItem } from "@/lib/catalog.server";
 import { useI18n } from "@/lib/i18n";
 import { CATEGORY_THEMES } from "@/lib/navigation";
 import { discountOf, isOnSale } from "@/lib/product-filters";
-import { jsonLd, organizationSchema, seo, webSiteSchema } from "@/lib/seo";
+import { jsonLd, organizationSchema, localeFromHead, localisedSeo, webSiteSchema } from "@/lib/seo";
 import type { TranslationKey } from "@/lib/translations";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(allProductsQuery),
-  head: () =>
-    seo({
-      title: "Besjaar — Praktische producten. Slim gekozen.",
-      description:
-        "Zaklampen, hoofdlampen, douchekoppen, keukenweegschalen en accessoires van Besjaar, RYNEX en LYNEX. Een compact assortiment praktische producten voor huis, tuin en onderweg.",
-      path: "/",
-    }),
+  head: (ctx) => localisedSeo("home", { path: "/", locale: localeFromHead(ctx) }),
   component: HomePage,
 });
 

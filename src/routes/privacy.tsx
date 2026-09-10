@@ -1,25 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { localeFromHead, localisedSeo } from "@/lib/seo";
 
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacyverklaring — Besjaar" },
-      {
-        name: "description",
-        content:
-          "Hoe Besjaar persoonsgegevens verwerkt: welke data we bewaren, waarom, hoe lang en welke rechten je hebt.",
-      },
-      { property: "og:title", content: "Privacyverklaring — Besjaar" },
-      {
-        property: "og:description",
-        content: "Onze werkwijze rond persoonsgegevens, cookies en jouw AVG-rechten.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: (ctx) => localisedSeo("privacy", { path: "/privacy", locale: localeFromHead(ctx) }),
   component: PrivacyPage,
 });
 

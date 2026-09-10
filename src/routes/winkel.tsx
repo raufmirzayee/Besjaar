@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ProductListing } from "@/components/product-listing";
 import { getAllProducts } from "@/lib/catalog.functions";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
-import { breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
+import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
 
 export const allProductsQuery = queryOptions({
@@ -17,13 +17,7 @@ export const allProductsQuery = queryOptions({
 export const Route = createFileRoute("/winkel")({
   validateSearch: (search: Record<string, unknown>): ListingSearch => parseListingSearch(search),
   loader: ({ context }) => context.queryClient.ensureQueryData(allProductsQuery),
-  head: () =>
-    seo({
-      title: "Alle producten",
-      description:
-        "Het volledige Besjaar assortiment: verlichting, badkamer, keuken, elektronica en meer van Besjaar, RYNEX en LYNEX. Filter op categorie, merk en prijs.",
-      path: "/winkel",
-    }),
+  head: (ctx) => localisedSeo("shop", { path: "/winkel", locale: localeFromHead(ctx) }),
   component: ShopPage,
 });
 
