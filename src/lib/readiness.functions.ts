@@ -26,7 +26,7 @@ export type ReadinessCheck = {
 export const getReadiness = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "dashboard", "view");
+    await requirePermission(context, "dashboard", "view");
 
     const { isPaymentProviderConfigured } = await import("./payments.server");
     const { isEmailConfigured } = await import("./email.server");

@@ -21,7 +21,7 @@ import {
 export const getAdminCategories = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "categories", "view");
+    await requirePermission(context, "categories", "view");
     return fetchAdminCategories(context.supabase);
   });
 
@@ -29,12 +29,7 @@ export const upsertCategory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: CategoryInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(
-      context.supabase,
-      context.userId,
-      "categories",
-      data.id ? "edit" : "create",
-    );
+    await requirePermission(context, "categories", data.id ? "edit" : "create");
     const result = await saveCategory(context.supabase, data);
     await logAudit({
       userId: context.userId,
@@ -52,7 +47,7 @@ export const archiveCategoryFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "categories", "archive");
+    await requirePermission(context, "categories", "archive");
     const result = await archiveCategory(context.supabase, data.id);
     await logAudit({
       userId: context.userId,
@@ -67,7 +62,7 @@ export const archiveCategoryFn = createServerFn({ method: "POST" })
 export const getAdminBrands = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "brands", "view");
+    await requirePermission(context, "brands", "view");
     return fetchAdminBrands(context.supabase);
   });
 
@@ -75,12 +70,7 @@ export const upsertBrand = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: BrandInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(
-      context.supabase,
-      context.userId,
-      "brands",
-      data.id ? "edit" : "create",
-    );
+    await requirePermission(context, "brands", data.id ? "edit" : "create");
     const result = await saveBrand(context.supabase, data);
     await logAudit({
       userId: context.userId,
@@ -97,14 +87,14 @@ export const getMovements = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: MovementFilters) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "stock_movements", "view");
+    await requirePermission(context, "stock_movements", "view");
     return fetchMovements(context.supabase, data ?? {});
   });
 
 export const getLowStockAlerts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "low_stock", "view");
+    await requirePermission(context, "low_stock", "view");
     return fetchLowStockAlerts(context.supabase);
   });
 
@@ -112,7 +102,7 @@ export const getCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { search?: string | null }) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "customers", "view");
+    await requirePermission(context, "customers", "view");
     return fetchCustomers(context.supabase, data?.search ?? null);
   });
 
@@ -120,7 +110,7 @@ export const getCustomerDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "customers", "view");
+    await requirePermission(context, "customers", "view");
     return fetchCustomerDetail(context.supabase, data.id);
   });
 
@@ -130,6 +120,6 @@ export const getAuditLogs = createServerFn({ method: "POST" })
     (input: { module?: string | null; search?: string | null; page?: number }) => input ?? {},
   )
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "audit", "view");
+    await requirePermission(context, "audit", "view");
     return fetchAuditLogs(context.supabase, data ?? {});
   });

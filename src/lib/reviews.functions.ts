@@ -33,7 +33,7 @@ export const getAdminReviews = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { status?: ReviewStatus }) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
+    await requireRoles(context, [
       "super_admin",
       "store_manager",
       "customer_service",
@@ -46,11 +46,7 @@ export const setReviewStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string; status: ReviewStatus; moderatorNote?: string }) => input)
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "customer_service",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
     return moderateReview(context.supabase, data);
   });
 
@@ -58,7 +54,7 @@ export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin", "store_manager"]);
+    await requireRoles(context, ["super_admin", "store_manager"]);
     return removeReview(context.supabase, data.id);
   });
 

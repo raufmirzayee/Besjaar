@@ -18,11 +18,7 @@ export const importCatalogueCsv = createServerFn({ method: "POST" })
     return { csv: input.csv };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "content_editor",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { runCatalogueImport } = await import("./catalogue-import.server");
@@ -41,11 +37,7 @@ export const validateCatalogueCsv = createServerFn({ method: "POST" })
     return { csv: input.csv };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "content_editor",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
 
     const { parseCatalogueImport } = await import("./catalogue-import");
     const parsed = parseCatalogueImport(data.csv);

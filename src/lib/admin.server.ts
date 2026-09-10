@@ -7,6 +7,25 @@ export type { AppRole } from "./staff";
 export { ROLE_LABELS, STAFF_ROLES } from "./staff";
 
 import type { AppRole } from "./staff";
+import { MFA_REQUIRED_MESSAGE, staffSessionMayAct, type SessionClaims } from "./mfa";
+
+/** What `requireSupabaseAuth` puts on the request context. */
+export type AuthContext = {
+  supabase: Client;
+  userId: string;
+  claims: SessionClaims | null | undefined;
+};
+
+/**
+ * Refuses a staff session that has not proved a second factor.
+ *
+ * The claim comes from the access token that the middleware already verified
+ * against Supabase, so it cannot be forged by the caller. Anything short of a
+ * literal "aal2" counts as password-only.
+ */
+export function assertStaffMfa(claims: SessionClaims | null | undefined): void {
+  if (!staffSessionMayAct(claims)) throw new Error(MFA_REQUIRED_MESSAGE);
+}
 
 // One source of truth for order statuses: the fulfilment state machine defines
 // them, and the admin filter reuses it so the two can never drift apart.
@@ -27,8 +46,17 @@ function assertRole(roles: AppRole[], allowed: AppRole[]) {
   }
 }
 
-export async function requireRoles(supabase: Client, userId: string, allowed: AppRole[]) {
-  const roles = await fetchMyRoles(supabase, userId);
+/**
+ * The authorisation choke point for role-gated admin work.
+ *
+ * Takes the whole request context rather than a client and a user id, so the
+ * two-factor assertion below cannot be forgotten at a call site: every admin
+ * function already calls this, and now none of them can run on a password-only
+ * session.
+ */
+export async function requireRoles(context: AuthContext, allowed: AppRole[]) {
+  assertStaffMfa(context.claims);
+  const roles = await fetchMyRoles(context.supabase, context.userId);
   assertRole(roles, allowed);
   return roles;
 }

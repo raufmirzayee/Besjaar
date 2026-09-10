@@ -24,7 +24,7 @@ export const getMyRoles = createServerFn({ method: "GET" })
 export const getAdminDashboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, [
+    await requireRoles(context, [
       "super_admin",
       "store_manager",
       "financial",
@@ -39,12 +39,7 @@ export const getAdminProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { search?: string }) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "content_editor",
-      "warehouse",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "content_editor", "warehouse"]);
     return fetchAdminProducts(context.supabase, data?.search);
   });
 
@@ -52,11 +47,7 @@ export const saveProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: ProductPatch) => input)
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "content_editor",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "content_editor"]);
     return updateProduct(context.supabase, data);
   });
 
@@ -64,7 +55,7 @@ export const getAdminOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { status?: string }) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
+    await requireRoles(context, [
       "super_admin",
       "store_manager",
       "warehouse",
@@ -77,22 +68,14 @@ export const getAdminOrders = createServerFn({ method: "POST" })
 export const getLowStock = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
     return fetchLowStock(context.supabase);
   });
 
 export const getStockMovements = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
     return fetchStockMovements(context.supabase);
   });
 
@@ -102,11 +85,7 @@ export const adjustStock = createServerFn({ method: "POST" })
     (input: { productId: string; change: number; reason: string; note?: string | null }) => input,
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
     if (!Number.isFinite(data.change) || data.change === 0) {
       throw new Error("Voer een aantal in dat niet 0 is");
     }
@@ -142,7 +121,7 @@ export const adjustStock = createServerFn({ method: "POST" })
 export const getAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin", "store_manager"]);
+    await requireRoles(context, ["super_admin", "store_manager"]);
     return fetchAdminUsers(context.supabase);
   });
 
@@ -150,7 +129,7 @@ export const setUserRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { userId: string; role: AppRole; grant: boolean }) => input)
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin"]);
+    await requireRoles(context, ["super_admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.grant) {
       if (data.role !== "customer") {

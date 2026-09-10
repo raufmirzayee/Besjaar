@@ -16,7 +16,7 @@ const ASSIGNABLE_ROLES = [
 export const getStaffAccounts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin"]);
+    await requireRoles(context, ["super_admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { listStaffAccounts } = await import("./staff.server");
     return listStaffAccounts(supabaseAdmin);
@@ -45,7 +45,7 @@ export const createStaff = createServerFn({ method: "POST" })
     return { email, fullName, role: input.role, password };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin"]);
+    await requireRoles(context, ["super_admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createStaffAccount } = await import("./staff.server");
     return createStaffAccount(supabaseAdmin, data, context.userId);
@@ -58,7 +58,7 @@ export const setStaffAccountActive = createServerFn({ method: "POST" })
     return { userId: String(input.userId), active: input.active === true };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, ["super_admin"]);
+    await requireRoles(context, ["super_admin"]);
     if (data.userId === context.userId && !data.active) {
       // Locking yourself out would leave the shop with no way back in.
       throw new Error("Je kunt je eigen account niet deactiveren.");
@@ -79,4 +79,22 @@ export const getIsStaffAccount = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { isStaffAccount } = await import("./staff.server");
     return { staff: await isStaffAccount(supabaseAdmin, context.userId) };
+  });
+
+/**
+ * Clears a colleague's authenticators after a lost phone. Super admin only —
+ * a self-service reset would let anyone holding the password strip the second
+ * factor, which is the thing it exists to stop.
+ */
+export const resetStaffMfaFactors = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { userId: string }) => {
+    if (!input?.userId) throw new Error("Geen account opgegeven.");
+    return { userId: String(input.userId) };
+  })
+  .handler(async ({ context, data }) => {
+    await requireRoles(context, ["super_admin"]);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { resetStaffMfa } = await import("./staff.server");
+    return resetStaffMfa(supabaseAdmin, data.userId);
   });

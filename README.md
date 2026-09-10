@@ -124,6 +124,14 @@ The admin is also invisible from the shop: nothing links to it, and `/beheer`
 returns the ordinary 404 for anyone who is not staff. Staff sign in on a bare
 screen at `/beheer` with none of the storefront chrome.
 
+**Staff need two factors.** Every admin server function refuses a password-only
+session, and so do the row-level policies — the four helpers gating all 36 of
+them require a verified second factor, so bypassing the app and calling the
+database API directly gets nothing either. Customers are unaffected. A super
+admin can clear a colleague's authenticator after a lost phone; there is no
+self-service reset, because whoever holds the password could then remove the
+second factor themselves.
+
 ---
 
 ## Payments (Mollie)

@@ -13,11 +13,7 @@ export const importProductsCsv = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "warehouse"]);
 
     const { rows, errors } = validateBulkRows(data.records);
     if (errors.length > 0) {

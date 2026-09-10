@@ -23,7 +23,7 @@ function parseTarget(input: unknown) {
 export const getTranslationCoverage = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchTranslationCoverage(context.supabase);
   });
 
@@ -31,7 +31,7 @@ export const getTranslationDraft = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(parseTarget)
   .handler(async ({ data, context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchTranslationDraft(context.supabase, data.entity, data.id);
   });
 
@@ -55,7 +55,7 @@ export const saveTranslationFields = createServerFn({ method: "POST" })
     return { ...target, values };
   })
   .handler(async ({ data, context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     const result = await saveTranslationDraft(context.supabase, data.entity, data.id, data.values);
     if (result.changed.length > 0) {
       await logAudit({
@@ -96,7 +96,7 @@ export const getTranslationDrafts = createServerFn({ method: "POST" })
     return { targets: list.map((item) => parseTarget(item)) };
   })
   .handler(async ({ data, context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchTranslationDrafts(context.supabase, data.targets);
   });
 
@@ -115,7 +115,7 @@ export const saveTranslationFieldsBulk = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data, context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     const result = await saveTranslationDrafts(context.supabase, data.items);
     const email = (context.claims as { email?: string | null } | undefined)?.email ?? null;
     for (const entry of result.results) {

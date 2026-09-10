@@ -12,11 +12,7 @@ export const getContactMessages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { status?: string } | undefined) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "customer_service",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
     let query = context.supabase
       .from("contact_messages")
       .select(
@@ -34,11 +30,7 @@ export const setContactMessageStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string; status: string; staffNote?: string }) => input)
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "customer_service",
-    ]);
+    await requireRoles(context, ["super_admin", "store_manager", "customer_service"]);
     const { error } = await context.supabase
       .from("contact_messages")
       .update({

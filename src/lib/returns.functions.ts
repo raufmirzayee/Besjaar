@@ -11,7 +11,7 @@ import {
   type ReturnStatus,
 } from "./returns.server";
 
-const STAFF: Parameters<typeof requireRoles>[2] = [
+const STAFF: Parameters<typeof requireRoles>[1] = [
   "super_admin",
   "store_manager",
   "warehouse",
@@ -49,7 +49,7 @@ export const getAdminReturns = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { status?: string }) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, STAFF);
+    await requireRoles(context, STAFF);
     return fetchAllReturns(context.supabase, data?.status);
   });
 
@@ -66,7 +66,7 @@ export const updateReturn = createServerFn({ method: "POST" })
     }) => input,
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, STAFF);
+    await requireRoles(context, STAFF);
 
     const patch: Record<string, unknown> = {};
     if (data.status) patch.status = data.status;

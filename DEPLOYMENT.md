@@ -79,7 +79,25 @@ rather than pretending.
    customer — `/beheer` and every page under it returns the site's ordinary
    404, so the backoffice is not discoverable by browsing.
 
-5. In **Authentication → URL configuration**, set the site URL to your domain so
+5. **Two-factor authentication is mandatory for staff.** On first sign-in each
+   staff member scans a QR code with an authenticator app (Google
+   Authenticator, 1Password, Bitwarden — any TOTP app). Until they do, they can
+   reach the enrolment screen and nothing else.
+
+   This is enforced in two places, not one. Every admin server function refuses
+   a password-only session, and the row-level policies do too: the four helpers
+   that gate all 36 policies require the session to have proved a second
+   factor. A staff member who skipped the app and called the database API
+   directly with their token would still get nothing. Customers are unaffected
+   — shoppers have no second factor and need none.
+
+   Nothing to switch on in Supabase: TOTP is part of Auth. If a colleague loses
+   their phone, a super admin clears their authenticator under **Beheer →
+   Medewerkers** and they enrol again next time they sign in. There is
+   deliberately no self-service reset — whoever holds the password could
+   otherwise remove the second factor themselves.
+
+6. In **Authentication → URL configuration**, set the site URL to your domain so
    confirmation and password-reset links point at the right place.
 
 Authorisation is enforced by RLS in the database and re-checked server-side in

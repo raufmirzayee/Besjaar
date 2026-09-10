@@ -19,7 +19,7 @@ export const getOrderDetail = createServerFn({ method: "GET" })
     return { orderId: String(input.orderId) };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [...FULFILMENT_ROLES, "financial"]);
+    await requireRoles(context, [...FULFILMENT_ROLES, "financial"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { fetchOrderDetail } = await import("./fulfilment.server");
     return fetchOrderDetail(supabaseAdmin, data.orderId);
@@ -51,7 +51,7 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     },
   )
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [...FULFILMENT_ROLES]);
+    await requireRoles(context, [...FULFILMENT_ROLES]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { transitionOrder } = await import("./fulfilment.server");
     return transitionOrder(supabaseAdmin, data, context.userId);
@@ -70,7 +70,7 @@ export const resendEmail = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [...FULFILMENT_ROLES]);
+    await requireRoles(context, [...FULFILMENT_ROLES]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { resendOrderEmail } = await import("./fulfilment.server");
     return resendOrderEmail(supabaseAdmin, data.orderId, data.template);
@@ -80,7 +80,7 @@ export const resendEmail = createServerFn({ method: "POST" })
 export const getEmailStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireRoles(context.supabase, context.userId, [...FULFILMENT_ROLES, "financial"]);
+    await requireRoles(context, [...FULFILMENT_ROLES, "financial"]);
     const { isEmailConfigured } = await import("./email.server");
     return { configured: isEmailConfigured() };
   });

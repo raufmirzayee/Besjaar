@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { assertStaffMfa, type AuthContext } from "./admin.server";
 
 import type { AdminAccess, AdminAction, AdminModule, PermissionKey } from "./admin-access";
 import type { AppRole } from "./admin.server";
@@ -28,13 +29,18 @@ export async function fetchAccess(supabase: Client, userId: string): Promise<Adm
   return { roles, permissions };
 }
 
+/**
+ * The authorisation choke point for permission-gated admin work. Takes the
+ * request context so the two-factor assertion runs on every admin call — see
+ * requireRoles in admin.server.ts for why the signature is shaped this way.
+ */
 export async function requirePermission(
-  supabase: Client,
-  userId: string,
+  context: AuthContext,
   module: AdminModule,
   action: AdminAction,
 ): Promise<AdminAccess> {
-  const access = await fetchAccess(supabase, userId);
+  assertStaffMfa(context.claims);
+  const access = await fetchAccess(context.supabase, context.userId);
   if (access.roles.includes("super_admin")) return access;
   if (!access.permissions.includes(`${module}:${action}`)) {
     throw new Error("Geen rechten voor deze actie");

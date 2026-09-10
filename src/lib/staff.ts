@@ -11,6 +11,8 @@ export type StaffAccount = {
   created_at: string;
   deactivated_at: string | null;
   roles: string[];
+  /** Whether a working authenticator is set up. */
+  mfa_enrolled: boolean;
 };
 
 export type AppRole =

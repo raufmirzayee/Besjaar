@@ -31,14 +31,14 @@ export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: ProductFilters) => input ?? {})
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchProductsAdmin(context.supabase, data ?? {});
   });
 
 export const getProductOptions = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchProductOptions(context.supabase);
   });
 
@@ -46,7 +46,7 @@ export const getProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     return fetchProductDetail(context.supabase, data.id);
   });
 
@@ -54,12 +54,7 @@ export const upsertProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: ProductInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(
-      context.supabase,
-      context.userId,
-      "products",
-      data.id ? "edit" : "create",
-    );
+    await requirePermission(context, "products", data.id ? "edit" : "create");
     const result = await saveProductFull(context.supabase, data);
     await logAudit({
       userId: context.userId,
@@ -77,12 +72,7 @@ export const changeProductStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string; status: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(
-      context.supabase,
-      context.userId,
-      "products",
-      data.status === "archived" ? "archive" : "edit",
-    );
+    await requirePermission(context, "products", data.status === "archived" ? "archive" : "edit");
     const result = await setProductStatus(context.supabase, data.id, data.status);
     await logAudit({
       userId: context.userId,
@@ -99,7 +89,7 @@ export const copyProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "create");
+    await requirePermission(context, "products", "create");
     const result = await duplicateProduct(context.supabase, data.id);
     await logAudit({
       userId: context.userId,
@@ -116,7 +106,7 @@ export const upsertVariant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: VariantInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     const result = await saveVariant(context.supabase, data);
     await logAudit({
       userId: context.userId,
@@ -133,7 +123,7 @@ export const removeVariant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "archive");
+    await requirePermission(context, "products", "archive");
     const result = await deleteVariant(context.supabase, data.id);
     await logAudit({
       userId: context.userId,
@@ -149,7 +139,7 @@ export const createProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: ImageInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     return addProductImage(context.supabase, data);
   });
 
@@ -157,7 +147,7 @@ export const makeMainImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { productId: string; imageId: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     return setMainImage(context.supabase, data.productId, data.imageId);
   });
 
@@ -165,7 +155,7 @@ export const reorderProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { imageId: string; sortOrder: number }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     return moveProductImage(context.supabase, data.imageId, data.sortOrder);
   });
 
@@ -173,7 +163,7 @@ export const removeProductImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { imageId: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     return deleteProductImage(context.supabase, data.imageId);
   });
 
@@ -181,7 +171,7 @@ export const upsertListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: ListingInput) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "bol", "edit");
+    await requirePermission(context, "bol", "edit");
     const result = await saveListing(context.supabase, data);
     await logAudit({
       userId: context.userId,
@@ -198,7 +188,7 @@ export const removeListing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { id: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "bol", "edit");
+    await requirePermission(context, "bol", "edit");
     const result = await deleteListing(context.supabase, data.id);
     await logAudit({
       userId: context.userId,
@@ -215,11 +205,10 @@ export const bulkProductAction = createServerFn({ method: "POST" })
   .inputValidator((input: BulkAction) => input)
   .handler(async ({ context, data }) => {
     if (data.kind === "mapping") {
-      await requirePermission(context.supabase, context.userId, "bol", "edit");
+      await requirePermission(context, "bol", "edit");
     } else {
       await requirePermission(
-        context.supabase,
-        context.userId,
+        context,
         "products",
         data.kind === "status" && data.status === "archived" ? "archive" : "edit",
       );
@@ -241,7 +230,7 @@ export const exportProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { ids: string[] }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     const rows = await exportProductsCsvRows(context.supabase, data.ids);
     await logAudit({
       userId: context.userId,
@@ -257,7 +246,7 @@ export const exportProducts = createServerFn({ method: "POST" })
 export const listImportRuns = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requirePermission(context.supabase, context.userId, "products", "view");
+    await requirePermission(context, "products", "view");
     const { fetchImportRuns } = await import("./admin-products.server");
     return fetchImportRuns(context.supabase, 25);
   });
@@ -266,7 +255,7 @@ export const importProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { csv: string; ids: string[]; fileName?: string }) => input)
   .handler(async ({ context, data }) => {
-    await requirePermission(context.supabase, context.userId, "products", "edit");
+    await requirePermission(context, "products", "edit");
     const { parseProductImport } = await import("./product-import");
     const { applyProductImport } = await import("./admin-products.server");
 
@@ -292,7 +281,7 @@ export const importProducts = createServerFn({ method: "POST" })
         ].some((v) => v !== undefined),
       );
       if (hasMapping) {
-        await requirePermission(context.supabase, context.userId, "bol", "edit");
+        await requirePermission(context, "bol", "edit");
       }
       // Permission is verified above; writes run through the service-role client so the
       // tables stay closed to direct client-side inserts/updates (RLS write policies absent by design).

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ShieldCheck, UserPlus } from "lucide-react";
+import { ShieldAlert, ShieldCheck, SmartphoneNfc, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createStaff, getStaffAccounts, setStaffAccountActive } from "@/lib/staff.functions";
+import {
+  createStaff,
+  getStaffAccounts,
+  resetStaffMfaFactors,
+  setStaffAccountActive,
+} from "@/lib/staff.functions";
 import type { StaffAccount } from "@/lib/staff";
 import { STAFF_ROLE_OPTIONS, roleLabel } from "@/lib/staff";
 
@@ -36,6 +41,7 @@ function StaffPage() {
   const fetchStaff = useServerFn(getStaffAccounts);
   const create = useServerFn(createStaff);
   const setActive = useServerFn(setStaffAccountActive);
+  const resetMfa = useServerFn(resetStaffMfaFactors);
 
   const [form, setForm] = useState({
     email: "",
@@ -59,6 +65,17 @@ function StaffPage() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const resetMfaMutation = useMutation({
+    mutationFn: (userId: string) => resetMfa({ data: { userId } }),
+    onSuccess: () => {
+      toast.success(
+        "Tweestapsverificatie gewist. De medewerker stelt bij de volgende login opnieuw in.",
+      );
+      queryClient.invalidateQueries({ queryKey: ["staff-accounts"] });
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
   const activeMutation = useMutation({
     mutationFn: (input: { userId: string; active: boolean }) => setActive({ data: input }),
     onSuccess: (_result, input) => {
@@ -75,6 +92,8 @@ function StaffPage() {
         <p className="text-sm text-muted-foreground">
           Medewerkersaccounts staan los van klantaccounts. Een klant kan geen medewerker worden en
           een medewerker kan niet bestellen — de database dwingt dat af, niet alleen dit scherm.
+          Iedere medewerker heeft daarnaast tweestapsverificatie nodig; zonder code werkt geen
+          enkele beheerhandeling, ook niet met het juiste wachtwoord.
         </p>
       </div>
 
@@ -194,28 +213,51 @@ function StaffPage() {
                       ))
                     )}
                     {!account.is_active ? <Badge variant="outline">Gedeactiveerd</Badge> : null}
+                    {account.mfa_enrolled ? (
+                      <Badge variant="stock" className="gap-1">
+                        <ShieldCheck className="size-3" aria-hidden="true" /> 2FA actief
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="gap-1">
+                        <ShieldAlert className="size-3" aria-hidden="true" /> 2FA nog niet ingesteld
+                      </Badge>
+                    )}
                   </div>
                 </div>
-                <Button
-                  size="sm"
-                  variant={account.is_active ? "outline" : "default"}
-                  disabled={activeMutation.isPending}
-                  onClick={() =>
-                    activeMutation.mutate({
-                      userId: account.user_id,
-                      active: !account.is_active,
-                    })
-                  }
-                >
-                  {account.is_active ? "Deactiveren" : "Heractiveren"}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  {account.mfa_enrolled ? (
+                    <Button
+                      size="sm"
+                      variant="subtle"
+                      disabled={resetMfaMutation.isPending}
+                      onClick={() => resetMfaMutation.mutate(account.user_id)}
+                    >
+                      <SmartphoneNfc className="mr-1 size-3.5" aria-hidden="true" />
+                      2FA resetten
+                    </Button>
+                  ) : null}
+                  <Button
+                    size="sm"
+                    variant={account.is_active ? "outline" : "default"}
+                    disabled={activeMutation.isPending}
+                    onClick={() =>
+                      activeMutation.mutate({
+                        userId: account.user_id,
+                        active: !account.is_active,
+                      })
+                    }
+                  >
+                    {account.is_active ? "Deactiveren" : "Heractiveren"}
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
         )}
         <p className="mt-3 text-xs text-muted-foreground">
           Deactiveren trekt alle rollen direct in — de toegang stopt meteen, de naam blijft in het
-          auditlogboek staan.
+          auditlogboek staan. Telefoon kwijt? Reset de tweestapsverificatie; de medewerker stelt bij
+          de volgende login een nieuwe authenticator in.
         </p>
       </section>
     </div>

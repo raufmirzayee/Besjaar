@@ -52,7 +52,17 @@ export async function listStaffAccounts(admin: any): Promise<StaffAccount[]> {
     byUser.set(row.user_id, [...(byUser.get(row.user_id) ?? []), row.role]);
   }
 
-  return rows.map((row) => ({ ...row, roles: byUser.get(row.user_id) ?? [] }));
+  // Show who still has to finish setting up two-factor, so a super admin can
+  // chase it rather than discover it when someone is locked out.
+  const enrolled = await Promise.all(
+    rows.map((row) => staffMfaEnrolled(admin, row.user_id).catch(() => false)),
+  );
+
+  return rows.map((row, index) => ({
+    ...row,
+    roles: byUser.get(row.user_id) ?? [],
+    mfa_enrolled: enrolled[index],
+  }));
 }
 
 export type CreateStaffInput = {
@@ -137,4 +147,40 @@ export async function setStaffActive(
     .eq("user_id", userId);
   if (error) throw new Error(error.message);
   return { ok: true };
+}
+
+/**
+ * Clears a staff member's authenticators, so a lost or replaced phone does not
+ * lock them out for good. They enrol again on their next sign-in.
+ *
+ * Deliberately a super-admin action rather than a self-service reset: a
+ * self-service path would undo the whole control, because whoever holds the
+ * password could simply remove the second factor.
+ */
+export async function resetStaffMfa(admin: any, userId: string): Promise<{ removed: number }> {
+  if (!(await isStaffAccount(admin, userId))) {
+    throw new Error("Dit is geen actief medewerkersaccount.");
+  }
+
+  const { data, error } = await admin.auth.admin.mfa.listFactors({ userId });
+  if (error) throw new Error(error.message);
+
+  const factors = (data?.factors ?? []) as { id: string }[];
+  for (const factor of factors) {
+    const { error: deleteError } = await admin.auth.admin.mfa.deleteFactor({
+      id: factor.id,
+      userId,
+    });
+    if (deleteError) throw new Error(deleteError.message);
+  }
+  return { removed: factors.length };
+}
+
+/** Whether a staff member has finished setting up an authenticator. */
+export async function staffMfaEnrolled(admin: any, userId: string): Promise<boolean> {
+  const { data, error } = await admin.auth.admin.mfa.listFactors({ userId });
+  if (error) return false;
+  return ((data?.factors ?? []) as { status?: string }[]).some(
+    (factor) => factor.status === "verified",
+  );
 }
