@@ -135,3 +135,40 @@ export const getAuditLogs = createServerFn({ method: "POST" })
     await requirePermission(context, "audit", "view");
     return fetchAuditLogs(context.supabase, data ?? {});
   });
+
+/**
+ * The staff directory.
+ *
+ * Its view used to be granted to `authenticated`, which meant any signed-in
+ * shopper could read every staff address and role — a ready-made phishing
+ * list. It is server-only now, and this is the only way to it.
+ */
+export const getStaffRoleAudit = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requirePermission(context, "users", "view");
+    const { fetchStaffRoleAudit } = await import("./admin-reports.server");
+    return fetchStaffRoleAudit();
+  });
+
+/** Where the shelf and the ledger disagree. Warehouse work, not customer data. */
+export const getInventoryReconciliation = createServerFn({ method: "POST" })
+  .inputValidator(v.validator(z.object({ onlyDiscrepancies: z.boolean().optional() }).strict()))
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context, data }) => {
+    await requirePermission(context, "inventory", "view");
+    const { fetchInventoryReconciliation } = await import("./admin-reports.server");
+    return fetchInventoryReconciliation(data?.onlyDiscrepancies ?? true);
+  });
+
+/** Products never translated, or edited since their last pass. */
+export const getTranslationQueue = createServerFn({ method: "POST" })
+  .inputValidator(
+    v.validator(z.object({ limit: z.number().int().min(1).max(500).optional() }).strict()),
+  )
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context, data }) => {
+    await requirePermission(context, "products", "view");
+    const { fetchTranslationQueue } = await import("./admin-reports.server");
+    return fetchTranslationQueue(data?.limit ?? 200);
+  });

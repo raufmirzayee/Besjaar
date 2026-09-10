@@ -4,7 +4,7 @@ import { z } from "zod";
 import * as v from "./validation";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { requirePermission } from "./admin-core.server";
+import { logAudit, requirePermission } from "./admin-core.server";
 import {
   createReturn,
   fetchAllReturns,
@@ -89,16 +89,57 @@ export const updateReturn = createServerFn({ method: "POST" })
     const patch: Record<string, unknown> = {};
     if (data.status) patch.status = data.status;
     if (data.staffNote !== undefined) patch.staff_note = data.staffNote;
-    if (data.refundAmount !== undefined) patch.refund_amount = data.refundAmount;
     if (data.trackingCode !== undefined) patch.tracking_code = data.trackingCode;
     if (data.status === "received") patch.received_at = new Date().toISOString();
     if (data.status === "refunded") patch.refunded_at = new Date().toISOString();
 
-    const { error } = await context.supabase
-      .from("returns")
-      .update(patch as never)
-      .eq("id", data.returnId);
-    if (error) throw new Error(error.message);
+    // refund_amount is deliberately absent from this patch, and from the
+    // column-level UPDATE grant on `returns`. Money leaving the business goes
+    // through record_refund(), which caps it at what was actually paid and
+    // requires returns:refund — a narrower set of roles than returns:edit.
+    if (Object.keys(patch).length > 0) {
+      const { error } = await context.supabase
+        .from("returns")
+        .update(patch as never)
+        .eq("id", data.returnId);
+      if (error) throw new Error(error.message);
+    }
+
+    if (data.refundAmount !== undefined && data.refundAmount !== null) {
+      await requirePermission(context, "returns", "refund");
+
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: returnRow, error: returnError } = await supabaseAdmin
+        .from("returns")
+        .select("order_id, return_number")
+        .eq("id", data.returnId)
+        .maybeSingle();
+      if (returnError) throw new Error(returnError.message);
+      const orderId = (returnRow as { order_id?: string } | null)?.order_id;
+      if (!orderId) throw new Error("Deze retour hoort niet bij een bestelling.");
+
+      const { error: refundError } = await supabaseAdmin.rpc("record_refund", {
+        p_order_id: orderId,
+        p_amount: data.refundAmount,
+        p_return_id: data.returnId,
+        p_reason: `Retour ${(returnRow as { return_number?: string }).return_number ?? ""}`.trim(),
+        p_actor: context.userId,
+      });
+      // The database refuses an amount above what is left to refund. That
+      // message names the figures, so it is worth showing rather than
+      // replacing with something generic.
+      if (refundError) throw new Error(refundError.message);
+
+      await logAudit({
+        userId: context.userId,
+        userEmail: (context.claims as { email?: string | null } | undefined)?.email ?? null,
+        action: "return.refund",
+        module: "returns",
+        entityType: "return",
+        entityId: data.returnId,
+        newValue: { amount: data.refundAmount },
+      });
+    }
 
     if (data.restock && data.status === "received") {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

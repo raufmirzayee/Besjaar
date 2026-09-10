@@ -3,9 +3,24 @@ import { createFileRoute } from "@tanstack/react-router";
 /**
  * Mollie payment webhook.
  *
- * Mollie posts only a payment id here; the status is never taken from the
- * request body. The handler reads the payment back from the Mollie API using
- * the server-side key, so a forged request cannot mark an order as paid.
+ * Mollie posts a payment id and nothing else. The status is read back from the
+ * Mollie API with the server-side key, so a forged request cannot mark an order
+ * as paid — the body is a hint about which payment changed, never a claim about
+ * what it changed to.
+ *
+ * Three things this has to survive, because all three happen in production:
+ *
+ *   * the same notification arriving several times;
+ *   * notifications arriving out of order, so a retried `open` lands after
+ *     `paid` — handled by the transition rules in apply_payment_status, which
+ *     refuse to move a payment backwards;
+ *   * a payment whose reference was never written onto its order, because the
+ *     write failed after Mollie had already created the payment — handled by
+ *     the order id in the payment's metadata.
+ *
+ * It answers 200 for anything it has understood, including a stale event.
+ * A non-2xx makes Mollie retry, so it is reserved for cases where retrying
+ * might actually help.
  *
  * Configure the public URL of this endpoint as MOLLIE_WEBHOOK_URL.
  */
@@ -40,52 +55,129 @@ export const Route = createFileRoute("/api/public/mollie-webhook")({
         if (!payment) return new Response("Unknown payment", { status: 404 });
 
         const mapped = mapPaymentStatus(payment.status);
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-        const { data: order, error } = await supabaseAdmin
-          .from("orders")
-          .select("id, order_number, payment_status")
-          .eq("payment_reference", paymentId)
-          .maybeSingle();
-
-        if (error) {
-          console.error("[mollie] order lookup failed:", error.message);
-          return new Response("Server error", { status: 500 });
-        }
-        if (!order) return new Response("Order not found", { status: 404 });
-
-        const row = order as { id: string; order_number: string; payment_status: string };
-        // Mollie retries webhooks; applying the same status twice is a no-op.
-        if (row.payment_status === mapped.payment_status) {
+        if (!mapped) {
+          // Mollie introduced a status this build does not know. Changing the
+          // order on a guess is how a refunded payment used to reset an order
+          // to pending, so it changes nothing and says so. 200, because
+          // retrying will deliver the same unknown status.
+          console.error(
+            `[mollie] unrecognised payment status "${payment.status}" for ${paymentId}; order left untouched`,
+          );
           return new Response("OK", { status: 200 });
         }
 
-        const { error: updateError } = await supabaseAdmin
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+        // Normally the order carries the reference. If attaching it failed
+        // after the payment was created, the metadata is the way back.
+        type OrderRow = { id: string; order_number: string; total: number };
+        let order: OrderRow | null = null;
+
+        const byReference = await supabaseAdmin
           .from("orders")
-          .update({ payment_status: mapped.payment_status, status: mapped.status })
-          .eq("id", row.id);
-        if (updateError) {
-          console.error("[mollie] order update failed:", updateError.message);
+          .select("id, order_number, total")
+          .eq("payment_reference", paymentId)
+          .maybeSingle();
+        if (byReference.error) {
+          console.error("[mollie] order lookup failed:", byReference.error.message);
+          return new Response("Server error", { status: 500 });
+        }
+        order = (byReference.data as OrderRow | null) ?? null;
+
+        if (!order && payment.metadata?.order_id) {
+          const byMetadata = await supabaseAdmin
+            .from("orders")
+            .select("id, order_number, total")
+            .eq("id", payment.metadata.order_id)
+            .maybeSingle();
+          if (byMetadata.error) {
+            console.error("[mollie] metadata lookup failed:", byMetadata.error.message);
+            return new Response("Server error", { status: 500 });
+          }
+          order = (byMetadata.data as OrderRow | null) ?? null;
+          if (order) {
+            console.warn(
+              `[mollie] order ${order.order_number} was recovered through payment metadata: its payment reference was never attached. Repairing it now.`,
+            );
+          }
+        }
+
+        if (!order) {
+          // Nothing to apply this to. 404 rather than 200: if the order is
+          // mid-creation, a retry a minute from now may well find it.
+          console.error(`[mollie] no order for payment ${paymentId}`);
+          return new Response("Order not found", { status: 404 });
+        }
+
+        // The amount is checked before anything is marked paid. A payment for
+        // the wrong amount against the right order is not a completed sale.
+        if (mapped.payment_status === "paid" && payment.amount) {
+          const paid = Number(payment.amount);
+          const expected = Number(order.total);
+          if (
+            Number.isFinite(paid) &&
+            Number.isFinite(expected) &&
+            Math.abs(paid - expected) > 0.01
+          ) {
+            console.error(
+              `[mollie] amount mismatch on ${order.order_number}: provider says ${paid}, order says ${expected}. Not marking paid.`,
+            );
+            return new Response("OK", { status: 200 });
+          }
+        }
+
+        // The transition rules live in the database, next to the row they
+        // protect, so a second code path cannot skip them.
+        const { data: applied, error: applyError } = await supabaseAdmin.rpc(
+          "apply_payment_status",
+          {
+            p_order_id: order.id,
+            p_status: mapped.payment_status,
+            p_order_status: mapped.status,
+            p_reference: paymentId,
+          },
+        );
+        if (applyError) {
+          console.error("[mollie] status transition failed:", applyError.message);
           return new Response("Server error", { status: 500 });
         }
 
+        const result = (Array.isArray(applied) ? applied[0] : applied) as
+          { outcome: string; previous: string; current: string } | undefined;
+        const outcome = result?.outcome ?? "unknown";
+
+        console.info(
+          `[mollie] ${order.order_number} payment=${paymentId} provider=${payment.status} -> ${outcome} (${result?.previous} -> ${result?.current})`,
+        );
+
+        if (outcome === "stale") {
+          // A retried older notification. Nothing to do, and Mollie must stop
+          // resending it.
+          return new Response("OK", { status: 200 });
+        }
+        if (outcome === "unchanged") {
+          return new Response("OK", { status: 200 });
+        }
+
         await supabaseAdmin.from("order_status_history").insert({
-          order_id: row.id,
+          order_id: order.id,
           status: mapped.status,
           note: `Betaalstatus bijgewerkt door de betaalprovider: ${payment.status}.`,
         });
 
         // Tell the customer their payment landed. Best-effort: a mail failure
         // must not make the webhook fail, or Mollie will keep retrying it.
+        // Only on the transition into paid, so a later refund event cannot
+        // send a second confirmation.
         if (mapped.payment_status === "paid") {
           try {
             const { orderEmailData, sendTransactionalEmail } = await import("@/lib/email.server");
-            const data = await orderEmailData(supabaseAdmin, row.id);
+            const data = await orderEmailData(supabaseAdmin, order.id);
             if (data) {
               await sendTransactionalEmail({
                 template: "payment_received",
                 data,
-                orderId: row.id,
+                orderId: order.id,
               });
             }
           } catch (mailError) {
@@ -104,9 +196,9 @@ export const Route = createFileRoute("/api/public/mollie-webhook")({
           const { releaseStockForOrder } = await import("@/lib/inventory.server");
           try {
             await releaseStockForOrder(
-              row.id,
+              order.id,
               "order_cancelled",
-              `Betaling ${payment.status} voor bestelling ${row.order_number}`,
+              `Betaling ${payment.status} voor bestelling ${order.order_number}`,
             );
           } catch (releaseError) {
             // Never fail the webhook over this, or Mollie retries forever.

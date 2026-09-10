@@ -1606,6 +1606,30 @@ export type Database = {
         };
         Returns: number;
       };
+      apply_payment_status: {
+        Args: {
+          p_order_id: string;
+          p_status: string;
+          p_order_status?: string | null;
+          p_reference?: string | null;
+        };
+        Returns: { outcome: string; previous: string; current: string }[];
+      };
+      record_refund: {
+        Args: {
+          p_order_id: string;
+          p_amount: number;
+          p_return_id?: string | null;
+          p_reason?: string | null;
+          p_provider_reference?: string | null;
+          p_actor?: string | null;
+        };
+        Returns: string;
+      };
+      refundable_balance: {
+        Args: { p_order_id: string };
+        Returns: number;
+      };
       apply_translations: {
         Args: {
           p_entity: string;

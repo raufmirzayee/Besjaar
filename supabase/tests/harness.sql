@@ -66,6 +66,13 @@ $$;
 
 DO $$ BEGIN CREATE ROLE anon NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE ROLE authenticated NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE ROLE service_role NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- service_role carries BYPASSRLS in Supabase, and the server relies on that:
+-- every server function that reads across customers does so through the
+-- service-role client. Without the attribute the harness would quietly prove
+-- the wrong thing — a query that works in production returning nothing here,
+-- or a policy looking tighter than it is.
+DO $$ BEGIN CREATE ROLE service_role NOLOGIN BYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+ALTER ROLE service_role BYPASSRLS;
 
 GRANT USAGE ON SCHEMA auth, storage TO anon, authenticated, service_role;

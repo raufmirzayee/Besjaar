@@ -261,6 +261,49 @@ SELECT pg_temp.expect('super_admin@aal1', 'addresses', pg_temp.visible('public.c
 
 RESET ROLE;
 
+-- ---------------------------------------------------------------------------
+-- No internal view is readable from the browser
+-- ---------------------------------------------------------------------------
+--
+-- staff_role_audit, inventory_reconciliation and products_awaiting_translation
+-- were all granted to `authenticated` and all ran with their owner's rights,
+-- so a shopper who signed up could read the shop's staff directory. This is
+-- the check that would have caught it.
+DO $$
+DECLARE
+  v_exposed text;
+BEGIN
+  SELECT string_agg(view_name || ' (' || problem || ')', ', ')
+  INTO v_exposed
+  FROM public.audit_view_exposure();
+
+  IF v_exposed IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: internal view(s) readable from the browser: %', v_exposed;
+  END IF;
+  RAISE NOTICE 'ok   %  %  none', rpad('views', 18), rpad('reachable from browser', 22);
+END;
+$$;
+
+-- And the specific one, by name, as an ordinary customer.
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claims',
+  '{"sub":"aaaaaaaa-0000-0000-0000-000000000001","role":"authenticated","aal":"aal1"}', true);
+DO $$
+DECLARE v_refused boolean := false;
+BEGIN
+  BEGIN
+    PERFORM count(*) FROM public.staff_role_audit;
+  EXCEPTION WHEN insufficient_privilege THEN
+    v_refused := true;
+  END;
+  IF NOT v_refused THEN
+    RAISE EXCEPTION 'FAIL: a customer can read the staff directory';
+  END IF;
+  RAISE NOTICE 'ok   %  %  refused', rpad('customer', 18), rpad('staff_role_audit', 22);
+END;
+$$;
+RESET ROLE;
+
 \echo ''
 \echo '================================================='
 \echo ' RLS suite: every assertion passed'

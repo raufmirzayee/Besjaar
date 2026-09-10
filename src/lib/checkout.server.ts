@@ -289,6 +289,7 @@ export async function createOrder(
   let payment;
   try {
     payment = await createPayment({
+      orderId: orderRow.order_id,
       orderNumber: orderRow.order_number,
       amount: total,
       method: input.paymentMethod,

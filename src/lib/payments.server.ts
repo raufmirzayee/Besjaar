@@ -54,6 +54,8 @@ export function isPaymentProviderConfigured(): boolean {
  * leave the order unpaid — never simulate a successful payment.
  */
 export async function createPayment(input: {
+  /** The shop's own order id. Carried in metadata as the recovery path. */
+  orderId: string;
   orderNumber: string;
   amount: number;
   method: string;
@@ -75,7 +77,11 @@ export async function createPayment(input: {
     amount: { currency: "EUR", value: input.amount.toFixed(2) },
     description: input.description,
     redirectUrl: input.redirectUrl,
-    metadata: { order_number: input.orderNumber },
+    // Both identifiers, because the webhook has to find the order again even
+    // if writing the payment reference back onto it failed. Without the id in
+    // metadata, a payment created successfully but never attached is money
+    // taken against an order nobody can find.
+    metadata: { order_id: input.orderId, order_number: input.orderNumber },
   };
 
   const method = METHOD_MAP[input.method.toLowerCase()];
@@ -118,36 +124,112 @@ export async function createPayment(input: {
   };
 }
 
-/** Maps a Mollie payment status onto the store's own order/payment status. */
-export function mapPaymentStatus(mollieStatus: string): {
-  payment_status: "open" | "paid" | "failed" | "expired" | "cancelled" | "refunded";
-  status: "pending" | "paid" | "cancelled" | "refunded";
-} {
+export type StoredPaymentStatus =
+  | "open"
+  | "pending"
+  | "authorized"
+  | "paid"
+  | "failed"
+  | "expired"
+  | "cancelled"
+  | "refunded"
+  | "partially_refunded"
+  | "chargeback";
+
+export type StoredOrderStatus = "pending" | "paid" | "cancelled" | "refunded";
+
+/**
+ * Maps a Mollie payment status onto the shop's own.
+ *
+ * Every status Mollie documents is listed. The `default` this replaces swept
+ * everything unrecognised into `open`, which was silent and wrong in two ways:
+ * an `authorized` payment — the money is reserved — read as unpaid, and a
+ * `refunded` one came back as `open`, which also reset the order to `pending`.
+ * A completed, refunded order presented itself as a fresh unpaid one.
+ *
+ * `null` means "Mollie said something we do not recognise". The caller must
+ * leave the order alone and log it, rather than guessing — guessing is what
+ * the old default arm did.
+ *
+ * Mollie spells it "canceled"; the shop's enum spells it "cancelled". Both
+ * are accepted here so a change at either end cannot silently stop matching.
+ */
+export function mapPaymentStatus(
+  mollieStatus: string,
+): { payment_status: StoredPaymentStatus; status: StoredOrderStatus } | null {
   switch (mollieStatus) {
+    case "open":
+      return { payment_status: "open", status: "pending" };
+    case "pending":
+      return { payment_status: "pending", status: "pending" };
+    case "authorized":
+      // Funds reserved, not yet captured. The sale is going ahead, so the
+      // order moves on; the money arrives at capture.
+      return { payment_status: "authorized", status: "pending" };
     case "paid":
       return { payment_status: "paid", status: "paid" };
     case "canceled":
+    case "cancelled":
       return { payment_status: "cancelled", status: "cancelled" };
     case "expired":
       return { payment_status: "expired", status: "cancelled" };
     case "failed":
       return { payment_status: "failed", status: "cancelled" };
+    case "refunded":
+      return { payment_status: "refunded", status: "refunded" };
+    case "partially_refunded":
+      // Still a completed sale — part of the money came back, the order did
+      // not un-happen.
+      return { payment_status: "partially_refunded", status: "paid" };
+    case "chargeback":
+      return { payment_status: "chargeback", status: "refunded" };
     default:
-      return { payment_status: "open", status: "pending" };
+      return null;
   }
 }
 
+export type FetchedPayment = {
+  status: string;
+  /** What the shop attached at creation. The webhook's recovery path. */
+  metadata: { order_id?: string; order_number?: string } | null;
+  /** Decimal string, e.g. "126.10". Checked against the order's own total. */
+  amount: string | null;
+  amountRefunded: string | null;
+};
+
 /** Reads a payment back from the provider — used by the webhook handler. */
-export async function fetchPayment(paymentId: string): Promise<{ status: string } | null> {
+export async function fetchPayment(paymentId: string): Promise<FetchedPayment | null> {
   const apiKey = process.env.MOLLIE_API_KEY;
   if (!apiKey) return null;
 
   const response = await fetch(`${MOLLIE_API}/payments/${encodeURIComponent(paymentId)}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
+    // A provider that never answers must not hold a webhook worker open.
+    signal: AbortSignal.timeout(15_000),
   });
   if (!response.ok) {
     console.error("[mollie] could not read payment", paymentId, response.status);
     return null;
   }
-  return (await response.json()) as { status: string };
+
+  const payment = (await response.json()) as {
+    status?: string;
+    metadata?: unknown;
+    amount?: { value?: string };
+    amountRefunded?: { value?: string };
+  };
+
+  // Metadata comes back as whatever was sent. Read it defensively: it is the
+  // recovery path, and a malformed one must not throw inside the webhook.
+  const metadata =
+    payment.metadata && typeof payment.metadata === "object"
+      ? (payment.metadata as { order_id?: string; order_number?: string })
+      : null;
+
+  return {
+    status: String(payment.status ?? ""),
+    metadata,
+    amount: payment.amount?.value ?? null,
+    amountRefunded: payment.amountRefunded?.value ?? null,
+  };
 }
