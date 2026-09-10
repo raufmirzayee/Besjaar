@@ -17,6 +17,25 @@ cd "$(dirname "$0")/../.."
 DB="${1:-besjaar_test}"
 FRESH=0
 
+if [ $# -gt 0 ]; then
+  # A named database has to exist and carry the migrations already. Saying so
+  # here beats three suites failing one after another with connection errors
+  # and leaving you to work out why.
+  if ! psql -q -X -d "$DB" -c 'select 1' >/dev/null 2>&1; then
+    echo "cannot connect to database '$DB'."
+    echo "Create it and apply the harness plus every migration first, or run"
+    echo "this with no arguments to build a throwaway one:"
+    echo
+    echo "    supabase/tests/run.sh"
+    exit 1
+  fi
+  if ! psql -q -X -d "$DB" -c 'select 1 from public.stock_movements limit 1' >/dev/null 2>&1; then
+    echo "database '$DB' exists but has no public.stock_movements table."
+    echo "Apply supabase/tests/harness.sql and everything in supabase/migrations/ first."
+    exit 1
+  fi
+fi
+
 if [ $# -eq 0 ]; then
   FRESH=1
   echo "building $DB from the harness and $(ls supabase/migrations/*.sql | wc -l) migrations"
