@@ -13,7 +13,8 @@
     "test": "vitest run",
     "verify": "bun run lint && bunx tsc --noEmit && bun run test && bun run build",
     "build:node": "NITRO_PRESET=node-server vite build",
-    "start": "node .output/server/index.mjs"
+    "start": "node .output/server/index.mjs",
+    "test:db": "supabase/tests/run.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
