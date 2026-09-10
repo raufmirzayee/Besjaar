@@ -72,20 +72,57 @@ const checkoutSchema = z.object({
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator(v.validator(checkoutSchema))
   .handler(async ({ data }) => {
+    // Placing an order reserves its stock, so a flood of orders that are never
+    // paid for empties the shelf for everyone else. Unpaid reservations are
+    // released when the payment expires, but that is minutes away — long
+    // enough to take a product off sale over a busy weekend.
+    //
+    // Set well above what any real shopper does: someone correcting a failed
+    // payment might genuinely try three or four times.
+    const { enforceRateLimit, callerKey } = await import("./rate-limit.server");
+    await enforceRateLimit(`checkout:${callerKey()}`, {
+      limit: 8,
+      windowSeconds: 600,
+      blockSeconds: 1800,
+    });
+
     return createOrder(data, await verifiedUserId());
   });
 
 export const getOrderByNumber = createServerFn({ method: "POST" })
   .inputValidator(
     v.validator(
-      z.object({
-        orderNumber: v.text(32).min(3),
-        email: v.email,
-        // Guests follow the unguessable link from their confirmation e-mail.
-        token: z.string().trim().length(64).optional(),
-      }),
+      z
+        .object({
+          orderNumber: v.text(32).min(3),
+          // One of these two. The e-mail address is what a customer coming
+          // back later has; the token is what the confirmation link carries,
+          // and is the only thing a guest returning from the payment provider
+          // has, since they never typed a password.
+          email: z.union([v.email, z.literal("")]).optional(),
+          token: z.string().trim().length(64).optional(),
+        })
+        .refine((input) => Boolean(input.email) || Boolean(input.token), {
+          message: "Vul je e-mailadres in om je bestelling te bekijken.",
+        }),
     ),
   )
   .handler(async ({ data }) => {
-    return fetchOrderByNumber(data.orderNumber, data.email);
+    // Order numbers run in sequence, so the lookup is enumerable by design:
+    // someone with a customer's address can walk the numbers, and someone with
+    // a number can guess at addresses. This is what makes either expensive.
+    // Keyed on the caller and the order, so hammering one order does not lock
+    // a legitimate customer out of a different one from the same office.
+    const { enforceRateLimit, clearRateLimit, callerKey } = await import("./rate-limit.server");
+    const bucket = `order_lookup:${callerKey()}`;
+    await enforceRateLimit(bucket, { limit: 10, windowSeconds: 300, blockSeconds: 900 });
+
+    const order = await fetchOrderByNumber(data.orderNumber, {
+      email: data.email,
+      token: data.token,
+    });
+
+    // A caller who found their own order is not the caller this limit is for.
+    if (order) await clearRateLimit(bucket);
+    return order;
   });

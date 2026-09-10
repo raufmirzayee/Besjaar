@@ -9,7 +9,19 @@ import { contactSchema, createContactMessage, type ContactMessage } from "./cont
 
 export const sendContactMessage = createServerFn({ method: "POST" })
   .inputValidator(v.validator(contactSchema))
-  .handler(async ({ data }) => createContactMessage(data));
+  .handler(async ({ data }) => {
+    // createContactMessage already caps messages per e-mail address per hour.
+    // That does nothing about one sender working through a list of addresses,
+    // which is what a spam run looks like.
+    const { enforceRateLimit, callerKey } = await import("./rate-limit.server");
+    await enforceRateLimit(`contact:${callerKey()}`, {
+      limit: 5,
+      windowSeconds: 3600,
+      blockSeconds: 3600,
+    });
+
+    return createContactMessage(data);
+  });
 
 export const getContactMessages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

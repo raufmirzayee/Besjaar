@@ -611,6 +611,10 @@ export type Database = {
       };
       orders: {
         Row: {
+          // Added by 20260911100000_atomic_order_creation.sql. Hand-written
+          // like the rest of this block: the live project is unreachable from
+          // here, so `supabase gen types` cannot be run against it.
+          access_token: string | null;
           carrier: string | null;
           cancelled_at: string | null;
           confirmation_sent_at: string | null;
@@ -1600,6 +1604,23 @@ export type Database = {
           p_note?: string | null;
           p_created_by?: string | null;
         };
+        Returns: number;
+      };
+      check_rate_limit: {
+        Args: {
+          p_bucket: string;
+          p_limit: number;
+          p_window_seconds: number;
+          p_block_seconds?: number | null;
+        };
+        Returns: { allowed: boolean; attempts: number; retry_after_seconds: number }[];
+      };
+      clear_rate_limit: {
+        Args: { p_bucket: string };
+        Returns: undefined;
+      };
+      prune_rate_limits: {
+        Args: Record<string, never>;
         Returns: number;
       };
       set_variant_stock_level: {

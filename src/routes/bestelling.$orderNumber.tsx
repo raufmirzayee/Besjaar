@@ -12,7 +12,13 @@ import { useI18n } from "@/lib/i18n";
 import type { TranslationKey } from "@/lib/translations";
 
 export const Route = createFileRoute("/bestelling/$orderNumber")({
-  validateSearch: z.object({ email: z.string().optional() }),
+  // `token` is what the payment provider's return link carries: a guest never
+  // typed a password, and asking them for the e-mail address they just entered
+  // to see the order they just paid for reads like the order went missing.
+  validateSearch: z.object({
+    email: z.string().optional(),
+    token: z.string().optional(),
+  }),
   head: () => ({
     meta: [
       { title: "Bestelling bevestigd — Besjaar" },
@@ -28,15 +34,22 @@ export const Route = createFileRoute("/bestelling/$orderNumber")({
 function OrderPage() {
   const { t } = useI18n();
   const { orderNumber } = Route.useParams();
-  const { email } = Route.useSearch();
+  const { email, token } = Route.useSearch();
+  const hasCredential = Boolean(email) || Boolean(token);
 
   const { data, isPending } = useQuery({
-    queryKey: ["order", orderNumber, email],
-    queryFn: () => getOrderByNumber({ data: { orderNumber, email: email ?? "" } }),
-    enabled: Boolean(email),
+    queryKey: ["order", orderNumber, email, token],
+    queryFn: () =>
+      getOrderByNumber({
+        data: { orderNumber, email: email ?? undefined, token: token ?? undefined },
+      }),
+    enabled: hasCredential,
+    // The lookup is rate limited, so retrying a refusal only spends the
+    // customer's remaining budget.
+    retry: false,
   });
 
-  if (!email) {
+  if (!hasCredential) {
     return (
       <Shell title={t("order.notFound")}>
         <p className="text-muted-foreground">{t("order.needEmail")}</p>

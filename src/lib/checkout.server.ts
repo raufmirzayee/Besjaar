@@ -345,15 +345,59 @@ export async function createOrder(
   };
 }
 
+/**
+ * Compares two secrets without leaking how far they matched.
+ *
+ * `a === b` on strings returns at the first differing byte, so the time it
+ * takes is a measurement of how much of the secret the caller got right. Over
+ * enough requests that recovers the value a character at a time. This always
+ * walks the full length.
+ */
+function constantTimeEqual(a: string, b: string): boolean {
+  const left = new TextEncoder().encode(a);
+  const right = new TextEncoder().encode(b);
+  // The lengths themselves are not secret; comparing anyway keeps the shape
+  // of the function uniform.
+  let diff = left.length ^ right.length;
+  const max = Math.max(left.length, right.length);
+  for (let i = 0; i < max; i += 1) {
+    diff |= (left[i] ?? 0) ^ (right[i] ?? 0);
+  }
+  return diff === 0;
+}
+
+/**
+ * Looks up one order for the customer who placed it.
+ *
+ * Two ways in, because there are two situations:
+ *
+ *   * the access token from the confirmation link, which is unguessable and is
+ *     how a guest returning from the payment provider gets in without typing
+ *     anything;
+ *   * the e-mail address on the order, for someone who has the number and
+ *     comes back later.
+ *
+ * Both are compared in constant time, and every failure returns the same null:
+ * distinguishing "no such order" from "wrong e-mail" would confirm which order
+ * numbers exist, and the numbers are sequential.
+ *
+ * Rate limiting sits at the server function, which is where the caller's
+ * address is knowable.
+ */
 export async function fetchOrderByNumber(
   orderNumber: string,
-  email: string,
+  credentials: { email?: string | null; token?: string | null },
 ): Promise<OrderSummary | null> {
+  const email = credentials.email?.trim().toLowerCase() ?? "";
+  const token = credentials.token?.trim() ?? "";
+  if (!email && !token) return null;
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin
     .from("orders")
     .select(
-      `order_number, status, payment_status, payment_method, email, first_name, last_name,
+      `order_number, status, payment_status, payment_method, email, access_token,
+       first_name, last_name,
        shipping_address, shipping_method_name, carrier, tracking_code, tracking_url,
        shipped_at, delivered_at, subtotal, shipping_cost, vat_amount, total, created_at,
        order_items ( product_name, product_slug, image_url, unit_price, quantity, line_total )`,
@@ -363,7 +407,13 @@ export async function fetchOrderByNumber(
   if (error) throw new Error(error.message);
   if (!data) return null;
   const row = data as Record<string, unknown>;
-  if (String(row.email).toLowerCase() !== email.trim().toLowerCase()) return null;
+
+  const storedToken = typeof row.access_token === "string" ? row.access_token : "";
+  const tokenMatches =
+    token.length > 0 && storedToken.length > 0 && constantTimeEqual(token, storedToken);
+  const emailMatches =
+    email.length > 0 && constantTimeEqual(email, String(row.email ?? "").toLowerCase());
+  if (!tokenMatches && !emailMatches) return null;
 
   return {
     order_number: String(row.order_number),

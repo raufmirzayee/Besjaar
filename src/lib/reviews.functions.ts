@@ -70,5 +70,16 @@ export const joinNewsletter = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Honeypot: hidden field must stay empty for real visitors.
     if (data.company) throw new Error("Inschrijving geweigerd.");
+
+    // The honeypot only catches a bot that fills every field it finds. Signing
+    // strangers up to a mailing list is a way to use the shop to harass them,
+    // and the shop's sending reputation pays for it.
+    const { enforceRateLimit, callerKey } = await import("./rate-limit.server");
+    await enforceRateLimit(`newsletter:${callerKey()}`, {
+      limit: 3,
+      windowSeconds: 3600,
+      blockSeconds: 3600,
+    });
+
     return subscribeNewsletter(data.email);
   });
