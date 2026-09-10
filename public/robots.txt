@@ -9,10 +9,15 @@ Disallow: /afrekenen
 Disallow: /account
 Disallow: /verlanglijst
 Disallow: /inloggen
+Disallow: /wachtwoord-herstellen
 Disallow: /bestelling
+Disallow: /retouren
 Disallow: /api/
 
 # Search result pages duplicate the category pages.
 Disallow: /zoeken
+
+# The product feed is fetched directly by Merchant Center; it is not a page.
+Disallow: /feeds/
 
 Sitemap: https://www.besjaar.nl/sitemap.xml

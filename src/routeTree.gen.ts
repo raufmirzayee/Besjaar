@@ -27,6 +27,7 @@ import { Route as VeelgesteldeVragenRouteImport } from './routes/veelgestelde-vr
 import { Route as VerlanglijstRouteImport } from './routes/verlanglijst'
 import { Route as VerzendingRouteImport } from './routes/verzending'
 import { Route as VoorwaardenRouteImport } from './routes/voorwaarden'
+import { Route as WachtwoordHerstellenRouteImport } from './routes/wachtwoord-herstellen'
 import { Route as WinkelRouteImport } from './routes/winkel'
 import { Route as WinkelwagenRouteImport } from './routes/winkelwagen'
 import { Route as ZoekenRouteImport } from './routes/zoeken'
@@ -51,6 +52,7 @@ import { Route as BeheerVertalingenRouteImport } from './routes/beheer.vertaling
 import { Route as BeheerVoorraadRouteImport } from './routes/beheer.voorraad'
 import { Route as BestellingOrderNumberRouteImport } from './routes/bestelling.$orderNumber'
 import { Route as CategorieSlugRouteImport } from './routes/categorie.$slug'
+import { Route as FeedsGoogleShoppingDotxmlRouteImport } from './routes/feeds.google-shopping[.]xml'
 import { Route as MerkenIndexRouteImport } from './routes/merken.index'
 import { Route as MerkenSlugRouteImport } from './routes/merken.$slug'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
@@ -145,6 +147,11 @@ const VerzendingRoute = VerzendingRouteImport.update({
 const VoorwaardenRoute = VoorwaardenRouteImport.update({
   id: '/voorwaarden',
   path: '/voorwaarden',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WachtwoordHerstellenRoute = WachtwoordHerstellenRouteImport.update({
+  id: '/wachtwoord-herstellen',
+  path: '/wachtwoord-herstellen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WinkelRoute = WinkelRouteImport.update({
@@ -267,6 +274,12 @@ const CategorieSlugRoute = CategorieSlugRouteImport.update({
   path: '/categorie/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedsGoogleShoppingDotxmlRoute =
+  FeedsGoogleShoppingDotxmlRouteImport.update({
+    id: '/feeds/google-shopping.xml',
+    path: '/feeds/google-shopping.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MerkenIndexRoute = MerkenIndexRouteImport.update({
   id: '/merken/',
   path: '/merken/',
@@ -312,6 +325,7 @@ export interface FileRoutesByFullPath {
   '/verlanglijst': typeof VerlanglijstRoute
   '/verzending': typeof VerzendingRoute
   '/voorwaarden': typeof VoorwaardenRoute
+  '/wachtwoord-herstellen': typeof WachtwoordHerstellenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
   '/zoeken': typeof ZoekenRoute
@@ -335,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/feeds/google-shopping.xml': typeof FeedsGoogleShoppingDotxmlRoute
   '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer/': typeof BeheerIndexRoute
@@ -360,6 +375,7 @@ export interface FileRoutesByTo {
   '/verlanglijst': typeof VerlanglijstRoute
   '/verzending': typeof VerzendingRoute
   '/voorwaarden': typeof VoorwaardenRoute
+  '/wachtwoord-herstellen': typeof WachtwoordHerstellenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
   '/zoeken': typeof ZoekenRoute
@@ -383,6 +399,7 @@ export interface FileRoutesByTo {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/feeds/google-shopping.xml': typeof FeedsGoogleShoppingDotxmlRoute
   '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer': typeof BeheerIndexRoute
@@ -410,6 +427,7 @@ export interface FileRoutesById {
   '/verlanglijst': typeof VerlanglijstRoute
   '/verzending': typeof VerzendingRoute
   '/voorwaarden': typeof VoorwaardenRoute
+  '/wachtwoord-herstellen': typeof WachtwoordHerstellenRoute
   '/winkel': typeof WinkelRoute
   '/winkelwagen': typeof WinkelwagenRoute
   '/zoeken': typeof ZoekenRoute
@@ -433,6 +451,7 @@ export interface FileRoutesById {
   '/beheer/voorraad': typeof BeheerVoorraadRoute
   '/bestelling/$orderNumber': typeof BestellingOrderNumberRoute
   '/categorie/$slug': typeof CategorieSlugRoute
+  '/feeds/google-shopping.xml': typeof FeedsGoogleShoppingDotxmlRoute
   '/merken/$slug': typeof MerkenSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/beheer/': typeof BeheerIndexRoute
@@ -461,6 +480,7 @@ export interface FileRouteTypes {
     | '/verlanglijst'
     | '/verzending'
     | '/voorwaarden'
+    | '/wachtwoord-herstellen'
     | '/winkel'
     | '/winkelwagen'
     | '/zoeken'
@@ -484,6 +504,7 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/feeds/google-shopping.xml'
     | '/merken/$slug'
     | '/product/$slug'
     | '/beheer/'
@@ -509,6 +530,7 @@ export interface FileRouteTypes {
     | '/verlanglijst'
     | '/verzending'
     | '/voorwaarden'
+    | '/wachtwoord-herstellen'
     | '/winkel'
     | '/winkelwagen'
     | '/zoeken'
@@ -532,6 +554,7 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/feeds/google-shopping.xml'
     | '/merken/$slug'
     | '/product/$slug'
     | '/beheer'
@@ -558,6 +581,7 @@ export interface FileRouteTypes {
     | '/verlanglijst'
     | '/verzending'
     | '/voorwaarden'
+    | '/wachtwoord-herstellen'
     | '/winkel'
     | '/winkelwagen'
     | '/zoeken'
@@ -581,6 +605,7 @@ export interface FileRouteTypes {
     | '/beheer/voorraad'
     | '/bestelling/$orderNumber'
     | '/categorie/$slug'
+    | '/feeds/google-shopping.xml'
     | '/merken/$slug'
     | '/product/$slug'
     | '/beheer/'
@@ -608,11 +633,13 @@ export interface RootRouteChildren {
   VerlanglijstRoute: typeof VerlanglijstRoute
   VerzendingRoute: typeof VerzendingRoute
   VoorwaardenRoute: typeof VoorwaardenRoute
+  WachtwoordHerstellenRoute: typeof WachtwoordHerstellenRoute
   WinkelRoute: typeof WinkelRoute
   WinkelwagenRoute: typeof WinkelwagenRoute
   ZoekenRoute: typeof ZoekenRoute
   BestellingOrderNumberRoute: typeof BestellingOrderNumberRoute
   CategorieSlugRoute: typeof CategorieSlugRoute
+  FeedsGoogleShoppingDotxmlRoute: typeof FeedsGoogleShoppingDotxmlRoute
   MerkenSlugRoute: typeof MerkenSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
   MerkenIndexRoute: typeof MerkenIndexRoute
@@ -746,6 +773,13 @@ declare module '@tanstack/react-router' {
       path: '/voorwaarden'
       fullPath: '/voorwaarden'
       preLoaderRoute: typeof VoorwaardenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wachtwoord-herstellen': {
+      id: '/wachtwoord-herstellen'
+      path: '/wachtwoord-herstellen'
+      fullPath: '/wachtwoord-herstellen'
+      preLoaderRoute: typeof WachtwoordHerstellenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/winkel': {
@@ -916,6 +950,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorieSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feeds/google-shopping.xml': {
+      id: '/feeds/google-shopping.xml'
+      path: '/feeds/google-shopping.xml'
+      fullPath: '/feeds/google-shopping.xml'
+      preLoaderRoute: typeof FeedsGoogleShoppingDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/merken/': {
       id: '/merken/'
       path: '/merken'
@@ -1020,11 +1061,13 @@ const rootRouteChildren: RootRouteChildren = {
   VerlanglijstRoute: VerlanglijstRoute,
   VerzendingRoute: VerzendingRoute,
   VoorwaardenRoute: VoorwaardenRoute,
+  WachtwoordHerstellenRoute: WachtwoordHerstellenRoute,
   WinkelRoute: WinkelRoute,
   WinkelwagenRoute: WinkelwagenRoute,
   ZoekenRoute: ZoekenRoute,
   BestellingOrderNumberRoute: BestellingOrderNumberRoute,
   CategorieSlugRoute: CategorieSlugRoute,
+  FeedsGoogleShoppingDotxmlRoute: FeedsGoogleShoppingDotxmlRoute,
   MerkenSlugRoute: MerkenSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
   MerkenIndexRoute: MerkenIndexRoute,

@@ -19,5 +19,11 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run lint
+      - name: Typecheck
+        run: bunx tsc --noEmit
       - name: Run tests (incl. NL/EN/DE/FR translation regression suite)
         run: bun run test
+      # A green lint and test run means nothing if the thing cannot be built
+      # and deployed, so CI builds the production bundle on every change.
+      - name: Production build
+        run: bun run build

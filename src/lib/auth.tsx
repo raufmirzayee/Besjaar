@@ -15,6 +15,10 @@ type AuthContextValue = {
     firstName: string;
     lastName: string;
   }) => Promise<{ needsConfirmation: boolean }>;
+  /** Sends a reset link. Resolves the same way whether or not the address exists. */
+  requestPasswordReset: (email: string) => Promise<void>;
+  /** Sets a new password for the session opened by a reset link. */
+  updatePassword: (password: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -81,6 +85,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
         }
         return { needsConfirmation: !data.session };
+      },
+      async requestPasswordReset(email) {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/wachtwoord-herstellen`,
+        });
+        // Supabase does not reveal whether an address is registered, and
+        // neither does this: reporting "unknown e-mail" would let anyone
+        // enumerate customer accounts.
+        if (error) throw new Error(error.message);
+      },
+      async updatePassword(password) {
+        const { error } = await supabase.auth.updateUser({ password });
+        if (error) throw new Error(error.message);
       },
       async signOut() {
         await supabase.auth.signOut();

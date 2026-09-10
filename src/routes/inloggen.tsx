@@ -28,10 +28,13 @@ export const Route = createFileRoute("/inloggen")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, requestPasswordReset } = useAuth();
   const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [login, setLogin] = useState({ email: "", password: "" });
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetSent, setResetSent] = useState(false);
   const [register, setRegister] = useState({
     email: "",
     password: "",
@@ -48,6 +51,21 @@ function AuthPage() {
       navigate({ to: "/account" });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("auth.signInFailed"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleReset(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      await requestPasswordReset(resetEmail);
+      // Always the same confirmation, whether or not the address is known:
+      // a different message would let anyone test which e-mails have accounts.
+      setResetSent(true);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("auth.resetFailed"));
     } finally {
       setBusy(false);
     }
@@ -119,6 +137,58 @@ function AuthPage() {
                 {busy ? t("auth.busy") : t("auth.signIn")}
               </Button>
             </form>
+
+            {/* Without this a customer who forgets their password is locked
+                out of their order history for good. */}
+            {resetSent ? (
+              <p className="mt-4 rounded-lg border bg-surface p-3 text-sm text-muted-foreground">
+                {t("auth.resetSent")}
+              </p>
+            ) : resetOpen ? (
+              <form
+                onSubmit={handleReset}
+                className="mt-4 space-y-3 rounded-lg border bg-surface p-4"
+              >
+                <div>
+                  <Label htmlFor="reset-email" className="mb-1.5 block">
+                    {t("auth.email")}
+                  </Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground">{t("auth.resetHint")}</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="submit" size="sm" disabled={busy}>
+                    {busy ? t("auth.busy") : t("auth.resetSubmit")}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setResetOpen(false)}
+                  >
+                    {t("auth.cancel")}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setResetEmail(login.email);
+                  setResetOpen(true);
+                }}
+                className="mt-3 text-sm text-primary underline underline-offset-4 hover:text-primary-hover"
+              >
+                {t("auth.forgotPassword")}
+              </button>
+            )}
           </TabsContent>
 
           <TabsContent value="register">

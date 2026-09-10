@@ -66,20 +66,49 @@ export function jsonLd(data: Record<string, unknown>): string {
 }
 
 export function organizationSchema() {
+  const company = storeConfig.company;
+
+  // Registration details are only claimed when they have actually been
+  // configured. A schema.org vatID that nobody supplied would be a false
+  // statement about a real business, so nothing is filled in speculatively.
+  const address =
+    company.street || company.postalCode || company.city
+      ? {
+          "@type": "PostalAddress",
+          streetAddress: company.street || undefined,
+          postalCode: company.postalCode || undefined,
+          addressLocality: company.city || undefined,
+          addressCountry: "NL",
+        }
+      : undefined;
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: SITE_NAME,
+    legalName: company.legalName || undefined,
     url: storeConfig.origin,
     logo: absoluteUrl("/apple-touch-icon.png"),
     email: storeConfig.email,
+    telephone: storeConfig.phone || undefined,
+    vatID: company.vat || undefined,
+    // The KvK number is the Dutch company register identifier.
+    identifier: company.kvk
+      ? {
+          "@type": "PropertyValue",
+          propertyID: "KvK",
+          value: company.kvk,
+        }
+      : undefined,
+    address,
     contactPoint: [
       {
         "@type": "ContactPoint",
         contactType: "customer service",
         email: storeConfig.email,
+        telephone: storeConfig.phone || undefined,
         areaServed: [...storeConfig.shippingCountries],
-        availableLanguage: ["nl", "en", "de"],
+        availableLanguage: ["nl", "en", "de", "fr"],
       },
     ],
   };

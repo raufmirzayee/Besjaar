@@ -17,8 +17,10 @@ const STATIC_PATHS = [
   "/contact",
   "/veelgestelde-vragen",
   "/verzending",
-  "/retouren",
+  // /retouren is the customer's own returns portal and carries noindex, so it
+  // is deliberately absent: listing it would contradict the tag.
   "/voorwaarden",
+  "/herroeping",
   "/privacy",
   "/cookies",
 ];

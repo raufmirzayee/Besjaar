@@ -18,13 +18,18 @@ bun run dev
 
 The store runs at `http://localhost:8080`.
 
-| Command             | What it does                                  |
-| ------------------- | --------------------------------------------- |
-| `bun run dev`       | Development server with HMR                   |
-| `bun run build`     | Production build                              |
-| `bun run lint`      | ESLint + Prettier                             |
-| `bun run test`      | Vitest suite                                  |
-| `bunx tsc --noEmit` | Type check                                    |
+| Command              | What it does                                         |
+| -------------------- | ---------------------------------------------------- |
+| `bun run dev`        | Development server with HMR                          |
+| `bun run verify`     | Lint, typecheck, tests and build — everything CI run |
+| `bun run build`      | Production build (Cloudflare Workers by default)     |
+| `bun run build:node` | Production build for a Node server                   |
+| `bun run start`      | Serve a Node build from `.output`                    |
+| `bun run lint`       | ESLint + Prettier                                    |
+| `bun run test`       | Vitest suite                                         |
+| `bunx tsc --noEmit`  | Type check                                           |
+
+Use bun, not npm — the lockfile is a bun lockfile and `npm install` fails on it.
 
 ### Running without services
 
@@ -33,27 +38,32 @@ The store deliberately works with nothing configured:
 - **No Supabase** — the storefront serves the catalogue bundled from the
   product workbook, so every page renders real products instead of an error.
   Accounts, orders and the admin area need Supabase.
-- **No payment provider** — orders can be placed but are stored as *awaiting
-  payment*, and checkout says so. Nothing is ever reported as paid without the
+- **No payment provider** — orders can be placed but are stored as _awaiting
+  payment_, and checkout says so. Nothing is ever reported as paid without the
   provider confirming it.
+- **No email provider** — nothing is sent, every attempt is logged as skipped,
+  and the admin says so. An order is never lost because mail is down.
 - **No bol.com credentials** — the integration reports as not connected; the
   independent store is unaffected.
+
+**Beheer → Dashboard** lists exactly what is still switched off, read from the
+running configuration. See [DEPLOYMENT.md](DEPLOYMENT.md) to turn it all on.
 
 ---
 
 ## The product catalogue
 
 `data/EenTop_Besjaar_Sorted_Product_Catalogue.xlsx` is the single source of
-truth. The **Sorted Products** worksheet holds 51 unique products; the *All 53
-Entries* sheet is the raw source and is deliberately not imported.
+truth. The **Sorted Products** worksheet holds 51 unique products; the _All 53
+Entries_ sheet is the raw source and is deliberately not imported.
 
 `scripts/build_catalogue.py` reads that worksheet and generates three artefacts:
 
-| Output                                            | Used for                            |
-| ------------------------------------------------- | ----------------------------------- |
-| `src/data/catalogue.generated.ts`                 | The typed catalogue used at runtime |
-| `supabase/migrations/…_besjaar_catalogue.sql`     | Idempotent Supabase seed            |
-| `data/besjaar-catalogue.csv`                      | Import via `/beheer/catalogus-import` |
+| Output                                        | Used for                              |
+| --------------------------------------------- | ------------------------------------- |
+| `src/data/catalogue.generated.ts`             | The typed catalogue used at runtime   |
+| `supabase/migrations/…_besjaar_catalogue.sql` | Idempotent Supabase seed              |
+| `data/besjaar-catalogue.csv`                  | Import via `/beheer/catalogus-import` |
 
 Regenerate after editing the workbook:
 
@@ -83,7 +93,7 @@ Nothing is invented. In particular:
 - The catalogue carries review **counts** but no rating value, so the store
   shows counts and never a star score. `AggregateRating` is deliberately absent
   from the Product structured data for the same reason.
-- The popularity badge says *Populair*, not *Bestseller*: review volume is not
+- The popularity badge says _Populair_, not _Bestseller_: review volume is not
   sales data.
 
 ---
@@ -154,15 +164,20 @@ Conventions worth knowing:
 
 ---
 
-## Still required from the business
+## Going live
 
-These are deliberately absent rather than invented, and must be supplied before
-launch:
+[DEPLOYMENT.md](DEPLOYMENT.md) is the full checklist: Supabase, environment,
+hosting, payments, email, the Merchant Center product feed and the go-live
+checks.
+
+Four things must come from the business, and are deliberately absent rather
+than invented:
 
 - **Company registration details** — KvK number, VAT number and registered
-  address for the legal pages and the footer.
+  address. Set them via `VITE_COMPANY_*`; until then the shop leaves them out
+  and says on the page that it is not yet fully registered.
 - **Real fulfilment terms** — carrier, cut-off time and delivery estimates.
-  Until then the store says only "op werkdagen verzonden".
+  Until then the store says only that orders are dispatched on working days.
 - **Product photography rights** — images currently point at the marketplace
   CDN the catalogue came from. Host them yourself before launch: hotlinking a
   third-party CDN is fragile and not yours to rely on.

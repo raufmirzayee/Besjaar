@@ -131,8 +131,10 @@ export function hasCompanyIdentity(): boolean {
 }
 
 /** The registered address as display lines. Empty when nothing is configured. */
-export function companyAddressLines(): string[] {
-  const c = storeConfig.company;
+export function companyAddressLines(
+  company: StoreConfig["company"] = storeConfig.company,
+): string[] {
+  const c = company;
   return [
     c.legalName,
     c.street,
