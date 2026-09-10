@@ -9,7 +9,9 @@
 import { storeConfig } from "./store-config";
 
 const SITE_NAME = "Besjaar";
-const DEFAULT_OG_IMAGE = "/images/brand/hero-douchekop.webp";
+// A brand card, not a product photo: the default share image stands for the
+// shop as a whole, and must not appear to depict a specific item.
+const DEFAULT_OG_IMAGE = "/images/brand/og-besjaar.png";
 
 export function absoluteUrl(path: string): string {
   if (path.startsWith("http")) return path;

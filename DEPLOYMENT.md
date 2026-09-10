@@ -93,6 +93,12 @@ gitignored; keep it that way.
 The build targets [Nitro](https://nitro.build), so the same source deploys to
 several hosts.
 
+The Node path below was run end to end here: build, serve, and every page and
+feed fetched back. The Cloudflare, Vercel and Netlify commands are the standard
+Nitro ones and the Cloudflare build does emit `.output/server/wrangler.json`,
+but no deploy to those platforms was performed — treat the first deploy as
+something to watch rather than assume.
+
 ### Cloudflare Workers (the default)
 
 ```bash

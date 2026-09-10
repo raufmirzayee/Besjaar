@@ -10,13 +10,14 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportClientError } from "../lib/error-reporting";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CookieConsent } from "@/components/cookie-consent";
 import { ConsentScripts } from "@/components/consent-scripts";
 
 import { Toaster } from "@/components/ui/sonner";
+import { storeConfig } from "@/lib/store-config";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
 import { CartDrawer } from "@/components/cart-drawer";
@@ -51,7 +52,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportClientError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -85,6 +86,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+const OG_IMAGE = `${storeConfig.origin.replace(/\/$/, "")}/images/brand/og-besjaar.png`;
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
@@ -110,16 +113,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Ontdek zaklampen, douchekoppen, powerbanks en airstylers van Besjaar, RYNEX en LYNEX. Snel geleverd in NL, BE en DE.",
       },
-      {
-        property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e5e3fe61-fbf6-422a-8295-4fcf7d44fc9c/id-preview-ab4ecf78--5dec3cbe-9639-49c5-8cef-840290efbdf2.lovable.app-1786000168010.png",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e5e3fe61-fbf6-422a-8295-4fcf7d44fc9c/id-preview-ab4ecf78--5dec3cbe-9639-49c5-8cef-840290efbdf2.lovable.app-1786000168010.png",
-      },
+      // Served from this site. It used to point at a screenshot of a preview
+      // build in a third-party bucket, so every share of the shop depended on
+      // storage nobody here controls.
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
