@@ -53,9 +53,18 @@ rather than pretending.
    The seed is idempotent: running it twice does not duplicate products or
    images.
 
-4. Give yourself an admin role (after signing up through the site once):
+4. Give yourself an admin role (after signing up through the site once).
+
+   The staff pool comes first — the database refuses a staff role to an
+   account that is not in it, so a bare `user_roles` insert fails with
+   *"Account … is geen medewerkersaccount"*:
 
    ```sql
+   -- 1. Put the account in the staff pool.
+   insert into public.staff_accounts (user_id, email)
+   select id, email from auth.users where email = 'you@example.com';
+
+   -- 2. Then grant the role.
    insert into public.user_roles (user_id, role)
    select id, 'super_admin' from auth.users where email = 'you@example.com';
    ```
@@ -117,6 +126,11 @@ Copy `.env.example` and fill it in. The rules that matter:
 
 Set them in your host's dashboard, not in a committed file. `.env` is
 gitignored; keep it that way.
+
+`DEEPL_API_KEY` is the same kind of secret: server-only, never a `VITE_*`.
+Without it the shop runs exactly as before — products are created and edited
+normally, and the translations screen lists what is waiting rather than
+inventing text.
 
 ---
 
@@ -269,16 +283,27 @@ Beyond configuration:
   `src/components/consent-scripts.tsx`. Add your tag there so it stays behind
   consent — do not paste it into the document head.
 
-### Known limitation: translated pages are not indexable
+### Languages and search engines
 
-The storefront translates into EN, DE and FR in the browser, at the same URL.
-Search engines therefore only index the Dutch version, and `hreflang`
-annotations are deliberately **not** emitted — they require one URL per
-language, and claiming otherwise would be wrong.
+The visitor's language is chosen **on the server**, before anything is
+rendered, from the CDN's country header and the browser's `Accept-Language` —
+no geolocation prompt, no GPS. The order is: a language the visitor chose
+themselves, then `?lang=` in the URL, then the country, then the browser, then
+English. A visitor the shop cannot place gets English rather than Dutch.
 
-If the other languages need to rank, that means moving to path-prefixed locales
-(`/en/…`) with server-rendered copy per locale, and then adding `hreflang`. It
-is a real change, not a tag you can switch on.
+Because the choice happens server-side, `<html lang>`, the page title, the
+meta description and the OpenGraph tags are already correct in the served
+HTML, and there is no flash of Dutch before the page settles.
+
+Each page emits a language-free canonical plus `hreflang` alternates on
+`?lang=` URLs, with `x-default` on the clean URL. That gives each language an
+address a crawler can index without setting the four versions competing for
+the same content.
+
+If the country header is missing — a host that does not set one — detection
+falls back to the browser language, which is still correct for most visitors.
+Cloudflare (`cf-ipcountry`), Vercel, Netlify and a generic `x-country-code`
+are all read.
 
 ---
 
@@ -295,3 +320,20 @@ one once, in filename order.
 
 Rolling a migration back is not automatic — take a Supabase backup before
 applying new ones to production.
+
+---
+
+## Verifying a deployment's database
+
+The behaviour that matters most — inventory arithmetic, row locking, RLS —
+lives in the database, so it is tested there rather than against a mock:
+
+```bash
+bun run test:db
+```
+
+That builds a throwaway PostgreSQL database from `supabase/tests/harness.sql`
+plus every migration, runs the inventory, RLS and concurrency suites, and drops
+it again. It needs a local PostgreSQL server and touches nothing you already
+have. Pass a database name to run the suites against an existing one instead —
+they all roll back, so a copy of production data is safe.
