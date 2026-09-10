@@ -70,6 +70,12 @@ export type OrderSummary = {
   last_name: string;
   shipping_address: Record<string, string | null>;
   shipping_method_name: string | null;
+  /** Set once the order actually ships, so the customer can follow the parcel. */
+  carrier: string | null;
+  tracking_code: string | null;
+  tracking_url: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
   subtotal: number;
   shipping_cost: number;
   vat_amount: number;
@@ -315,7 +321,8 @@ export async function fetchOrderByNumber(
     .from("orders")
     .select(
       `order_number, status, payment_status, payment_method, email, first_name, last_name,
-       shipping_address, shipping_method_name, subtotal, shipping_cost, vat_amount, total, created_at,
+       shipping_address, shipping_method_name, carrier, tracking_code, tracking_url,
+       shipped_at, delivered_at, subtotal, shipping_cost, vat_amount, total, created_at,
        order_items ( product_name, product_slug, image_url, unit_price, quantity, line_total )`,
     )
     .eq("order_number", orderNumber)
@@ -335,6 +342,11 @@ export async function fetchOrderByNumber(
     last_name: String(row.last_name),
     shipping_address: (row.shipping_address as Record<string, string | null>) ?? {},
     shipping_method_name: (row.shipping_method_name as string) ?? null,
+    carrier: (row.carrier as string) ?? null,
+    tracking_code: (row.tracking_code as string) ?? null,
+    tracking_url: (row.tracking_url as string) ?? null,
+    shipped_at: (row.shipped_at as string) ?? null,
+    delivered_at: (row.delivered_at as string) ?? null,
     subtotal: Number(row.subtotal),
     shipping_cost: Number(row.shipping_cost),
     vat_amount: Number(row.vat_amount),

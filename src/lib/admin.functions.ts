@@ -175,19 +175,36 @@ export const setUserRole = createServerFn({ method: "POST" })
  * Bootstrap: the very first signed-in user may claim super admin when the shop
  * has no staff member yet. Afterwards this endpoint always refuses.
  */
+/**
+ * First-run admin bootstrap. The rule itself lives in `admin-bootstrap.ts`
+ * so it is covered by tests; this only gathers the facts it decides on.
+ */
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const { decideFirstAdminClaim } = await import("./admin-bootstrap");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // The address comes from the verified session, never from the request body.
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(
+      context.userId,
+    );
+    if (userError) throw new Error(userError.message);
+
     const { data: existing, error } = await supabaseAdmin
       .from("user_roles")
       .select("id")
       .neq("role", "customer")
       .limit(1);
     if (error) throw new Error(error.message);
-    if ((existing ?? []).length > 0) {
-      throw new Error("Er is al een beheerder ingesteld");
-    }
+
+    const decision = decideFirstAdminClaim({
+      configuredEmail: process.env.ADMIN_BOOTSTRAP_EMAIL,
+      callerEmail: userData?.user?.email,
+      staffExists: (existing ?? []).length > 0,
+    });
+    if (!decision.allowed) throw new Error(decision.reason);
+
     const { error: insertError } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: context.userId, role: "super_admin" });

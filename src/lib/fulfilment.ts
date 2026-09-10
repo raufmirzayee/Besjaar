@@ -31,6 +31,14 @@ export const STATUS_LABELS: Record<FulfilmentStatus, string> = {
   refunded: "Terugbetaald",
 };
 
+/**
+ * Labels a status coming from the database, where the type is a plain string.
+ * An unknown value prints as itself rather than disappearing.
+ */
+export function statusLabel(status: string): string {
+  return STATUS_LABELS[status as FulfilmentStatus] ?? status;
+}
+
 /** Carrier track-and-trace URL templates, `{code}` replaced with the code. */
 const TRACKING_URLS: Record<string, string> = {
   postnl: "https://jouw.postnl.nl/track-and-trace/{code}",

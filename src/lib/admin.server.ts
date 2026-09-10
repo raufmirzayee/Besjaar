@@ -28,27 +28,9 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   customer: "Klant",
 };
 
-export const ORDER_STATUSES = [
-  "pending",
-  "paid",
-  "processing",
-  "packed",
-  "shipped",
-  "delivered",
-  "cancelled",
-  "refunded",
-] as const;
-
-export const ORDER_STATUS_LABELS: Record<string, string> = {
-  pending: "In afwachting",
-  paid: "Betaald",
-  processing: "In behandeling",
-  packed: "Ingepakt",
-  shipped: "Verzonden",
-  delivered: "Bezorgd",
-  cancelled: "Geannuleerd",
-  refunded: "Terugbetaald",
-};
+// One source of truth for order statuses: the fulfilment state machine defines
+// them, and the admin filter reuses it so the two can never drift apart.
+export { FULFILMENT_STATUSES as ORDER_STATUSES } from "./fulfilment";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;

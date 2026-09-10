@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Button } from "@/components/ui/button";
+import { statusLabel } from "@/lib/fulfilment";
 import { getAdminOrders } from "@/lib/admin.functions";
-import { ORDER_STATUS_LABELS, type AdminOrder } from "@/lib/admin.server";
+import { type AdminOrder } from "@/lib/admin.server";
 import { formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/beheer/rapporten")({
@@ -94,7 +95,7 @@ function ReportsPage() {
         <ul className="mt-3 divide-y divide-border text-sm">
           {Object.entries(byStatus).map(([status, value]) => (
             <li key={status} className="flex justify-between py-2">
-              <span>{ORDER_STATUS_LABELS[status] ?? status}</span>
+              <span>{statusLabel(status)}</span>
               <span className="text-muted-foreground">
                 {value.count}× · {formatPrice(value.total)}
               </span>

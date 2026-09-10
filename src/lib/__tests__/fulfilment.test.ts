@@ -93,3 +93,29 @@ describe("trackingUrlFor", () => {
     expect(trackingUrlFor("postnl", "   ")).toBeNull();
   });
 });
+
+describe("status labels", () => {
+  it("names every status the state machine can reach", async () => {
+    const { STATUS_LABELS } = await import("@/lib/fulfilment");
+    for (const status of FULFILMENT_STATUSES) {
+      expect(STATUS_LABELS[status], status).toBeTruthy();
+    }
+  });
+
+  it("matches the order_status values the database migration defines", async () => {
+    const { readFileSync, readdirSync } = await import("node:fs");
+    const dir = "supabase/migrations";
+    const sql = readdirSync(dir)
+      .map((file) => readFileSync(`${dir}/${file}`, "utf8"))
+      .join("\n");
+
+    // The enum is created once; every value the app can set must exist in it,
+    // or a transition fails at the database with a cryptic cast error.
+    const match = /CREATE TYPE public\.order_status AS ENUM \(([^)]+)\)/i.exec(sql);
+    expect(match, "order_status enum not found in migrations").toBeTruthy();
+    const values = [...match![1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    for (const status of FULFILMENT_STATUSES) {
+      expect(values, `order_status is missing "${status}"`).toContain(status);
+    }
+  });
+});

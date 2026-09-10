@@ -71,8 +71,9 @@ function BeheerLayout() {
         <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
           <h1 className="text-xl font-semibold">Geen toegang tot het beheer</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Je account heeft geen medewerkersrol. Is dit een nieuwe webshop? Dan kan de eerste
-            gebruiker zichzelf eenmalig als beheerder instellen.
+            Je account heeft geen medewerkersrol. Bij een nieuwe webshop kan één account zichzelf
+            eenmalig als beheerder instellen — maar alleen het adres dat in{" "}
+            <code>ADMIN_BOOTSTRAP_EMAIL</code> staat. Staat dat er niet, ken de rol dan toe via SQL.
           </p>
           <div className="mt-6 flex flex-col gap-2">
             <Button onClick={() => claimMutation.mutate()} disabled={claimMutation.isPending}>

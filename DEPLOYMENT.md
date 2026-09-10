@@ -60,6 +60,11 @@ rather than pretending.
    select id, 'super_admin' from auth.users where email = 'you@example.com';
    ```
 
+   Alternatively set `ADMIN_BOOTSTRAP_EMAIL` to your address and use the
+   "Eerste beheerder worden" button in the admin. That claim is refused for any
+   other address, and refused entirely when the variable is unset — a deployed
+   shop must never let whoever signs up first take it over.
+
 5. In **Authentication → URL configuration**, set the site URL to your domain so
    confirmation and password-reset links point at the right place.
 
@@ -213,6 +218,14 @@ Beyond configuration:
 
 - **Sitemap and robots.** `/sitemap.xml` lists every indexable page; noindex
   pages are deliberately absent. Submit it in Search Console.
+
+- **Newsletter.** Sign-ups land in `newsletter_subscribers` with `confirmed`
+  false — the RLS policy forces it, so a public sign-up can never mark itself
+  confirmed. Nothing sends to that list: this codebase has no marketing mail.
+  Before you send anything, run a double opt-in (set `confirmed` only after the
+  subscriber clicks a confirmation link) and put an unsubscribe link in every
+  message that writes `unsubscribed_at`. Both are legal requirements, and the
+  columns are already there for them.
 
 - **Analytics.** The cookie banner already gates non-essential scripts through
   `src/components/consent-scripts.tsx`. Add your tag there so it stays behind

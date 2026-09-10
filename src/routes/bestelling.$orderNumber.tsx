@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Truck } from "lucide-react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { CARRIER_LABELS } from "@/lib/fulfilment";
 import { getOrderByNumber } from "@/lib/checkout.functions";
 import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
@@ -70,6 +71,33 @@ function OrderPage() {
             </p>
           </div>
         </div>
+
+        {/* The shipping e-mail carries the tracking code, but a customer who
+            deleted it still needs somewhere to find it. */}
+        {data.tracking_code ? (
+          <div className="mt-6 rounded-2xl border bg-card p-6 shadow-soft">
+            <div className="flex items-start gap-3">
+              <Truck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+              <div>
+                <h2 className="text-lg font-semibold">{t("order.trackingTitle")}</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {data.carrier ? `${carrierLabel(data.carrier)} · ` : ""}
+                  <span className="font-medium text-foreground">{data.tracking_code}</span>
+                </p>
+                {data.tracking_url ? (
+                  <a
+                    href={data.tracking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block text-sm text-primary underline underline-offset-4 hover:text-primary-hover"
+                  >
+                    {t("order.trackParcel")}
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6 rounded-2xl border bg-card p-6 shadow-soft">
           <h2 className="text-lg font-semibold">{t("order.products")}</h2>
@@ -179,4 +207,9 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
       </div>
     </div>
   );
+}
+
+/** Prints "PostNL" rather than the stored "postnl". */
+function carrierLabel(carrier: string): string {
+  return CARRIER_LABELS[carrier.toLowerCase()] ?? carrier;
 }

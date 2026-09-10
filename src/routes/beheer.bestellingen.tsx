@@ -19,27 +19,26 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { getAdminOrders } from "@/lib/admin.functions";
-import { ORDER_STATUSES, ORDER_STATUS_LABELS, type AdminOrder } from "@/lib/admin.server";
+import { ORDER_STATUSES, type AdminOrder } from "@/lib/admin.server";
 import {
   getEmailStatus,
   getOrderDetail,
   resendEmail,
   updateOrderStatus,
 } from "@/lib/fulfilment.functions";
-import { CARRIERS, canTransition, type OrderDetail } from "@/lib/fulfilment";
+import {
+  CARRIERS,
+  CARRIER_LABELS,
+  EMAIL_LABELS,
+  canTransition,
+  statusLabel,
+  type OrderDetail,
+} from "@/lib/fulfilment";
 import { formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/beheer/bestellingen")({
   component: OrdersPage,
 });
-
-const CARRIER_LABELS: Record<string, string> = {
-  postnl: "PostNL",
-  dhl: "DHL",
-  dpd: "DPD",
-  ups: "UPS",
-  gls: "GLS",
-};
 
 function OrdersPage() {
   const queryClient = useQueryClient();
@@ -73,7 +72,7 @@ function OrdersPage() {
             <SelectItem value="alle">Alle statussen</SelectItem>
             {ORDER_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
-                {ORDER_STATUS_LABELS[s] ?? s}
+                {statusLabel(s)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -132,7 +131,7 @@ function OrdersPage() {
                   </td>
                   <td className="px-4 py-2.5">
                     <Badge variant={order.status === "cancelled" ? "destructive" : "outline"}>
-                      {ORDER_STATUS_LABELS[order.status] ?? order.status}
+                      {statusLabel(order.status)}
                     </Badge>
                   </td>
                   <td className="px-4 py-2.5">
@@ -251,7 +250,7 @@ function OrderDetailSheet({
         ) : (
           <div className="mt-5 space-y-6">
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">{ORDER_STATUS_LABELS[order.status] ?? order.status}</Badge>
+              <Badge variant="outline">{statusLabel(order.status)}</Badge>
               <Badge variant={order.payment_status === "paid" ? "stock" : "outline"}>
                 Betaling: {order.payment_status}
               </Badge>
@@ -335,7 +334,7 @@ function OrderDetailSheet({
                   <SelectContent>
                     {available.map((s) => (
                       <SelectItem key={s} value={s}>
-                        {ORDER_STATUS_LABELS[s] ?? s}
+                        {statusLabel(s)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -388,7 +387,11 @@ function OrderDetailSheet({
 
                 <Button
                   className="mt-3 w-full"
-                  disabled={!nextStatus || mutation.isPending}
+                  disabled={
+                    !nextStatus ||
+                    mutation.isPending ||
+                    (nextStatus === "shipped" && (!carrier.trim() || !trackingCode.trim()))
+                  }
                   onClick={() => mutation.mutate()}
                 >
                   {mutation.isPending ? "Bezig…" : "Status bijwerken"}
@@ -401,8 +404,7 @@ function OrderDetailSheet({
               </section>
             ) : (
               <p className="rounded-lg border border-border bg-surface p-3 text-sm text-muted-foreground">
-                Deze bestelling is {ORDER_STATUS_LABELS[order.status] ?? order.status} en kan niet
-                verder worden bijgewerkt.
+                Deze bestelling is {statusLabel(order.status)} en kan niet verder worden bijgewerkt.
               </p>
             )}
 
@@ -416,7 +418,7 @@ function OrderDetailSheet({
                 <ul className="space-y-1 text-sm">
                   {order.emails.map((mail, index) => (
                     <li key={index} className="flex items-center justify-between gap-2">
-                      <span>{mail.template}</span>
+                      <span>{EMAIL_LABELS[mail.template] ?? mail.template}</span>
                       <span className="text-xs text-muted-foreground">
                         {mail.status} · {new Date(mail.created_at).toLocaleString("nl-NL")}
                       </span>
@@ -452,7 +454,7 @@ function OrderDetailSheet({
                 {order.history.map((entry, index) => (
                   <li key={index} className="flex items-start justify-between gap-3">
                     <span>
-                      {ORDER_STATUS_LABELS[entry.status] ?? entry.status}
+                      {statusLabel(entry.status)}
                       {entry.note ? (
                         <span className="text-muted-foreground"> — {entry.note}</span>
                       ) : null}
