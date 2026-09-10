@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { useI18n } from "@/lib/i18n";
 import { getAdminOrders } from "@/lib/admin.functions";
 import { ORDER_STATUSES, type AdminOrder } from "@/lib/admin.server";
 import {
@@ -41,6 +42,7 @@ export const Route = createFileRoute("/beheer/bestellingen")({
 });
 
 function OrdersPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchOrders = useServerFn(getAdminOrders);
   const fetchEmailStatus = useServerFn(getEmailStatus);
@@ -63,13 +65,13 @@ function OrdersPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-bold">Bestellingen</h2>
+        <h2 className="font-display text-xl font-bold">{t("admin.orders.title")}</h2>
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-52">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle statussen</SelectItem>
+            <SelectItem value="alle">{t("admin.orders.allStatuses")}</SelectItem>
             {ORDER_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {statusLabel(s)}
@@ -92,25 +94,23 @@ function OrdersPage() {
       ) : null}
 
       {isPending ? (
-        <p className="text-sm text-muted-foreground">Bestellingen laden…</p>
+        <p className="text-sm text-muted-foreground">{t("admin.orders.loading")}</p>
       ) : orders.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border-strong bg-surface p-10 text-center">
           <Package className="mx-auto size-8 text-muted-foreground" aria-hidden="true" />
-          <p className="mt-3 font-semibold">Nog geen bestellingen</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Zodra er een bestelling binnenkomt, verschijnt die hier.
-          </p>
+          <p className="mt-3 font-semibold">{t("admin.orders.empty")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("admin.orders.emptyHint")}</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full min-w-[46rem] text-sm">
             <thead className="border-b border-border bg-surface text-left">
               <tr>
-                <th className="px-4 py-2.5 font-semibold">Bestelling</th>
-                <th className="px-4 py-2.5 font-semibold">Klant</th>
-                <th className="px-4 py-2.5 font-semibold">Status</th>
-                <th className="px-4 py-2.5 font-semibold">Betaling</th>
-                <th className="px-4 py-2.5 text-right font-semibold">Totaal</th>
+                <th className="px-4 py-2.5 font-semibold">{t("admin.orders.order")}</th>
+                <th className="px-4 py-2.5 font-semibold">{t("admin.orders.customer")}</th>
+                <th className="px-4 py-2.5 font-semibold">{t("admin.common.status")}</th>
+                <th className="px-4 py-2.5 font-semibold">{t("admin.orders.payment")}</th>
+                <th className="px-4 py-2.5 text-right font-semibold">{t("admin.common.total")}</th>
                 <th className="px-4 py-2.5" />
               </tr>
             </thead>
@@ -144,7 +144,7 @@ function OrdersPage() {
                   </td>
                   <td className="px-4 py-2.5 text-right">
                     <Button size="sm" variant="subtle" onClick={() => setOpenOrderId(order.id)}>
-                      Openen
+                      {t("admin.orders.open")}
                     </Button>
                   </td>
                 </tr>
@@ -176,6 +176,7 @@ function OrderDetailSheet({
   onClose: () => void;
   onChanged: () => void;
 }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchDetail = useServerFn(getOrderDetail);
   const transition = useServerFn(updateOrderStatus);
@@ -204,12 +205,11 @@ function OrderDetailSheet({
         },
       }) as Promise<{ emailSent: boolean; emailSkipped: boolean; emailError: string | null }>,
     onSuccess: (result) => {
-      if (result.emailSent) toast.success("Status bijgewerkt en klant geïnformeerd");
-      else if (result.emailSkipped)
-        toast.success("Status bijgewerkt. Geen e-mail verstuurd: e-mail is niet ingesteld.");
+      if (result.emailSent) toast.success(t("admin.orders.statusUpdatedNotified"));
+      else if (result.emailSkipped) toast.success(t("admin.orders.statusUpdatedNoEmail"));
       else if (result.emailError)
         toast.warning(`Status bijgewerkt, maar de e-mail is niet verstuurd: ${result.emailError}`);
-      else toast.success("Status bijgewerkt");
+      else toast.success(t("admin.orders.statusUpdated"));
       setNextStatus("");
       setTrackingCode("");
       setNote("");
@@ -227,7 +227,7 @@ function OrderDetailSheet({
       }>,
     onSuccess: (result) => {
       toast[result.sent ? "success" : "warning"](
-        result.sent ? "E-mail opnieuw verstuurd" : "Niet verstuurd: e-mail is niet ingesteld.",
+        result.sent ? t("admin.orders.emailResent") : t("admin.orders.emailNotConfigured"),
       );
       queryClient.invalidateQueries({ queryKey: ["admin-order", orderId] });
     },
@@ -240,13 +240,15 @@ function OrderDetailSheet({
     <Sheet open={Boolean(orderId)} onOpenChange={(open) => (open ? undefined : onClose())}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
         <SheetHeader className="text-left">
-          <SheetTitle>{order ? `Bestelling ${order.order_number}` : "Bestelling"}</SheetTitle>
+          <SheetTitle>
+            {order ? `Bestelling ${order.order_number}` : t("admin.orders.order")}
+          </SheetTitle>
         </SheetHeader>
 
         {isPending ? (
-          <p className="mt-6 text-sm text-muted-foreground">Laden…</p>
+          <p className="mt-6 text-sm text-muted-foreground">{t("admin.common.loading")}</p>
         ) : !order ? (
-          <p className="mt-6 text-sm text-muted-foreground">Bestelling niet gevonden.</p>
+          <p className="mt-6 text-sm text-muted-foreground">{t("admin.orders.notFound")}</p>
         ) : (
           <div className="mt-5 space-y-6">
             <div className="flex flex-wrap gap-2">
@@ -262,7 +264,7 @@ function OrderDetailSheet({
             </div>
 
             <section>
-              <h3 className="mb-2 text-sm font-bold">Producten</h3>
+              <h3 className="mb-2 text-sm font-bold">{t("admin.orders.products")}</h3>
               <ul className="divide-y divide-border rounded-lg border border-border">
                 {order.items.map((item, index) => (
                   <li key={index} className="flex justify-between gap-3 px-3 py-2 text-sm">
@@ -276,15 +278,15 @@ function OrderDetailSheet({
               </ul>
               <dl className="mt-3 space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Subtotaal</dt>
+                  <dt className="text-muted-foreground">{t("admin.orders.subtotal")}</dt>
                   <dd className="tabular-nums">{formatPrice(order.subtotal)}</dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="text-muted-foreground">Verzending</dt>
+                  <dt className="text-muted-foreground">{t("admin.orders.shipping")}</dt>
                   <dd className="tabular-nums">{formatPrice(order.shipping_cost)}</dd>
                 </div>
                 <div className="flex justify-between font-bold">
-                  <dt>Totaal</dt>
+                  <dt>{t("admin.common.total")}</dt>
                   <dd className="tabular-nums">{formatPrice(order.total)}</dd>
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground">
@@ -295,7 +297,7 @@ function OrderDetailSheet({
             </section>
 
             <section>
-              <h3 className="mb-2 text-sm font-bold">Bezorgadres</h3>
+              <h3 className="mb-2 text-sm font-bold">{t("admin.orders.shippingAddress")}</h3>
               <address className="rounded-lg border border-border bg-surface p-3 text-sm not-italic leading-relaxed">
                 {order.first_name} {order.last_name}
                 <br />
@@ -312,7 +314,7 @@ function OrderDetailSheet({
               </address>
               {order.customer_note ? (
                 <p className="mt-2 rounded-lg bg-secondary p-3 text-sm">
-                  <span className="font-semibold">Opmerking klant: </span>
+                  <span className="font-semibold">{t("admin.orders.customerNote")}</span>
                   {order.customer_note}
                 </p>
               ) : null}
@@ -321,15 +323,16 @@ function OrderDetailSheet({
             {available.length > 0 ? (
               <section className="rounded-lg border border-border p-4">
                 <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
-                  <Truck className="size-4" aria-hidden="true" /> Status bijwerken
+                  <Truck className="size-4" aria-hidden="true" />
+                  {t("admin.orders.updateStatus")}
                 </h3>
 
                 <Label htmlFor="next-status" className="text-xs">
-                  Nieuwe status
+                  {t("admin.orders.newStatus")}
                 </Label>
                 <Select value={nextStatus} onValueChange={setNextStatus}>
                   <SelectTrigger id="next-status" className="mt-1">
-                    <SelectValue placeholder="Kies een status" />
+                    <SelectValue placeholder={t("admin.orders.chooseStatus")} />
                   </SelectTrigger>
                   <SelectContent>
                     {available.map((s) => (
@@ -344,7 +347,7 @@ function OrderDetailSheet({
                   <div className="mt-3 grid gap-3 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="carrier" className="text-xs">
-                        Vervoerder
+                        {t("admin.orders.carrier")}
                       </Label>
                       <Select value={carrier} onValueChange={setCarrier}>
                         <SelectTrigger id="carrier" className="mt-1">
@@ -361,7 +364,7 @@ function OrderDetailSheet({
                     </div>
                     <div>
                       <Label htmlFor="tracking" className="text-xs">
-                        Track &amp; trace-code
+                        {t("admin.orders.trackingCode")}
                       </Label>
                       <Input
                         id="tracking"
@@ -375,7 +378,7 @@ function OrderDetailSheet({
                 ) : null}
 
                 <Label htmlFor="note" className="mt-3 block text-xs">
-                  Interne notitie (optioneel)
+                  {t("admin.orders.internalNote")}
                 </Label>
                 <Textarea
                   id="note"
@@ -394,11 +397,11 @@ function OrderDetailSheet({
                   }
                   onClick={() => mutation.mutate()}
                 >
-                  {mutation.isPending ? "Bezig…" : "Status bijwerken"}
+                  {mutation.isPending ? t("admin.common.busy") : t("admin.orders.updateStatus")}
                 </Button>
                 {nextStatus === "shipped" || nextStatus === "cancelled" ? (
                   <p className="mt-2 text-xs text-muted-foreground">
-                    De klant ontvangt hierover automatisch een e-mail.
+                    {t("admin.orders.autoEmail")}
                   </p>
                 ) : null}
               </section>
@@ -410,10 +413,11 @@ function OrderDetailSheet({
 
             <section>
               <h3 className="mb-2 flex items-center gap-2 text-sm font-bold">
-                <Mail className="size-4" aria-hidden="true" /> Verstuurde e-mails
+                <Mail className="size-4" aria-hidden="true" />
+                {t("admin.orders.sentEmails")}
               </h3>
               {order.emails.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Nog geen e-mails verstuurd.</p>
+                <p className="text-sm text-muted-foreground">{t("admin.orders.noEmails")}</p>
               ) : (
                 <ul className="space-y-1 text-sm">
                   {order.emails.map((mail, index) => (
@@ -433,7 +437,7 @@ function OrderDetailSheet({
                   disabled={resendMutation.isPending}
                   onClick={() => resendMutation.mutate("order_confirmation")}
                 >
-                  Bevestiging opnieuw sturen
+                  {t("admin.orders.resendConfirmation")}
                 </Button>
                 {order.tracking_code ? (
                   <Button
@@ -442,14 +446,14 @@ function OrderDetailSheet({
                     disabled={resendMutation.isPending}
                     onClick={() => resendMutation.mutate("order_shipped")}
                   >
-                    Verzendmail opnieuw sturen
+                    {t("admin.orders.resendShipping")}
                   </Button>
                 ) : null}
               </div>
             </section>
 
             <section>
-              <h3 className="mb-2 text-sm font-bold">Historie</h3>
+              <h3 className="mb-2 text-sm font-bold">{t("admin.orders.history")}</h3>
               <ul className="space-y-1 text-sm">
                 {order.history.map((entry, index) => (
                   <li key={index} className="flex items-start justify-between gap-3">
@@ -468,7 +472,8 @@ function OrderDetailSheet({
             </section>
 
             <Button variant="ghost" className="w-full" onClick={onClose}>
-              <X className="size-4" /> Sluiten
+              <X className="size-4" />
+              {t("admin.common.close")}
             </Button>
           </div>
         )}

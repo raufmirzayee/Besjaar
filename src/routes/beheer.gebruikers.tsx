@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import { getAdminUsers, setUserRole } from "@/lib/admin.functions";
 import { ROLE_LABELS, STAFF_ROLES, type AdminUserRow, type AppRole } from "@/lib/admin.server";
 
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/beheer/gebruikers")({
 });
 
 function UsersPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchUsers = useServerFn(getAdminUsers);
   const changeRole = useServerFn(setUserRole);
@@ -26,23 +28,21 @@ function UsersPage() {
     mutationFn: (input: { userId: string; role: AppRole; grant: boolean }) =>
       changeRole({ data: input }),
     onSuccess: () => {
-      toast.success("Rollen bijgewerkt");
+      toast.success(t("admin.users.rolesUpdated"));
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
       queryClient.invalidateQueries({ queryKey: ["my-roles"] });
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
-  if (isPending) return <p className="text-sm text-muted-foreground">Gebruikers laden…</p>;
+  if (isPending) return <p className="text-sm text-muted-foreground">{t("admin.users.loading")}</p>;
   if (error) return <p className="text-sm text-destructive">{(error as Error).message}</p>;
 
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-display text-xl font-bold">Gebruikers & rollen</h2>
-        <p className="text-sm text-muted-foreground">
-          Alleen een super admin kan rollen toekennen of intrekken.
-        </p>
+        <h2 className="font-display text-xl font-bold">{t("admin.users.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("admin.users.subtitle")}</p>
       </div>
 
       <div className="space-y-3">
@@ -51,7 +51,8 @@ function UsersPage() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="font-medium">
-                  {[user.first_name, user.last_name].filter(Boolean).join(" ") || "Naamloos"}
+                  {[user.first_name, user.last_name].filter(Boolean).join(" ") ||
+                    t("admin.users.unnamed")}
                 </p>
                 <p className="text-sm text-muted-foreground">{user.email ?? "geen e-mailadres"}</p>
               </div>
@@ -63,7 +64,7 @@ function UsersPage() {
                     </Badge>
                   ))
                 ) : (
-                  <Badge variant="outline">Geen rol</Badge>
+                  <Badge variant="outline">{t("admin.users.noRole")}</Badge>
                 )}
               </div>
             </div>
@@ -88,7 +89,7 @@ function UsersPage() {
         ))}
         {(data ?? []).length === 0 ? (
           <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
-            Nog geen gebruikers.
+            {t("admin.users.empty")}
           </p>
         ) : null}
       </div>

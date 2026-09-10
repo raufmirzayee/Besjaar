@@ -46,6 +46,8 @@ import {
   statusTone,
 } from "@/components/admin/admin-ui";
 import { useCan } from "@/components/admin/admin-shell";
+import type { TranslationKey } from "@/lib/translations";
+import { useI18n } from "@/lib/i18n";
 import { downloadCsv, toCsv } from "@/lib/csv";
 import { adjustStock } from "@/lib/admin.functions";
 import {
@@ -97,14 +99,15 @@ export const Route = createFileRoute("/beheer/producten")({
 
 const PAGE_SIZE = 25;
 
-const SORT_LABELS: Record<ProductSort, string> = {
-  naam: "Naam A-Z",
-  nieuwste: "Nieuwste eerst",
-  "prijs-op": "Prijs laag → hoog",
-  "prijs-af": "Prijs hoog → laag",
-  "voorraad-op": "Voorraad laag → hoog",
-  "voorraad-af": "Voorraad hoog → laag",
-  verkocht: "Best verkocht",
+/** Keys, not labels: a module constant cannot call t(). */
+const SORT_LABELS: Record<ProductSort, TranslationKey> = {
+  naam: "admin.prod.sortNameAz",
+  nieuwste: "admin.prod.sortNewest",
+  "prijs-op": "admin.prod.sortPriceAsc",
+  "prijs-af": "admin.prod.sortPriceDesc",
+  "voorraad-op": "admin.prod.sortStockAsc",
+  "voorraad-af": "admin.prod.sortStockDesc",
+  verkocht: "admin.prod.sortBestSelling",
 };
 
 const EMPTY_FORM = {
@@ -200,6 +203,7 @@ function parseSpecs(raw: string): Record<string, string> {
 }
 
 function ProductsPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const queryClient = useQueryClient();
 
@@ -267,7 +271,7 @@ function ProductsPage() {
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: string }) => setStatus({ data: input }),
     onSuccess: () => {
-      toast.success("Status bijgewerkt");
+      toast.success(t("admin.prod.statusUpdated"));
       invalidate();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -276,7 +280,7 @@ function ProductsPage() {
   const duplicateMutation = useMutation({
     mutationFn: (id: string) => duplicate({ data: { id } }),
     onSuccess: (result: { id: string }) => {
-      toast.success("Product gedupliceerd als concept");
+      toast.success(t("admin.prod.duplicated"));
       invalidate();
       setOpenId(result.id);
     },
@@ -304,7 +308,7 @@ function ProductsPage() {
         },
       }),
     onSuccess: (result: { id: string }) => {
-      toast.success("Product aangemaakt");
+      toast.success(t("admin.prod.created"));
       setCreating(false);
       invalidate();
       setOpenId(result.id);
@@ -361,7 +365,7 @@ function ProductsPage() {
   const handleImportFile = async (file: File | null | undefined) => {
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("Bestand is groter dan 2 MB");
+      toast.error(t("admin.prod.fileTooBig"));
       return;
     }
     const text = await file.text();
@@ -411,10 +415,10 @@ function ProductsPage() {
   };
 
   const BULK_LABELS: Record<string, string> = {
-    status: "Archiveren",
-    restore: "Herstellen naar concept",
-    brand: "Merk wijzigen",
-    category: "Categorie wijzigen",
+    status: t("admin.prod.archive"),
+    restore: t("admin.prod.restoreToDraft"),
+    brand: t("admin.prod.changeBrand"),
+    category: t("admin.prod.changeCategory"),
     mapping: "bol.com-koppeling bijwerken",
   };
 
@@ -423,11 +427,11 @@ function ProductsPage() {
   return (
     <div>
       <PageHeader
-        title="Producten"
+        title={t("admin.prod.title")}
         description="Volledig assortimentbeheer: varianten, afbeeldingen, voorraad, SEO en bol.com-koppeling."
         actions={
           allow("products", "create") ? (
-            <Button onClick={() => setCreating(true)}>Product toevoegen</Button>
+            <Button onClick={() => setCreating(true)}>{t("admin.prod.addProduct")}</Button>
           ) : null
         }
       />
@@ -443,7 +447,7 @@ function ProductsPage() {
           <Input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Zoek op naam, SKU, EAN of slug"
+            placeholder={t("admin.prod.search")}
           />
         </form>
 
@@ -451,12 +455,12 @@ function ProductsPage() {
           value={filters.status ?? "alle-actief"}
           onValueChange={(v) => setFilters((f) => ({ ...f, status: v, page: 1 }))}
         >
-          <SelectTrigger aria-label="Status">
+          <SelectTrigger aria-label={t("admin.common.status")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle-actief">Alle (excl. archief)</SelectItem>
-            <SelectItem value="alle">Alles incl. archief</SelectItem>
+            <SelectItem value="alle-actief">{t("admin.prod.allExclArchived")}</SelectItem>
+            <SelectItem value="alle">{t("admin.prod.allInclArchived")}</SelectItem>
             {PRODUCT_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {PRODUCT_STATUS_LABELS[s]}
@@ -471,11 +475,11 @@ function ProductsPage() {
             setFilters((f) => ({ ...f, categoryId: v === "alle" ? null : v, page: 1 }))
           }
         >
-          <SelectTrigger aria-label="Categorie">
-            <SelectValue placeholder="Categorie" />
+          <SelectTrigger aria-label={t("admin.prod.category")}>
+            <SelectValue placeholder={t("admin.prod.category")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle categorieën</SelectItem>
+            <SelectItem value="alle">{t("admin.prod.allCategories")}</SelectItem>
             {categoryOptions.map((c) => (
               <SelectItem key={c.id} value={c.id}>
                 {c.name}
@@ -494,7 +498,7 @@ function ProductsPage() {
             <SelectValue placeholder="Merk" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle merken</SelectItem>
+            <SelectItem value="alle">{t("admin.prod.allBrands")}</SelectItem>
             {brandOptions.map((b) => (
               <SelectItem key={b.id} value={b.id}>
                 {b.name}
@@ -509,14 +513,14 @@ function ProductsPage() {
             setFilters((f) => ({ ...f, stock: v as ProductFilters["stock"], page: 1 }))
           }
         >
-          <SelectTrigger aria-label="Voorraad">
+          <SelectTrigger aria-label={t("admin.common.stock")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle voorraad</SelectItem>
-            <SelectItem value="laag">Lage voorraad</SelectItem>
-            <SelectItem value="uitverkocht">Uitverkocht</SelectItem>
-            <SelectItem value="voorradig">Op voorraad</SelectItem>
+            <SelectItem value="alle">{t("admin.prod.allStock")}</SelectItem>
+            <SelectItem value="laag">{t("admin.prod.lowStock")}</SelectItem>
+            <SelectItem value="uitverkocht">{t("admin.prod.soldOut")}</SelectItem>
+            <SelectItem value="voorradig">{t("admin.prod.inStock")}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -524,28 +528,25 @@ function ProductsPage() {
           value={filters.sort ?? "naam"}
           onValueChange={(v) => setFilters((f) => ({ ...f, sort: v as ProductSort, page: 1 }))}
         >
-          <SelectTrigger aria-label="Sortering">
+          <SelectTrigger aria-label={t("admin.prod.sorting")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {Object.entries(SORT_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>
-                {label}
+                {t(label)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {query.isPending ? <LoadingState label="Producten laden…" /> : null}
+      {query.isPending ? <LoadingState label={t("admin.prod.loading")} /> : null}
       {query.error ? (
         <ErrorState message={(query.error as Error).message} onRetry={() => query.refetch()} />
       ) : null}
       {query.data && rows.length === 0 ? (
-        <EmptyState
-          title="Geen producten gevonden"
-          description="Pas de filters aan of voeg een product toe."
-        />
+        <EmptyState title={t("admin.prod.empty")} description={t("admin.prod.emptyHint")} />
       ) : null}
 
       {selected.length ? (
@@ -558,8 +559,8 @@ function ProductsPage() {
               setBulkValue("");
             }}
           >
-            <SelectTrigger className="w-[230px]" aria-label="Bulkactie">
-              <SelectValue placeholder="Bulkactie kiezen…" />
+            <SelectTrigger className="w-[230px]" aria-label={t("admin.prod.bulkAction")}>
+              <SelectValue placeholder={t("admin.prod.chooseBulk")} />
             </SelectTrigger>
             <SelectContent>
               {allow("products", "archive") ? (
@@ -589,7 +590,7 @@ function ProductsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Geen merk</SelectItem>
+                <SelectItem value="none">{t("admin.prod.noBrand")}</SelectItem>
                 {brandOptions.map((b) => (
                   <SelectItem key={b.id} value={b.id}>
                     {b.name}
@@ -604,11 +605,11 @@ function ProductsPage() {
               value={bulkValue || "none"}
               onValueChange={(v) => setBulkValue(v === "none" ? "" : v)}
             >
-              <SelectTrigger className="w-[220px]" aria-label="Categorie">
+              <SelectTrigger className="w-[220px]" aria-label={t("admin.prod.category")}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Geen categorie</SelectItem>
+                <SelectItem value="none">{t("admin.prod.noCategory")}</SelectItem>
                 {categoryOptions.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -625,21 +626,21 @@ function ProductsPage() {
                   checked={bulkMapping.active}
                   onCheckedChange={(v) => setBulkMapping((m) => ({ ...m, active: v }))}
                 />
-                Koppeling actief
+                {t("admin.prod.listingActive")}
               </label>
               <label className="flex items-center gap-2">
                 <Switch
                   checked={bulkMapping.price}
                   onCheckedChange={(v) => setBulkMapping((m) => ({ ...m, price: v }))}
                 />
-                Prijssync
+                {t("admin.prod.priceSync")}
               </label>
               <label className="flex items-center gap-2">
                 <Switch
                   checked={bulkMapping.stock}
                   onCheckedChange={(v) => setBulkMapping((m) => ({ ...m, stock: v }))}
                 />
-                Voorraadsync
+                {t("admin.prod.stockSync")}
               </label>
             </div>
           ) : null}
@@ -649,7 +650,7 @@ function ProductsPage() {
             disabled={!bulkKind || bulkMutation.isPending}
             onClick={() => setConfirmBulk(true)}
           >
-            Toepassen
+            {t("admin.prod.apply")}
           </Button>
           <Button
             size="sm"
@@ -657,7 +658,7 @@ function ProductsPage() {
             disabled={exportMutation.isPending}
             onClick={() => exportMutation.mutate(selected)}
           >
-            {exportMutation.isPending ? "Exporteren…" : "Exporteer CSV"}
+            {exportMutation.isPending ? t("admin.prod.exporting") : t("admin.prod.exportCsv")}
           </Button>
           <label>
             <input
@@ -674,7 +675,7 @@ function ProductsPage() {
               className="inline-flex h-9 cursor-pointer items-center rounded-md border border-border px-3 text-sm font-medium hover:bg-muted"
               role="button"
             >
-              {importMutation.isPending ? "Importeren…" : "Importeer CSV"}
+              {importMutation.isPending ? t("admin.prod.importing") : t("admin.prod.importCsv")}
             </span>
           </label>
           <Button
@@ -684,10 +685,10 @@ function ProductsPage() {
               downloadCsv("besjaar-import-sjabloon.csv", toCsv([[...IMPORT_TEMPLATE_HEADER]]))
             }
           >
-            Sjabloon
+            {t("admin.prod.templateFile")}
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setSelected([])}>
-            Selectie wissen
+            {t("admin.prod.clearSelection")}
           </Button>
         </div>
       ) : null}
@@ -695,18 +696,18 @@ function ProductsPage() {
       <Dialog open={Boolean(importReport)} onOpenChange={(open) => !open && setImportReport(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Importrapport</DialogTitle>
+            <DialogTitle>{t("admin.prod.importReport")}</DialogTitle>
           </DialogHeader>
           {importReport ? (
             <div className="space-y-4 text-sm">
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {[
-                  ["Regels in bestand", importReport.totalLines],
-                  ["Verwerkt", importReport.processed],
-                  ["Producten bijgewerkt", importReport.productsUpdated],
-                  ["Varianten bijgewerkt", importReport.variantsUpdated],
+                  [t("admin.prod.rowsInFile"), importReport.totalLines],
+                  [t("admin.prod.processed"), importReport.processed],
+                  [t("admin.prod.bulkUpdated"), importReport.productsUpdated],
+                  [t("admin.prod.variantsUpdated"), importReport.variantsUpdated],
                   ["bol.com-koppelingen", importReport.listingsUpdated],
-                  ["Voorraadmutaties", importReport.stockMutations],
+                  [t("admin.nav.stockMovements"), importReport.stockMutations],
                 ].map(([label, value]) => (
                   <div key={String(label)} className="rounded-lg border border-border p-3">
                     <p className="text-xs text-muted-foreground">{label}</p>
@@ -724,9 +725,9 @@ function ProductsPage() {
                     <table className="w-full text-xs">
                       <thead className="border-b border-border text-left text-muted-foreground">
                         <tr>
-                          <th className="p-2">Regel</th>
-                          <th className="p-2">Product</th>
-                          <th className="p-2">Melding</th>
+                          <th className="p-2">{t("admin.prod.row")}</th>
+                          <th className="p-2">{t("admin.common.product")}</th>
+                          <th className="p-2">{t("admin.prod.message")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -757,17 +758,17 @@ function ProductsPage() {
                       )
                     }
                   >
-                    Download foutenrapport
+                    {t("admin.prod.downloadErrors")}
                   </Button>
                 </div>
               ) : (
-                <p className="text-muted-foreground">Alle regels zijn zonder fouten verwerkt.</p>
+                <p className="text-muted-foreground">{t("admin.prod.importClean")}</p>
               )}
             </div>
           ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setImportReport(null)}>
-              Sluiten
+              {t("admin.common.close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -776,10 +777,8 @@ function ProductsPage() {
       <section className="rounded-xl border border-border bg-card">
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border p-4">
           <div>
-            <h2 className="font-medium">Importgeschiedenis</h2>
-            <p className="text-xs text-muted-foreground">
-              De laatste 25 CSV-imports met bestandsnaam, resultaat en foutenrapport.
-            </p>
+            <h2 className="font-medium">{t("admin.prod.importHistory")}</h2>
+            <p className="text-xs text-muted-foreground">{t("admin.prod.importHistoryHint")}</p>
           </div>
           <Button
             size="sm"
@@ -787,7 +786,7 @@ function ProductsPage() {
             disabled={importRunsQuery.isFetching}
             onClick={() => void importRunsQuery.refetch()}
           >
-            Verversen
+            {t("admin.prod.refresh")}
           </Button>
         </header>
         {importRunsQuery.isLoading ? (
@@ -795,20 +794,20 @@ function ProductsPage() {
             <LoadingState />
           </div>
         ) : (importRunsQuery.data ?? []).length === 0 ? (
-          <p className="p-4 text-sm text-muted-foreground">Er zijn nog geen imports uitgevoerd.</p>
+          <p className="p-4 text-sm text-muted-foreground">{t("admin.prod.noImports")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
                 <tr>
-                  <th className="p-3">Datum</th>
-                  <th className="p-3">Bestand</th>
-                  <th className="p-3">Door</th>
-                  <th className="p-3 text-right">Regels</th>
-                  <th className="p-3 text-right">Ingelezen producten</th>
-                  <th className="p-3 text-right">Varianten</th>
-                  <th className="p-3 text-right">Koppelingen</th>
-                  <th className="p-3 text-right">Fouten</th>
+                  <th className="p-3">{t("admin.common.date")}</th>
+                  <th className="p-3">{t("admin.prod.file")}</th>
+                  <th className="p-3">{t("admin.prod.by")}</th>
+                  <th className="p-3 text-right">{t("admin.prod.rows")}</th>
+                  <th className="p-3 text-right">{t("admin.prod.rowsRead")}</th>
+                  <th className="p-3 text-right">{t("admin.prod.variants")}</th>
+                  <th className="p-3 text-right">{t("admin.prod.listings")}</th>
+                  <th className="p-3 text-right">{t("admin.prod.errors")}</th>
                   <th className="p-3" />
                 </tr>
               </thead>
@@ -846,7 +845,7 @@ function ProductsPage() {
                             )
                           }
                         >
-                          Foutenrapport
+                          {t("admin.prod.errorReport")}
                         </Button>
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
@@ -869,16 +868,16 @@ function ProductsPage() {
                   <Checkbox
                     checked={allSelected}
                     onCheckedChange={toggleAll}
-                    aria-label="Alles selecteren"
+                    aria-label={t("admin.prod.selectAll")}
                   />
                 </th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Status</th>
-                <th className="p-3 text-right">Prijs</th>
-                <th className="p-3 text-right">Voorraad</th>
-                <th className="p-3 text-right">Verkocht</th>
-                <th className="p-3">Kanaal</th>
-                <th className="p-3 text-right">Acties</th>
+                <th className="p-3">{t("admin.common.product")}</th>
+                <th className="p-3">{t("admin.common.status")}</th>
+                <th className="p-3 text-right">{t("admin.common.price")}</th>
+                <th className="p-3 text-right">{t("admin.common.stock")}</th>
+                <th className="p-3 text-right">{t("admin.prod.sold")}</th>
+                <th className="p-3">{t("admin.prod.channel")}</th>
+                <th className="p-3 text-right">{t("admin.common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -945,13 +944,15 @@ function ProductsPage() {
                     {p.bol_linked ? (
                       <StatusBadge tone="info" label="bol.com" />
                     ) : (
-                      <span className="text-xs text-muted-foreground">Alleen webshop</span>
+                      <span className="text-xs text-muted-foreground">
+                        {t("admin.prod.webshopOnly")}
+                      </span>
                     )}
                   </td>
                   <td className="p-3">
                     <div className="flex justify-end gap-1">
                       <Button size="sm" variant="outline" onClick={() => setOpenId(p.id)}>
-                        Beheren
+                        {t("admin.prod.manage")}
                       </Button>
                       {allow("products", "create") ? (
                         <Button
@@ -960,7 +961,7 @@ function ProductsPage() {
                           disabled={duplicateMutation.isPending}
                           onClick={() => duplicateMutation.mutate(p.id)}
                         >
-                          Dupliceren
+                          {t("admin.prod.duplicate")}
                         </Button>
                       ) : null}
                       {allow("products", "archive") && p.status !== "archived" ? (
@@ -969,7 +970,7 @@ function ProductsPage() {
                           variant="ghost"
                           onClick={() => statusMutation.mutate({ id: p.id, status: "archived" })}
                         >
-                          Archiveren
+                          {t("admin.prod.archive")}
                         </Button>
                       ) : null}
                       {allow("products", "archive") && p.status === "archived" ? (
@@ -978,7 +979,7 @@ function ProductsPage() {
                           variant="ghost"
                           onClick={() => statusMutation.mutate({ id: p.id, status: "draft" })}
                         >
-                          Herstellen
+                          {t("admin.prod.restore")}
                         </Button>
                       ) : null}
                     </div>
@@ -1001,7 +1002,7 @@ function ProductsPage() {
       <Dialog open={creating} onOpenChange={(open) => !open && setCreating(false)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Nieuw product</DialogTitle>
+            <DialogTitle>{t("admin.prod.new")}</DialogTitle>
           </DialogHeader>
           <NewProductForm
             categories={categoryOptions}
@@ -1016,14 +1017,14 @@ function ProductsPage() {
       <AlertDialog open={confirmBulk} onOpenChange={setConfirmBulk}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Bulkactie bevestigen</AlertDialogTitle>
+            <AlertDialogTitle>{t("admin.prod.confirmBulk")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {BULK_LABELS[bulkKind] ?? "Actie"} wordt toegepast op {selected.length} product(en).
-              Deze wijziging wordt vastgelegd in het auditlog.
+              {BULK_LABELS[bulkKind] ?? t("admin.common.action")} wordt toegepast op{" "}
+              {selected.length} product(en). Deze wijziging wordt vastgelegd in het auditlog.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuleren</AlertDialogCancel>
+            <AlertDialogCancel>{t("admin.common.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(e) => {
                 e.preventDefault();
@@ -1031,7 +1032,7 @@ function ProductsPage() {
                 if (payload) bulkMutation.mutate(payload);
               }}
             >
-              {bulkMutation.isPending ? "Bezig…" : "Toepassen"}
+              {bulkMutation.isPending ? t("admin.common.busy") : t("admin.prod.apply")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1041,7 +1042,7 @@ function ProductsPage() {
       <Dialog open={Boolean(openId)} onOpenChange={(open) => !open && setOpenId(null)}>
         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{detailQuery.data?.name ?? "Product beheren"}</DialogTitle>
+            <DialogTitle>{detailQuery.data?.name ?? t("admin.prod.manageProduct")}</DialogTitle>
           </DialogHeader>
           {detailQuery.isPending ? <LoadingState /> : null}
           {detailQuery.data ? (
@@ -1071,18 +1072,19 @@ function NewProductForm({
   onSubmit: (form: FormState) => void;
   onCancel: () => void;
 }) {
+  const { t } = useI18n();
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }));
 
   return (
     <div className="space-y-3">
       <div>
-        <Label htmlFor="new-name">Naam *</Label>
+        <Label htmlFor="new-name">{t("admin.prod.nameRequired")}</Label>
         <Input id="new-name" value={form.name} onChange={(e) => set({ name: e.target.value })} />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <Label htmlFor="new-price">Prijs *</Label>
+          <Label htmlFor="new-price">{t("admin.prod.priceRequired")}</Label>
           <Input
             id="new-price"
             value={form.regular_price}
@@ -1090,7 +1092,7 @@ function NewProductForm({
           />
         </div>
         <div>
-          <Label htmlFor="new-stock">Voorraad</Label>
+          <Label htmlFor="new-stock">{t("admin.common.stock")}</Label>
           <Input
             id="new-stock"
             value={form.stock_quantity}
@@ -1098,7 +1100,7 @@ function NewProductForm({
           />
         </div>
         <div>
-          <Label htmlFor="new-sku">Interne SKU</Label>
+          <Label htmlFor="new-sku">{t("admin.prod.internalSku")}</Label>
           <Input
             id="new-sku"
             value={form.internal_sku}
@@ -1116,10 +1118,10 @@ function NewProductForm({
             onValueChange={(v) => set({ brand_id: v === "geen" ? "" : v })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Kies merk" />
+              <SelectValue placeholder={t("admin.prod.pickBrand")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="geen">Geen merk</SelectItem>
+              <SelectItem value="geen">{t("admin.prod.noBrand")}</SelectItem>
               {brands.map((b) => (
                 <SelectItem key={b.id} value={b.id}>
                   {b.name}
@@ -1129,16 +1131,16 @@ function NewProductForm({
           </Select>
         </div>
         <div>
-          <Label>Categorie</Label>
+          <Label>{t("admin.prod.category")}</Label>
           <Select
             value={form.category_id || "geen"}
             onValueChange={(v) => set({ category_id: v === "geen" ? "" : v })}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Kies categorie" />
+              <SelectValue placeholder={t("admin.prod.pickCategory")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="geen">Geen categorie</SelectItem>
+              <SelectItem value="geen">{t("admin.prod.noCategory")}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
@@ -1149,7 +1151,7 @@ function NewProductForm({
         </div>
       </div>
       <div>
-        <Label htmlFor="new-short">Korte omschrijving</Label>
+        <Label htmlFor="new-short">{t("admin.prod.shortDescription")}</Label>
         <Textarea
           id="new-short"
           value={form.short_description}
@@ -1158,10 +1160,10 @@ function NewProductForm({
       </div>
       <DialogFooter>
         <Button variant="outline" onClick={onCancel}>
-          Annuleren
+          {t("admin.common.cancel")}
         </Button>
         <Button disabled={pending} onClick={() => onSubmit(form)}>
-          {pending ? "Opslaan…" : "Aanmaken"}
+          {pending ? t("admin.common.saving") : t("admin.common.create")}
         </Button>
       </DialogFooter>
     </div>
@@ -1179,6 +1181,7 @@ function ProductEditor({
   brands: ProductPickerOptions["brands"];
   onChanged: () => void;
 }) {
+  const { t } = useI18n();
   const allow = useCan();
   const save = useServerFn(upsertProduct);
   const saveVariantFn = useServerFn(upsertVariant);
@@ -1238,7 +1241,7 @@ function ProductEditor({
         },
       }),
     onSuccess: () => {
-      toast.success("Product opgeslagen");
+      toast.success(t("admin.prod.saved"));
       onChanged();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -1268,8 +1271,8 @@ function ProductEditor({
   return (
     <Tabs defaultValue="algemeen">
       <TabsList className="flex w-full flex-wrap">
-        <TabsTrigger value="algemeen">Algemeen</TabsTrigger>
-        <TabsTrigger value="prijs">Prijs & voorraad</TabsTrigger>
+        <TabsTrigger value="algemeen">{t("admin.prod.general")}</TabsTrigger>
+        <TabsTrigger value="prijs">{t("admin.prod.priceAndStock")}</TabsTrigger>
         <TabsTrigger value="varianten">Varianten ({product.variants.length})</TabsTrigger>
         <TabsTrigger value="media">Afbeeldingen ({product.images.length})</TabsTrigger>
         <TabsTrigger value="seo">SEO</TabsTrigger>
@@ -1279,7 +1282,7 @@ function ProductEditor({
       <TabsContent value="algemeen" className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
-            <Label>Naam *</Label>
+            <Label>{t("admin.prod.nameRequired")}</Label>
             <Input value={form.name} onChange={(e) => set({ name: e.target.value })} />
           </div>
           <div>
@@ -1287,7 +1290,7 @@ function ProductEditor({
             <Input value={form.slug} onChange={(e) => set({ slug: e.target.value })} />
           </div>
           <div>
-            <Label>Status</Label>
+            <Label>{t("admin.common.status")}</Label>
             <Select value={form.status} onValueChange={(v) => set({ status: v })}>
               <SelectTrigger>
                 <SelectValue />
@@ -1311,7 +1314,7 @@ function ProductEditor({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="geen">Geen merk</SelectItem>
+                <SelectItem value="geen">{t("admin.prod.noBrand")}</SelectItem>
                 {brands.map((b) => (
                   <SelectItem key={b.id} value={b.id}>
                     {b.name}
@@ -1321,7 +1324,7 @@ function ProductEditor({
             </Select>
           </div>
           <div>
-            <Label>Categorie</Label>
+            <Label>{t("admin.prod.category")}</Label>
             <Select
               value={form.category_id || "geen"}
               onValueChange={(v) => set({ category_id: v === "geen" ? "" : v })}
@@ -1330,7 +1333,7 @@ function ProductEditor({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="geen">Geen categorie</SelectItem>
+                <SelectItem value="geen">{t("admin.prod.noCategory")}</SelectItem>
                 {categories.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -1340,14 +1343,14 @@ function ProductEditor({
             </Select>
           </div>
           <div>
-            <Label>Interne SKU</Label>
+            <Label>{t("admin.prod.internalSku")}</Label>
             <Input
               value={form.internal_sku}
               onChange={(e) => set({ internal_sku: e.target.value })}
             />
           </div>
           <div>
-            <Label>Leverancier-SKU</Label>
+            <Label>{t("admin.prod.supplierSku")}</Label>
             <Input
               value={form.supplier_sku}
               onChange={(e) => set({ supplier_sku: e.target.value })}
@@ -1359,14 +1362,14 @@ function ProductEditor({
           </div>
         </div>
         <div>
-          <Label>Korte omschrijving</Label>
+          <Label>{t("admin.prod.shortDescription")}</Label>
           <Textarea
             value={form.short_description}
             onChange={(e) => set({ short_description: e.target.value })}
           />
         </div>
         <div>
-          <Label>Volledige omschrijving</Label>
+          <Label>{t("admin.prod.fullDescription")}</Label>
           <Textarea
             rows={5}
             value={form.full_description}
@@ -1383,7 +1386,7 @@ function ProductEditor({
             />
           </div>
           <div>
-            <Label>Specificaties (naam: waarde)</Label>
+            <Label>{t("admin.prod.specifications")}</Label>
             <Textarea
               rows={4}
               value={form.specifications}
@@ -1394,18 +1397,18 @@ function ProductEditor({
         <div className="flex flex-wrap gap-6">
           <label className="flex items-center gap-2 text-sm">
             <Switch checked={form.featured} onCheckedChange={(v) => set({ featured: v })} />
-            Uitgelicht
+            {t("admin.prod.featured")}
           </label>
           <label className="flex items-center gap-2 text-sm">
             <Switch checked={form.bestseller} onCheckedChange={(v) => set({ bestseller: v })} />
-            Bestseller
+            {t("admin.prod.bestseller")}
           </label>
           <label className="flex items-center gap-2 text-sm">
             <Switch
               checked={form.return_eligible}
               onCheckedChange={(v) => set({ return_eligible: v })}
             />
-            Retour mogelijk
+            {t("admin.prod.returnable")}
           </label>
         </div>
         <SaveBar
@@ -1417,66 +1420,66 @@ function ProductEditor({
       <TabsContent value="prijs" className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-3">
           <div>
-            <Label>Prijs *</Label>
+            <Label>{t("admin.prod.priceRequired")}</Label>
             <Input
               value={form.regular_price}
               onChange={(e) => set({ regular_price: e.target.value })}
             />
           </div>
           <div>
-            <Label>Actieprijs</Label>
+            <Label>{t("admin.prod.salePrice")}</Label>
             <Input value={form.sale_price} onChange={(e) => set({ sale_price: e.target.value })} />
           </div>
           <div>
-            <Label>Inkoopprijs</Label>
+            <Label>{t("admin.prod.costPrice")}</Label>
             <Input
               value={form.purchase_cost}
               onChange={(e) => set({ purchase_cost: e.target.value })}
             />
           </div>
           <div>
-            <Label>Btw %</Label>
+            <Label>{t("admin.prod.vat")}</Label>
             <Input value={form.vat_rate} onChange={(e) => set({ vat_rate: e.target.value })} />
           </div>
           <div>
-            <Label>Drempel lage voorraad</Label>
+            <Label>{t("admin.prod.lowStockThreshold")}</Label>
             <Input
               value={form.low_stock_threshold}
               onChange={(e) => set({ low_stock_threshold: e.target.value })}
             />
           </div>
           <div>
-            <Label>Veiligheidsvoorraad</Label>
+            <Label>{t("admin.prod.safetyStock")}</Label>
             <Input
               value={form.safety_stock}
               onChange={(e) => set({ safety_stock: e.target.value })}
             />
           </div>
           <div>
-            <Label>Gewicht (kg)</Label>
+            <Label>{t("admin.prod.weight")}</Label>
             <Input value={form.weight} onChange={(e) => set({ weight: e.target.value })} />
           </div>
           <div>
-            <Label>Lengte (cm)</Label>
+            <Label>{t("admin.prod.length")}</Label>
             <Input value={form.length} onChange={(e) => set({ length: e.target.value })} />
           </div>
           <div>
-            <Label>Breedte (cm)</Label>
+            <Label>{t("admin.prod.width")}</Label>
             <Input value={form.width} onChange={(e) => set({ width: e.target.value })} />
           </div>
           <div>
-            <Label>Hoogte (cm)</Label>
+            <Label>{t("admin.prod.height")}</Label>
             <Input value={form.height} onChange={(e) => set({ height: e.target.value })} />
           </div>
           <div>
-            <Label>Verzendklasse</Label>
+            <Label>{t("admin.prod.shippingClass")}</Label>
             <Input
               value={form.shipping_class}
               onChange={(e) => set({ shipping_class: e.target.value })}
             />
           </div>
           <div>
-            <Label>Garantie (maanden)</Label>
+            <Label>{t("admin.prod.warrantyMonths")}</Label>
             <Input
               value={form.warranty_months}
               onChange={(e) => set({ warranty_months: e.target.value })}
@@ -1488,12 +1491,12 @@ function ProductEditor({
           <p className="text-sm font-medium">Huidige voorraad: {product.stock_quantity} stuks</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             <Input
-              placeholder="Mutatie (bijv. 10 of -3)"
+              placeholder={t("admin.prod.movement")}
               value={stockChange}
               onChange={(e) => setStockChange(e.target.value)}
             />
             <Input
-              placeholder="Notitie"
+              placeholder={t("admin.prod.note")}
               value={stockNote}
               onChange={(e) => setStockNote(e.target.value)}
             />
@@ -1502,7 +1505,7 @@ function ProductEditor({
               onClick={() => {
                 const change = num(stockChange);
                 if (!change) {
-                  toast.error("Voer een aantal in dat niet 0 is");
+                  toast.error(t("admin.prod.nonZero"));
                   return;
                 }
                 void act(
@@ -1515,14 +1518,14 @@ function ProductEditor({
                         note: stockNote || null,
                       },
                     }),
-                  "Voorraad bijgewerkt",
+                  t("admin.prod.stockUpdated"),
                 ).then(() => {
                   setStockChange("");
                   setStockNote("");
                 });
               }}
             >
-              Voorraad muteren
+              {t("admin.prod.adjustStock")}
             </Button>
           </div>
         </div>
@@ -1539,10 +1542,10 @@ function ProductEditor({
             <table className="w-full text-sm">
               <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
                 <tr>
-                  <th className="p-2">Variant</th>
+                  <th className="p-2">{t("admin.prod.variant")}</th>
                   <th className="p-2">SKU / EAN</th>
-                  <th className="p-2 text-right">Prijs</th>
-                  <th className="p-2 text-right">Voorraad</th>
+                  <th className="p-2 text-right">{t("admin.common.price")}</th>
+                  <th className="p-2 text-right">{t("admin.common.stock")}</th>
                   <th className="p-2" />
                 </tr>
               </thead>
@@ -1565,11 +1568,11 @@ function ProductEditor({
                           onClick={() =>
                             void act(
                               () => deleteVariantFn({ data: { id: v.id } }),
-                              "Variant verwijderd",
+                              t("admin.prod.variantRemoved"),
                             )
                           }
                         >
-                          Verwijderen
+                          {t("admin.common.delete")}
                         </Button>
                       ) : null}
                     </td>
@@ -1579,13 +1582,13 @@ function ProductEditor({
             </table>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">Nog geen varianten.</p>
+          <p className="text-sm text-muted-foreground">{t("admin.prod.noVariants")}</p>
         )}
 
         {canEdit ? (
           <div className="grid gap-2 rounded-xl border border-border p-3 sm:grid-cols-5">
             <Input
-              placeholder="Naam"
+              placeholder={t("admin.common.name")}
               value={variant.variant_name}
               onChange={(e) => setVariant((v) => ({ ...v, variant_name: e.target.value }))}
             />
@@ -1600,7 +1603,7 @@ function ProductEditor({
               onChange={(e) => setVariant((v) => ({ ...v, ean: e.target.value }))}
             />
             <Input
-              placeholder="Prijs"
+              placeholder={t("admin.common.price")}
               value={variant.regular_price}
               onChange={(e) => setVariant((v) => ({ ...v, regular_price: e.target.value }))}
             />
@@ -1619,7 +1622,7 @@ function ProductEditor({
                         sort_order: product.variants.length,
                       },
                     }),
-                  "Variant toegevoegd",
+                  t("admin.prod.variantAdded"),
                 ).then(() =>
                   setVariant({
                     variant_name: "",
@@ -1631,7 +1634,7 @@ function ProductEditor({
                 )
               }
             >
-              Toevoegen
+              {t("admin.prod.add")}
             </Button>
           </div>
         ) : null}
@@ -1648,11 +1651,11 @@ function ProductEditor({
                 loading="lazy"
               />
               <p className="mt-1 truncate text-xs text-muted-foreground">
-                {img.alt_text ?? "Geen alt-tekst"}
+                {img.alt_text ?? t("admin.prod.noAltText")}
               </p>
               <div className="mt-2 flex flex-wrap gap-1">
                 {img.is_main ? (
-                  <StatusBadge tone="success" label="Hoofdafbeelding" />
+                  <StatusBadge tone="success" label={t("admin.prod.mainImage")} />
                 ) : canEdit ? (
                   <Button
                     size="sm"
@@ -1660,11 +1663,11 @@ function ProductEditor({
                     onClick={() =>
                       void act(
                         () => mainImage({ data: { productId: product.id, imageId: img.id } }),
-                        "Hoofdafbeelding ingesteld",
+                        t("admin.prod.mainImageSet"),
                       )
                     }
                   >
-                    Hoofd
+                    {t("admin.prod.main")}
                   </Button>
                 ) : null}
                 {canEdit ? (
@@ -1677,7 +1680,7 @@ function ProductEditor({
                         void act(
                           () =>
                             moveImage({ data: { imageId: img.id, sortOrder: img.sort_order - 1 } }),
-                          "Volgorde bijgewerkt",
+                          t("admin.prod.orderUpdated"),
                         )
                       }
                     >
@@ -1690,7 +1693,7 @@ function ProductEditor({
                         void act(
                           () =>
                             moveImage({ data: { imageId: img.id, sortOrder: img.sort_order + 1 } }),
-                          "Volgorde bijgewerkt",
+                          t("admin.prod.orderUpdated"),
                         )
                       }
                     >
@@ -1702,11 +1705,11 @@ function ProductEditor({
                       onClick={() =>
                         void act(
                           () => deleteImage({ data: { imageId: img.id } }),
-                          "Afbeelding verwijderd",
+                          t("admin.prod.imageRemoved"),
                         )
                       }
                     >
-                      Verwijderen
+                      {t("admin.common.delete")}
                     </Button>
                   </>
                 ) : null}
@@ -1723,7 +1726,7 @@ function ProductEditor({
               onChange={(e) => setImageUrl(e.target.value)}
             />
             <Input
-              placeholder="Alt-tekst"
+              placeholder={t("admin.prod.altText")}
               value={imageAlt}
               onChange={(e) => setImageAlt(e.target.value)}
             />
@@ -1740,14 +1743,14 @@ function ProductEditor({
                         is_main: product.images.length === 0,
                       },
                     }),
-                  "Afbeelding toegevoegd",
+                  t("admin.prod.imageAdded"),
                 ).then(() => {
                   setImageUrl("");
                   setImageAlt("");
                 })
               }
             >
-              Afbeelding toevoegen
+              {t("admin.prod.addImage")}
             </Button>
           </div>
         ) : null}
@@ -1770,7 +1773,7 @@ function ProductEditor({
           </p>
         </div>
         <div>
-          <Label>Zoekwoorden</Label>
+          <Label>{t("admin.prod.keywords")}</Label>
           <Input
             value={form.search_keywords}
             onChange={(e) => set({ search_keywords: e.target.value })}
@@ -1803,7 +1806,7 @@ function ProductEditor({
                 <div className="flex items-center gap-2">
                   <StatusBadge
                     tone={l.is_active ? "success" : "muted"}
-                    label={l.is_active ? "Actief" : "Inactief"}
+                    label={l.is_active ? t("admin.prod.active") : t("admin.prod.inactive")}
                   />
                   {allow("bol", "edit") ? (
                     <Button
@@ -1812,11 +1815,11 @@ function ProductEditor({
                       onClick={() =>
                         void act(
                           () => deleteListingFn({ data: { id: l.id } }),
-                          "Koppeling verwijderd",
+                          t("admin.prod.listingRemoved"),
                         )
                       }
                     >
-                      Ontkoppelen
+                      {t("admin.prod.unlink")}
                     </Button>
                   ) : null}
                 </div>
@@ -1824,9 +1827,7 @@ function ProductEditor({
             ))}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            Dit product is nog niet gekoppeld aan bol.com.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("admin.prod.notLinkedBol")}</p>
         )}
 
         {allow("bol", "edit") ? (
@@ -1842,7 +1843,7 @@ function ProductEditor({
               onChange={(e) => setListing((l) => ({ ...l, offer: e.target.value }))}
             />
             <Input
-              placeholder="Kanaalprijs (optioneel)"
+              placeholder={t("admin.prod.channelPrice")}
               value={listing.price}
               onChange={(e) => setListing((l) => ({ ...l, price: e.target.value }))}
             />
@@ -1863,7 +1864,7 @@ function ProductEditor({
                 ).then(() => setListing({ ean: product.ean ?? "", offer: "", price: "" }))
               }
             >
-              Koppelen
+              {t("admin.prod.link")}
             </Button>
           </div>
         ) : null}
@@ -1873,10 +1874,11 @@ function ProductEditor({
 }
 
 function SaveBar({ disabled, onSave }: { disabled: boolean; onSave: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="flex justify-end border-t border-border pt-3">
       <Button disabled={disabled} onClick={onSave}>
-        Opslaan
+        {t("admin.common.save")}
       </Button>
     </div>
   );

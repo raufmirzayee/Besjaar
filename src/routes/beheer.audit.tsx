@@ -14,6 +14,8 @@ import {
   Pager,
 } from "@/components/admin/admin-ui";
 import { useCan } from "@/components/admin/admin-shell";
+import type { TranslationKey } from "@/lib/translations";
+import { useI18n } from "@/lib/i18n";
 import { getAuditLogs } from "@/lib/admin-extra.functions";
 import type { AuditRow } from "@/lib/admin-extra.server";
 import { MODULE_LABELS } from "@/lib/admin-access";
@@ -25,6 +27,7 @@ export const Route = createFileRoute("/beheer/audit")({
 const PAGE_SIZE = 25;
 
 function AuditPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const fetchLogs = useServerFn(getAuditLogs);
   const [search, setSearch] = useState("");
@@ -49,13 +52,13 @@ function AuditPage() {
   return (
     <div>
       <PageHeader
-        title="Audit logs"
+        title={t("admin.audit.title")}
         description="Onveranderlijke registratie van alle wijzigingen: wie, wat, wanneer en de oude en nieuwe waarde."
       />
 
       <div className="mb-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <Label htmlFor="audit-search">Zoeken</Label>
+          <Label htmlFor="audit-search">{t("admin.common.search")}</Label>
           <Input
             id="audit-search"
             value={search}
@@ -63,11 +66,11 @@ function AuditPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Gebruiker, actie of object"
+            placeholder={t("admin.audit.searchPlaceholder")}
           />
         </div>
         <div>
-          <Label htmlFor="audit-module">Module</Label>
+          <Label htmlFor="audit-module">{t("admin.audit.module")}</Label>
           <select
             id="audit-module"
             value={module}
@@ -77,10 +80,10 @@ function AuditPage() {
             }}
             className="mt-1 h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
           >
-            <option value="alle">Alle modules</option>
+            <option value="alle">{t("admin.audit.allModules")}</option>
             {Object.entries(MODULE_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
-                {label}
+                {t(label as TranslationKey)}
               </option>
             ))}
           </select>
@@ -90,7 +93,7 @@ function AuditPage() {
       {isPending ? <LoadingState /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}
       {data && rows.length === 0 ? (
-        <EmptyState title="Geen logregels" description="Er zijn geen wijzigingen die matchen." />
+        <EmptyState title={t("admin.audit.empty")} description={t("admin.audit.noMatch")} />
       ) : null}
 
       {rows.length ? (
@@ -100,7 +103,9 @@ function AuditPage() {
               <summary className="flex cursor-pointer flex-wrap items-center gap-2 text-sm">
                 <span className="font-medium">{row.action}</span>
                 <span className="text-muted-foreground">
-                  {MODULE_LABELS[row.module as keyof typeof MODULE_LABELS] ?? row.module}
+                  {MODULE_LABELS[row.module as keyof typeof MODULE_LABELS]
+                    ? t(MODULE_LABELS[row.module as keyof typeof MODULE_LABELS] as TranslationKey)
+                    : row.module}
                 </span>
                 <span className="text-muted-foreground">
                   · {row.user_email ?? "systeem"} ·{" "}
@@ -109,13 +114,13 @@ function AuditPage() {
               </summary>
               <div className="mt-3 grid gap-3 text-xs md:grid-cols-2">
                 <div>
-                  <p className="mb-1 font-semibold">Oude waarde</p>
+                  <p className="mb-1 font-semibold">{t("admin.audit.oldValue")}</p>
                   <pre className="overflow-x-auto rounded-lg bg-muted p-2">
                     {row.old_value ?? "—"}
                   </pre>
                 </div>
                 <div>
-                  <p className="mb-1 font-semibold">Nieuwe waarde</p>
+                  <p className="mb-1 font-semibold">{t("admin.audit.newValue")}</p>
                   <pre className="overflow-x-auto rounded-lg bg-muted p-2">
                     {row.new_value ?? "—"}
                   </pre>

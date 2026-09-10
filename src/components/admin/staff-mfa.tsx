@@ -6,16 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { useI18n } from "@/lib/i18n";
 import { isValidTotpCode } from "@/lib/mfa";
 
 /** Frame shared by both steps, so the two screens read as one flow. */
 function MfaFrame({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   return (
     <div className="flex min-h-[80vh] items-center justify-center bg-background px-4 py-16">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex items-center gap-2 text-muted-foreground">
           <ShieldCheck className="size-5" aria-hidden="true" />
-          <span className="text-sm font-semibold uppercase tracking-widest">Besjaar beheer</span>
+          <span className="text-sm font-semibold uppercase tracking-widest">
+            {t("admin.signIn.eyebrow")}
+          </span>
         </div>
         <div className="rounded-2xl border bg-card p-6 shadow-soft">{children}</div>
       </div>
@@ -31,6 +35,7 @@ function MfaFrame({ children }: { children: React.ReactNode }) {
  * app — the secret lives in Supabase and in the staff member's authenticator.
  */
 export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
+  const { t } = useI18n();
   const [qr, setQr] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [factorId, setFactorId] = useState<string | null>(null);
@@ -64,7 +69,7 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
         setQr(data.totp.qr_code);
         setSecret(data.totp.secret);
       } catch (caught) {
-        setError(caught instanceof Error ? caught.message : "Instellen is niet gelukt.");
+        setError(caught instanceof Error ? caught.message : t("admin.mfa.setupFailed"));
       }
     })();
   }, []);
@@ -72,7 +77,7 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
   async function verify(event: React.FormEvent) {
     event.preventDefault();
     if (!factorId || !isValidTotpCode(code)) {
-      setError("Vul de zes cijfers uit je app in.");
+      setError(t("admin.mfa.enterSix"));
       return;
     }
     setBusy(true);
@@ -93,7 +98,7 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
       onDone();
     } catch {
       // Wrong code, or the phone's clock has drifted. Either way, retry.
-      setError("Die code klopt niet. Controleer de tijd op je telefoon en probeer opnieuw.");
+      setError(t("admin.mfa.wrongCodeClock"));
     } finally {
       setBusy(false);
     }
@@ -101,25 +106,20 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
 
   return (
     <MfaFrame>
-      <h1 className="text-lg font-semibold">Tweestapsverificatie instellen</h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Beheeraccounts hebben een authenticator-app nodig. Scan de code met Google Authenticator,
-        1Password, Bitwarden of een vergelijkbare app.
-      </p>
+      <h1 className="text-lg font-semibold">{t("admin.mfa.enrolTitle")}</h1>
+      <p className="mt-1 text-sm text-muted-foreground">{t("admin.mfa.enrolIntro")}</p>
 
       {qr ? (
         <div className="mt-5 flex justify-center rounded-xl border bg-white p-3">
-          <img src={qr} alt="QR-code voor je authenticator-app" className="size-44" />
+          <img src={qr} alt={t("admin.mfa.qrAlt")} className="size-44" />
         </div>
       ) : (
-        <p className="mt-5 text-sm text-muted-foreground">Code laden…</p>
+        <p className="mt-5 text-sm text-muted-foreground">{t("admin.mfa.loadingCode")}</p>
       )}
 
       {secret ? (
         <div className="mt-3">
-          <p className="text-xs text-muted-foreground">
-            Kun je niet scannen? Voer deze sleutel handmatig in:
-          </p>
+          <p className="text-xs text-muted-foreground">{t("admin.mfa.manualIntro")}</p>
           <code className="mt-1 block break-all rounded-lg bg-surface px-3 py-2 font-mono text-xs">
             {secret}
           </code>
@@ -128,7 +128,7 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
 
       <form onSubmit={verify} className="mt-5">
         <Label htmlFor="mfa-enrol-code" className="mb-1.5 block">
-          Code uit de app
+          {t("admin.mfa.codeLabel")}
         </Label>
         <Input
           id="mfa-enrol-code"
@@ -146,14 +146,11 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
           </p>
         ) : null}
         <Button type="submit" className="mt-4 w-full" disabled={busy || !factorId}>
-          {busy ? "Controleren…" : "Instellen afronden"}
+          {busy ? t("admin.mfa.checking") : t("admin.mfa.finish")}
         </Button>
       </form>
 
-      <p className="mt-4 text-xs text-muted-foreground">
-        Bewaar de sleutel op een veilige plek. Ben je je telefoon kwijt, dan kan een super admin je
-        tweestapsverificatie opnieuw instellen.
-      </p>
+      <p className="mt-4 text-xs text-muted-foreground">{t("admin.mfa.keepSafe")}</p>
     </MfaFrame>
   );
 }
@@ -161,6 +158,7 @@ export function StaffMfaEnrol({ onDone }: { onDone: () => void }) {
 /** Every later sign-in: the password is in, the code still has to be. */
 export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
   const queryClient = useQueryClient();
+  const { t } = useI18n();
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -168,7 +166,7 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (!isValidTotpCode(code)) {
-      setError("Vul de zes cijfers uit je app in.");
+      setError(t("admin.mfa.enterSix"));
       return;
     }
     setBusy(true);
@@ -177,7 +175,7 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
       const { data: factors, error: listError } = await supabase.auth.mfa.listFactors();
       if (listError) throw listError;
       const factor = (factors?.totp ?? []).find((item) => item.status === "verified");
-      if (!factor) throw new Error("Geen authenticator gevonden.");
+      if (!factor) throw new Error(t("admin.mfa.noAuthenticator"));
 
       const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
         factorId: factor.id,
@@ -195,7 +193,7 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
       await queryClient.invalidateQueries();
       onDone();
     } catch {
-      setError("Die code klopt niet. Probeer het opnieuw.");
+      setError(t("admin.mfa.wrongCode"));
     } finally {
       setBusy(false);
     }
@@ -209,15 +207,13 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
   return (
     <MfaFrame>
       <h1 className="flex items-center gap-2 text-lg font-semibold">
-        <KeyRound className="size-4" aria-hidden="true" /> Verificatiecode
+        <KeyRound className="size-4" aria-hidden="true" /> {t("admin.mfa.challengeTitle")}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Vul de code uit je authenticator-app in om verder te gaan.
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("admin.mfa.challengeIntro")}</p>
 
       <form onSubmit={submit} className="mt-5">
         <Label htmlFor="mfa-code" className="mb-1.5 block">
-          Zescijferige code
+          {t("admin.mfa.sixDigits")}
         </Label>
         <Input
           id="mfa-code"
@@ -236,7 +232,7 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
           </p>
         ) : null}
         <Button type="submit" className="mt-4 w-full" disabled={busy}>
-          {busy ? "Controleren…" : "Bevestigen"}
+          {busy ? t("admin.mfa.checking") : t("admin.mfa.confirm")}
         </Button>
       </form>
 
@@ -245,7 +241,7 @@ export function StaffMfaChallenge({ onDone }: { onDone: () => void }) {
         onClick={signOut}
         className="mt-4 w-full text-center text-xs text-muted-foreground underline underline-offset-4"
       >
-        Uitloggen
+        {t("admin.mfa.signOut")}
       </button>
     </MfaFrame>
   );

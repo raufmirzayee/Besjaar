@@ -11,6 +11,7 @@ import {
   CATALOGUE_IMPORT_TEMPLATE_HEADER,
   type CatalogueImportError,
 } from "@/lib/catalogue-import";
+import { useI18n } from "@/lib/i18n";
 import { importCatalogueCsv, validateCatalogueCsv } from "@/lib/catalogue-import.functions";
 import { downloadCsv, toCsv } from "@/lib/csv";
 
@@ -46,6 +47,7 @@ type Validation = {
 };
 
 function CatalogueImportPage() {
+  const { t } = useI18n();
   const runImport = useServerFn(importCatalogueCsv);
   const runValidate = useServerFn(validateCatalogueCsv);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -116,7 +118,7 @@ function CatalogueImportPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-2xl font-bold">Catalogus importeren</h1>
+        <h1 className="font-display text-2xl font-bold">{t("admin.cimp.title")}</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
           Voeg producten toe of werk ze bij vanuit een CSV-bestand. Producten worden gematcht op{" "}
           <strong>product_id</strong> — hetzelfde bestand twee keer importeren maakt dus geen
@@ -126,11 +128,12 @@ function CatalogueImportPage() {
 
       <div className="flex flex-wrap gap-3">
         <Button variant="subtle" onClick={downloadTemplate}>
-          <Download className="size-4" /> Download sjabloon
+          <Download className="size-4" />
+          {t("admin.cimp.template")}
         </Button>
         <Button onClick={() => fileInput.current?.click()} disabled={validateMutation.isPending}>
           <FileUp className="size-4" />
-          {validateMutation.isPending ? "Bestand controleren…" : "Kies CSV-bestand"}
+          {validateMutation.isPending ? t("admin.cimp.checking") : t("admin.cimp.chooseFile")}
         </Button>
         <input
           ref={fileInput}
@@ -142,7 +145,7 @@ function CatalogueImportPage() {
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 text-sm">
-        <p className="font-semibold">Kolommen</p>
+        <p className="font-semibold">{t("admin.cimp.columns")}</p>
         <p className="mt-1 text-muted-foreground">
           {CATALOGUE_IMPORT_TEMPLATE_HEADER.map((column, index) => (
             <span key={column}>
@@ -152,10 +155,11 @@ function CatalogueImportPage() {
           ))}
         </p>
         <p className="mt-2 text-muted-foreground">
-          Verplicht: <code>product_id</code>, <code>naam</code>, <code>merk</code>,{" "}
-          <code>categorie</code> en <code>prijs</code>. Puntkomma, komma of tab als scheidingsteken;
-          decimalen mogen met een komma. <code>adviesprijs</code> wordt alleen als korting getoond
-          wanneer die hoger is dan de verkoopprijs.
+          {t("admin.cimp.required")}
+          <code>product_id</code>, <code>naam</code>, <code>merk</code>, <code>categorie</code> en{" "}
+          <code>prijs</code>. Puntkomma, komma of tab als scheidingsteken; decimalen mogen met een
+          komma. <code>adviesprijs</code> wordt alleen als korting getoond wanneer die hoger is dan
+          de verkoopprijs.
         </p>
       </div>
 
@@ -197,7 +201,7 @@ function CatalogueImportPage() {
             >
               <Upload className="size-4" />
               {importMutation.isPending
-                ? "Bezig met importeren…"
+                ? t("admin.cimp.importing")
                 : `Importeer ${validation.valid} producten`}
             </Button>
             <Button
@@ -208,7 +212,7 @@ function CatalogueImportPage() {
                 setFileName(null);
               }}
             >
-              Annuleren
+              {t("admin.common.cancel")}
             </Button>
           </div>
         </section>
@@ -218,14 +222,14 @@ function CatalogueImportPage() {
         <section className="rounded-xl border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 font-display text-lg font-bold">
             <CheckCircle2 className="size-5 text-success" aria-hidden="true" />
-            Importresultaat
+            {t("admin.cimp.result")}
           </h2>
           <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: "Geïmporteerd", value: report.imported },
-              { label: "Bijgewerkt", value: report.updated },
-              { label: "Overgeslagen", value: report.skipped },
-              { label: "Mislukt", value: report.failed },
+              { label: t("admin.cimp.imported"), value: report.imported },
+              { label: t("admin.cimp.updated"), value: report.updated },
+              { label: t("admin.cimp.skipped"), value: report.skipped },
+              { label: t("admin.cimp.failed"), value: report.failed },
             ].map((stat) => (
               <div key={stat.label} className="rounded-lg border border-border bg-surface p-4">
                 <dt className="text-sm text-muted-foreground">{stat.label}</dt>

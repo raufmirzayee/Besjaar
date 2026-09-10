@@ -22,6 +22,7 @@ import {
   resetStaffMfaFactors,
   setStaffAccountActive,
 } from "@/lib/staff.functions";
+import { useI18n } from "@/lib/i18n";
 import type { StaffAccount } from "@/lib/staff";
 import { STAFF_ROLE_OPTIONS, roleLabel } from "@/lib/staff";
 
@@ -37,6 +38,7 @@ function suggestPassword(): string {
 }
 
 function StaffPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchStaff = useServerFn(getStaffAccounts);
   const create = useServerFn(createStaff);
@@ -68,9 +70,7 @@ function StaffPage() {
   const resetMfaMutation = useMutation({
     mutationFn: (userId: string) => resetMfa({ data: { userId } }),
     onSuccess: () => {
-      toast.success(
-        "Tweestapsverificatie gewist. De medewerker stelt bij de volgende login opnieuw in.",
-      );
+      toast.success(t("admin.staff.mfaCleared"));
       queryClient.invalidateQueries({ queryKey: ["staff-accounts"] });
     },
     onError: (err: Error) => toast.error(err.message),
@@ -79,7 +79,7 @@ function StaffPage() {
   const activeMutation = useMutation({
     mutationFn: (input: { userId: string; active: boolean }) => setActive({ data: input }),
     onSuccess: (_result, input) => {
-      toast.success(input.active ? "Account weer actief" : "Account gedeactiveerd");
+      toast.success(input.active ? t("admin.staff.reactivated") : t("admin.staff.deactivated"));
       queryClient.invalidateQueries({ queryKey: ["staff-accounts"] });
     },
     onError: (err: Error) => toast.error(err.message),
@@ -88,7 +88,7 @@ function StaffPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-xl font-bold">Medewerkers</h2>
+        <h2 className="font-display text-xl font-bold">{t("admin.staff.title")}</h2>
         <p className="text-sm text-muted-foreground">
           Medewerkersaccounts staan los van klantaccounts. Een klant kan geen medewerker worden en
           een medewerker kan niet bestellen — de database dwingt dat af, niet alleen dit scherm.
@@ -99,13 +99,14 @@ function StaffPage() {
 
       <section className="rounded-xl border border-border p-4">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-bold">
-          <UserPlus className="size-4" aria-hidden="true" /> Nieuwe medewerker
+          <UserPlus className="size-4" aria-hidden="true" />
+          {t("admin.staff.newStaff")}
         </h3>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label htmlFor="staff-name" className="text-xs">
-              Naam
+              {t("admin.common.name")}
             </Label>
             <Input
               id="staff-name"
@@ -146,7 +147,7 @@ function StaffPage() {
           </div>
           <div>
             <Label htmlFor="staff-password" className="text-xs">
-              Startwachtwoord
+              {t("admin.staff.startPassword")}
             </Label>
             <div className="mt-1 flex gap-2">
               <Input
@@ -161,7 +162,7 @@ function StaffPage() {
                 size="sm"
                 onClick={() => setForm({ ...form, password: suggestPassword() })}
               >
-                Nieuw
+                {t("admin.staff.regenerate")}
               </Button>
             </div>
           </div>
@@ -177,21 +178,22 @@ function StaffPage() {
           disabled={createMutation.isPending}
           onClick={() => createMutation.mutate()}
         >
-          {createMutation.isPending ? "Bezig…" : "Account aanmaken"}
+          {createMutation.isPending ? t("admin.common.busy") : t("admin.staff.createAccount")}
         </Button>
       </section>
 
       <section>
         <h3 className="mb-2 flex items-center gap-2 text-sm font-bold">
-          <ShieldCheck className="size-4" aria-hidden="true" /> Bestaande medewerkers
+          <ShieldCheck className="size-4" aria-hidden="true" />
+          {t("admin.staff.existing")}
         </h3>
 
         {isPending ? (
-          <p className="text-sm text-muted-foreground">Laden…</p>
+          <p className="text-sm text-muted-foreground">{t("admin.common.loading")}</p>
         ) : error ? (
           <p className="text-sm text-destructive">{(error as Error).message}</p>
         ) : (data ?? []).length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nog geen medewerkersaccounts.</p>
+          <p className="text-sm text-muted-foreground">{t("admin.staff.empty")}</p>
         ) : (
           <ul className="divide-y divide-border rounded-lg border border-border">
             {(data ?? []).map((account) => (
@@ -204,7 +206,7 @@ function StaffPage() {
                   <p className="truncate text-xs text-muted-foreground">{account.email}</p>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {account.roles.length === 0 ? (
-                      <Badge variant="outline">Geen rol</Badge>
+                      <Badge variant="outline">{t("admin.staff.noRole")}</Badge>
                     ) : (
                       account.roles.map((role) => (
                         <Badge key={role} variant="secondary">
@@ -212,7 +214,9 @@ function StaffPage() {
                         </Badge>
                       ))
                     )}
-                    {!account.is_active ? <Badge variant="outline">Gedeactiveerd</Badge> : null}
+                    {!account.is_active ? (
+                      <Badge variant="outline">{t("admin.staff.deactivatedBadge")}</Badge>
+                    ) : null}
                     {account.mfa_enrolled ? (
                       <Badge variant="stock" className="gap-1">
                         <ShieldCheck className="size-3" aria-hidden="true" /> 2FA actief
@@ -247,7 +251,7 @@ function StaffPage() {
                       })
                     }
                   >
-                    {account.is_active ? "Deactiveren" : "Heractiveren"}
+                    {account.is_active ? t("admin.staff.deactivate") : t("admin.staff.reactivate")}
                   </Button>
                 </div>
               </li>

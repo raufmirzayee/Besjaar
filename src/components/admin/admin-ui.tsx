@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2, Clock, Inbox, Loader2, XCircle } from "lucid
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export function PageHeader({
@@ -17,6 +18,7 @@ export function PageHeader({
   actions?: ReactNode;
   breadcrumb?: ReactNode;
 }) {
+  const { t } = useI18n();
   return (
     <header className="mb-5 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:flex-wrap sm:justify-between">
       <div className="min-w-0">
@@ -48,6 +50,7 @@ const TONE_ICON: Record<Tone, typeof CheckCircle2> = {
 };
 
 export function StatusBadge({ tone, label }: { tone: Tone; label: string }) {
+  const { t } = useI18n();
   const Icon = TONE_ICON[tone];
   return (
     <span
@@ -94,23 +97,26 @@ export function statusTone(status: string): Tone {
   return ORDER_TONE[status] ?? "muted";
 }
 
-export function LoadingState({ label = "Laden…" }: { label?: string }) {
+export function LoadingState({ label }: { label?: string }) {
+  const { t } = useI18n();
+  const text = label ?? t("admin.common.loading");
   return (
     <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card p-10 text-sm text-muted-foreground">
       <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-      {label}
+      {text}
     </div>
   );
 }
 
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
       <AlertCircle className="mx-auto h-5 w-5 text-destructive" aria-hidden />
       <p className="mt-2 text-sm text-destructive">{message}</p>
       {onRetry ? (
         <Button className="mt-3" size="sm" variant="outline" onClick={onRetry}>
-          Opnieuw proberen
+          {t("admin.common.retry")}
         </Button>
       ) : null}
     </div>
@@ -126,6 +132,7 @@ export function EmptyState({
   description?: string;
   action?: ReactNode;
 }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-xl border border-dashed border-border bg-card p-10 text-center">
       <Inbox className="mx-auto h-6 w-6 text-muted-foreground" aria-hidden />
@@ -137,6 +144,7 @@ export function EmptyState({
 }
 
 export function NoAccessState({ module }: { module: string }) {
+  const { t } = useI18n();
   return (
     <div className="rounded-xl border border-border bg-card p-10 text-center">
       <p className="font-medium">Geen toegang tot {module}</p>
@@ -144,7 +152,7 @@ export function NoAccessState({ module }: { module: string }) {
         Je rol geeft geen rechten voor deze pagina. Vraag een super admin om toegang.
       </p>
       <Button className="mt-4" variant="outline" asChild>
-        <Link to="/beheer">Terug naar dashboard</Link>
+        <Link to="/beheer">{t("admin.common.backToDashboard")}</Link>
       </Button>
     </div>
   );
@@ -161,6 +169,7 @@ export function Pager({
   total: number;
   onPage: (page: number) => void;
 }) {
+  const { t } = useI18n();
   if (pageCount <= 1) {
     return <p className="mt-3 text-xs text-muted-foreground">{total} resultaten</p>;
   }
@@ -171,7 +180,7 @@ export function Pager({
       </p>
       <div className="flex gap-1">
         <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => onPage(page - 1)}>
-          Vorige
+          {t("admin.common.previous")}
         </Button>
         <Button
           size="sm"
@@ -179,7 +188,7 @@ export function Pager({
           disabled={page >= pageCount}
           onClick={() => onPage(page + 1)}
         >
-          Volgende
+          {t("admin.common.next")}
         </Button>
       </div>
     </div>
@@ -199,6 +208,7 @@ export function MetricCard({
   hint?: string;
   to?: string;
 }) {
+  const { t } = useI18n();
   const body = (
     <div className="h-full rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40">
       <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>

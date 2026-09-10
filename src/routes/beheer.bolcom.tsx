@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/format";
 import { JOB_STATUS_LABELS, JOB_TYPE_LABELS } from "@/lib/bol.server";
 import {
@@ -51,6 +52,7 @@ function formatDate(value: string | null) {
 }
 
 function BolPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchOverview = useServerFn(getBolOverview);
   const saveListing = useServerFn(saveBolListing);
@@ -78,7 +80,7 @@ function BolPage() {
         },
       }),
     onSuccess: () => {
-      toast.success("Koppeling opgeslagen");
+      toast.success(t("admin.bol.listingSaved"));
       setEan("");
       setOfferId("");
       setPrice("");
@@ -100,7 +102,7 @@ function BolPage() {
   const removeMutation = useMutation({
     mutationFn: (id: string) => deleteListing({ data: { id } }),
     onSuccess: () => {
-      toast.success("Koppeling verwijderd");
+      toast.success(t("admin.bol.listingRemoved"));
       invalidate();
     },
     onError: (error: Error) => toast.error(error.message),
@@ -111,7 +113,7 @@ function BolPage() {
       runSync({ data: { jobType } }),
     onSuccess: (result) => {
       const res = result as { status: string; processed: number; failed: number; error?: string };
-      if (res.status === "failed") toast.error(res.error ?? "Synchronisatie mislukt");
+      if (res.status === "failed") toast.error(res.error ?? t("admin.bol.syncFailed"));
       else
         toast.success(
           `Synchronisatie ${JOB_STATUS_LABELS[res.status] ?? res.status}: ${res.processed} verwerkt, ${res.failed} mislukt`,
@@ -150,10 +152,10 @@ function BolPage() {
           </div>
           <Badge variant={data.status.connected ? "secondary" : "destructive"}>
             {data.status.connected
-              ? "Verbonden"
+              ? t("admin.bol.connected")
               : data.status.configured
-                ? "Fout"
-                : "Niet ingesteld"}
+                ? t("admin.bol.error")
+                : t("admin.bol.notConfigured")}
           </Badge>
         </div>
 
@@ -174,7 +176,7 @@ function BolPage() {
       </section>
 
       <section className="rounded-xl border border-border bg-card p-5">
-        <h2 className="font-display text-lg font-bold">Productkoppelingen</h2>
+        <h2 className="font-display text-lg font-bold">{t("admin.bol.listings")}</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Koppel een EAN aan een bol.com-aanbieding. Voorraad wordt automatisch verminderd met de
           veiligheidsvoorraad voordat het naar bol.com gaat.
@@ -195,7 +197,7 @@ function BolPage() {
             <Input id="bol-offer" value={offerId} onChange={(e) => setOfferId(e.target.value)} />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="bol-price">Kanaalprijs (€)</Label>
+            <Label htmlFor="bol-price">{t("admin.bol.channelPrice")}</Label>
             <Input
               id="bol-price"
               type="number"
@@ -210,7 +212,7 @@ function BolPage() {
               disabled={createMutation.isPending || (!ean.trim() && !offerId.trim())}
               onClick={() => createMutation.mutate()}
             >
-              Koppeling toevoegen
+              {t("admin.bol.addListing")}
             </Button>
           </div>
         </div>
@@ -219,12 +221,12 @@ function BolPage() {
           <table className="w-full min-w-[720px] text-sm">
             <thead className="text-left text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="pb-2">Product / EAN</th>
-                <th className="pb-2">Offer-ID</th>
-                <th className="pb-2">Voorraad</th>
-                <th className="pb-2">Prijs</th>
-                <th className="pb-2">Voorraadsync</th>
-                <th className="pb-2">Laatste sync</th>
+                <th className="pb-2">{t("admin.bol.productEan")}</th>
+                <th className="pb-2">{t("admin.bol.offerId")}</th>
+                <th className="pb-2">{t("admin.common.stock")}</th>
+                <th className="pb-2">{t("admin.common.price")}</th>
+                <th className="pb-2">{t("admin.bol.stockSync")}</th>
+                <th className="pb-2">{t("admin.bol.lastSync")}</th>
                 <th className="pb-2" />
               </tr>
             </thead>
@@ -232,14 +234,16 @@ function BolPage() {
               {data.listings.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-6 text-center text-muted-foreground">
-                    Nog geen koppelingen. Voeg er één toe of haal de aanbiedingen op bij bol.com.
+                    {t("admin.bol.noListings")}
                   </td>
                 </tr>
               )}
               {data.listings.map((listing) => (
                 <tr key={listing.id} className="border-t border-border">
                   <td className="py-3">
-                    <div className="font-medium">{listing.product_name ?? "Niet gekoppeld"}</div>
+                    <div className="font-medium">
+                      {listing.product_name ?? t("admin.bol.notConnected")}
+                    </div>
                     <div className="text-xs text-muted-foreground">{listing.ean ?? "—"}</div>
                   </td>
                   <td className="py-3 text-xs">{listing.external_offer_id ?? "—"}</td>
@@ -272,7 +276,7 @@ function BolPage() {
                       variant="ghost"
                       size="icon"
                       onClick={() => removeMutation.mutate(listing.id)}
-                      aria-label="Koppeling verwijderen"
+                      aria-label={t("admin.bol.removeListing")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -286,10 +290,10 @@ function BolPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-display text-lg font-bold">Synchronisatie-opdrachten</h2>
+          <h2 className="font-display text-lg font-bold">{t("admin.bol.syncJobs")}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {data.jobs.length === 0 && (
-              <li className="text-muted-foreground">Nog geen synchronisaties uitgevoerd.</li>
+              <li className="text-muted-foreground">{t("admin.bol.noSyncs")}</li>
             )}
             {data.jobs.map((job) => (
               <li
@@ -320,10 +324,10 @@ function BolPage() {
         </section>
 
         <section className="rounded-xl border border-border bg-card p-5">
-          <h2 className="font-display text-lg font-bold">Logboek</h2>
+          <h2 className="font-display text-lg font-bold">{t("admin.bol.log")}</h2>
           <ul className="mt-3 space-y-2 text-sm">
             {data.logs.length === 0 && (
-              <li className="text-muted-foreground">Nog geen logregels.</li>
+              <li className="text-muted-foreground">{t("admin.bol.noLog")}</li>
             )}
             {data.logs.map((entry) => (
               <li key={entry.id} className="border-b border-border pb-2">

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n";
 import { adjustStock, getLowStock, getStockMovements } from "@/lib/admin.functions";
 import type { LowStockRow, StockMovementRow } from "@/lib/admin.server";
 
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/beheer/voorraad")({
 });
 
 function StockPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchLow = useServerFn(getLowStock);
   const fetchMovements = useServerFn(getStockMovements);
@@ -31,9 +33,11 @@ function StockPage() {
 
   const mutation = useMutation({
     mutationFn: (input: { productId: string; change: number }) =>
-      adjust({ data: { ...input, reason: "manual_correction", note: "Handmatig via beheer" } }),
+      adjust({
+        data: { ...input, reason: "manual_correction", note: t("admin.stock.manualAdjustment") },
+      }),
     onSuccess: (_result, vars) => {
-      toast.success("Voorraad bijgewerkt");
+      toast.success(t("admin.stock.updated"));
       setDrafts((prev) => ({ ...prev, [vars.productId]: "" }));
       queryClient.invalidateQueries({ queryKey: ["admin-low-stock"] });
       queryClient.invalidateQueries({ queryKey: ["admin-stock-movements"] });
@@ -46,24 +50,22 @@ function StockPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-display text-xl font-bold">Voorraad & bijstellingen</h2>
-        <p className="text-sm text-muted-foreground">
-          Producten met een krappe voorraad, met een aanbevolen bestelaantal.
-        </p>
+        <h2 className="font-display text-xl font-bold">{t("admin.stock.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("admin.stock.subtitle")}</p>
       </div>
 
       {lowStock.isPending ? (
-        <p className="text-sm text-muted-foreground">Voorraad laden…</p>
+        <p className="text-sm text-muted-foreground">{t("admin.stock.loading")}</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-3 py-2">Product</th>
-                <th className="px-3 py-2 text-right">Voorraad</th>
-                <th className="px-3 py-2 text-right">Drempel</th>
-                <th className="px-3 py-2 text-right">Advies bestellen</th>
-                <th className="px-3 py-2">Bijstellen</th>
+                <th className="px-3 py-2">{t("admin.common.product")}</th>
+                <th className="px-3 py-2 text-right">{t("admin.common.stock")}</th>
+                <th className="px-3 py-2 text-right">{t("admin.stock.threshold")}</th>
+                <th className="px-3 py-2 text-right">{t("admin.stock.suggestedOrder")}</th>
+                <th className="px-3 py-2">{t("admin.stock.adjust")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -101,7 +103,7 @@ function StockPage() {
                           })
                         }
                       >
-                        Boeken
+                        {t("admin.stock.book")}
                       </Button>
                     </div>
                   </td>
@@ -110,7 +112,7 @@ function StockPage() {
               {(lowStock.data ?? []).length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-3 py-6 text-center text-muted-foreground">
-                    Geen producten met een krappe voorraad.
+                    {t("admin.stock.none")}
                   </td>
                 </tr>
               ) : null}
@@ -120,12 +122,14 @@ function StockPage() {
       )}
 
       <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="font-semibold">Voorraadmutaties</h3>
+        <h3 className="font-semibold">{t("admin.nav.stockMovements")}</h3>
         <ul className="mt-3 divide-y divide-border text-sm">
           {(movements.data ?? []).map((m) => (
             <li key={m.id} className="flex items-center justify-between gap-2 py-2">
               <div className="min-w-0">
-                <p className="truncate font-medium">{m.product_name ?? "Onbekend product"}</p>
+                <p className="truncate font-medium">
+                  {m.product_name ?? t("admin.stock.unknownProduct")}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {m.reason} · {new Date(m.created_at).toLocaleString("nl-NL")}
                 </p>
@@ -137,7 +141,7 @@ function StockPage() {
             </li>
           ))}
           {(movements.data ?? []).length === 0 ? (
-            <li className="py-2 text-muted-foreground">Nog geen mutaties.</li>
+            <li className="py-2 text-muted-foreground">{t("admin.stock.noMovements")}</li>
           ) : null}
         </ul>
       </div>

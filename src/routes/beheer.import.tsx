@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useI18n } from "@/lib/i18n";
 import { getAdminProducts } from "@/lib/admin.functions";
 import type { AdminProduct } from "@/lib/admin.server";
 import { importProductsCsv } from "@/lib/bulk.functions";
@@ -39,6 +40,7 @@ type ImportResult = {
 };
 
 function ImportPage() {
+  const { t } = useI18n();
   const fetchProducts = useServerFn(getAdminProducts);
   const runImport = useServerFn(importProductsCsv);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -60,7 +62,7 @@ function ImportPage() {
         toast.success(`${data.updated} producten bijgewerkt`);
         productsQuery.refetch();
       } else {
-        toast.error("Import gestopt: los eerst de fouten op");
+        toast.error(t("admin.imp.stopped"));
       }
     },
     onError: (error: Error) => toast.error(error.message),
@@ -97,7 +99,7 @@ function ImportPage() {
     const text = await file.text();
     const records = csvToObjects(text);
     if (records.length === 0) {
-      toast.error("Het bestand bevat geen rijen");
+      toast.error(t("admin.imp.noRows"));
       return;
     }
     setResult(null);
@@ -113,7 +115,7 @@ function ImportPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-2xl font-bold">Import &amp; export</h1>
+        <h1 className="font-display text-2xl font-bold">{t("admin.imp.title")}</h1>
         <p className="text-sm text-muted-foreground">
           Werk prijzen, voorraad, naam en status van het assortiment in bulk bij. Producten worden
           gematcht op interne SKU; lege cellen blijven ongewijzigd.
@@ -122,27 +124,29 @@ function ImportPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Producten</p>
+          <p className="text-sm text-muted-foreground">{t("admin.common.products")}</p>
           <p className="font-display text-2xl font-bold">{products.length}</p>
         </div>
         <div className="rounded-xl border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Zonder SKU</p>
+          <p className="text-sm text-muted-foreground">{t("admin.imp.noSku")}</p>
           <p className="font-display text-2xl font-bold">
             {products.filter((p) => !p.internal_sku).length}
           </p>
         </div>
         <div className="rounded-xl border bg-card p-4">
-          <p className="text-sm text-muted-foreground">Voorraadwaarde (verkoop)</p>
+          <p className="text-sm text-muted-foreground">{t("admin.imp.stockValue")}</p>
           <p className="font-display text-2xl font-bold">{formatPrice(totalStockValue)}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
         <Button onClick={exportProducts} disabled={products.length === 0}>
-          <Download className="mr-2 h-4 w-4" /> Exporteer assortiment
+          <Download className="mr-2 h-4 w-4" />
+          {t("admin.imp.export")}
         </Button>
         <Button variant="outline" onClick={downloadTemplate}>
-          <Download className="mr-2 h-4 w-4" /> Download sjabloon
+          <Download className="mr-2 h-4 w-4" />
+          {t("admin.imp.template")}
         </Button>
         <Button
           variant="secondary"
@@ -150,7 +154,7 @@ function ImportPage() {
           disabled={importMutation.isPending}
         >
           <Upload className="mr-2 h-4 w-4" />
-          {importMutation.isPending ? "Bezig met importeren…" : "Importeer CSV"}
+          {importMutation.isPending ? t("admin.imp.importing") : t("admin.imp.importCsv")}
         </Button>
         <input
           ref={fileInput}
@@ -162,7 +166,7 @@ function ImportPage() {
       </div>
 
       <div className="rounded-xl border bg-card p-4 text-sm">
-        <p className="font-semibold">Kolommen</p>
+        <p className="font-semibold">{t("admin.imp.columns")}</p>
         <p className="mt-1 text-muted-foreground">
           <code>sku</code>; <code>naam</code>; <code>prijs</code>; <code>actieprijs</code>;{" "}
           <code>voorraad</code>; <code>status</code> (draft, active of archived). Scheidingsteken is

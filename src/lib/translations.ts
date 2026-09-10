@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n";
 import { accountMessages } from "@/lib/translations/account";
+import { adminMessages, type AdminTranslationKey } from "@/lib/translations/admin";
 import { checkoutMessages } from "@/lib/translations/checkout";
 import { pageMessages } from "@/lib/translations/pages";
 import { productMessages } from "@/lib/translations/product";
@@ -126,6 +127,7 @@ export type TranslationKey =
   | keyof (typeof checkoutMessages)["nl"]
   | keyof (typeof accountMessages)["nl"]
   | keyof (typeof pageMessages)["nl"]
+  | AdminTranslationKey
   | keyof (typeof storefrontMessages)["nl"];
 
 const en: Record<CoreKey, string> = {
@@ -477,6 +479,9 @@ export const translations = Object.fromEntries(
       ...checkoutMessages[locale],
       ...accountMessages[locale],
       ...pageMessages[locale],
+      // Backoffice copy. Only nl and en are supplied; other locales spread as
+      // nothing and fall back to Dutch in t().
+      ...adminMessages[locale],
       // Storefront copy is merged last so it can supersede older wording.
       ...storefrontMessages[locale],
     },

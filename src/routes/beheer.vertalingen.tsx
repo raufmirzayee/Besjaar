@@ -32,6 +32,8 @@ import {
   saveTranslationFields,
   saveTranslationFieldsBulk,
 } from "@/lib/admin-translations.functions";
+import type { TranslationKey } from "@/lib/translations";
+import { useI18n } from "@/lib/i18n";
 import type { TranslationCoverage, TranslationDraft } from "@/lib/admin-translations.server";
 import {
   COVERAGE_FIELDS,
@@ -47,10 +49,11 @@ export const Route = createFileRoute("/beheer/vertalingen")({
   component: TranslationsPage,
 });
 
-const ENTITY_LABELS: Record<CoverageEntity, string> = {
-  product: "Producten",
-  category: "Categorieën",
-  brand: "Merken",
+/** Keys, not labels: a module constant cannot call t(). */
+const ENTITY_LABELS: Record<CoverageEntity, TranslationKey> = {
+  product: "admin.common.products",
+  category: "admin.nav.categories",
+  brand: "admin.nav.brands",
 };
 
 const STATUS_CLASS: Record<CoverageStatus, string> = {
@@ -67,11 +70,12 @@ const STATUS_SYMBOL: Record<CoverageStatus, string> = {
   no_source: "–",
 };
 
-const STATUS_TITLE: Record<CoverageStatus, string> = {
-  ok: "Vertaling aanwezig",
-  missing: "Vertaling ontbreekt",
-  identical: "Identiek aan het Nederlands (nog niet vertaald)",
-  no_source: "Geen Nederlandse brontekst",
+/** Keys, not labels: a module constant cannot call t(). */
+const STATUS_TITLE: Record<CoverageStatus, TranslationKey> = {
+  ok: "admin.tr.present",
+  missing: "admin.tr.missing",
+  identical: "admin.tr.sameAsDutch",
+  no_source: "admin.tr.noSource",
 };
 
 function CoverageTable({
@@ -95,6 +99,7 @@ function CoverageTable({
   onToggle?: (row: CoverageRow, checked: boolean) => void;
   onToggleMany?: (rows: CoverageRow[], checked: boolean) => void;
 }) {
+  const { t } = useI18n();
   const fields = COVERAGE_FIELDS[entity];
   const term = search.trim().toLowerCase();
 
@@ -111,8 +116,10 @@ function CoverageTable({
   if (filtered.length === 0) {
     return (
       <EmptyState
-        title={`Geen ${ENTITY_LABELS[entity].toLowerCase()} met openstaande vertalingen`}
-        description="Alle gecontroleerde velden zijn per taal gevuld."
+        title={t("admin.tr.nothingOutstanding", {
+          entity: t(ENTITY_LABELS[entity]).toLowerCase(),
+        })}
+        description={t("admin.tr.allComplete")}
       />
     );
   }
@@ -125,7 +132,7 @@ function CoverageTable({
             {selectable ? (
               <th className="p-3">
                 <Checkbox
-                  aria-label="Alles selecteren"
+                  aria-label={t("admin.tr.selectAll")}
                   checked={filtered.every((row) => selectedIds?.has(row.id))}
                   onCheckedChange={(checked: boolean | "indeterminate") =>
                     onToggleMany?.(filtered, checked === true)
@@ -133,14 +140,14 @@ function CoverageTable({
                 />
               </th>
             ) : null}
-            <th className="p-3">Naam</th>
-            <th className="p-3">Volledig</th>
+            <th className="p-3">{t("admin.common.name")}</th>
+            <th className="p-3">{t("admin.tr.complete")}</th>
             {fields.map((field) => (
               <th key={field} className="p-3">
                 {FIELD_LABELS[field] ?? field}
               </th>
             ))}
-            {onEdit ? <th className="p-3 text-right">Actie</th> : null}
+            {onEdit ? <th className="p-3 text-right">{t("admin.common.action")}</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -183,7 +190,7 @@ function CoverageTable({
                       return (
                         <span
                           key={locale}
-                          title={`${locale.toUpperCase()} · ${STATUS_TITLE[status]}`}
+                          title={`${locale.toUpperCase()} · ${t(STATUS_TITLE[status])}`}
                           className={cn(
                             "inline-flex min-w-[2.4rem] flex-col items-center rounded-md px-1 py-0.5 text-[10px] font-medium leading-tight",
                             STATUS_CLASS[status],
@@ -200,7 +207,7 @@ function CoverageTable({
               {onEdit ? (
                 <td className="p-3 text-right">
                   <Button size="sm" variant="outline" onClick={() => onEdit(row)}>
-                    Bewerk
+                    {t("admin.tr.editShort")}
                   </Button>
                 </td>
               ) : null}
@@ -213,6 +220,7 @@ function CoverageTable({
 }
 
 function TranslationsPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const fetchCoverage = useServerFn(getTranslationCoverage);
   const [search, setSearch] = useState("");
@@ -244,12 +252,12 @@ function TranslationsPage() {
     enabled: allow("products", "view"),
   });
 
-  if (!allow("products", "view")) return <NoAccessState module="Vertalingen" />;
+  if (!allow("products", "view")) return <NoAccessState module={t("admin.tr.title")} />;
 
   return (
     <div>
       <PageHeader
-        title="Vertalingen"
+        title={t("admin.tr.title")}
         description="Zie per categorie, merk en product welke NL/EN/DE/FR velden ontbreken of nog Nederlands zijn."
         actions={
           <>
@@ -259,15 +267,15 @@ function TranslationsPage() {
                   Bewerk selectie ({selection.length})
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setSelection([])}>
-                  Selectie wissen
+                  {t("admin.tr.clearSelection")}
                 </Button>
               </>
             ) : null}
             <Button variant="outline" size="sm" onClick={() => setOnlyIncomplete((v) => !v)}>
-              {onlyIncomplete ? "Toon alles" : "Alleen incompleet"}
+              {onlyIncomplete ? t("admin.tr.showAll") : t("admin.tr.onlyIncomplete")}
             </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
-              Verversen
+              {t("admin.tr.refresh")}
             </Button>
           </>
         }
@@ -275,14 +283,14 @@ function TranslationsPage() {
 
       <div className="mb-4 max-w-sm">
         <Input
-          placeholder="Zoek op naam of slug…"
+          placeholder={t("admin.tr.search")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {isPending ? (
-        <LoadingState label="Vertaaldekking berekenen…" />
+        <LoadingState label={t("admin.tr.calculating")} />
       ) : error ? (
         <ErrorState message={(error as Error).message} onRetry={() => refetch()} />
       ) : data ? (
@@ -318,7 +326,7 @@ function TranslationsPage() {
           ).map(([entity, rows]) => (
             <section key={entity}>
               <h2 className="mb-2 font-display text-lg font-semibold">
-                {ENTITY_LABELS[entity]}{" "}
+                {t(ENTITY_LABELS[entity])}{" "}
                 <span className="text-sm font-normal text-muted-foreground">({rows.length})</span>
               </h2>
               <CoverageTable
@@ -359,6 +367,7 @@ function BulkTranslationDialog({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const loadDrafts = useServerFn(getTranslationDrafts);
   const saveBulk = useServerFn(saveTranslationFieldsBulk);
@@ -400,7 +409,7 @@ function BulkTranslationDialog({
       } else {
         toast.success(
           result.changedTotal === 0
-            ? "Geen wijzigingen"
+            ? t("admin.tr.noChanges")
             : `${result.changedTotal} veld(en) opgeslagen over ${result.results.length} item(s)`,
         );
       }
@@ -420,13 +429,11 @@ function BulkTranslationDialog({
       <DialogContent className="max-h-[85vh] max-w-4xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Bulk vertalingen bewerken ({targets.length})</DialogTitle>
-          <DialogDescription>
-            Pas per item alle NL/EN/DE/FR velden aan en sla ze in één keer op.
-          </DialogDescription>
+          <DialogDescription>{t("admin.tr.subtitle")}</DialogDescription>
         </DialogHeader>
 
         {draftsQuery.isPending ? (
-          <LoadingState label="Velden laden…" />
+          <LoadingState label={t("admin.tr.loadingFields")} />
         ) : draftsQuery.error ? (
           <ErrorState
             message={(draftsQuery.error as Error).message}
@@ -440,7 +447,7 @@ function BulkTranslationDialog({
                 <section key={itemKey} className="rounded-xl border border-border p-4">
                   <p className="font-display text-base font-semibold">{draft.name}</p>
                   <p className="mb-3 text-xs text-muted-foreground">
-                    {ENTITY_LABELS[draft.entity]} · {draft.slug}
+                    {t(ENTITY_LABELS[draft.entity])} · {draft.slug}
                   </p>
                   <div className="space-y-4">
                     {COVERAGE_FIELDS[draft.entity].map((field) => (
@@ -491,13 +498,13 @@ function BulkTranslationDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={save.isPending}>
-            Annuleren
+            {t("admin.common.cancel")}
           </Button>
           <Button
             onClick={() => save.mutate()}
             disabled={save.isPending || !draftsQuery.data?.length}
           >
-            {save.isPending ? "Opslaan…" : "Alles opslaan"}
+            {save.isPending ? t("admin.common.saving") : t("admin.tr.saveAll")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -512,6 +519,7 @@ function TranslationEditorDialog({
   target: { entity: CoverageEntity; id: string } | null;
   onClose: () => void;
 }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const loadDraft = useServerFn(getTranslationDraft);
   const saveDraft = useServerFn(saveTranslationFields);
@@ -536,7 +544,7 @@ function TranslationEditorDialog({
     onSuccess: (result) => {
       toast.success(
         result.changed.length === 0
-          ? "Geen wijzigingen"
+          ? t("admin.tr.noChanges")
           : `${result.changed.length} veld(en) opgeslagen`,
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-translation-coverage"] });
@@ -553,7 +561,7 @@ function TranslationEditorDialog({
     <Dialog open={Boolean(target)} onOpenChange={(open) => (open ? null : onClose())}>
       <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{draft ? draft.name : "Vertalingen bewerken"}</DialogTitle>
+          <DialogTitle>{draft ? draft.name : t("admin.tr.edit")}</DialogTitle>
           <DialogDescription>
             Vul per taal de ontbrekende velden aan. Laat een veld leeg om terug te vallen op het
             Nederlands.
@@ -561,7 +569,7 @@ function TranslationEditorDialog({
         </DialogHeader>
 
         {draftQuery.isPending ? (
-          <LoadingState label="Velden laden…" />
+          <LoadingState label={t("admin.tr.loadingFields")} />
         ) : draftQuery.error ? (
           <ErrorState
             message={(draftQuery.error as Error).message}
@@ -606,10 +614,10 @@ function TranslationEditorDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={save.isPending}>
-            Annuleren
+            {t("admin.common.cancel")}
           </Button>
           <Button onClick={() => save.mutate()} disabled={save.isPending || !draft}>
-            {save.isPending ? "Opslaan…" : "Opslaan"}
+            {save.isPending ? t("admin.common.saving") : t("admin.common.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

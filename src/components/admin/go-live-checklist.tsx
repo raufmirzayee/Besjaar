@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, Check, ChevronDown, CircleAlert } from "lucide-react";
 import { useState } from "react";
 
+import { useI18n } from "@/lib/i18n";
 import { getReadiness } from "@/lib/readiness.functions";
 
 /**
@@ -13,6 +14,7 @@ import { getReadiness } from "@/lib/readiness.functions";
  * somewhere that says plainly what is still switched off. This is that place.
  */
 export function GoLiveChecklist() {
+  const { t } = useI18n();
   const fetchReadiness = useServerFn(getReadiness);
   const [open, setOpen] = useState(false);
 
@@ -53,7 +55,7 @@ export function GoLiveChecklist() {
           <span className="block text-sm font-semibold">
             {blocking.length
               ? `Nog ${blocking.length} ${blocking.length === 1 ? "instelling" : "instellingen"} nodig voordat je echt kunt verkopen`
-              : "Klaar om te verkopen · een paar optionele punten open"}
+              : t("admin.golive.readyOptional")}
           </span>
           <span className="mt-0.5 block text-sm text-muted-foreground">
             {blocking.length

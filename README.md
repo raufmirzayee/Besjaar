@@ -124,6 +124,13 @@ The admin is also invisible from the shop: nothing links to it, and `/beheer`
 returns the ordinary 404 for anyone who is not staff. Staff sign in on a bare
 screen at `/beheer` with none of the storefront chrome.
 
+The backoffice is available in **Dutch and English**, switchable from the
+language menu in its top bar. Dutch is the source language and the fallback:
+a staff member whose browser is set to German or French sees Dutch in the
+admin rather than half-translated copy, and the admin's switcher deliberately
+offers only the two languages it actually has. Adding a third means adding one
+block to `src/lib/translations/admin.ts`.
+
 **Staff need two factors.** Every admin server function refuses a password-only
 session, and so do the row-level policies — the four helpers gating all 36 of
 them require a verified second factor, so bypassing the app and calling the

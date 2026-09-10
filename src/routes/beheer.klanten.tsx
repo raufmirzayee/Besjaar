@@ -17,6 +17,7 @@ import {
   statusTone,
 } from "@/components/admin/admin-ui";
 import { useCan } from "@/components/admin/admin-shell";
+import { useI18n } from "@/lib/i18n";
 import { getCustomerDetail, getCustomers } from "@/lib/admin-extra.functions";
 import type { CustomerDetail, CustomerRow } from "@/lib/admin-extra.server";
 import { formatPrice } from "@/lib/format";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/beheer/klanten")({
 });
 
 function CustomersPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const fetchCustomers = useServerFn(getCustomers);
   const fetchDetail = useServerFn(getCustomerDetail);
@@ -59,17 +61,14 @@ function CustomersPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Klanten"
-        description="Klantprofielen met bestelhistorie, retouren, reviews en supportvragen."
-      />
+      <PageHeader title={t("admin.cust.title")} description={t("admin.cust.subtitle")} />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Klanten" value={String(rows.length)} />
-        <MetricCard label="Met bestellingen" value={String(withOrders)} />
-        <MetricCard label="Totale omzet" value={formatPrice(totalRevenue)} />
+        <MetricCard label={t("admin.cust.title")} value={String(rows.length)} />
+        <MetricCard label={t("admin.cust.withOrders")} value={String(withOrders)} />
+        <MetricCard label={t("admin.cust.totalRevenue")} value={formatPrice(totalRevenue)} />
         <MetricCard
-          label="Nieuwsbrief"
+          label={t("admin.cust.newsletter")}
           value={String(rows.filter((c) => c.newsletter_opt_in).length)}
         />
       </div>
@@ -78,37 +77,37 @@ function CustomersPage() {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Zoek op naam, e-mail of telefoon"
+          placeholder={t("admin.cust.search")}
           className="max-w-xs"
         />
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as typeof sort)}
-          aria-label="Sorteren"
+          aria-label={t("admin.cust.sort")}
           className="h-9 rounded-md border border-input bg-background px-2 text-sm"
         >
-          <option value="recent">Meest recent actief</option>
-          <option value="spent">Hoogste besteding</option>
-          <option value="orders">Meeste bestellingen</option>
+          <option value="recent">{t("admin.cust.sortRecent")}</option>
+          <option value="spent">{t("admin.cust.sortHighestSpend")}</option>
+          <option value="orders">{t("admin.cust.sortMostOrders")}</option>
         </select>
       </div>
 
       {isPending ? <LoadingState /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}
-      {data && rows.length === 0 ? <EmptyState title="Geen klanten gevonden" /> : null}
+      {data && rows.length === 0 ? <EmptyState title={t("admin.cust.empty")} /> : null}
 
       {rows.length ? (
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="p-3">Klant</th>
-                <th className="p-3">Contact</th>
-                <th className="p-3 text-right">Orders</th>
-                <th className="p-3 text-right">Besteed</th>
-                <th className="p-3 text-right">Gem. order</th>
-                <th className="p-3">Laatste order</th>
-                <th className="p-3 text-right">Acties</th>
+                <th className="p-3">{t("admin.orders.customer")}</th>
+                <th className="p-3">{t("admin.cust.contact")}</th>
+                <th className="p-3 text-right">{t("admin.nav.orders")}</th>
+                <th className="p-3 text-right">{t("admin.cust.spent")}</th>
+                <th className="p-3 text-right">{t("admin.cust.avgOrder")}</th>
+                <th className="p-3">{t("admin.cust.lastOrder")}</th>
+                <th className="p-3 text-right">{t("admin.common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -116,7 +115,8 @@ function CustomersPage() {
                 <tr key={c.id}>
                   <td className="p-3">
                     <p className="font-medium">
-                      {[c.first_name, c.last_name].filter(Boolean).join(" ") || "Naamloos"}
+                      {[c.first_name, c.last_name].filter(Boolean).join(" ") ||
+                        t("admin.cust.unnamed")}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       Klant sinds {new Date(c.created_at).toLocaleDateString("nl-NL")}
@@ -134,7 +134,7 @@ function CustomersPage() {
                   </td>
                   <td className="p-3 text-right">
                     <Button size="sm" variant="outline" onClick={() => setOpenId(c.id)}>
-                      Profiel
+                      {t("admin.cust.profileTab")}
                     </Button>
                   </td>
                 </tr>
@@ -147,7 +147,7 @@ function CustomersPage() {
       <Dialog open={Boolean(openId)} onOpenChange={(open) => !open && setOpenId(null)}>
         <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Klantprofiel</DialogTitle>
+            <DialogTitle>{t("admin.cust.profile")}</DialogTitle>
           </DialogHeader>
           {detailQuery.isPending ? <LoadingState /> : null}
           {detailQuery.error ? <ErrorState message={(detailQuery.error as Error).message} /> : null}
@@ -157,13 +157,13 @@ function CustomersPage() {
                 <p className="font-medium">
                   {[detailQuery.data.customer.first_name, detailQuery.data.customer.last_name]
                     .filter(Boolean)
-                    .join(" ") || "Naamloos"}
+                    .join(" ") || t("admin.cust.unnamed")}
                 </p>
                 <p className="text-muted-foreground">{detailQuery.data.customer.email}</p>
               </div>
 
               <section>
-                <h3 className="mb-2 font-semibold">Adressen</h3>
+                <h3 className="mb-2 font-semibold">{t("admin.cust.addresses")}</h3>
                 {detailQuery.data.addresses.length ? (
                   <ul className="space-y-1 text-muted-foreground">
                     {detailQuery.data.addresses.map((a) => (
@@ -174,12 +174,12 @@ function CustomersPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-muted-foreground">Geen adressen bekend.</p>
+                  <p className="text-muted-foreground">{t("admin.cust.noAddresses")}</p>
                 )}
               </section>
 
               <section>
-                <h3 className="mb-2 font-semibold">Bestellingen</h3>
+                <h3 className="mb-2 font-semibold">{t("admin.nav.orders")}</h3>
                 {detailQuery.data.orders.length ? (
                   <ul className="divide-y divide-border">
                     {detailQuery.data.orders.map((o) => (
@@ -193,21 +193,21 @@ function CustomersPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-muted-foreground">Nog geen bestellingen.</p>
+                  <p className="text-muted-foreground">{t("admin.cust.noOrders")}</p>
                 )}
               </section>
 
               <div className="grid gap-4 sm:grid-cols-3">
                 <section>
-                  <h3 className="mb-1 font-semibold">Retouren</h3>
+                  <h3 className="mb-1 font-semibold">{t("admin.nav.returns")}</h3>
                   <p className="text-muted-foreground">{detailQuery.data.returns.length}</p>
                 </section>
                 <section>
-                  <h3 className="mb-1 font-semibold">Reviews</h3>
+                  <h3 className="mb-1 font-semibold">{t("admin.nav.reviews")}</h3>
                   <p className="text-muted-foreground">{detailQuery.data.reviews.length}</p>
                 </section>
                 <section>
-                  <h3 className="mb-1 font-semibold">Supportvragen</h3>
+                  <h3 className="mb-1 font-semibold">{t("admin.cust.support")}</h3>
                   <p className="text-muted-foreground">{detailQuery.data.tickets.length}</p>
                 </section>
               </div>

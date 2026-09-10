@@ -25,6 +25,7 @@ import {
   StatusBadge,
 } from "@/components/admin/admin-ui";
 import { useCan } from "@/components/admin/admin-shell";
+import { useI18n } from "@/lib/i18n";
 import { getAdminBrands, upsertBrand } from "@/lib/admin-extra.functions";
 import type { AdminBrand } from "@/lib/admin-extra.server";
 
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/beheer/merken")({
 type FormState = Partial<AdminBrand> & { name?: string };
 
 function BrandsPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const queryClient = useQueryClient();
   const fetchBrands = useServerFn(getAdminBrands);
@@ -65,7 +67,7 @@ function BrandsPage() {
         },
       }),
     onSuccess: () => {
-      toast.success("Merk opgeslagen");
+      toast.success(t("admin.brand.saved"));
       setEditing(null);
       queryClient.invalidateQueries({ queryKey: ["admin-brands"] });
     },
@@ -82,12 +84,12 @@ function BrandsPage() {
   return (
     <div>
       <PageHeader
-        title="Merken"
-        description="Merkpagina's, logo's en SEO voor Besjaar, RYNEX en LYNEX."
+        title={t("admin.brand.title")}
+        description={t("admin.brand.subtitle")}
         actions={
           allow("brands", "create") ? (
             <Button onClick={() => setEditing({ is_active: true, sort_order: 0 })}>
-              Merk toevoegen
+              {t("admin.brand.add")}
             </Button>
           ) : null
         }
@@ -96,25 +98,25 @@ function BrandsPage() {
       <Input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Zoek merk"
+        placeholder={t("admin.brand.search")}
         className="mb-3 max-w-xs"
       />
 
       {isPending ? <LoadingState /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}
-      {data && rows.length === 0 ? <EmptyState title="Geen merken gevonden" /> : null}
+      {data && rows.length === 0 ? <EmptyState title={t("admin.brand.empty")} /> : null}
 
       {rows.length ? (
         <div className="overflow-x-auto rounded-xl border border-border bg-card">
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="p-3">Merk</th>
+                <th className="p-3">{t("admin.brand.brand")}</th>
                 <th className="p-3">Slug</th>
-                <th className="p-3">Producten</th>
-                <th className="p-3">Status</th>
+                <th className="p-3">{t("admin.common.products")}</th>
+                <th className="p-3">{t("admin.common.status")}</th>
                 <th className="p-3">Orde</th>
-                <th className="p-3 text-right">Acties</th>
+                <th className="p-3 text-right">{t("admin.common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -126,14 +128,14 @@ function BrandsPage() {
                   <td className="p-3">
                     <StatusBadge
                       tone={b.is_active ? "success" : "muted"}
-                      label={b.is_active ? "Actief" : "Inactief"}
+                      label={b.is_active ? t("admin.brand.active") : t("admin.brand.inactive")}
                     />
                   </td>
                   <td className="p-3">{b.sort_order}</td>
                   <td className="p-3 text-right">
                     {allow("brands", "edit") ? (
                       <Button size="sm" variant="outline" onClick={() => setEditing(b)}>
-                        Wijzigen
+                        {t("admin.brand.change")}
                       </Button>
                     ) : null}
                   </td>
@@ -147,12 +149,14 @@ function BrandsPage() {
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
         <DialogContent className="max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editing?.id ? "Merk wijzigen" : "Nieuw merk"}</DialogTitle>
+            <DialogTitle>
+              {editing?.id ? t("admin.brand.editTitle") : t("admin.brand.new")}
+            </DialogTitle>
           </DialogHeader>
           {editing ? (
             <div className="space-y-3">
               <div>
-                <Label htmlFor="brand-name">Naam *</Label>
+                <Label htmlFor="brand-name">{t("admin.common.nameRequired")}</Label>
                 <Input
                   id="brand-name"
                   value={editing.name ?? ""}
@@ -168,7 +172,7 @@ function BrandsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="brand-logo">Logo (pad of URL)</Label>
+                <Label htmlFor="brand-logo">{t("admin.brand.logo")}</Label>
                 <Input
                   id="brand-logo"
                   value={editing.logo_url ?? ""}
@@ -176,7 +180,7 @@ function BrandsPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="brand-desc">Beschrijving</Label>
+                <Label htmlFor="brand-desc">{t("admin.common.description")}</Label>
                 <Textarea
                   id="brand-desc"
                   value={editing.description ?? ""}
@@ -185,7 +189,7 @@ function BrandsPage() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label htmlFor="brand-order">Weergave-orde</Label>
+                  <Label htmlFor="brand-order">{t("admin.brand.displayOrder")}</Label>
                   <Input
                     id="brand-order"
                     type="number"
@@ -198,7 +202,7 @@ function BrandsPage() {
                     checked={editing.is_active ?? true}
                     onCheckedChange={(v) => setEditing({ ...editing, is_active: v })}
                   />
-                  Actief
+                  {t("admin.brand.active")}
                 </label>
               </div>
               <div>
@@ -221,13 +225,13 @@ function BrandsPage() {
           ) : null}
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditing(null)}>
-              Annuleren
+              {t("admin.common.cancel")}
             </Button>
             <Button
               disabled={mutation.isPending || !editing?.name?.trim()}
               onClick={() => editing && mutation.mutate(editing)}
             >
-              {mutation.isPending ? "Opslaan…" : "Opslaan"}
+              {mutation.isPending ? t("admin.common.saving") : t("admin.common.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

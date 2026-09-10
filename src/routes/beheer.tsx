@@ -10,6 +10,7 @@ import { StaffMfaChallenge, StaffMfaEnrol } from "@/components/admin/staff-mfa";
 import { supabase } from "@/integrations/supabase/client";
 import { staffGateState } from "@/lib/mfa";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 import { getMyAccess } from "@/lib/admin-core.functions";
 import type { AdminAccess } from "@/lib/admin-access";
 
@@ -43,6 +44,7 @@ export const Route = createFileRoute("/beheer")({
  */
 function BeheerLayout() {
   const { user, loading } = useAuth();
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchAccess = useServerFn(getMyAccess);
 
@@ -79,7 +81,7 @@ function BeheerLayout() {
   if (loading || (user && accessQuery.isPending)) {
     return (
       <div className="container-page py-20">
-        <LoadingState label="Laden…" />
+        <LoadingState label={t("admin.gate.loading")} />
       </div>
     );
   }
@@ -102,7 +104,7 @@ function BeheerLayout() {
   if (mfaQuery.isPending) {
     return (
       <div className="container-page py-20">
-        <LoadingState label="Laden…" />
+        <LoadingState label={t("admin.gate.loading")} />
       </div>
     );
   }

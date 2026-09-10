@@ -15,6 +15,7 @@ import {
   Pager,
 } from "@/components/admin/admin-ui";
 import { useCan } from "@/components/admin/admin-shell";
+import { useI18n } from "@/lib/i18n";
 import { getMovements } from "@/lib/admin-extra.functions";
 import { MOVEMENT_REASON_LABELS, type MovementRow } from "@/lib/admin-extra.server";
 import { toCsv, downloadCsv } from "@/lib/csv";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/beheer/mutaties")({
 const PAGE_SIZE = 25;
 
 function MovementsPage() {
+  const { t } = useI18n();
   const allow = useCan();
   const fetchMovements = useServerFn(getMovements);
 
@@ -60,8 +62,8 @@ function MovementsPage() {
   return (
     <div>
       <PageHeader
-        title="Voorraadmutaties"
-        description="Volledige historie van elke voorraadwijziging met reden, referentie en gebruiker."
+        title={t("admin.moves.title")}
+        description={t("admin.moves.subtitle")}
         actions={
           rows.length ? (
             <Button
@@ -94,7 +96,7 @@ function MovementsPage() {
                 )
               }
             >
-              Exporteer CSV
+              {t("admin.moves.exportCsv")}
             </Button>
           ) : null
         }
@@ -102,7 +104,7 @@ function MovementsPage() {
 
       <div className="mb-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Label htmlFor="mv-search">Zoeken</Label>
+          <Label htmlFor="mv-search">{t("admin.common.search")}</Label>
           <Input
             id="mv-search"
             value={search}
@@ -110,11 +112,11 @@ function MovementsPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder="Product, EAN of notitie"
+            placeholder={t("admin.moves.search")}
           />
         </div>
         <div>
-          <Label htmlFor="mv-reason">Reden</Label>
+          <Label htmlFor="mv-reason">{t("admin.moves.reason")}</Label>
           <select
             id="mv-reason"
             value={reason}
@@ -124,7 +126,7 @@ function MovementsPage() {
             }}
             className="mt-1 h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
           >
-            <option value="alle">Alle redenen</option>
+            <option value="alle">{t("admin.moves.allReasons")}</option>
             {Object.entries(MOVEMENT_REASON_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -133,7 +135,7 @@ function MovementsPage() {
           </select>
         </div>
         <div>
-          <Label htmlFor="mv-from">Vanaf</Label>
+          <Label htmlFor="mv-from">{t("admin.moves.from")}</Label>
           <Input
             id="mv-from"
             type="date"
@@ -145,7 +147,7 @@ function MovementsPage() {
           />
         </div>
         <div>
-          <Label htmlFor="mv-to">Tot en met</Label>
+          <Label htmlFor="mv-to">{t("admin.moves.until")}</Label>
           <Input
             id="mv-to"
             type="date"
@@ -161,10 +163,7 @@ function MovementsPage() {
       {isPending ? <LoadingState /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}
       {data && rows.length === 0 ? (
-        <EmptyState
-          title="Geen mutaties gevonden"
-          description="Pas de filters aan of kies een andere periode."
-        />
+        <EmptyState title={t("admin.moves.empty")} description={t("admin.moves.emptyHint")} />
       ) : null}
 
       {rows.length ? (
@@ -172,13 +171,13 @@ function MovementsPage() {
           <table className="w-full text-sm">
             <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="p-3">Datum</th>
-                <th className="p-3">Product</th>
-                <th className="p-3">Reden</th>
-                <th className="p-3 text-right">Wijziging</th>
-                <th className="p-3">Referentie</th>
-                <th className="p-3">Gebruiker</th>
-                <th className="p-3">Notitie</th>
+                <th className="p-3">{t("admin.common.date")}</th>
+                <th className="p-3">{t("admin.common.product")}</th>
+                <th className="p-3">{t("admin.moves.reason")}</th>
+                <th className="p-3 text-right">{t("admin.moves.change")}</th>
+                <th className="p-3">{t("admin.moves.reference")}</th>
+                <th className="p-3">{t("admin.moves.user")}</th>
+                <th className="p-3">{t("admin.moves.note")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -188,7 +187,9 @@ function MovementsPage() {
                     {new Date(m.created_at).toLocaleString("nl-NL")}
                   </td>
                   <td className="p-3">
-                    <p className="font-medium">{m.product_name ?? "Onbekend product"}</p>
+                    <p className="font-medium">
+                      {m.product_name ?? t("admin.moves.unknownProduct")}
+                    </p>
                     <p className="text-xs text-muted-foreground">{m.ean ?? ""}</p>
                   </td>
                   <td className="p-3">{MOVEMENT_REASON_LABELS[m.reason] ?? m.reason}</td>

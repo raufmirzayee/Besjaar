@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/format";
 import { getAdminReturns, updateReturn } from "@/lib/returns.functions";
 import { RETURN_STATUSES, RETURN_STATUS_LABELS, type ReturnStatus } from "@/lib/returns.server";
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/beheer/retouren")({
 });
 
 function AdminReturnsPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchReturns = useServerFn(getAdminReturns);
   const save = useServerFn(updateReturn);
@@ -64,7 +66,7 @@ function AdminReturnsPage() {
       restock?: boolean;
     }) => save({ data: input }),
     onSuccess: () => {
-      toast.success("Retour bijgewerkt");
+      toast.success(t("admin.ret.updated"));
       queryClient.invalidateQueries({ queryKey: ["admin-returns"] });
     },
     onError: (error: Error) => toast.error(error.message),
@@ -76,7 +78,7 @@ function AdminReturnsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl font-bold">Retouren</h2>
+          <h2 className="font-display text-xl font-bold">{t("admin.ret.title")}</h2>
           <p className="text-sm text-muted-foreground">
             {rows.length} retour(en) · beoordeel, boek in en betaal terug
           </p>
@@ -86,7 +88,7 @@ function AdminReturnsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="alle">Alle statussen</SelectItem>
+            <SelectItem value="alle">{t("admin.ret.allStatuses")}</SelectItem>
             {RETURN_STATUSES.map((s) => (
               <SelectItem key={s} value={s}>
                 {RETURN_STATUS_LABELS[s]}
@@ -97,9 +99,9 @@ function AdminReturnsPage() {
       </div>
 
       {returnsQuery.isPending ? (
-        <p className="text-sm text-muted-foreground">Retouren laden…</p>
+        <p className="text-sm text-muted-foreground">{t("admin.ret.loading")}</p>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Geen retouren in deze status.</p>
+        <p className="text-sm text-muted-foreground">{t("admin.ret.empty")}</p>
       ) : (
         <ul className="space-y-4">
           {rows.map((ret) => {
@@ -137,7 +139,7 @@ function AdminReturnsPage() {
 
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">Terugbetaling (€)</label>
+                    <label className="text-xs font-medium">{t("admin.ret.refundAmount")}</label>
                     <Input
                       type="number"
                       step="0.01"
@@ -152,7 +154,7 @@ function AdminReturnsPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">Retourtracking</label>
+                    <label className="text-xs font-medium">{t("admin.ret.tracking")}</label>
                     <Input
                       value={draft.trackingCode ?? ret.tracking_code ?? ""}
                       onChange={(e) =>
@@ -165,7 +167,7 @@ function AdminReturnsPage() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium">Interne notitie / klantreactie</label>
+                    <label className="text-xs font-medium">{t("admin.ret.note")}</label>
                     <Textarea
                       rows={2}
                       value={draft.staffNote ?? ret.staff_note ?? ""}
@@ -196,7 +198,7 @@ function AdminReturnsPage() {
                       })
                     }
                   >
-                    Gegevens opslaan
+                    {t("admin.ret.save")}
                   </Button>
 
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -209,16 +211,16 @@ function AdminReturnsPage() {
                         }))
                       }
                     />
-                    Voorraad bijboeken bij ontvangst
+                    {t("admin.ret.restock")}
                   </label>
 
                   <div className="ml-auto flex flex-wrap gap-2">
                     {(
                       [
-                        ["approved", "Goedkeuren"],
-                        ["rejected", "Afwijzen"],
-                        ["received", "Ontvangen"],
-                        ["refunded", "Terugbetaald"],
+                        ["approved", t("admin.ret.approve")],
+                        ["rejected", t("admin.ret.reject")],
+                        ["received", t("admin.ret.received")],
+                        ["refunded", t("admin.ret.refunded")],
                       ] as [ReturnStatus, string][]
                     ).map(([next, label]) => (
                       <Button

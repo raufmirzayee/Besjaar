@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useI18n } from "@/lib/i18n";
+import { ADMIN_LOCALES } from "@/lib/translations/admin";
+import type { TranslationKey } from "@/lib/translations";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import {
@@ -37,7 +40,6 @@ import {
   searchAdmin,
 } from "@/lib/admin-core.functions";
 import type { AdminBadges, AdminNotification, GlobalSearchResult } from "@/lib/admin-core.server";
-import { ROLE_LABELS } from "@/lib/admin.server";
 
 /* ------------------------------ access context ------------------------------ */
 
@@ -79,6 +81,7 @@ function badgeValue(badges: AdminBadges | undefined, key?: string) {
 export function AdminShell({ children }: { children: ReactNode }) {
   const access = useAdminAccess();
   const { user, signOut } = useAuth();
+  const { t, locale, setLocale } = useI18n();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -133,7 +136,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <div key={group}>
             {!collapsed ? (
               <p className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {group}
+                {t(group as TranslationKey)}
               </p>
             ) : null}
             <div className="flex flex-col gap-0.5">
@@ -145,7 +148,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
-                    title={item.label}
+                    title={t(item.label as TranslationKey)}
                     className={cn(
                       "flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                       active
@@ -154,7 +157,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
                     )}
                   >
                     <Icon name={item.icon} className="h-4 w-4 shrink-0" />
-                    {!collapsed ? <span className="min-w-0 truncate">{item.label}</span> : null}
+                    {!collapsed ? (
+                      <span className="min-w-0 truncate">{t(item.label as TranslationKey)}</span>
+                    ) : null}
                     {count > 0 ? (
                       <Badge
                         variant={active ? "secondary" : "outline"}
@@ -192,12 +197,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
         >
           <div className="mb-2 flex items-center justify-between px-1">
             {!collapsed ? (
-              <span className="px-2 font-display text-sm font-bold">Besjaar beheer</span>
+              <span className="px-2 font-display text-sm font-bold">
+                {t("admin.signIn.eyebrow")}
+              </span>
             ) : null}
             <Button
               size="icon"
               variant="ghost"
-              aria-label={collapsed ? "Menu uitklappen" : "Menu inklappen"}
+              aria-label={t("admin.shell.toggleSidebar")}
               onClick={() => setCollapsed((v) => !v)}
             >
               <Icons.PanelLeft className="h-4 w-4" aria-hidden />
@@ -212,12 +219,17 @@ export function AdminShell({ children }: { children: ReactNode }) {
             <div className="flex items-center gap-1">
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
-                  <Button size="icon" variant="ghost" className="lg:hidden" aria-label="Menu">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="lg:hidden"
+                    aria-label={t("admin.shell.menu")}
+                  >
                     <Icons.Menu className="h-4 w-4" aria-hidden />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 overflow-y-auto">
-                  <SheetTitle className="mb-3 font-display">Besjaar beheer</SheetTitle>
+                  <SheetTitle className="mb-3 font-display">{t("admin.signIn.eyebrow")}</SheetTitle>
                   {nav}
                 </SheetContent>
               </Sheet>
@@ -234,9 +246,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   <Input
                     value={term}
                     onChange={(e) => setTerm(e.target.value)}
-                    placeholder="Zoek product, order, klant of retour…"
+                    placeholder={t("admin.shell.searchPlaceholder")}
                     className="pl-8"
-                    aria-label="Globaal zoeken"
+                    aria-label={t("admin.shell.globalSearch")}
                   />
                 </div>
               </PopoverTrigger>
@@ -246,9 +258,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 {searchQuery.isPending ? (
-                  <p className="p-3 text-sm text-muted-foreground">Zoeken…</p>
+                  <p className="p-3 text-sm text-muted-foreground">{t("admin.shell.searching")}</p>
                 ) : (searchQuery.data ?? []).length === 0 ? (
-                  <p className="p-3 text-sm text-muted-foreground">Geen resultaten.</p>
+                  <p className="p-3 text-sm text-muted-foreground">{t("admin.shell.noResults")}</p>
                 ) : (
                   <ul className="max-h-72 overflow-y-auto">
                     {(searchQuery.data ?? []).map((r) => (
@@ -284,18 +296,18 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   <DropdownMenuTrigger asChild>
                     <Button size="sm" className="hidden sm:inline-flex">
                       <Icons.Plus className="mr-1 h-4 w-4" aria-hidden />
-                      Snelactie
+                      {t("admin.shell.quickAction")}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Snelacties</DropdownMenuLabel>
+                    <DropdownMenuLabel>{t("admin.shell.quickActions")}</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     {quickActions.map((a) => (
                       <DropdownMenuItem
-                        key={a.label}
+                        key={t(a.label as TranslationKey)}
                         onClick={() => navigate({ to: a.to.split("?")[0] })}
                       >
-                        {a.label}
+                        {t(a.label as TranslationKey)}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -305,7 +317,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
               {/* Notifications */}
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button size="icon" variant="ghost" className="relative" aria-label="Meldingen">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="relative"
+                    aria-label={t("admin.shell.notifications")}
+                  >
                     <Icons.Bell className="h-4 w-4" aria-hidden />
                     {unread > 0 ? (
                       <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
@@ -316,23 +333,25 @@ export function AdminShell({ children }: { children: ReactNode }) {
                 </PopoverTrigger>
                 <PopoverContent align="end" className="w-80 p-2">
                   <div className="flex items-center justify-between gap-2 pb-2">
-                    <p className="text-sm font-semibold">Meldingen</p>
+                    <p className="text-sm font-semibold">{t("admin.shell.notifications")}</p>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={async () => {
                         await markRead({ data: { ids: null } });
-                        toast.success("Alles gelezen");
+                        toast.success(t("admin.shell.allRead"));
                         queryClient.invalidateQueries({ queryKey: ["admin-badges"] });
                         queryClient.invalidateQueries({ queryKey: ["admin-notifications"] });
                       }}
                     >
-                      Alles gelezen
+                      {t("admin.shell.allRead")}
                     </Button>
                   </div>
                   <div className="max-h-80 space-y-1 overflow-y-auto">
                     {(notificationsQuery.data ?? []).length === 0 ? (
-                      <p className="p-3 text-sm text-muted-foreground">Geen meldingen.</p>
+                      <p className="p-3 text-sm text-muted-foreground">
+                        {t("admin.shell.noNotifications")}
+                      </p>
                     ) : (
                       (notificationsQuery.data ?? []).map((n) => (
                         <button
@@ -355,7 +374,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
                             </span>
                           ) : null}
                           <span className="mt-0.5 block text-[10px] text-muted-foreground">
-                            {new Date(n.created_at).toLocaleString("nl-NL")}
+                            {new Date(n.created_at).toLocaleString(locale)}
                           </span>
                         </button>
                       ))
@@ -365,10 +384,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </Popover>
 
               <div className="hidden sm:block">
-                <LanguageSwitcher />
+                <LanguageSwitcher only={ADMIN_LOCALES} />
               </div>
 
-              <Button size="icon" variant="ghost" asChild aria-label="Help">
+              <Button size="icon" variant="ghost" asChild aria-label={t("admin.shell.help")}>
                 <Link to="/veelgestelde-vragen">
                   <Icons.CircleHelp className="h-4 w-4" aria-hidden />
                 </Link>
@@ -376,7 +395,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="ghost" aria-label="Profielmenu">
+                  <Button size="icon" variant="ghost" aria-label={t("admin.shell.profileMenu")}>
                     <Icons.UserRound className="h-4 w-4" aria-hidden />
                   </Button>
                 </DropdownMenuTrigger>
@@ -386,19 +405,21 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   <div className="flex flex-wrap gap-1 px-2 pb-2">
                     {access.roles.map((r) => (
                       <Badge key={r} variant="secondary">
-                        {ROLE_LABELS[r] ?? r}
+                        {t(`admin.role.${r}` as TranslationKey)}
                       </Badge>
                     ))}
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate({ to: "/account" })}>
-                    Mijn account
+                    {t("admin.shell.myAccount")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate({ to: "/" })}>
-                    Naar de webshop
+                    {t("admin.shell.toShop")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut}>Uitloggen</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    {t("admin.shell.signOut")}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -407,7 +428,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           {/* Breadcrumbs */}
           <p className="mb-3 flex items-center gap-1 text-xs text-muted-foreground">
             <Link to="/beheer" className="hover:text-foreground">
-              Beheer
+              {t("admin.shell.title")}
             </Link>
             {activeItem && !activeItem.exact ? (
               <>

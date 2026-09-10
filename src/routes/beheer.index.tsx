@@ -25,6 +25,8 @@ import {
   statusTone,
 } from "@/components/admin/admin-ui";
 import { GoLiveChecklist } from "@/components/admin/go-live-checklist";
+import type { TranslationKey } from "@/lib/translations";
+import { useI18n } from "@/lib/i18n";
 import { getDashboardOverview } from "@/lib/admin-core.functions";
 import type { DashboardOverview, DashboardPeriod } from "@/lib/admin-core.server";
 import { formatPrice } from "@/lib/format";
@@ -33,13 +35,14 @@ export const Route = createFileRoute("/beheer/")({
   component: DashboardPage,
 });
 
-const PERIODS: { value: DashboardPeriod; label: string }[] = [
-  { value: "today", label: "Vandaag" },
-  { value: "7d", label: "7 dagen" },
-  { value: "30d", label: "30 dagen" },
-  { value: "month", label: "Deze maand" },
-  { value: "last_month", label: "Vorige maand" },
-  { value: "year", label: "Dit jaar" },
+/** Keys, not labels: a module constant cannot call t(). */
+const PERIODS: { value: DashboardPeriod; label: TranslationKey }[] = [
+  { value: "today", label: "admin.dash.today" },
+  { value: "7d", label: "admin.dash.days7" },
+  { value: "30d", label: "admin.dash.days30" },
+  { value: "month", label: "admin.dash.thisMonth" },
+  { value: "last_month", label: "admin.dash.lastMonth" },
+  { value: "year", label: "admin.dash.thisYear" },
 ];
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
@@ -52,6 +55,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 function DashboardPage() {
+  const { t } = useI18n();
   const [period, setPeriod] = useState<DashboardPeriod>("30d");
   const fetchOverview = useServerFn(getDashboardOverview);
 
@@ -63,8 +67,8 @@ function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Dashboard"
-        description="Live cijfers uit de webshop, het magazijn en bol.com."
+        title={t("admin.dash.title")}
+        description={t("admin.dash.subtitle")}
         actions={
           <div className="flex flex-wrap gap-1">
             {PERIODS.map((p) => (
@@ -74,7 +78,7 @@ function DashboardPage() {
                 variant={period === p.value ? "default" : "outline"}
                 onClick={() => setPeriod(p.value)}
               >
-                {p.label}
+                {t(p.label)}
               </Button>
             ))}
           </div>
@@ -83,31 +87,31 @@ function DashboardPage() {
 
       <GoLiveChecklist />
 
-      {isPending ? <LoadingState label="Cijfers laden…" /> : null}
+      {isPending ? <LoadingState label={t("admin.dash.loading")} /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}
 
       {data ? (
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              label="Omzet periode"
+              label={t("admin.dash.revenuePeriod")}
               value={formatPrice(data.revenue.value)}
               change={data.revenue.change}
               to="/beheer/rapporten"
             />
             <MetricCard
-              label="Bestellingen periode"
+              label={t("admin.dash.ordersPeriod")}
               value={String(data.orders.value)}
               change={data.orders.change}
               to="/beheer/bestellingen"
             />
             <MetricCard
-              label="Gem. orderwaarde"
+              label={t("admin.dash.avgOrder")}
               value={formatPrice(data.averageOrderValue.value)}
               change={data.averageOrderValue.change}
             />
             <MetricCard
-              label="Voorraadwaarde"
+              label={t("admin.dash.stockValue")}
               value={formatPrice(data.inventoryValue)}
               hint="inkoopwaarde op voorraad"
               to="/beheer/voorraad"
@@ -116,22 +120,22 @@ function DashboardPage() {
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricCard
-              label="Omzet vandaag"
+              label={t("admin.dash.revenueToday")}
               value={formatPrice(data.revenueToday)}
               hint={`${data.ordersToday} orders`}
             />
             <MetricCard
-              label="Omzet deze week"
+              label={t("admin.dash.revenueWeek")}
               value={formatPrice(data.revenueWeek)}
               hint="laatste 7 dagen"
             />
             <MetricCard
-              label="Omzet deze maand"
+              label={t("admin.dash.revenueMonth")}
               value={formatPrice(data.revenueMonth)}
               hint="lopende maand"
             />
             <MetricCard
-              label="Omzet dit jaar"
+              label={t("admin.dash.revenueYear")}
               value={formatPrice(data.revenueYear)}
               hint="lopend jaar"
             />
@@ -139,50 +143,54 @@ function DashboardPage() {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <MetricCard
-              label="In afwachting"
+              label={t("admin.dash.pending")}
               value={String(data.counts.pending)}
               hint="te betalen"
               to="/beheer/bestellingen"
             />
             <MetricCard
-              label="Betaald"
+              label={t("admin.dash.paid")}
               value={String(data.counts.paid)}
               hint="te verwerken"
               to="/beheer/bestellingen"
             />
             <MetricCard
-              label="Klaar voor verzending"
+              label={t("admin.dash.readyToShip")}
               value={String(data.counts.readyToShip)}
               hint="magazijn"
               to="/beheer/verzendingen"
             />
             <MetricCard
-              label="Verzonden"
+              label={t("admin.dash.shipped")}
               value={String(data.counts.shipped)}
               hint="onderweg/bezorgd"
               to="/beheer/verzendingen"
             />
-            <MetricCard label="Geannuleerd" value={String(data.counts.cancelled)} hint="totaal" />
             <MetricCard
-              label="Open retouren"
+              label={t("admin.dash.cancelled")}
+              value={String(data.counts.cancelled)}
+              hint="totaal"
+            />
+            <MetricCard
+              label={t("admin.dash.openReturns")}
               value={String(data.counts.pendingReturns)}
               hint="te behandelen"
               to="/beheer/retouren"
             />
             <MetricCard
-              label="Mislukte betalingen"
+              label={t("admin.dash.failedPayments")}
               value={String(data.counts.failedPayments)}
               hint="controle nodig"
               to="/beheer/bestellingen"
             />
             <MetricCard
-              label="Lage voorraad"
+              label={t("admin.dash.lowStock")}
               value={String(data.counts.lowStock)}
               hint="bijbestellen"
               to="/beheer/lage-voorraad"
             />
             <MetricCard
-              label="Niet op voorraad"
+              label={t("admin.dash.outOfStock")}
               value={String(data.counts.outOfStock)}
               hint="uitverkocht"
               to="/beheer/voorraad"
@@ -194,20 +202,20 @@ function DashboardPage() {
               to="/beheer/synchronisatie"
             />
             <MetricCard
-              label="Open supportvragen"
+              label={t("admin.dash.openSupport")}
               value={String(data.counts.openSupport)}
               hint="klantenservice"
               to="/beheer/berichten"
             />
             <MetricCard
-              label="Retourpercentage"
+              label={t("admin.dash.returnRate")}
               value={`${data.returnRate.toFixed(1)}%`}
               hint="retouren / orders"
             />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <ChartCard title="Omzet over tijd">
+            <ChartCard title={t("admin.dash.revenueOverTime")}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.series}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -225,7 +233,7 @@ function DashboardPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Bestellingen over tijd">
+            <ChartCard title={t("admin.dash.ordersOverTime")}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.series}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -237,7 +245,7 @@ function DashboardPage() {
               </ResponsiveContainer>
             </ChartCard>
 
-            <ChartCard title="Omzet per categorie">
+            <ChartCard title={t("admin.dash.revenueByCategory")}>
               {data.byCategory.length ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.byCategory} layout="vertical">
@@ -248,11 +256,11 @@ function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState title="Nog geen verkoopdata" />
+                <EmptyState title={t("admin.dash.noSalesData")} />
               )}
             </ChartCard>
 
-            <ChartCard title="Omzet per merk">
+            <ChartCard title={t("admin.dash.revenueByBrand")}>
               {data.byBrand.length ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.byBrand} layout="vertical">
@@ -263,14 +271,14 @@ function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <EmptyState title="Nog geen verkoopdata" />
+                <EmptyState title={t("admin.dash.noSalesData")} />
               )}
             </ChartCard>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-3">
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold">Verkoopkanalen</h2>
+              <h2 className="text-sm font-semibold">{t("admin.dash.channels")}</h2>
               <ul className="mt-3 space-y-2 text-sm">
                 {data.byChannel.length ? (
                   data.byChannel.map((c) => (
@@ -282,10 +290,10 @@ function DashboardPage() {
                     </li>
                   ))
                 ) : (
-                  <li className="text-muted-foreground">Nog geen omzet in deze periode.</li>
+                  <li className="text-muted-foreground">{t("admin.dash.noRevenue")}</li>
                 )}
               </ul>
-              <h2 className="mt-4 text-sm font-semibold">Betaalmethoden</h2>
+              <h2 className="mt-4 text-sm font-semibold">{t("admin.dash.paymentMethods")}</h2>
               <ul className="mt-2 space-y-1 text-sm">
                 {data.byPaymentMethod.length ? (
                   data.byPaymentMethod.map((p) => (
@@ -295,17 +303,17 @@ function DashboardPage() {
                     </li>
                   ))
                 ) : (
-                  <li className="text-muted-foreground">Geen data.</li>
+                  <li className="text-muted-foreground">{t("admin.dash.noData")}</li>
                 )}
               </ul>
-              <h2 className="mt-4 text-sm font-semibold">Klanten</h2>
+              <h2 className="mt-4 text-sm font-semibold">{t("admin.dash.customers")}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {data.customers.new} nieuw · {data.customers.returning} terugkerend
               </p>
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold">Best verkocht</h2>
+              <h2 className="text-sm font-semibold">{t("admin.dash.bestSellers")}</h2>
               <ul className="mt-3 divide-y divide-border text-sm">
                 {data.topProducts.length ? (
                   data.topProducts.map((p) => (
@@ -317,10 +325,10 @@ function DashboardPage() {
                     </li>
                   ))
                 ) : (
-                  <li className="py-2 text-muted-foreground">Nog geen verkopen.</li>
+                  <li className="py-2 text-muted-foreground">{t("admin.dash.noSales")}</li>
                 )}
               </ul>
-              <h2 className="mt-4 text-sm font-semibold">Laagste verkoop</h2>
+              <h2 className="mt-4 text-sm font-semibold">{t("admin.dash.worstSellers")}</h2>
               <ul className="mt-2 divide-y divide-border text-sm">
                 {data.slowProducts.map((p) => (
                   <li key={p.id} className="flex items-center justify-between gap-2 py-2">
@@ -334,7 +342,7 @@ function DashboardPage() {
             </div>
 
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="text-sm font-semibold">Recente activiteit</h2>
+              <h2 className="text-sm font-semibold">{t("admin.dash.recentActivity")}</h2>
               <ul className="mt-3 divide-y divide-border text-sm">
                 {data.activity.length ? (
                   data.activity.map((a) => (
@@ -352,11 +360,11 @@ function DashboardPage() {
                     </li>
                   ))
                 ) : (
-                  <li className="py-2 text-muted-foreground">Nog geen activiteit.</li>
+                  <li className="py-2 text-muted-foreground">{t("admin.dash.noActivity")}</li>
                 )}
               </ul>
               <Button className="mt-3 w-full" variant="outline" asChild>
-                <Link to="/beheer/audit">Audit log bekijken</Link>
+                <Link to="/beheer/audit">{t("admin.dash.viewAudit")}</Link>
               </Button>
             </div>
           </div>

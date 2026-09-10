@@ -7,10 +7,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, useI18n } from "@/lib/i18n";
+import { LOCALES, LOCALE_LABELS, LOCALE_SHORT, useI18n, type Locale } from "@/lib/i18n";
 
-export function LanguageSwitcher() {
+/**
+ * `only` narrows the choices to the locales the surrounding area actually has
+ * copy for. The backoffice is Dutch and English, and offering German there
+ * would just serve Dutch under a German flag.
+ */
+export function LanguageSwitcher({ only }: { only?: readonly Locale[] } = {}) {
   const { locale, setLocale, t } = useI18n();
+  const choices = only ?? LOCALES;
 
   return (
     <DropdownMenu>
@@ -21,7 +27,7 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {LOCALES.map((code) => (
+        {choices.map((code) => (
           <DropdownMenuItem
             key={code}
             onSelect={() => setLocale(code)}

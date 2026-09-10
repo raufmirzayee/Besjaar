@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { StarRating } from "@/components/star-rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { TranslationKey } from "@/lib/translations";
+import { useI18n } from "@/lib/i18n";
 import { deleteReview, getAdminReviews, setReviewStatus } from "@/lib/reviews.functions";
 import { REVIEW_STATUS_LABELS, type AdminReview, type ReviewStatus } from "@/lib/reviews.server";
 
@@ -14,14 +16,16 @@ export const Route = createFileRoute("/beheer/beoordelingen")({
   component: ReviewsAdminPage,
 });
 
-const FILTERS: { value: ReviewStatus | "all"; label: string }[] = [
-  { value: "pending", label: "In afwachting" },
-  { value: "approved", label: "Goedgekeurd" },
-  { value: "rejected", label: "Afgewezen" },
-  { value: "all", label: "Alles" },
+/** Keys, not labels: a module constant cannot call t(). */
+const FILTERS: { value: ReviewStatus | "all"; label: TranslationKey }[] = [
+  { value: "pending", label: "admin.reviews.pending" },
+  { value: "approved", label: "admin.reviews.approved" },
+  { value: "rejected", label: "admin.reviews.rejected" },
+  { value: "all", label: "admin.common.all" },
 ];
 
 function ReviewsAdminPage() {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const fetchReviews = useServerFn(getAdminReviews);
   const moderate = useServerFn(setReviewStatus);
@@ -39,7 +43,7 @@ function ReviewsAdminPage() {
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: ReviewStatus }) => moderate({ data: input }),
     onSuccess: () => {
-      toast.success("Beoordeling bijgewerkt");
+      toast.success(t("admin.reviews.updated"));
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
       queryClient.invalidateQueries({ queryKey: ["product-reviews"] });
     },
@@ -49,7 +53,7 @@ function ReviewsAdminPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => remove({ data: { id } }),
     onSuccess: () => {
-      toast.success("Beoordeling verwijderd");
+      toast.success(t("admin.reviews.deleted"));
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
     onError: (err: Error) => toast.error(err.message),
@@ -58,7 +62,7 @@ function ReviewsAdminPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-display text-xl font-bold">Beoordelingen</h2>
+        <h2 className="font-display text-xl font-bold">{t("admin.reviews.title")}</h2>
         <p className="text-sm text-muted-foreground">
           Keur beoordelingen goed of af. Alleen goedgekeurde beoordelingen zijn zichtbaar in de
           webshop en tellen mee in het gemiddelde.
@@ -73,18 +77,18 @@ function ReviewsAdminPage() {
             variant={filter === option.value ? "default" : "outline"}
             onClick={() => setFilter(option.value)}
           >
-            {option.label}
+            {t(option.label)}
           </Button>
         ))}
       </div>
 
       {isPending ? (
-        <p className="text-sm text-muted-foreground">Beoordelingen laden…</p>
+        <p className="text-sm text-muted-foreground">{t("admin.reviews.loading")}</p>
       ) : error ? (
         <p className="text-sm text-destructive">{(error as Error).message}</p>
       ) : (data ?? []).length === 0 ? (
         <p className="rounded-xl border border-border bg-card p-6 text-center text-muted-foreground">
-          Geen beoordelingen in deze weergave.
+          {t("admin.reviews.empty")}
         </p>
       ) : (
         <div className="space-y-3">
@@ -94,7 +98,7 @@ function ReviewsAdminPage() {
                 <StarRating value={review.rating} />
                 <span className="font-medium">{review.author_name}</span>
                 {review.verified_purchase ? (
-                  <Badge variant="secondary">Gekochte klant</Badge>
+                  <Badge variant="secondary">{t("admin.reviews.verifiedBuyer")}</Badge>
                 ) : null}
                 <Badge
                   variant={
@@ -123,7 +127,7 @@ function ReviewsAdminPage() {
                   disabled={statusMutation.isPending || review.status === "approved"}
                   onClick={() => statusMutation.mutate({ id: review.id, status: "approved" })}
                 >
-                  Goedkeuren
+                  {t("admin.reviews.approve")}
                 </Button>
                 <Button
                   size="sm"
@@ -131,19 +135,19 @@ function ReviewsAdminPage() {
                   disabled={statusMutation.isPending || review.status === "rejected"}
                   onClick={() => statusMutation.mutate({ id: review.id, status: "rejected" })}
                 >
-                  Afwijzen
+                  {t("admin.reviews.reject")}
                 </Button>
                 <Button
                   size="sm"
                   variant="destructive"
                   disabled={deleteMutation.isPending}
                   onClick={() => {
-                    if (confirm("Deze beoordeling definitief verwijderen?")) {
+                    if (confirm(t("admin.reviews.confirmDelete"))) {
                       deleteMutation.mutate(review.id);
                     }
                   }}
                 >
-                  Verwijderen
+                  {t("admin.common.delete")}
                 </Button>
               </div>
             </div>

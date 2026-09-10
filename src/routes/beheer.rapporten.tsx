@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
 import { statusLabel } from "@/lib/fulfilment";
 import { getAdminOrders } from "@/lib/admin.functions";
 import { type AdminOrder } from "@/lib/admin.server";
@@ -39,6 +40,7 @@ function toCsv(orders: AdminOrder[]): string {
 }
 
 function ReportsPage() {
+  const { t } = useI18n();
   const fetchOrders = useServerFn(getAdminOrders);
   const { data, isPending } = useQuery({
     queryKey: ["admin-orders", "alle"],
@@ -79,19 +81,20 @@ function ReportsPage() {
     URL.revokeObjectURL(url);
   }
 
-  if (isPending) return <p className="text-sm text-muted-foreground">Rapporten laden…</p>;
+  if (isPending)
+    return <p className="text-sm text-muted-foreground">{t("admin.reports.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-xl font-bold">Rapporten</h2>
+        <h2 className="font-display text-xl font-bold">{t("admin.reports.title")}</h2>
         <Button variant="outline" onClick={download} disabled={orders.length === 0}>
-          Exporteer bestellingen (CSV)
+          {t("admin.reports.exportOrders")}
         </Button>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="font-semibold">Bestellingen per status</h3>
+        <h3 className="font-semibold">{t("admin.reports.ordersByStatus")}</h3>
         <ul className="mt-3 divide-y divide-border text-sm">
           {Object.entries(byStatus).map(([status, value]) => (
             <li key={status} className="flex justify-between py-2">
@@ -102,13 +105,13 @@ function ReportsPage() {
             </li>
           ))}
           {orders.length === 0 ? (
-            <li className="py-2 text-muted-foreground">Nog geen bestellingen.</li>
+            <li className="py-2 text-muted-foreground">{t("admin.reports.noOrders")}</li>
           ) : null}
         </ul>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
-        <h3 className="font-semibold">Omzet per product</h3>
+        <h3 className="font-semibold">{t("admin.reports.revenueByProduct")}</h3>
         <ul className="mt-3 divide-y divide-border text-sm">
           {topProducts.map(([name, value]) => (
             <li key={name} className="flex justify-between gap-2 py-2">
@@ -119,7 +122,7 @@ function ReportsPage() {
             </li>
           ))}
           {topProducts.length === 0 ? (
-            <li className="py-2 text-muted-foreground">Nog geen verkopen.</li>
+            <li className="py-2 text-muted-foreground">{t("admin.reports.noSales")}</li>
           ) : null}
         </ul>
       </div>

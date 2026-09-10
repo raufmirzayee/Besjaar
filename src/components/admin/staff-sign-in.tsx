@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n";
 
 /**
  * Staff sign-in.
@@ -19,6 +20,7 @@ import { useAuth } from "@/lib/auth";
  */
 export function StaffSignIn() {
   const { signIn } = useAuth();
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +39,7 @@ export function StaffSignIn() {
     } catch {
       // One message for every failure. Naming the cause would tell an attacker
       // which addresses are staff.
-      setError("Inloggen mislukt. Controleer je gegevens.");
+      setError(t("admin.signIn.failed"));
     } finally {
       setBusy(false);
     }
@@ -48,17 +50,19 @@ export function StaffSignIn() {
       <div className="w-full max-w-sm">
         <div className="mb-6 flex items-center gap-2 text-muted-foreground">
           <ShieldCheck className="size-5" aria-hidden="true" />
-          <span className="text-sm font-semibold uppercase tracking-widest">Besjaar beheer</span>
+          <span className="text-sm font-semibold uppercase tracking-widest">
+            {t("admin.signIn.eyebrow")}
+          </span>
         </div>
 
         <form onSubmit={handleSubmit} className="rounded-2xl border bg-card p-6 shadow-soft">
-          <h1 className="text-lg font-semibold">Inloggen</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Alleen voor medewerkersaccounts.</p>
+          <h1 className="text-lg font-semibold">{t("admin.signIn.title")}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("admin.signIn.subtitle")}</p>
 
           <div className="mt-5 space-y-4">
             <div>
               <Label htmlFor="staff-email" className="mb-1.5 block">
-                E-mailadres
+                {t("admin.signIn.email")}
               </Label>
               <Input
                 id="staff-email"
@@ -71,7 +75,7 @@ export function StaffSignIn() {
             </div>
             <div>
               <Label htmlFor="staff-password" className="mb-1.5 block">
-                Wachtwoord
+                {t("admin.signIn.password")}
               </Label>
               <Input
                 id="staff-password"
@@ -91,12 +95,12 @@ export function StaffSignIn() {
           ) : null}
 
           <Button type="submit" className="mt-5 w-full" disabled={busy}>
-            {busy ? "Bezig…" : "Inloggen"}
+            {busy ? t("admin.common.busy") : t("admin.signIn.submit")}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Geen toegang meer? Vraag een super admin om je account te herstellen.
+          {t("admin.signIn.lockedOut")}
         </p>
       </div>
     </div>
