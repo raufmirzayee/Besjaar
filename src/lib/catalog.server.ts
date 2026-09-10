@@ -27,6 +27,8 @@ export type BrandRow = {
   slug: string;
   description: string | null;
   logo_url: string | null;
+  /** Brand descriptions translate; brand names are proper nouns and do not. */
+  translations: Translations;
 };
 
 export type ProductListItem = {
@@ -184,7 +186,7 @@ export async function fetchBrands(): Promise<BrandRow[]> {
     async () => {
       const { data, error } = await publicClient()
         .from("brands")
-        .select("id, name, slug, description, logo_url")
+        .select("id, name, slug, description, logo_url, translations")
         .eq("is_active", true)
         .order("sort_order");
       if (error) throw new Error(error.message);

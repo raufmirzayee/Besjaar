@@ -14,6 +14,11 @@ import {
   categories as catalogueCategories,
   brands as catalogueBrands,
 } from "@/data/catalogue";
+import {
+  CATALOGUE_BRAND_TRANSLATIONS,
+  CATALOGUE_CATEGORY_TRANSLATIONS,
+  CATALOGUE_PRODUCT_TRANSLATIONS,
+} from "@/data/catalogue-translations";
 import type { CatalogueProduct } from "@/data/catalogue-types";
 import type { CategoryRow, ProductDetail, ProductListItem } from "./catalog.server";
 
@@ -53,9 +58,13 @@ function toListItem(product: CatalogueProduct): ProductListItem {
     availability: product.availability,
     source_url: product.sourceUrl,
     highlights: product.highlights,
-    translations: null,
-    brand_translations: null,
-    category_translations: null,
+    // These used to be null, so switching to English, German or French left
+    // every product name and category in Dutch while the interface around them
+    // translated. They carry the same shape Supabase's `translations` column
+    // does, so `localize()` reads both without knowing which source it got.
+    translations: CATALOGUE_PRODUCT_TRANSLATIONS[product.slug] ?? null,
+    brand_translations: CATALOGUE_BRAND_TRANSLATIONS[brandSlug(product.brand)] ?? null,
+    category_translations: CATALOGUE_CATEGORY_TRANSLATIONS[product.categorySlug] ?? null,
   };
 }
 
@@ -95,7 +104,7 @@ export function catalogueCategoryRows(): CategoryRow[] {
     image_url: null,
     icon: null,
     sort_order: category.sortOrder,
-    translations: null,
+    translations: CATALOGUE_CATEGORY_TRANSLATIONS[category.slug] ?? null,
   }));
 }
 
@@ -106,6 +115,7 @@ export function catalogueBrandRows() {
     slug: brand.slug,
     description: brand.description,
     logo_url: null,
+    translations: CATALOGUE_BRAND_TRANSLATIONS[brand.slug] ?? null,
   }));
 }
 

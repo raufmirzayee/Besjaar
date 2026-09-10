@@ -5,6 +5,8 @@ import { ProductImage } from "@/components/product-image";
 import { brands, countByBrand, productsForBrand } from "@/data/catalogue";
 import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
+import { localize } from "@/lib/content-i18n";
+import { withBrandTranslations } from "@/data/catalogue-translations";
 
 export const Route = createFileRoute("/merken/")({
   head: (ctx) => localisedSeo("brands", { path: "/merken", locale: localeFromHead(ctx) }),
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/merken/")({
 });
 
 function BrandsIndexPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const counts = countByBrand();
 
   return (
@@ -69,7 +71,7 @@ function BrandsIndexPage() {
                   </span>
                 </div>
                 <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {brand.description}
+                  {localize(withBrandTranslations(brand), "description", locale)}
                 </p>
                 <span className="mt-4 text-sm font-semibold text-primary group-hover:underline">
                   {t("brand.viewAll", { brand: brand.name })} →

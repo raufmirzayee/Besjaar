@@ -5,6 +5,8 @@ import { ProductImage } from "@/components/product-image";
 import { categories, countByCategory, productsInCategory } from "@/data/catalogue";
 import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
+import { localize } from "@/lib/content-i18n";
+import { withCategoryTranslations } from "@/data/catalogue-translations";
 
 export const Route = createFileRoute("/categorieen")({
   head: (ctx) => localisedSeo("categories", { path: "/categorieen", locale: localeFromHead(ctx) }),
@@ -12,7 +14,7 @@ export const Route = createFileRoute("/categorieen")({
 });
 
 function CategoriesPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const counts = countByCategory();
 
   return (
@@ -61,10 +63,10 @@ function CategoriesPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <h2 className="font-display text-base font-bold group-hover:text-primary">
-                  {category.name}
+                  {localize(withCategoryTranslations(category), "name", locale)}
                 </h2>
                 <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                  {category.description}
+                  {localize(withCategoryTranslations(category), "description", locale)}
                 </p>
                 <p className="mt-2 text-xs font-semibold tabular-nums text-muted-foreground">
                   {t("brand.productCount", { count: counts[category.slug] ?? 0 })}
