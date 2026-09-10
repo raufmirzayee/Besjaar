@@ -68,6 +68,7 @@ export const LEGAL_LINKS = [
   { to: "/privacy", labelKey: "footer.privacy" },
   { to: "/cookies", labelKey: "footer.cookies" },
   { to: "/voorwaarden", labelKey: "footer.terms" },
+  { to: "/herroeping", labelKey: "footer.withdrawal" },
 ] as const;
 
 export const ACCOUNT_LINKS = [

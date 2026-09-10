@@ -31,12 +31,6 @@ const nl = {
   "contact.privacyPrefix": "We gebruiken je gegevens alleen om je vraag te beantwoorden. Zie onze ",
   "contact.privacyLink": "privacyverklaring",
   "contact.success": "Bedankt! We reageren binnen 1 werkdag.",
-  "contact.companyTitle": "Bedrijfsgegevens",
-  "contact.companyLine1": "Besjaar B.V. · KvK 00000000 · BTW NL000000000B01",
-  "contact.companyLine2": "Eigen merken: Besjaar, RYNEX en LYNEX",
-  "contact.companyNote":
-    "Let op: KvK- en btw-nummer zijn nog placeholders — geef de definitieve bedrijfsgegevens door zodat we ze hier en op de bestelbevestiging invullen.",
-
   "faq.eyebrow": "Klantenservice",
   "faq.title": "Veelgestelde vragen",
   "faq.introPrefix": "Staat je vraag er niet bij? Mail ons via ",
@@ -178,11 +172,6 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
     "contact.privacyPrefix": "We only use your details to answer your question. See our ",
     "contact.privacyLink": "privacy statement",
     "contact.success": "Thanks! We'll reply within 1 working day.",
-    "contact.companyTitle": "Company details",
-    "contact.companyLine1": "Besjaar B.V. · CoC 00000000 · VAT NL000000000B01",
-    "contact.companyLine2": "Own brands: Besjaar, RYNEX and LYNEX",
-    "contact.companyNote":
-      "Note: the CoC and VAT numbers are still placeholders — share the final company details so we can fill them in here and on the order confirmation.",
 
     "faq.eyebrow": "Customer service",
     "faq.title": "Frequently asked questions",
@@ -320,11 +309,6 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
       "Wir verwenden deine Daten ausschließlich zur Beantwortung deiner Frage. Siehe unsere ",
     "contact.privacyLink": "Datenschutzerklärung",
     "contact.success": "Danke! Wir antworten innerhalb eines Werktags.",
-    "contact.companyTitle": "Firmendaten",
-    "contact.companyLine1": "Besjaar B.V. · HR 00000000 · USt-IdNr. NL000000000B01",
-    "contact.companyLine2": "Eigene Marken: Besjaar, RYNEX und LYNEX",
-    "contact.companyNote":
-      "Hinweis: Handelsregister- und Umsatzsteuernummer sind noch Platzhalter — teile uns die endgültigen Firmendaten mit, damit wir sie hier und in der Bestellbestätigung eintragen.",
 
     "faq.eyebrow": "Kundenservice",
     "faq.title": "Häufig gestellte Fragen",
@@ -463,11 +447,6 @@ export const pageMessages: Record<Locale, Record<Key, string>> = {
       "Nous utilisons vos données uniquement pour répondre à votre question. Consultez notre ",
     "contact.privacyLink": "déclaration de confidentialité",
     "contact.success": "Merci ! Nous répondons sous 1 jour ouvré.",
-    "contact.companyTitle": "Informations sur l'entreprise",
-    "contact.companyLine1": "Besjaar B.V. · RC 00000000 · TVA NL000000000B01",
-    "contact.companyLine2": "Marques propres : Besjaar, RYNEX et LYNEX",
-    "contact.companyNote":
-      "Remarque : les numéros de registre du commerce et de TVA sont encore des espaces réservés — communiquez-nous les données définitives afin que nous les indiquions ici et sur la confirmation de commande.",
 
     "faq.eyebrow": "Service client",
     "faq.title": "Questions fréquentes",

@@ -6,7 +6,7 @@ import { productMessages } from "@/lib/translations/product";
 import { storefrontMessages } from "@/lib/translations/storefront";
 
 const nl = {
-  "banner.freeShipping": "Gratis verzending vanaf € 50 in NL & BE",
+  "banner.freeShipping": "Gratis verzending vanaf {amount} in NL & BE",
   "banner.cutoff": "Op werkdagen verzonden vanuit Nederland",
   "banner.returns": "30 dagen retourrecht",
 
@@ -39,6 +39,7 @@ const nl = {
   "footer.faq": "Veelgestelde vragen",
   "footer.contact": "Contact",
   "footer.terms": "Algemene voorwaarden",
+  "footer.withdrawal": "Herroepingsformulier",
   "footer.privacy": "Privacyverklaring",
   "footer.hours": "Ma t/m vr 09:00 – 17:00",
   "footer.rights": "© {year} Besjaar. Alle rechten voorbehouden.",
@@ -128,7 +129,7 @@ export type TranslationKey =
   | keyof (typeof storefrontMessages)["nl"];
 
 const en: Record<CoreKey, string> = {
-  "banner.freeShipping": "Free shipping from €50 in NL & BE",
+  "banner.freeShipping": "Free shipping from {amount} in NL & BE",
   "banner.cutoff": "Dispatched on working days from the Netherlands",
   "banner.returns": "30-day right of return",
 
@@ -161,6 +162,7 @@ const en: Record<CoreKey, string> = {
   "footer.faq": "Frequently asked questions",
   "footer.contact": "Contact",
   "footer.terms": "Terms & conditions",
+  "footer.withdrawal": "Withdrawal form",
   "footer.privacy": "Privacy statement",
   "footer.hours": "Mon–Fri 09:00 – 17:00",
   "footer.rights": "© {year} Besjaar. All rights reserved.",
@@ -239,7 +241,7 @@ const en: Record<CoreKey, string> = {
 };
 
 const de: Record<CoreKey, string> = {
-  "banner.freeShipping": "Gratis Versand ab 50 € in NL & BE",
+  "banner.freeShipping": "Gratis Versand ab {amount} in NL & BE",
   "banner.cutoff": "Versand an Werktagen aus den Niederlanden",
   "banner.returns": "30 Tage Rückgaberecht",
 
@@ -272,6 +274,7 @@ const de: Record<CoreKey, string> = {
   "footer.faq": "Häufige Fragen",
   "footer.contact": "Kontakt",
   "footer.terms": "Allgemeine Geschäftsbedingungen",
+  "footer.withdrawal": "Widerrufsformular",
   "footer.privacy": "Datenschutzerklärung",
   "footer.hours": "Mo–Fr 09:00 – 17:00",
   "footer.rights": "© {year} Besjaar. Alle Rechte vorbehalten.",
@@ -351,7 +354,7 @@ const de: Record<CoreKey, string> = {
 };
 
 const fr: Record<CoreKey, string> = {
-  "banner.freeShipping": "Livraison gratuite dès 50 € aux Pays-Bas et en Belgique",
+  "banner.freeShipping": "Livraison gratuite dès {amount} aux Pays-Bas et en Belgique",
   "banner.cutoff": "Expédié les jours ouvrés depuis les Pays-Bas",
   "banner.returns": "30 jours pour changer d'avis",
 
@@ -384,6 +387,7 @@ const fr: Record<CoreKey, string> = {
   "footer.faq": "Questions fréquentes",
   "footer.contact": "Contact",
   "footer.terms": "Conditions générales",
+  "footer.withdrawal": "Formulaire de rétractation",
   "footer.privacy": "Déclaration de confidentialité",
   "footer.hours": "Lun–ven 09:00 – 17:00",
   "footer.rights": "© {year} Besjaar. Tous droits réservés.",

@@ -40,7 +40,7 @@ export const Route = createFileRoute("/retouren")({
       { property: "og:title", content: "Retouren aanmelden — Besjaar" },
       {
         property: "og:description",
-        content: "Binnen 30 dagen retourneren met gratis retourlabel.",
+        content: "Meld je retour aan binnen de bedenktijd en volg de status van je terugbetaling.",
       },
       { name: "robots", content: "noindex" },
     ],

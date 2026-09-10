@@ -2,6 +2,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { createPayment, isPaymentProviderConfigured } from "./payments.server";
 
+/**
+ * Bump when the terms or the withdrawal notice change, so each order records
+ * which version the customer actually agreed to.
+ */
+export const TERMS_VERSION = "2026-09-10";
+
 export type ShippingMethod = {
   id: string;
   name: string;
@@ -34,6 +40,12 @@ export type CheckoutInput = {
   customerNote?: string | null;
   paymentMethod: string;
   idempotencyKey: string;
+  /**
+   * The customer ticked the terms and withdrawal-notice box at checkout.
+   * Required: an order is a contract, and the acceptance recorded against it
+   * must reflect something the customer actually did.
+   */
+  acceptedTerms: boolean;
   /** @deprecated ignored by the server; ownership is derived from the verified session. */
   userId?: string | null;
   lines: { productId: string; quantity: number }[];
@@ -107,6 +119,11 @@ export async function createOrder(
   verifiedUserId: string | null = null,
 ): Promise<{ order_number: string; checkoutUrl: string | null; paymentConfigured: boolean }> {
   if (input.lines.length === 0) throw new Error("Je winkelwagen is leeg.");
+  if (input.acceptedTerms !== true) {
+    // Recording an acceptance the customer never gave would make the audit
+    // trail worthless, so refuse the order instead of assuming consent.
+    throw new Error("Je moet de algemene voorwaarden accepteren om te kunnen bestellen.");
+  }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const existing = await supabaseAdmin
@@ -221,6 +238,8 @@ export async function createOrder(
       customer_note: input.customerNote ?? null,
       payment_method: input.paymentMethod,
       idempotency_key: input.idempotencyKey,
+      terms_accepted_at: new Date().toISOString(),
+      terms_version: TERMS_VERSION,
       payment_status: payment.paymentStatus,
       status: payment.status,
       payment_reference: payment.paymentReference,
@@ -256,6 +275,29 @@ export async function createOrder(
       note: `Bestelling ${orderRow.order_number}`,
     })),
   );
+
+  // Confirmation of the contract on a durable medium is required under EU
+  // consumer law, so it is sent as soon as the order exists — not only once
+  // payment clears. A failed send never fails the order.
+  try {
+    const { orderEmailData, sendTransactionalEmail } = await import("./email.server");
+    const data = await orderEmailData(supabaseAdmin, orderRow.id);
+    if (data) {
+      const result = await sendTransactionalEmail({
+        template: "order_confirmation",
+        data,
+        orderId: orderRow.id,
+      });
+      if (result.sent) {
+        await supabaseAdmin
+          .from("orders")
+          .update({ confirmation_sent_at: new Date().toISOString() })
+          .eq("id", orderRow.id);
+      }
+    }
+  } catch (error) {
+    console.error("[checkout] order confirmation could not be sent:", error);
+  }
 
   return {
     order_number: orderRow.order_number,

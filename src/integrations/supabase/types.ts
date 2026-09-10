@@ -532,8 +532,65 @@ export type Database = {
           },
         ];
       };
+      email_log: {
+        Row: {
+          created_at: string;
+          error: string | null;
+          id: string;
+          order_id: string | null;
+          provider: string | null;
+          provider_message_id: string | null;
+          recipient: string;
+          status: string;
+          subject: string;
+          template: string;
+        };
+        Insert: {
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          order_id?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          recipient: string;
+          status?: string;
+          subject: string;
+          template: string;
+        };
+        Update: {
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          order_id?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          recipient?: string;
+          status?: string;
+          subject?: string;
+          template?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "email_log_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       orders: {
         Row: {
+          carrier: string | null;
+          cancelled_at: string | null;
+          confirmation_sent_at: string | null;
+          delivered_at: string | null;
+          shipped_at: string | null;
+          shipping_notified_at: string | null;
+          terms_accepted_at: string | null;
+          terms_version: string | null;
+          tracking_code: string | null;
+          tracking_url: string | null;
           billing_address: Json;
           company_name: string | null;
           created_at: string;
@@ -564,6 +621,16 @@ export type Database = {
           vat_amount: number;
         };
         Insert: {
+          carrier?: string | null;
+          cancelled_at?: string | null;
+          confirmation_sent_at?: string | null;
+          delivered_at?: string | null;
+          shipped_at?: string | null;
+          shipping_notified_at?: string | null;
+          terms_accepted_at?: string | null;
+          terms_version?: string | null;
+          tracking_code?: string | null;
+          tracking_url?: string | null;
           billing_address?: Json;
           company_name?: string | null;
           created_at?: string;
@@ -594,6 +661,16 @@ export type Database = {
           vat_amount?: number;
         };
         Update: {
+          carrier?: string | null;
+          cancelled_at?: string | null;
+          confirmation_sent_at?: string | null;
+          delivered_at?: string | null;
+          shipped_at?: string | null;
+          shipping_notified_at?: string | null;
+          terms_accepted_at?: string | null;
+          terms_version?: string | null;
+          tracking_code?: string | null;
+          tracking_url?: string | null;
           billing_address?: Json;
           company_name?: string | null;
           created_at?: string;

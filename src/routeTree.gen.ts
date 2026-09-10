@@ -17,6 +17,7 @@ import { Route as BeheerRouteImport } from './routes/beheer'
 import { Route as CategorieenRouteImport } from './routes/categorieen'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as HerroepingRouteImport } from './routes/herroeping'
 import { Route as InloggenRouteImport } from './routes/inloggen'
 import { Route as OverOnsRouteImport } from './routes/over-ons'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -94,6 +95,11 @@ const ContactRoute = ContactRouteImport.update({
 const CookiesRoute = CookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HerroepingRoute = HerroepingRouteImport.update({
+  id: '/herroeping',
+  path: '/herroeping',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InloggenRoute = InloggenRouteImport.update({
@@ -296,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/herroeping': typeof HerroepingRoute
   '/inloggen': typeof InloggenRoute
   '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
@@ -343,6 +350,7 @@ export interface FileRoutesByTo {
   '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/herroeping': typeof HerroepingRoute
   '/inloggen': typeof InloggenRoute
   '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
@@ -392,6 +400,7 @@ export interface FileRoutesById {
   '/categorieen': typeof CategorieenRoute
   '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
+  '/herroeping': typeof HerroepingRoute
   '/inloggen': typeof InloggenRoute
   '/over-ons': typeof OverOnsRoute
   '/privacy': typeof PrivacyRoute
@@ -442,6 +451,7 @@ export interface FileRouteTypes {
     | '/categorieen'
     | '/contact'
     | '/cookies'
+    | '/herroeping'
     | '/inloggen'
     | '/over-ons'
     | '/privacy'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/categorieen'
     | '/contact'
     | '/cookies'
+    | '/herroeping'
     | '/inloggen'
     | '/over-ons'
     | '/privacy'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/categorieen'
     | '/contact'
     | '/cookies'
+    | '/herroeping'
     | '/inloggen'
     | '/over-ons'
     | '/privacy'
@@ -586,6 +598,7 @@ export interface RootRouteChildren {
   CategorieenRoute: typeof CategorieenRoute
   ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
+  HerroepingRoute: typeof HerroepingRoute
   InloggenRoute: typeof InloggenRoute
   OverOnsRoute: typeof OverOnsRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -663,6 +676,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/herroeping': {
+      id: '/herroeping'
+      path: '/herroeping'
+      fullPath: '/herroeping'
+      preLoaderRoute: typeof HerroepingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inloggen': {
@@ -990,6 +1010,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategorieenRoute: CategorieenRoute,
   ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
+  HerroepingRoute: HerroepingRoute,
   InloggenRoute: InloggenRoute,
   OverOnsRoute: OverOnsRoute,
   PrivacyRoute: PrivacyRoute,

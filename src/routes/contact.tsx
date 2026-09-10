@@ -5,6 +5,7 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { CompanyDetails } from "@/components/company-details";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -207,15 +208,7 @@ function ContactPage() {
           </form>
         </section>
 
-        <div className="mt-8 rounded-xl border bg-surface p-6 text-sm text-muted-foreground">
-          <p className="font-semibold text-foreground">Bedrijfsgegevens</p>
-          <p className="mt-2">Besjaar B.V. · KvK 00000000 · BTW NL000000000B01</p>
-          <p>Eigen merken: Besjaar, RYNEX en LYNEX</p>
-          <p className="mt-2 text-xs">
-            Let op: KvK- en btw-nummer zijn nog placeholders — geef de definitieve bedrijfsgegevens
-            door zodat we ze hier en op de bestelbevestiging invullen.
-          </p>
-        </div>
+        <CompanyDetails className="mt-8 rounded-xl border bg-surface p-6 text-sm text-muted-foreground" />
       </div>
     </div>
   );

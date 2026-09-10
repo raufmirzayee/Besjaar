@@ -40,7 +40,7 @@ const nl = {
 
   "returns.title": "Retouren",
   "returns.subtitle":
-    "Je hebt 30 dagen bedenktijd. Meld je retour aan en wij mailen je het retourlabel.",
+    "Je hebt 30 dagen bedenktijd. Meld je retour aan; we mailen je hoe en waarheen je terugstuurt.",
   "returns.toAccount": "Naar mijn account",
   "returns.new": "Nieuwe retour aanmelden",
   "returns.ordersLoading": "Bestellingen laden…",
@@ -121,7 +121,7 @@ export const accountMessages: Record<Locale, Record<Key, string>> = {
 
     "returns.title": "Returns",
     "returns.subtitle":
-      "You have 30 days to change your mind. Register your return and we'll email you the return label.",
+      "You have 30 days to change your mind. Register your return and we'll email you how and where to send it back.",
     "returns.toAccount": "Go to my account",
     "returns.new": "Register a new return",
     "returns.ordersLoading": "Loading orders…",
@@ -198,7 +198,7 @@ export const accountMessages: Record<Locale, Record<Key, string>> = {
 
     "returns.title": "Rücksendungen",
     "returns.subtitle":
-      "Du hast 30 Tage Widerrufsrecht. Melde deine Rücksendung an und wir senden dir das Rücksendelabel per E-Mail.",
+      "Du hast 30 Tage Widerrufsrecht. Melde deine Rücksendung an; wir mailen dir, wie und wohin du zurücksendest.",
     "returns.toAccount": "Zu meinem Konto",
     "returns.new": "Neue Rücksendung anmelden",
     "returns.ordersLoading": "Bestellungen werden geladen…",
@@ -275,7 +275,7 @@ export const accountMessages: Record<Locale, Record<Key, string>> = {
 
     "returns.title": "Retours",
     "returns.subtitle":
-      "Vous disposez de 30 jours pour changer d'avis. Déclarez votre retour et nous vous envoyons l'étiquette par e-mail.",
+      "Vous disposez de 30 jours pour changer d'avis. Déclarez votre retour ; nous vous indiquons par e-mail comment et où le renvoyer.",
     "returns.toAccount": "Aller à mon compte",
     "returns.new": "Déclarer un nouveau retour",
     "returns.ordersLoading": "Chargement des commandes…",

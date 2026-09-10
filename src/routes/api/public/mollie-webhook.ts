@@ -75,6 +75,24 @@ export const Route = createFileRoute("/api/public/mollie-webhook")({
           note: `Betaalstatus bijgewerkt door de betaalprovider: ${payment.status}.`,
         });
 
+        // Tell the customer their payment landed. Best-effort: a mail failure
+        // must not make the webhook fail, or Mollie will keep retrying it.
+        if (mapped.payment_status === "paid") {
+          try {
+            const { orderEmailData, sendTransactionalEmail } = await import("@/lib/email.server");
+            const data = await orderEmailData(supabaseAdmin, row.id);
+            if (data) {
+              await sendTransactionalEmail({
+                template: "payment_received",
+                data,
+                orderId: row.id,
+              });
+            }
+          } catch (mailError) {
+            console.error("[mollie] payment confirmation email failed:", mailError);
+          }
+        }
+
         // A failed or cancelled payment releases the stock the order reserved.
         if (mapped.payment_status === "failed" || mapped.payment_status === "cancelled") {
           const { data: items } = await supabaseAdmin

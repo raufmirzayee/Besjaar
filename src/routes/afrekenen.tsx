@@ -4,6 +4,7 @@ import { cloneElement, isValidElement, useId, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,6 +66,9 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [methodId, setMethodId] = useState<string | null>(null);
   const [payment, setPayment] = useState("ideal");
+  // An order is a contract, so consent is explicit and un-ticked by default.
+  // The server refuses the order without it and records what was agreed to.
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   // Reports whether a payment provider is connected, so the customer is told
   // up front when placing the order will not take a payment.
   const { data: paymentAvailability } = useQuery({
@@ -88,7 +92,12 @@ function CheckoutPage() {
     customer_note: "",
   });
 
-  const { data: methods } = useQuery({
+  const {
+    data: methods,
+    isPending: methodsPending,
+    error: methodsError,
+    refetch: refetchMethods,
+  } = useQuery({
     queryKey: ["shipping-methods"],
     queryFn: () => getShippingMethods(),
     staleTime: 5 * 60 * 1000,
@@ -119,6 +128,10 @@ function CheckoutPage() {
 
   async function submit() {
     if (!validateAddress() || !selected) return;
+    if (!acceptedTerms) {
+      setErrors((current) => ({ ...current, terms: t("checkout.termsRequired") }));
+      return;
+    }
     setSubmitting(true);
     try {
       const parsed = addressSchema.parse(form);
@@ -142,6 +155,7 @@ function CheckoutPage() {
           shippingMethodId: selected.id,
           customerNote: parsed.customer_note ?? null,
           paymentMethod: payment,
+          acceptedTerms,
           idempotencyKey: crypto.randomUUID(),
           userId: user?.id ?? null,
           lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity })),
@@ -196,8 +210,8 @@ function CheckoutPage() {
         ))}
       </ol>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_22rem]">
-        <div className="rounded-2xl border bg-card p-6 shadow-soft">
+      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="min-w-0 rounded-2xl border bg-card p-6 shadow-soft">
           {step === 1 ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
@@ -305,6 +319,24 @@ function CheckoutPage() {
 
           {step === 2 ? (
             <div className="space-y-4">
+              {/* A dead end with a greyed-out button and no explanation is the
+                  worst thing checkout can do. Say what went wrong instead. */}
+              {methodsPending ? (
+                <p className="text-sm text-muted-foreground">{t("checkout.methodsLoading")}</p>
+              ) : null}
+              {!methodsPending && (methodsError || (methods ?? []).length === 0) ? (
+                <div className="rounded-xl border border-sale/30 bg-sale/5 p-4">
+                  <p className="text-sm">{t("checkout.methodsUnavailable")}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => void refetchMethods()}
+                  >
+                    {t("checkout.retry")}
+                  </Button>
+                </div>
+              ) : null}
               <RadioGroup
                 value={selected?.id ?? ""}
                 onValueChange={setMethodId}
@@ -332,7 +364,7 @@ function CheckoutPage() {
                   </label>
                 ))}
               </RadioGroup>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={() => setStep(1)}>
                   {t("checkout.back")}
                 </Button>
@@ -364,11 +396,49 @@ function CheckoutPage() {
                   </label>
                 ))}
               </RadioGroup>
-              <div className="flex gap-2">
+              <div className="rounded-xl border bg-surface p-4">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="accept-terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) => {
+                      setAcceptedTerms(checked === true);
+                      if (checked === true) {
+                        setErrors(({ terms: _removed, ...rest }) => rest);
+                      }
+                    }}
+                    aria-describedby={errors.terms ? "accept-terms-error" : undefined}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="accept-terms" className="text-sm font-normal leading-relaxed">
+                    {t("checkout.termsPrefix")}
+                    <Link
+                      to="/voorwaarden"
+                      className="text-primary underline underline-offset-4 hover:text-primary-hover"
+                    >
+                      {t("checkout.termsLink")}
+                    </Link>
+                    {t("checkout.termsMiddle")}
+                    <Link
+                      to="/herroeping"
+                      className="text-primary underline underline-offset-4 hover:text-primary-hover"
+                    >
+                      {t("checkout.withdrawalLink")}
+                    </Link>
+                    {t("checkout.termsSuffix")}
+                  </Label>
+                </div>
+                {errors.terms ? (
+                  <p id="accept-terms-error" role="alert" className="mt-2 text-sm text-sale">
+                    {errors.terms}
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap gap-2">
                 <Button variant="outline" onClick={() => setStep(2)}>
                   {t("checkout.back")}
                 </Button>
-                <Button onClick={submit} disabled={submitting}>
+                <Button onClick={submit} disabled={submitting || !acceptedTerms}>
                   {submitting
                     ? t("checkout.placing")
                     : t("checkout.placeOrder", { total: formatPrice(total) })}
@@ -378,7 +448,7 @@ function CheckoutPage() {
           ) : null}
         </div>
 
-        <aside className="h-fit rounded-2xl border bg-card p-6 shadow-soft">
+        <aside className="h-fit min-w-0 rounded-2xl border bg-card p-6 shadow-soft">
           <h2 className="text-lg font-semibold">{t("checkout.yourOrder")}</h2>
           <ul className="mt-4 space-y-3 text-sm">
             {lines.map((l) => (

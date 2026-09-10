@@ -24,6 +24,7 @@ import {
   StatusBadge,
   statusTone,
 } from "@/components/admin/admin-ui";
+import { GoLiveChecklist } from "@/components/admin/go-live-checklist";
 import { getDashboardOverview } from "@/lib/admin-core.functions";
 import type { DashboardOverview, DashboardPeriod } from "@/lib/admin-core.server";
 import { formatPrice } from "@/lib/format";
@@ -79,6 +80,8 @@ function DashboardPage() {
           </div>
         }
       />
+
+      <GoLiveChecklist />
 
       {isPending ? <LoadingState label="Cijfers laden…" /> : null}
       {error ? <ErrorState message={(error as Error).message} onRetry={() => refetch()} /> : null}

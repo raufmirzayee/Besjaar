@@ -74,32 +74,6 @@ export const getAdminOrders = createServerFn({ method: "POST" })
     return fetchAdminOrders(context.supabase, data?.status);
   });
 
-export const setOrderStatus = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: { orderId: string; status: string; note?: string | null }) => input)
-  .handler(async ({ context, data }) => {
-    await requireRoles(context.supabase, context.userId, [
-      "super_admin",
-      "store_manager",
-      "warehouse",
-      "customer_service",
-    ]);
-    const { error } = await context.supabase
-      .from("orders")
-      .update({ status: data.status as never, updated_at: new Date().toISOString() })
-      .eq("id", data.orderId);
-    if (error) throw new Error(error.message);
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("order_status_history").insert({
-      order_id: data.orderId,
-      status: data.status as never,
-      note: data.note ?? null,
-      changed_by: context.userId,
-    });
-    return { ok: true };
-  });
-
 export const getLowStock = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
