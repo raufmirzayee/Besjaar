@@ -27,6 +27,8 @@ import {
 import { useCan } from "@/components/admin/admin-shell";
 import {
   getTranslationCoverage,
+  getTranslationProviderStatus,
+  runAutoTranslation,
   getTranslationDraft,
   getTranslationDrafts,
   saveTranslationFields,
@@ -223,6 +225,9 @@ function TranslationsPage() {
   const { t } = useI18n();
   const allow = useCan();
   const fetchCoverage = useServerFn(getTranslationCoverage);
+  const fetchProviderStatus = useServerFn(getTranslationProviderStatus);
+  const autoTranslate = useServerFn(runAutoTranslation);
+  const [translating, setTranslating] = useState(false);
   const [search, setSearch] = useState("");
   const [onlyIncomplete, setOnlyIncomplete] = useState(true);
   const [editing, setEditing] = useState<{ entity: CoverageEntity; id: string } | null>(null);
@@ -252,6 +257,54 @@ function TranslationsPage() {
     enabled: allow("products", "view"),
   });
 
+  const { data: provider } = useQuery({
+    queryKey: ["translation-provider"],
+    queryFn: () =>
+      fetchProviderStatus({}) as Promise<{ configured: boolean; provider: string | null }>,
+    enabled: allow("products", "view"),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  /**
+   * Runs the machine translation over the selected rows.
+   *
+   * One at a time on purpose: a provider's rate limit is easy to hit with a
+   * fan-out, and a partial failure halfway through a batch is easier to report
+   * when each row's outcome is known.
+   */
+  const translateSelection = async () => {
+    if (selection.length === 0) return;
+    setTranslating(true);
+    let done = 0;
+    const failures: string[] = [];
+    try {
+      for (const target of selection) {
+        try {
+          const result = (await autoTranslate({ data: target })) as {
+            status: string;
+            translated: string[];
+          };
+          if (result.translated.length > 0) done += 1;
+          else if (result.status === "failed") failures.push(target.id);
+        } catch (translationError) {
+          failures.push(
+            translationError instanceof Error ? translationError.message : String(translationError),
+          );
+        }
+      }
+      if (done > 0) toast.success(t("admin.tr.translated", { count: done }));
+      if (failures.length > 0)
+        toast.error(t("admin.tr.translateFailed", { count: failures.length }));
+      if (done === 0 && failures.length === 0) {
+        toast.info(t("admin.tr.nothingToTranslate"));
+      }
+      await refetch();
+      setSelection([]);
+    } finally {
+      setTranslating(false);
+    }
+  };
+
   if (!allow("products", "view")) return <NoAccessState module={t("admin.tr.title")} />;
 
   return (
@@ -263,8 +316,19 @@ function TranslationsPage() {
           <>
             {canEdit && selection.length > 0 ? (
               <>
-                <Button size="sm" onClick={() => setBulkOpen(true)}>
-                  Bewerk selectie ({selection.length})
+                {provider?.configured ? (
+                  <Button
+                    size="sm"
+                    onClick={() => void translateSelection()}
+                    disabled={translating}
+                  >
+                    {translating
+                      ? t("admin.tr.translating")
+                      : t("admin.tr.autoTranslate", { count: selection.length })}
+                  </Button>
+                ) : null}
+                <Button size="sm" variant="outline" onClick={() => setBulkOpen(true)}>
+                  {t("admin.tr.editSelection", { count: selection.length })}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => setSelection([])}>
                   {t("admin.tr.clearSelection")}
@@ -280,6 +344,18 @@ function TranslationsPage() {
           </>
         }
       />
+
+      {provider && !provider.configured ? (
+        <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="font-semibold">{t("admin.tr.noProviderTitle")}</p>
+          <p className="mt-1">{t("admin.tr.noProviderBody")}</p>
+        </div>
+      ) : null}
+      {provider?.configured ? (
+        <div className="mb-4 rounded-xl border border-border bg-muted/40 p-3 text-sm text-muted-foreground">
+          {t("admin.tr.providerOn", { provider: provider.provider ?? "" })}
+        </div>
+      ) : null}
 
       <div className="mb-4 max-w-sm">
         <Input

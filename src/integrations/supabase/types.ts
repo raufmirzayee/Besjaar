@@ -1606,6 +1606,15 @@ export type Database = {
         };
         Returns: number;
       };
+      apply_translations: {
+        Args: {
+          p_entity: string;
+          p_id: string;
+          p_translations: Json;
+          p_meta: Json;
+        };
+        Returns: undefined;
+      };
       check_rate_limit: {
         Args: {
           p_bucket: string;

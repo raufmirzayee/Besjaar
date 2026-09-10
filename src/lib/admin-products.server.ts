@@ -227,6 +227,10 @@ export type ProductListing = {
 export type ProductDetailAdmin = {
   id: string;
   name: string;
+  /** The language this product's text was written in. */
+  source_locale: "nl" | "en";
+  /** Where its translations stand: translated, pending, no_provider, failed. */
+  translation_status: string | null;
   short_name: string | null;
   slug: string;
   status: string;
@@ -286,6 +290,10 @@ export async function fetchProductDetail(
   return {
     id: p.id,
     name: p.name,
+    // Which language the text was written in, so the edit form shows the
+    // choice that was made rather than resetting everyone to Dutch.
+    source_locale: (p.translation_meta?.source_locale === "en" ? "en" : "nl") as "nl" | "en",
+    translation_status: (p.translation_meta?.status ?? null) as string | null,
     short_name: p.short_name,
     slug: p.slug,
     status: p.status,
@@ -405,6 +413,14 @@ export type ProductInput = {
   search_keywords?: string | null;
   featured?: boolean;
   bestseller?: boolean;
+  /**
+   * The language the admin wrote this product in.
+   *
+   * Stated rather than assumed. Everything used to be treated as Dutch, so a
+   * product written in English would have had its English overwritten by a
+   * translation of an empty Dutch field.
+   */
+  source_locale?: "nl" | "en";
 };
 
 function nullish<T>(value: T | undefined | null) {
@@ -488,6 +504,7 @@ export async function saveProductFull(
   if (input.id) {
     const { error } = await supabase.from("products").update(payload).eq("id", input.id);
     if (error) throw new Error(error.message);
+    await queueTranslation(input.id, input.source_locale);
     return { id: input.id, slug };
   }
 
@@ -516,7 +533,29 @@ export async function saveProductFull(
     });
   }
 
+  await queueTranslation(id, input.source_locale);
+
   return { id, slug };
+}
+
+/**
+ * Records that a product's translations are behind its source text.
+ *
+ * Deliberately does not translate here. An external call inside a save makes
+ * the save as slow and as fragile as the provider, and a shopkeeper should
+ * never be unable to publish a product because a translation service is down.
+ * The admin runs the pass from the translations screen, or right after saving.
+ *
+ * A failure to record this is swallowed: the product is saved, and a missing
+ * translation marker is not worth losing that over.
+ */
+async function queueTranslation(id: string, sourceLocale: "nl" | "en" | undefined) {
+  try {
+    const { markTranslationPending } = await import("./auto-translate.server");
+    await markTranslationPending("product", id, sourceLocale ?? "nl");
+  } catch (error) {
+    console.error("[translations] could not mark product pending:", error);
+  }
 }
 
 export async function setProductStatus(supabase: Client, id: string, status: string) {

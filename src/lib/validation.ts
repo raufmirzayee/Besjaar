@@ -208,6 +208,11 @@ export const productInput = z
     search_keywords: optionalText(500),
     featured: z.boolean().optional(),
     bestseller: z.boolean().optional(),
+    // Which language the admin typed this in. Only the two the shop is
+    // actually written in: nobody drafts a product in French here, and
+    // accepting one would mean translating from a language the source text is
+    // not in.
+    source_locale: z.enum(["nl", "en"]).optional(),
   })
   .strict();
 

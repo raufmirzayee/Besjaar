@@ -503,6 +503,21 @@ const nl = {
   "admin.tr.loadingFields": "Velden laden…",
   "admin.tr.saveAll": "Alles opslaan",
   "admin.tr.title": "Vertalingen",
+  "admin.tr.sourceLanguage": "Taal van deze tekst",
+  "admin.tr.sourceLanguageHelp":
+    "De taal waarin je de naam en omschrijvingen hierboven hebt ingevoerd. De andere talen worden hieruit vertaald — kies dus de taal die je echt hebt getypt, niet de taal die je wilt verkopen.",
+  "admin.tr.noProviderTitle": "Er is geen vertaaldienst ingesteld.",
+  "admin.tr.noProviderBody":
+    "Producten aanmaken en bewerken werkt gewoon; ontbrekende vertalingen blijven staan als “nog te vertalen” en worden hieronder getoond. Stel DEEPL_API_KEY in om automatisch vertalen aan te zetten. Er wordt niets automatisch ingevuld zolang die ontbreekt.",
+  "admin.tr.providerOn":
+    "Automatisch vertalen staat aan via {provider}. Selecteer regels en kies “Automatisch vertalen”. Handmatig gecorrigeerde talen worden nooit overschreven.",
+  "admin.tr.autoTranslate": "Automatisch vertalen ({count})",
+  "admin.tr.translating": "Bezig met vertalen…",
+  "admin.tr.translated": "{count} item(s) vertaald.",
+  "admin.tr.translateFailed": "{count} item(s) niet vertaald.",
+  "admin.tr.nothingToTranslate":
+    "Niets te vertalen: alles is al bijgewerkt of handmatig goedgekeurd.",
+  "admin.tr.editSelection": "Bewerk selectie ({count})",
   "admin.tr.showAll": "Toon alles",
   "admin.tr.refresh": "Verversen",
   "admin.tr.complete": "Volledig",
@@ -1133,6 +1148,21 @@ const en: Record<Key, string> = {
   "admin.tr.loadingFields": "Loading fields…",
   "admin.tr.saveAll": "Save all",
   "admin.tr.title": "Translations",
+  "admin.tr.sourceLanguage": "Language of this text",
+  "admin.tr.sourceLanguageHelp":
+    "The language you typed the name and descriptions above in. The other languages are translated from it — so pick the language you actually wrote, not the one you want to sell in.",
+  "admin.tr.noProviderTitle": "No translation service is configured.",
+  "admin.tr.noProviderBody":
+    "Creating and editing products works as normal; missing translations stay listed below as awaiting translation. Set DEEPL_API_KEY to switch automatic translation on. Nothing is filled in automatically while it is missing.",
+  "admin.tr.providerOn":
+    "Automatic translation is on, via {provider}. Select rows and choose “Translate automatically”. A language somebody has corrected by hand is never overwritten.",
+  "admin.tr.autoTranslate": "Translate automatically ({count})",
+  "admin.tr.translating": "Translating…",
+  "admin.tr.translated": "{count} item(s) translated.",
+  "admin.tr.translateFailed": "{count} item(s) could not be translated.",
+  "admin.tr.nothingToTranslate":
+    "Nothing to translate: everything is already up to date or approved by hand.",
+  "admin.tr.editSelection": "Edit selection ({count})",
   "admin.tr.showAll": "Show all",
   "admin.tr.refresh": "Refresh",
   "admin.tr.complete": "Complete",

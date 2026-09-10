@@ -143,6 +143,11 @@ const EMPTY_FORM = {
   search_keywords: "",
   featured: false,
   bestseller: false,
+  // Which language this product's text is written in. Stated, not assumed:
+  // everything used to be treated as Dutch, so a product drafted in English
+  // would have had its English overwritten by a translation of an empty
+  // Dutch field.
+  source_locale: "nl" as "nl" | "en",
 };
 
 type FormState = typeof EMPTY_FORM;
@@ -190,6 +195,7 @@ function toForm(p: ProductDetailAdmin): FormState {
     search_keywords: p.search_keywords ?? "",
     featured: p.featured,
     bestseller: p.bestseller,
+    source_locale: p.source_locale ?? "nl",
   };
 }
 
@@ -1238,6 +1244,7 @@ function ProductEditor({
           search_keywords: form.search_keywords || null,
           featured: form.featured,
           bestseller: form.bestseller,
+          source_locale: form.source_locale,
         },
       }),
     onSuccess: () => {
@@ -1757,6 +1764,19 @@ function ProductEditor({
       </TabsContent>
 
       <TabsContent value="seo" className="space-y-3">
+        <div className="rounded-xl border border-border bg-muted/40 p-3">
+          <Label htmlFor="source-locale">{t("admin.tr.sourceLanguage")}</Label>
+          <select
+            id="source-locale"
+            className="mt-1 h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+            value={form.source_locale}
+            onChange={(e) => set({ source_locale: e.target.value as "nl" | "en" })}
+          >
+            <option value="nl">Nederlands</option>
+            <option value="en">Engels</option>
+          </select>
+          <p className="mt-2 text-xs text-muted-foreground">{t("admin.tr.sourceLanguageHelp")}</p>
+        </div>
         <div>
           <Label>SEO-titel</Label>
           <Input value={form.seo_title} onChange={(e) => set({ seo_title: e.target.value })} />

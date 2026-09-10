@@ -134,3 +134,78 @@ export const saveTranslationFieldsBulk = createServerFn({ method: "POST" })
     }
     return result;
   });
+
+/**
+ * Runs a translation pass over one entity, now.
+ *
+ * The product form calls this straight after a save, and the translations
+ * screen calls it for anything still pending. It is a separate call from the
+ * save on purpose: the save must not wait on an external service.
+ */
+export const runAutoTranslation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => {
+    const target = parseTarget(input);
+    const data = input as { sourceLocale?: unknown; force?: unknown };
+    const source = data?.sourceLocale;
+    const sourceLocale =
+      source === "nl" || source === "en" || source === "de" || source === "fr"
+        ? (source as "nl" | "en" | "de" | "fr")
+        : undefined;
+    return { ...target, sourceLocale, force: data?.force === true };
+  })
+  .handler(async ({ data, context }) => {
+    await requirePermission(context, "products", "edit");
+    const { translateEntity } = await import("./auto-translate.server");
+    const result = await translateEntity(data.entity, data.id, {
+      sourceLocale: data.sourceLocale,
+      force: data.force,
+    });
+
+    if (result.translated.length > 0) {
+      await logAudit({
+        userId: context.userId,
+        userEmail: (context.claims as { email?: string | null } | undefined)?.email ?? null,
+        action: "translations.auto",
+        module: "products",
+        entityType: data.entity,
+        entityId: data.id,
+        newValue: {
+          provider: result.provider,
+          source: result.sourceLocale,
+          locales: result.translated,
+        },
+      });
+    }
+    return result;
+  });
+
+/** Whether this deployment has a translation provider, for the admin to show. */
+export const getTranslationProviderStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requirePermission(context, "products", "view");
+    const { translationProviderName } = await import("./translation-provider.server");
+    const provider = translationProviderName();
+    return { configured: provider !== null, provider };
+  });
+
+/**
+ * Freezes a language a person has read, so a later machine pass leaves it.
+ */
+export const acceptTranslation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => {
+    const target = parseTarget(input);
+    const locale = (input as { locale?: unknown }).locale;
+    if (locale !== "nl" && locale !== "en" && locale !== "de" && locale !== "fr") {
+      throw new Error("Ongeldige taal");
+    }
+    return { ...target, locale: locale as "nl" | "en" | "de" | "fr" };
+  })
+  .handler(async ({ data, context }) => {
+    await requirePermission(context, "products", "edit");
+    const { markTranslationReviewed } = await import("./auto-translate.server");
+    await markTranslationReviewed(data.entity, data.id, data.locale, context.userId);
+    return { ok: true as const };
+  });
