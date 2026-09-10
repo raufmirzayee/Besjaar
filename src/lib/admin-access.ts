@@ -220,6 +220,13 @@ export const ADMIN_NAV: AdminNavItem[] = [
     group: "Analyse",
   },
   {
+    to: "/beheer/medewerkers",
+    label: "Medewerkers",
+    module: "users",
+    icon: "ShieldCheck",
+    group: "Systeem",
+  },
+  {
     to: "/beheer/gebruikers",
     label: "Gebruikers & rollen",
     module: "users",

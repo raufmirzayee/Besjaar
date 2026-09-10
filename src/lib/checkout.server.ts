@@ -132,6 +132,18 @@ export async function createOrder(
   }
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+  // Staff and customers are separate pools; the database refuses an order that
+  // belongs to a staff account outright. Catching it here turns a raw
+  // constraint error into something the person can act on.
+  if (verifiedUserId) {
+    const { isStaffAccount } = await import("./staff.server");
+    if (await isStaffAccount(supabaseAdmin, verifiedUserId)) {
+      throw new Error(
+        "Dit is een medewerkersaccount en kan niet bestellen. Log uit en bestel als klant.",
+      );
+    }
+  }
+
   const existing = await supabaseAdmin
     .from("orders")
     .select("order_number")

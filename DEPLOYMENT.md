@@ -65,6 +65,20 @@ rather than pretending.
    other address, and refused entirely when the variable is unset — a deployed
    shop must never let whoever signs up first take it over.
 
+   **Staff accounts are a separate pool from customers.** The database enforces
+   it: a non-customer role cannot exist for an account outside
+   `staff_accounts`, and an order cannot belong to one inside it. So a shopper
+   can never be promoted to admin, and an admin can never place an order —
+   whatever the application code does. After bootstrapping yourself, add
+   colleagues under **Beheer → Medewerkers**; public sign-up has no path into
+   the staff pool at all.
+
+   Sign in to the admin at `/beheer`. It has its own bare sign-in screen with
+   none of the shop's chrome, and the customer login at `/inloggen` turns staff
+   accounts away. To anyone who is not staff — signed out or a signed-in
+   customer — `/beheer` and every page under it returns the site's ordinary
+   404, so the backoffice is not discoverable by browsing.
+
 5. In **Authentication → URL configuration**, set the site URL to your domain so
    confirmation and password-reset links point at the right place.
 

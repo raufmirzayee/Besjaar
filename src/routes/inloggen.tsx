@@ -1,11 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getIsStaffAccount } from "@/lib/staff.functions";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 
@@ -28,7 +30,8 @@ export const Route = createFileRoute("/inloggen")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { signIn, signUp, requestPasswordReset } = useAuth();
+  const { signIn, signUp, signOut, requestPasswordReset } = useAuth();
+  const checkStaff = useServerFn(getIsStaffAccount);
   const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [login, setLogin] = useState({ email: "", password: "" });
@@ -47,6 +50,18 @@ function AuthPage() {
     setBusy(true);
     try {
       await signIn(login.email, login.password);
+
+      // Staff and customers are separate pools. A staff account signing in
+      // here would get a customer session it cannot use — it cannot order, and
+      // has no order history — so send it back out with an explanation rather
+      // than leaving someone stuck on a broken account page.
+      const { staff } = (await checkStaff({})) as { staff: boolean };
+      if (staff) {
+        await signOut();
+        toast.error(t("auth.staffUseAdminLogin"));
+        return;
+      }
+
       toast.success(t("auth.welcomeBack"));
       navigate({ to: "/account" });
     } catch (error) {

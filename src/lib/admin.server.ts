@@ -1,32 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type AppRole =
-  | "super_admin"
-  | "store_manager"
-  | "warehouse"
-  | "customer_service"
-  | "content_editor"
-  | "financial"
-  | "customer";
+// Roles and their labels live in ./staff, which the browser can import; this
+// module re-exports them so existing callers keep working and there is still
+// only one definition.
+export type { AppRole } from "./staff";
+export { ROLE_LABELS, STAFF_ROLES } from "./staff";
 
-export const STAFF_ROLES: AppRole[] = [
-  "super_admin",
-  "store_manager",
-  "warehouse",
-  "customer_service",
-  "content_editor",
-  "financial",
-];
-
-export const ROLE_LABELS: Record<AppRole, string> = {
-  super_admin: "Super admin",
-  store_manager: "Winkelmanager",
-  warehouse: "Magazijn",
-  customer_service: "Klantenservice",
-  content_editor: "Content",
-  financial: "Financieel",
-  customer: "Klant",
-};
+import type { AppRole } from "./staff";
 
 // One source of truth for order statuses: the fulfilment state machine defines
 // them, and the admin filter reuses it so the two can never drift apart.

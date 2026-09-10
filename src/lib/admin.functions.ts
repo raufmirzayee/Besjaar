@@ -153,6 +153,14 @@ export const setUserRole = createServerFn({ method: "POST" })
     await requireRoles(context.supabase, context.userId, ["super_admin"]);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     if (data.grant) {
+      if (data.role !== "customer") {
+        const { isStaffAccount } = await import("./staff.server");
+        if (!(await isStaffAccount(supabaseAdmin, data.userId))) {
+          throw new Error(
+            "Dit is geen medewerkersaccount. Maak een apart medewerkersaccount aan in plaats van een klant te promoveren.",
+          );
+        }
+      }
       const { error } = await supabaseAdmin
         .from("user_roles")
         .insert({ user_id: data.userId, role: data.role as never });
@@ -204,6 +212,17 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
       staffExists: (existing ?? []).length > 0,
     });
     if (!decision.allowed) throw new Error(decision.reason);
+
+    // The staff pool comes first: the database refuses a staff role for an
+    // account that is not in it.
+    const { error: poolError } = await supabaseAdmin.from("staff_accounts").insert({
+      user_id: context.userId,
+      email: userData?.user?.email ?? null,
+      created_by: context.userId,
+    });
+    if (poolError && !poolError.message.toLowerCase().includes("duplicate")) {
+      throw new Error(poolError.message);
+    }
 
     const { error: insertError } = await supabaseAdmin
       .from("user_roles")

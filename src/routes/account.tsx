@@ -78,9 +78,6 @@ function AccountPage() {
           <Button variant="outline" asChild>
             <Link to="/verlanglijst">{t("account.wishlist")}</Link>
           </Button>
-          <Button variant="outline" asChild>
-            <Link to="/beheer">{t("account.admin")}</Link>
-          </Button>
           <Button variant="outline" onClick={() => signOut()}>
             {t("account.signOut")}
           </Button>

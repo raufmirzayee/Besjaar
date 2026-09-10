@@ -532,6 +532,36 @@ export type Database = {
           },
         ];
       };
+      staff_accounts: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          deactivated_at: string | null;
+          email: string | null;
+          full_name: string | null;
+          is_active: boolean;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          deactivated_at?: string | null;
+          email?: string | null;
+          full_name?: string | null;
+          is_active?: boolean;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          deactivated_at?: string | null;
+          email?: string | null;
+          full_name?: string | null;
+          is_active?: boolean;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       email_log: {
         Row: {
           created_at: string;

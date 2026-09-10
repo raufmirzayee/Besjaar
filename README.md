@@ -113,6 +113,17 @@ Nothing is invented. In particular:
 Authorisation is enforced in the database (RLS) and re-checked server-side in
 every admin server function. Hiding a link is never the control.
 
+**Staff and customers are separate pools.** A non-customer role cannot exist
+for an account outside `staff_accounts`, and an order cannot belong to one
+inside it — both enforced by database triggers, not by application code. A
+customer therefore cannot be promoted to admin, and staff cannot shop. Staff
+accounts are created by a super admin under **Beheer → Medewerkers**; public
+sign-up has no path into the pool.
+
+The admin is also invisible from the shop: nothing links to it, and `/beheer`
+returns the ordinary 404 for anyone who is not staff. Staff sign in on a bare
+screen at `/beheer` with none of the storefront chrome.
+
 ---
 
 ## Payments (Mollie)

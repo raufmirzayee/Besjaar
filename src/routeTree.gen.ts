@@ -43,6 +43,7 @@ import { Route as BeheerGebruikersRouteImport } from './routes/beheer.gebruikers
 import { Route as BeheerImportRouteImport } from './routes/beheer.import'
 import { Route as BeheerKlantenRouteImport } from './routes/beheer.klanten'
 import { Route as BeheerLageVoorraadRouteImport } from './routes/beheer.lage-voorraad'
+import { Route as BeheerMedewerkersRouteImport } from './routes/beheer.medewerkers'
 import { Route as BeheerMerkenRouteImport } from './routes/beheer.merken'
 import { Route as BeheerMutatiesRouteImport } from './routes/beheer.mutaties'
 import { Route as BeheerProductenRouteImport } from './routes/beheer.producten'
@@ -229,6 +230,11 @@ const BeheerLageVoorraadRoute = BeheerLageVoorraadRouteImport.update({
   path: '/lage-voorraad',
   getParentRoute: () => BeheerRoute,
 } as any)
+const BeheerMedewerkersRoute = BeheerMedewerkersRouteImport.update({
+  id: '/medewerkers',
+  path: '/medewerkers',
+  getParentRoute: () => BeheerRoute,
+} as any)
 const BeheerMerkenRoute = BeheerMerkenRouteImport.update({
   id: '/merken',
   path: '/merken',
@@ -340,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/beheer/import': typeof BeheerImportRoute
   '/beheer/klanten': typeof BeheerKlantenRoute
   '/beheer/lage-voorraad': typeof BeheerLageVoorraadRoute
+  '/beheer/medewerkers': typeof BeheerMedewerkersRoute
   '/beheer/merken': typeof BeheerMerkenRoute
   '/beheer/mutaties': typeof BeheerMutatiesRoute
   '/beheer/producten': typeof BeheerProductenRoute
@@ -390,6 +397,7 @@ export interface FileRoutesByTo {
   '/beheer/import': typeof BeheerImportRoute
   '/beheer/klanten': typeof BeheerKlantenRoute
   '/beheer/lage-voorraad': typeof BeheerLageVoorraadRoute
+  '/beheer/medewerkers': typeof BeheerMedewerkersRoute
   '/beheer/merken': typeof BeheerMerkenRoute
   '/beheer/mutaties': typeof BeheerMutatiesRoute
   '/beheer/producten': typeof BeheerProductenRoute
@@ -442,6 +450,7 @@ export interface FileRoutesById {
   '/beheer/import': typeof BeheerImportRoute
   '/beheer/klanten': typeof BeheerKlantenRoute
   '/beheer/lage-voorraad': typeof BeheerLageVoorraadRoute
+  '/beheer/medewerkers': typeof BeheerMedewerkersRoute
   '/beheer/merken': typeof BeheerMerkenRoute
   '/beheer/mutaties': typeof BeheerMutatiesRoute
   '/beheer/producten': typeof BeheerProductenRoute
@@ -495,6 +504,7 @@ export interface FileRouteTypes {
     | '/beheer/import'
     | '/beheer/klanten'
     | '/beheer/lage-voorraad'
+    | '/beheer/medewerkers'
     | '/beheer/merken'
     | '/beheer/mutaties'
     | '/beheer/producten'
@@ -545,6 +555,7 @@ export interface FileRouteTypes {
     | '/beheer/import'
     | '/beheer/klanten'
     | '/beheer/lage-voorraad'
+    | '/beheer/medewerkers'
     | '/beheer/merken'
     | '/beheer/mutaties'
     | '/beheer/producten'
@@ -596,6 +607,7 @@ export interface FileRouteTypes {
     | '/beheer/import'
     | '/beheer/klanten'
     | '/beheer/lage-voorraad'
+    | '/beheer/medewerkers'
     | '/beheer/merken'
     | '/beheer/mutaties'
     | '/beheer/producten'
@@ -887,6 +899,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BeheerLageVoorraadRouteImport
       parentRoute: typeof BeheerRoute
     }
+    '/beheer/medewerkers': {
+      id: '/beheer/medewerkers'
+      path: '/medewerkers'
+      fullPath: '/beheer/medewerkers'
+      preLoaderRoute: typeof BeheerMedewerkersRouteImport
+      parentRoute: typeof BeheerRoute
+    }
     '/beheer/merken': {
       id: '/beheer/merken'
       path: '/merken'
@@ -1007,6 +1026,7 @@ interface BeheerRouteChildren {
   BeheerImportRoute: typeof BeheerImportRoute
   BeheerKlantenRoute: typeof BeheerKlantenRoute
   BeheerLageVoorraadRoute: typeof BeheerLageVoorraadRoute
+  BeheerMedewerkersRoute: typeof BeheerMedewerkersRoute
   BeheerMerkenRoute: typeof BeheerMerkenRoute
   BeheerMutatiesRoute: typeof BeheerMutatiesRoute
   BeheerProductenRoute: typeof BeheerProductenRoute
@@ -1029,6 +1049,7 @@ const BeheerRouteChildren: BeheerRouteChildren = {
   BeheerImportRoute: BeheerImportRoute,
   BeheerKlantenRoute: BeheerKlantenRoute,
   BeheerLageVoorraadRoute: BeheerLageVoorraadRoute,
+  BeheerMedewerkersRoute: BeheerMedewerkersRoute,
   BeheerMerkenRoute: BeheerMerkenRoute,
   BeheerMutatiesRoute: BeheerMutatiesRoute,
   BeheerProductenRoute: BeheerProductenRoute,

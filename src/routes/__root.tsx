@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -17,6 +18,7 @@ import { CookieConsent } from "@/components/cookie-consent";
 import { ConsentScripts } from "@/components/consent-scripts";
 
 import { Toaster } from "@/components/ui/sonner";
+import { NotFound } from "@/components/not-found";
 import { storeConfig } from "@/lib/store-config";
 import { CartProvider } from "@/lib/cart";
 import { WishlistProvider } from "@/lib/wishlist";
@@ -25,28 +27,6 @@ import { RecentlyViewedProvider } from "@/lib/recently-viewed";
 import { AuthProvider } from "@/lib/auth";
 import { getCategories } from "@/lib/catalog.functions";
 import { I18nProvider } from "@/lib/i18n";
-
-function NotFoundComponent() {
-  return (
-    <div className="flex min-h-[60vh] items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Pagina niet gevonden</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Deze pagina bestaat niet (meer). Bekijk ons assortiment via de winkel.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/winkel"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Naar de winkel
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
@@ -144,7 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   },
   shellComponent: RootShell,
   component: RootComponent,
-  notFoundComponent: NotFoundComponent,
+  notFoundComponent: NotFound,
   errorComponent: ErrorComponent,
 });
 
@@ -164,6 +144,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const isAdminArea = pathname === "/beheer" || pathname.startsWith("/beheer/");
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -175,17 +157,31 @@ function RootComponent() {
                 <a href="#hoofdinhoud" className="skip-link">
                   Naar de inhoud
                 </a>
-                <div className="flex min-h-screen flex-col">
-                  <SiteHeader />
-                  <main id="hoofdinhoud" tabIndex={-1} className="flex-1 outline-none">
-                    {/* Required: nested routes render here. */}
+                {isAdminArea ? (
+                  // The backoffice brings its own shell, and the staff sign-in
+                  // is deliberately bare. Wrapping either in the shop's header
+                  // and footer would put a cart and a catalogue menu on a
+                  // screen that has no business showing them.
+                  <main id="hoofdinhoud" tabIndex={-1} className="min-h-screen outline-none">
                     <Outlet />
                   </main>
-                  <SiteFooter />
-                </div>
-                <CartDrawer />
-                <CookieConsent />
-                <ConsentScripts />
+                ) : (
+                  <div className="flex min-h-screen flex-col">
+                    <SiteHeader />
+                    <main id="hoofdinhoud" tabIndex={-1} className="flex-1 outline-none">
+                      {/* Required: nested routes render here. */}
+                      <Outlet />
+                    </main>
+                    <SiteFooter />
+                  </div>
+                )}
+                {isAdminArea ? null : (
+                  <>
+                    <CartDrawer />
+                    <CookieConsent />
+                    <ConsentScripts />
+                  </>
+                )}
                 <Toaster position="top-center" richColors />
               </CartProvider>
             </RecentlyViewedProvider>
