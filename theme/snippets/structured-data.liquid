@@ -82,7 +82,7 @@
       "@id": {{ canonical_url | append: '#product' | json }},
       "name": {{ sd_product_name | strip | default: product.title | json }},
       "url": {{ canonical_url | json }},
-      "description": {{ product.description | strip_html | strip | truncate: 500 | json }},
+      {% if product.description != blank %}"description": {{ product.description | strip_html | strip | truncate: 500 | json }},{% endif %}
       "sku": {{ sd_variant.sku | default: sd_variant.id | json }},
       {% case sd_barcode.size %}{% when 8 %}"gtin8": {{ sd_barcode | json }},{% when 12 %}"gtin12": {{ sd_barcode | json }},{% when 13 %}"gtin13": {{ sd_barcode | json }},{% when 14 %}"gtin14": {{ sd_barcode | json }},{% endcase %}
       "brand": {"@type": "Brand", "name": {{ sd_brand_name | json }}{% if sd_brand_name == 'Besjaar' %}, "@id": {{ shop.url | append: '#brand' | json }}, "url": {{ shop.url | json }}{% endif %}},

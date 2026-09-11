@@ -233,8 +233,25 @@
         endif
       elsif besjaar_ui_meta_description == blank and request.page_type == 'page' and page.content != blank
         assign besjaar_ui_meta_description = page.content | strip_html | strip | truncate: 155
-      elsif besjaar_ui_meta_description == blank and shop.description != blank
-        assign besjaar_ui_meta_description = shop.description | strip_html | strip | truncate: 155
+      elsif besjaar_ui_meta_description == blank
+        comment
+          Besjaar SEO 2026-09-11: the last-resort fallback used to be
+          shop.description (Online Store > Preferences), which on this store is
+          generic boilerplate that never mentions showerheads or filters. Any
+          page without its own SEO description inherited that off-topic copy and
+          competed for the wrong queries. Fall back to a short, on-topic brand
+          line in the visitor's language instead.
+        endcomment
+        case besjaar_ui_lang
+          when 'en'
+            assign besjaar_ui_meta_description = 'Besjaar showerheads, shower filters and replacement parts. Compare models, spray modes and compatibility, then order online.'
+          when 'de'
+            assign besjaar_ui_meta_description = 'Besjaar Duschköpfe, Duschfilter und Ersatzteile. Modelle, Strahlarten und Kompatibilität vergleichen und online bestellen.'
+          when 'fr'
+            assign besjaar_ui_meta_description = 'Pommeaux, filtres de douche et pièces de rechange Besjaar. Comparez les modèles, les jets et la compatibilité, puis commandez en ligne.'
+          else
+            assign besjaar_ui_meta_description = 'Besjaar douchekoppen, douchefilters en vervangingsonderdelen. Vergelijk modellen, sproeistanden en compatibiliteit en bestel online.'
+        endcase
       endif
     %}
     {%- comment -%}
