@@ -1,0 +1,179 @@
+{% if request.page_type == 'article' and article != blank %}
+  <meta property="article:published_time" content="{{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+  <meta property="article:modified_time" content="{{ article.updated_at | date: '%Y-%m-%dT%H:%M:%S%z' }}">
+{% endif %}
+{% liquid
+  assign besjaar_ui_meta_title = besjaar_ui_browser_title | default: page_title | default: shop.name
+  assign besjaar_ui_social_description = besjaar_ui_meta_description | default: page_description | default: shop.description | strip_html | strip
+  comment
+    Besjaar SEO 2026-09-11: the home page used to override the social title and
+    description with two translation keys. That produced three different home
+    page titles in one document - one in <title>, a second in og:title and
+    twitter:title, and a third in the WebPage JSON-LD node - and it silently
+    discarded a Search engine listing title/description set by the merchant
+    under Online Store > Preferences. The values computed in layout/theme.liquid
+    are passed in, so the social tags now mirror <title> and meta description
+    exactly and a merchant-entered value always wins.
+  endcomment
+
+  comment
+    SEO indexation policy:
+    - Keep only true utility/private URLs out of search.
+    - Do NOT automatically noindex products because they fall outside a
+      theme-specific "focus" family. That can accidentally block valid,
+      published products from Bing/Google.
+    - Respect Shopify's supported seo.hidden system metafield when the merchant
+      intentionally wants a resource hidden from search.
+  endcomment
+  assign besjaar_ui_resource_seo_hidden = false
+  assign besjaar_ui_resource_seo_hidden_value = blank
+  case request.page_type
+    when 'product'
+      assign besjaar_ui_resource_seo_hidden_value = product.metafields.seo.hidden.value
+    when 'page'
+      assign besjaar_ui_resource_seo_hidden_value = page.metafields.seo.hidden.value
+    when 'article'
+      assign besjaar_ui_resource_seo_hidden_value = article.metafields.seo.hidden.value
+    when 'collection'
+      assign besjaar_ui_resource_seo_hidden_value = collection.metafields.seo.hidden.value
+    when 'blog'
+      assign besjaar_ui_resource_seo_hidden_value = blog.metafields.seo.hidden.value
+  endcase
+  if besjaar_ui_resource_seo_hidden_value == 1 or besjaar_ui_resource_seo_hidden_value == '1' or besjaar_ui_resource_seo_hidden_value == true
+    assign besjaar_ui_resource_seo_hidden = true
+  endif
+
+  assign besjaar_ui_meta_image = page_image
+  if besjaar_ui_meta_image == blank and request.page_type == 'product' and product.featured_media != blank
+    assign besjaar_ui_meta_image = product.featured_media.preview_image
+  endif
+  if besjaar_ui_meta_image == blank and settings.social_share_image != blank
+    assign besjaar_ui_meta_image = settings.social_share_image
+  endif
+  assign besjaar_ui_use_bundled_share_image = false
+  if besjaar_ui_meta_image == blank
+    assign besjaar_ui_use_bundled_share_image = true
+  endif
+
+  assign besjaar_ui_meta_image_alt = besjaar_ui_meta_title
+  if request.page_type == 'product' and product.featured_media.preview_image.alt != blank
+    assign besjaar_ui_meta_image_alt = product.featured_media.preview_image.alt
+  elsif besjaar_ui_meta_image != blank and besjaar_ui_meta_image.alt != blank
+    assign besjaar_ui_meta_image_alt = besjaar_ui_meta_image.alt
+  endif
+
+  assign besjaar_ui_og_type = 'website'
+  if request.page_type == 'product'
+    assign besjaar_ui_og_type = 'product'
+  elsif request.page_type == 'article'
+    assign besjaar_ui_og_type = 'article'
+  endif
+
+  assign besjaar_ui_noindex = false
+  if request.page_type == 'search' or request.page_type == 'cart' or request.page_type == '404' or request.page_type == 'gift_card'
+    assign besjaar_ui_noindex = true
+  elsif request.page_type contains 'customers'
+    assign besjaar_ui_noindex = true
+  elsif request.path contains '/apps/parcelpanel'
+    comment
+      ParcelPanel is an order-tracking utility route, not an organic-search
+      landing page. Keep the page usable for customers and crawlable for link
+      discovery, but prevent it from competing with commercial/content pages.
+    endcomment
+    assign besjaar_ui_noindex = true
+  elsif besjaar_ui_resource_seo_hidden
+    assign besjaar_ui_noindex = true
+  endif
+%}
+<meta property="og:site_name" content="Besjaar">
+{% liquid
+  comment
+    Besjaar 11.6: og:locale must be a canonical ll_CC pair from Facebook's locale
+    list. Appending the storefront market country produced invalid codes such as
+    de_NL / fr_NL, so map each supported language explicitly instead.
+  endcomment
+  assign besjaar_ui_og_locale_lang = request.locale.iso_code | split: '-' | first | downcase
+  case besjaar_ui_og_locale_lang
+    when 'nl'
+      assign besjaar_ui_og_locale = 'nl_NL'
+    when 'de'
+      assign besjaar_ui_og_locale = 'de_DE'
+    when 'fr'
+      assign besjaar_ui_og_locale = 'fr_FR'
+    when 'en'
+      assign besjaar_ui_og_locale = 'en_GB'
+    else
+      assign besjaar_ui_og_locale = request.locale.iso_code | replace: '-', '_'
+  endcase
+%}
+<meta property="og:locale" content="{{ besjaar_ui_og_locale }}">
+{% for besjaar_ui_language in localization.available_languages %}
+  {% liquid
+    assign besjaar_ui_alt_lang = besjaar_ui_language.iso_code | split: '-' | first | downcase
+    case besjaar_ui_alt_lang
+      when 'nl'
+        assign besjaar_ui_og_locale_alt = 'nl_NL'
+      when 'de'
+        assign besjaar_ui_og_locale_alt = 'de_DE'
+      when 'fr'
+        assign besjaar_ui_og_locale_alt = 'fr_FR'
+      when 'en'
+        assign besjaar_ui_og_locale_alt = 'en_GB'
+      else
+        assign besjaar_ui_og_locale_alt = besjaar_ui_language.iso_code | replace: '-', '_'
+    endcase
+  %}
+  {% unless besjaar_ui_og_locale_alt == besjaar_ui_og_locale %}<meta property="og:locale:alternate" content="{{ besjaar_ui_og_locale_alt }}">{% endunless %}
+{% endfor %}
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:title" content="{{ besjaar_ui_meta_title | escape }}">
+<meta property="og:type" content="{{ besjaar_ui_og_type }}">
+{% if besjaar_ui_social_description != blank %}<meta property="og:description" content="{{ besjaar_ui_social_description | escape }}">{% endif %}
+{% if besjaar_ui_meta_image != blank %}
+  {% liquid
+    comment
+      Besjaar 11.6: declare the dimensions of the 1200px asset actually served,
+      not the intrinsic size of the original upload.
+    endcomment
+    assign besjaar_ui_og_image_width = besjaar_ui_meta_image.width | default: 1200 | at_most: 1200
+    if besjaar_ui_meta_image.aspect_ratio > 0
+      assign besjaar_ui_og_image_height = 1.0 | times: besjaar_ui_og_image_width | divided_by: besjaar_ui_meta_image.aspect_ratio | round
+    else
+      assign besjaar_ui_og_image_height = besjaar_ui_meta_image.height | default: 630
+    endif
+  %}
+  <meta property="og:image" content="https:{{ besjaar_ui_meta_image | image_url: width: 1200 }}">
+  <meta property="og:image:secure_url" content="https:{{ besjaar_ui_meta_image | image_url: width: 1200 }}">
+  <meta property="og:image:width" content="{{ besjaar_ui_og_image_width }}">
+  <meta property="og:image:height" content="{{ besjaar_ui_og_image_height }}">
+  <meta property="og:image:alt" content="{{ besjaar_ui_meta_image_alt | escape }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https:{{ besjaar_ui_meta_image | image_url: width: 1200 }}">
+  <meta name="twitter:image:alt" content="{{ besjaar_ui_meta_image_alt | escape }}">
+{% elsif besjaar_ui_use_bundled_share_image %}
+  {% assign besjaar_ui_bundled_share_url = 'besjaar-social-share.png' | asset_url %}
+  <meta property="og:image" content="https:{{ besjaar_ui_bundled_share_url }}">
+  <meta property="og:image:secure_url" content="https:{{ besjaar_ui_bundled_share_url }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{ besjaar_ui_meta_title | escape }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https:{{ besjaar_ui_bundled_share_url }}">
+  <meta name="twitter:image:alt" content="{{ besjaar_ui_meta_title | escape }}">
+{% else %}
+  <meta name="twitter:card" content="summary">
+{% endif %}
+<meta name="twitter:title" content="{{ besjaar_ui_meta_title | escape }}">
+{% if besjaar_ui_social_description != blank %}<meta name="twitter:description" content="{{ besjaar_ui_social_description | escape }}">{% endif %}
+{% if request.page_type == 'product' and product != blank %}
+  {% assign besjaar_ui_meta_variant = product.selected_or_first_available_variant | default: product.variants.first %}
+  <meta property="product:price:amount" content="{{ besjaar_ui_meta_variant.price | divided_by: 100.0 }}">
+  <meta property="product:price:currency" content="{{ cart.currency.iso_code | default: shop.currency }}">
+  <meta property="product:availability" content="{% if besjaar_ui_meta_variant.available %}in stock{% else %}out of stock{% endif %}">
+  <meta property="product:brand" content="{{ product.vendor | default: 'Besjaar' | escape }}">
+{% endif %}
+{% if besjaar_ui_noindex %}
+  <meta name="robots" content="noindex,follow,max-image-preview:large">
+{% else %}
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+{% endif %}
