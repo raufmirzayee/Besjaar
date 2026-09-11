@@ -80,6 +80,8 @@ const nl = {
   "status.delivered": "bezorgd",
   "status.cancelled": "geannuleerd",
   "status.refunded": "terugbetaald",
+  "status.returned": "retour ontvangen",
+  "status.partiallyReturned": "deels retour ontvangen",
 } as const;
 
 type Key = keyof typeof nl;
@@ -165,6 +167,8 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "status.delivered": "delivered",
     "status.cancelled": "cancelled",
     "status.refunded": "refunded",
+    "status.returned": "returned",
+    "status.partiallyReturned": "partially returned",
   },
   de: {
     "checkout.title": "Kasse",
@@ -246,6 +250,8 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "status.delivered": "geliefert",
     "status.cancelled": "storniert",
     "status.refunded": "zurückerstattet",
+    "status.returned": "retourniert",
+    "status.partiallyReturned": "teilweise retourniert",
   },
   fr: {
     "checkout.title": "Paiement",
@@ -326,5 +332,7 @@ export const checkoutMessages: Record<Locale, Record<Key, string>> = {
     "status.delivered": "livrée",
     "status.cancelled": "annulée",
     "status.refunded": "remboursée",
+    "status.returned": "retourné",
+    "status.partiallyReturned": "partiellement retourné",
   },
 };

@@ -169,5 +169,31 @@ export const updateReturn = createServerFn({ method: "POST" })
       }
     }
 
+    // Once goods are physically back, the order should say so rather than
+    // still reading "delivered" while the shelf count says otherwise. The
+    // database derives it from the quantities actually received, so a second
+    // return on the same order moves it from partially returned to returned
+    // without anyone having to work that out.
+    if (data.status === "received" || data.status === "refunded") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: returnRow } = await supabaseAdmin
+        .from("returns")
+        .select("order_id")
+        .eq("id", data.returnId)
+        .maybeSingle();
+      const orderId = (returnRow as { order_id?: string } | null)?.order_id;
+      if (orderId) {
+        const { error: statusError } = await supabaseAdmin.rpc("refresh_order_return_status", {
+          p_order_id: orderId,
+        });
+        // A return that was booked in correctly is not undone because the
+        // order's own label could not be refreshed; it is logged loudly and
+        // the next status change recomputes it.
+        if (statusError) {
+          console.error("[returns] could not refresh the order status:", statusError.message);
+        }
+      }
+    }
+
     return { ok: true };
   });

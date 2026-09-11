@@ -1630,6 +1630,11 @@ export type Database = {
         Args: { p_order_id: string };
         Returns: number;
       };
+      refresh_order_return_status: {
+        Args: { p_order_id: string };
+        /** The order_status the order ended on. */
+        Returns: string;
+      };
       apply_translations: {
         Args: {
           p_entity: string;

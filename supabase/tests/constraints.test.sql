@@ -214,7 +214,71 @@ SELECT pg_temp.must_refuse('a second order claiming the same reference',
       WHERE id = 'cccccccc-0000-0000-0000-000000000002'$$);
 
 -- ---------------------------------------------------------------------------
--- 7. Every foreign key is indexed
+-- 7. An order that came back says so
+-- ---------------------------------------------------------------------------
+--
+-- The status is derived from the quantities actually received, never typed in,
+-- so it stays true after a second return on the same order.
+
+\echo ''
+\echo '--- returned orders'
+
+DO $$
+DECLARE
+  v_order uuid := 'dddddddd-0000-0000-0000-000000000009';
+  v_item  uuid := 'dddddddd-0000-0000-0000-00000000000a';
+  v_ret   uuid := 'dddddddd-0000-0000-0000-00000000000b';
+  v_status public.order_status;
+BEGIN
+  INSERT INTO public.orders (id, email, first_name, last_name, subtotal, total, status)
+  VALUES (v_order, 'retour@test.invalid', 'R', 'Etour', 30, 30, 'delivered');
+  INSERT INTO public.order_items (id, order_id, product_id, product_name, unit_price, vat_rate, quantity, line_total)
+  VALUES (v_item, v_order, 'bbbbbbbb-0000-0000-0000-000000000001', 'Testlamp', 10, 21, 3, 30);
+  INSERT INTO public.returns (id, order_id, user_id, email, return_number, status, reason)
+  VALUES (v_ret, v_order, 'aaaaaaaa-0000-0000-0000-000000000001', 'retour@test.invalid',
+          'RET-TEST-1', 'requested', 'Niet tevreden / bedenktijd');
+  INSERT INTO public.return_items (return_id, order_item_id, product_id, product_name, quantity)
+  VALUES (v_ret, v_item, 'bbbbbbbb-0000-0000-0000-000000000001', 'Testlamp', 1);
+
+  -- A requested return is an intention, not goods on a shelf.
+  v_status := public.refresh_order_return_status(v_order);
+  IF v_status <> 'delivered' THEN
+    RAISE EXCEPTION 'FAIL: a merely requested return moved the order to %', v_status;
+  END IF;
+  RAISE NOTICE 'ok   a requested return leaves the order as delivered';
+
+  UPDATE public.returns SET status = 'received' WHERE id = v_ret;
+  v_status := public.refresh_order_return_status(v_order);
+  IF v_status <> 'partially_returned' THEN
+    RAISE EXCEPTION 'FAIL: one of three back should be partially_returned, got %', v_status;
+  END IF;
+  RAISE NOTICE 'ok   one of three back reads partially_returned';
+
+  -- Idempotent: the same booking counted twice must not change anything.
+  v_status := public.refresh_order_return_status(v_order);
+  IF v_status <> 'partially_returned' THEN
+    RAISE EXCEPTION 'FAIL: re-running changed the status to %', v_status;
+  END IF;
+  RAISE NOTICE 'ok   re-running it changes nothing';
+
+  UPDATE public.return_items SET quantity = 3 WHERE return_id = v_ret;
+  v_status := public.refresh_order_return_status(v_order);
+  IF v_status <> 'returned' THEN
+    RAISE EXCEPTION 'FAIL: everything back should be returned, got %', v_status;
+  END IF;
+  RAISE NOTICE 'ok   everything back reads returned';
+
+  -- A cancelled order has no fulfilment left to describe.
+  UPDATE public.orders SET status = 'cancelled' WHERE id = v_order;
+  v_status := public.refresh_order_return_status(v_order);
+  IF v_status <> 'cancelled' THEN
+    RAISE EXCEPTION 'FAIL: a cancelled order was overwritten with %', v_status;
+  END IF;
+  RAISE NOTICE 'ok   a cancelled order is left alone';
+END $$;
+
+-- ---------------------------------------------------------------------------
+-- 8. Every foreign key is indexed
 -- ---------------------------------------------------------------------------
 
 \echo ''

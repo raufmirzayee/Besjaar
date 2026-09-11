@@ -203,6 +203,8 @@ const STATUS_KEYS: Record<string, TranslationKey> = {
   delivered: "status.delivered",
   cancelled: "status.cancelled",
   refunded: "status.refunded",
+  returned: "status.returned",
+  partially_returned: "status.partiallyReturned",
 };
 
 function statusKey(status: string): TranslationKey {

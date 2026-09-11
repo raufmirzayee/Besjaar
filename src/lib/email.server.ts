@@ -258,8 +258,11 @@ export async function sendTransactionalEmail(input: {
   };
 
   if (!isEmailConfigured()) {
+    // The order id, not the address. A customer's e-mail address is personal
+    // data, and a log stream is read by more people and kept for longer than
+    // the database is — email_log already records who a message was for.
     console.warn(
-      `[email] ${input.template} for ${recipient} not sent: no email provider configured.`,
+      `[email] ${input.template} not sent (order ${input.orderId ?? "unknown"}): no email provider configured.`,
     );
     return record({
       sent: false,

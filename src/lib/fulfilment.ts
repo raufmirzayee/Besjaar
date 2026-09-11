@@ -15,6 +15,10 @@ export const FULFILMENT_STATUSES = [
   "delivered",
   "cancelled",
   "refunded",
+  // Derived from the returns booked against an order, never picked from the
+  // status dropdown. See refresh_order_return_status.
+  "returned",
+  "partially_returned",
 ] as const;
 
 export type FulfilmentStatus = (typeof FULFILMENT_STATUSES)[number];
@@ -29,6 +33,8 @@ export const STATUS_LABELS: Record<FulfilmentStatus, string> = {
   delivered: "Bezorgd",
   cancelled: "Geannuleerd",
   refunded: "Terugbetaald",
+  returned: "Retour ontvangen",
+  partially_returned: "Deels retour ontvangen",
 };
 
 /**
@@ -75,6 +81,13 @@ export const ALLOWED_NEXT: Record<FulfilmentStatus, FulfilmentStatus[]> = {
   packed: ["shipped", "processing", "cancelled", "refunded"],
   shipped: ["delivered", "refunded"],
   delivered: ["refunded"],
+  // Sources, not targets. Neither appears in the status dropdown: both are set
+  // by refresh_order_return_status from the quantities actually received back,
+  // and letting someone pick "returned" by hand would put the order and the
+  // warehouse back into disagreement. An order that came back can still be
+  // refunded, and a partly returned one can still be cancelled.
+  partially_returned: ["refunded", "cancelled"],
+  returned: ["refunded"],
   cancelled: [],
   refunded: [],
 };

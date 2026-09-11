@@ -109,11 +109,23 @@ describe("status labels", () => {
       .map((file) => readFileSync(`${dir}/${file}`, "utf8"))
       .join("\n");
 
-    // The enum is created once; every value the app can set must exist in it,
-    // or a transition fails at the database with a cryptic cast error.
-    const match = /CREATE TYPE public\.order_status AS ENUM \(([^)]+)\)/i.exec(sql);
-    expect(match, "order_status enum not found in migrations").toBeTruthy();
-    const values = [...match![1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    // Every value the app can set must exist in the enum, or a transition
+    // fails at the database with a cryptic cast error.
+    //
+    // The enum is created once and then widened: ALTER TYPE ... ADD VALUE
+    // cannot run in the same transaction that uses the new value, so later
+    // additions live in their own migrations. Reading only the CREATE TYPE
+    // would miss every one of them.
+    const created = /CREATE TYPE public\.order_status AS ENUM \(([^)]+)\)/i.exec(sql);
+    expect(created, "order_status enum not found in migrations").toBeTruthy();
+
+    const values = [...created![1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    for (const added of sql.matchAll(
+      /ALTER TYPE public\.order_status\s+ADD VALUE(?:\s+IF NOT EXISTS)?\s+'([^']+)'/gi,
+    )) {
+      values.push(added[1]);
+    }
+
     for (const status of FULFILMENT_STATUSES) {
       expect(values, `order_status is missing "${status}"`).toContain(status);
     }
