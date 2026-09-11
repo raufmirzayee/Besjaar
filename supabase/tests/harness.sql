@@ -79,4 +79,63 @@ DO $$ BEGIN CREATE ROLE authenticated NOLOGIN; EXCEPTION WHEN duplicate_object T
 DO $$ BEGIN CREATE ROLE service_role NOLOGIN BYPASSRLS; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 ALTER ROLE service_role BYPASSRLS;
 
+-- ---------------------------------------------------------------------------
+-- Supabase Vault, in miniature
+-- ---------------------------------------------------------------------------
+--
+-- A real Supabase project has the `supabase_vault` extension and encrypts at
+-- rest with pgsodium. A plain Postgres has neither, so the secret store would
+-- otherwise only ever be tested down its "no vault" branch — and the branch
+-- that actually holds credentials would ship unexercised.
+--
+-- This stands in for it: the same schema, the same three function signatures,
+-- the same `decrypted_secrets` view. What it does NOT do is encrypt, and it
+-- must never be mistaken for the real thing — it exists inside a throwaway
+-- test database and nothing else creates it.
+--
+-- `secret_store_available()` looks for the extension in pg_extension, so it
+-- reports false here unless a test deliberately registers it. A test that wants
+-- the Vault path calls pg_temp.enable_vault() first.
+
+CREATE SCHEMA IF NOT EXISTS vault;
+
+CREATE TABLE IF NOT EXISTS vault.secrets (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text,
+  description text,
+  secret text NOT NULL,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+CREATE OR REPLACE VIEW vault.decrypted_secrets AS
+  SELECT id, name, description, secret AS decrypted_secret, created_at, updated_at
+  FROM vault.secrets;
+
+CREATE OR REPLACE FUNCTION vault.create_secret(
+  new_secret text, new_name text DEFAULT NULL, new_description text DEFAULT ''
+) RETURNS uuid LANGUAGE plpgsql AS $$
+DECLARE v_id uuid;
+BEGIN
+  INSERT INTO vault.secrets (name, description, secret)
+  VALUES (new_name, new_description, new_secret) RETURNING id INTO v_id;
+  RETURN v_id;
+END; $$;
+
+CREATE OR REPLACE FUNCTION vault.update_secret(
+  secret_id uuid, new_secret text DEFAULT NULL, new_name text DEFAULT NULL,
+  new_description text DEFAULT NULL
+) RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE vault.secrets
+  SET secret = COALESCE(new_secret, secret),
+      name = COALESCE(new_name, name),
+      description = COALESCE(new_description, description),
+      updated_at = now()
+  WHERE id = secret_id;
+END; $$;
+
+GRANT USAGE ON SCHEMA vault TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA vault TO service_role;
+
 GRANT USAGE ON SCHEMA auth, storage TO anon, authenticated, service_role;

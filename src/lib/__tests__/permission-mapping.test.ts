@@ -36,45 +36,120 @@ function permissionCalls(): Call[] {
   return calls;
 }
 
-/** Every (role, module, action) the seed migration grants. */
+/**
+ * Every (role, module, action) any migration grants.
+ *
+ * This reads the migrations rather than the database because the check has to
+ * run in a plain unit test, which means parsing SQL — and a parser that
+ * memorises the exact layout of each INSERT goes stale the first time someone
+ * writes the same grant a different way. It happened: a new migration seeded
+ * permissions with the columns in a shape the old parser did not recognise,
+ * and the test reported them as granted to nobody.
+ *
+ * So this parses the structure instead: for each INSERT into role_permissions,
+ * take the three column expressions and whatever `unnest(ARRAY[...]) alias`
+ * bindings are in scope, then expand the cross product. A literal resolves to
+ * itself, an alias to its list, and the shape of the statement stops mattering.
+ */
 function seededPermissions(): Set<string> {
   const granted = new Set<string>();
-  const source = readFileSync(
-    "supabase/migrations/20260731100301_8bd658a9-0882-4531-94a0-561fcc85a582.sql",
-    "utf8",
-  );
-  const extra = readFileSync(
-    "supabase/migrations/20260911150000_permission_matrix_matches_reality.sql",
-    "utf8",
-  );
-  const both = `${source}\n${extra}`;
 
-  // The cross-join seeds: unnest(ARRAY[...modules]) CROSS JOIN unnest(ARRAY[...actions]).
-  const crossJoin =
-    /unnest\(ARRAY\[([^\]]+)\]\)\s*m\s*CROSS JOIN\s*unnest\(ARRAY\[([^\]]+)\]\)\s*a/gi;
-  for (const match of both.matchAll(crossJoin)) {
-    const modules = match[1].split(",").map((s) => s.trim().replace(/'/g, ""));
-    const actions = match[2].split(",").map((s) => s.trim().replace(/'/g, ""));
-    for (const m of modules) for (const a of actions) granted.add(`${m}:${a}`);
-  }
-
-  // The single-action seeds: SELECT '<role>', m, '<action>' FROM unnest(ARRAY[...]).
-  const singleAction = /,\s*m\s*,\s*'(\w+)'\s*\nFROM unnest\(ARRAY\[([^\]]+)\]\)\s*m/gi;
-  for (const match of both.matchAll(singleAction)) {
-    const action = match[1];
-    for (const m of match[2].split(",").map((s) => s.trim().replace(/'/g, ""))) {
-      granted.add(`${m}:${action}`);
+  for (const path of globSync("supabase/migrations/*.sql")) {
+    for (const statement of roleGrantStatements(readFileSync(path, "utf8"))) {
+      for (const triple of expandGrant(statement)) granted.add(triple);
     }
   }
+  return granted;
+}
 
-  // The VALUES seeds: ('role','module','action').
-  for (const match of both.matchAll(
-    /\(\s*'[\w]+'(?:::app_role)?\s*,\s*'(\w+)'\s*,\s*'(\w+)'\s*\)/g,
-  )) {
-    granted.add(`${match[1]}:${match[2]}`);
+/** The body of every `INSERT INTO ... role_permissions ...` up to its semicolon. */
+function roleGrantStatements(sql: string): string[] {
+  const statements: string[] = [];
+  const opener = /INSERT\s+INTO\s+(?:public\.)?role_permissions\s*\([^)]*\)/gi;
+
+  for (const match of sql.matchAll(opener)) {
+    const from = match.index! + match[0].length;
+    const semicolon = sql.indexOf(";", from);
+    statements.push(sql.slice(from, semicolon === -1 ? sql.length : semicolon));
+  }
+  return statements;
+}
+
+/** `'view'`, `'store_manager'::app_role` -> the literal. Anything else -> null. */
+function literal(expression: string): string | null {
+  const match = /^'([^']+)'(?:::\w+)?$/.exec(expression.trim());
+  return match ? match[1] : null;
+}
+
+function arrayLiteral(sql: string): string[] {
+  return sql
+    .split(",")
+    .map((item) => literal(item))
+    .filter((item): item is string => item !== null);
+}
+
+function expandGrant(statement: string): string[] {
+  const triples: string[] = [];
+
+  // VALUES ('role', 'module', 'action'), (...), ...
+  const values = /VALUES\s*([\s\S]*)$/i.exec(statement);
+  if (values && !/\bSELECT\b/i.test(statement)) {
+    for (const tuple of values[1].matchAll(/\(([^()]+)\)/g)) {
+      const parts = tuple[1].split(",").map((part) => literal(part));
+      if (parts.length === 3 && parts.every(Boolean)) {
+        triples.push(`${parts[1]}:${parts[2]}`);
+      }
+    }
+    return triples;
   }
 
-  return granted;
+  // SELECT <role>, <module>, <action> FROM unnest(ARRAY[...]) alias ...
+  const select = /SELECT\s+([\s\S]*?)\s+FROM\s+([\s\S]*)$/i.exec(statement);
+  if (!select) return triples;
+
+  const bindings = new Map<string, string[]>();
+  for (const bind of select[2].matchAll(/unnest\(ARRAY\[([^\]]+)\]\)\s*(?:AS\s+)?(\w+)/gi)) {
+    bindings.set(bind[2], arrayLiteral(bind[1]));
+  }
+
+  const columns = splitTopLevel(select[1]);
+  if (columns.length !== 3) return triples;
+
+  const resolved = columns.map((column) => {
+    const asLiteral = literal(column);
+    if (asLiteral) return [asLiteral];
+    const alias = /^(\w+)(?:::\w+)?$/.exec(column.trim());
+    return alias ? (bindings.get(alias[1]) ?? []) : [];
+  });
+
+  for (const module of resolved[1]) {
+    for (const action of resolved[2]) {
+      // The role is resolved too, but the orphan check only asks whether some
+      // role holds the permission, not which.
+      if (resolved[0].length > 0) triples.push(`${module}:${action}`);
+    }
+  }
+  return triples;
+}
+
+/** Splits a select list on commas that are not inside brackets. */
+function splitTopLevel(list: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+
+  for (const character of list) {
+    if (character === "(" || character === "[") depth += 1;
+    if (character === ")" || character === "]") depth -= 1;
+    if (character === "," && depth === 0) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    current += character;
+  }
+  if (current.trim()) parts.push(current);
+  return parts;
 }
 
 describe("permission mapping", () => {
@@ -106,19 +181,34 @@ describe("permission mapping", () => {
 
     expect(
       [...new Set(orphans)],
-      "These permissions are required by a server function but granted to nobody but super_admin, " +
-        "so the screen behind them is dead for every other role. Grant them in a migration, or " +
+      "These permissions are required by a server function but no migration grants them to any " +
+        "role, so the screen behind them is dead for everyone. Grant them in a migration, or " +
         "require a permission that exists.",
     ).toEqual([]);
   });
 
-  it("reads the seed migration correctly", () => {
+  it("reads every grant shape the migrations use", () => {
     // Guards the parser above: if it silently matched nothing, the orphan test
-    // would pass by accident.
+    // would pass by accident. One assertion per statement shape in the
+    // migrations, so a parser that stops understanding one of them fails here
+    // with a name rather than quietly reporting a permission as ungranted.
     const granted = seededPermissions();
-    expect(granted.has("orders:view")).toBe(true);
-    expect(granted.has("shipments:edit")).toBe(true);
-    expect(granted.has("returns:approve")).toBe(true);
+
+    // module list CROSS JOIN action list
+    expect(granted.has("orders:view"), "module x action cross join").toBe(true);
+    // module list, single action
+    expect(granted.has("shipments:edit"), "module list, single action").toBe(true);
+    expect(granted.has("returns:approve"), "module list, single action").toBe(true);
+    // single module, action list
+    expect(granted.has("settings:edit"), "single module, action list").toBe(true);
+    expect(granted.has("integrations:create"), "single module, action list").toBe(true);
+    // role list, single module, single action
+    expect(granted.has("integrations:view"), "role list, single module and action").toBe(true);
+    // VALUES tuple
+    expect(granted.has("security:view"), "VALUES tuple").toBe(true);
+    // super_admin's own cross join
+    expect(granted.has("secrets:manage_settings"), "super_admin cross join").toBe(true);
+
     expect(granted.size).toBeGreaterThan(20);
   });
 });

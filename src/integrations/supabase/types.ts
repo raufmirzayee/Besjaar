@@ -1338,6 +1338,65 @@ export type Database = {
         };
         Relationships: [];
       };
+      store_settings: {
+        Row: {
+          key: string;
+          category: string;
+          value: Json;
+          is_public: boolean;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          key: string;
+          category: string;
+          value: Json;
+          is_public?: boolean;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: {
+          key?: string;
+          category?: string;
+          value?: Json;
+          is_public?: boolean;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        // Required, even when empty: supabase-js resolves `from()` against the
+        // union of every table entry, and one entry missing this key collapses
+        // the union so `.insert()` on unrelated tables types as `never[]`.
+        Relationships: [];
+      };
+      store_settings_history: {
+        Row: {
+          id: number;
+          key: string;
+          old_value: Json;
+          new_value: Json;
+          changed_at: string;
+          changed_by: string | null;
+        };
+        Insert: {
+          key: string;
+          old_value?: Json;
+          new_value?: Json;
+          changed_at?: string;
+          changed_by?: string | null;
+        };
+        // A partial rather than `never`: supabase-js resolves `from()` against
+        // the union of every table, and one table whose Update is `never`
+        // collapses the union so `.insert()` on unrelated tables types as
+        // `never[]`. History rows are append-only by policy, not by type.
+        Update: {
+          key?: string;
+          old_value?: Json;
+          new_value?: Json;
+          changed_at?: string;
+          changed_by?: string | null;
+        };
+        Relationships: [];
+      };
       shipping_methods: {
         Row: {
           carrier: string;
@@ -1629,6 +1688,66 @@ export type Database = {
       refundable_balance: {
         Args: { p_order_id: string };
         Returns: number;
+      };
+      secret_store_available: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+      store_managed_secret: {
+        Args: {
+          p_name: string;
+          p_value: string;
+          p_masked_hint?: string | null;
+          p_actor?: string | null;
+        };
+        Returns: boolean;
+      };
+      /** Server-only. The value never leaves the server module that calls it. */
+      read_managed_secret: {
+        Args: { p_name: string };
+        Returns: string | null;
+      };
+      managed_secret_status: {
+        Args: Record<string, never>;
+        Returns: {
+          name: string;
+          configured: boolean;
+          masked_hint: string | null;
+          updated_at: string;
+        }[];
+      };
+      forget_managed_secret: {
+        Args: { p_name: string };
+        Returns: boolean;
+      };
+      set_store_setting: {
+        Args: {
+          p_key: string;
+          p_value: unknown;
+          p_actor?: string | null;
+          p_is_public?: boolean;
+        };
+        Returns: undefined;
+      };
+      audit_storage_buckets: {
+        Args: Record<string, never>;
+        Returns: { bucket: string; problem: string }[];
+      };
+      audit_view_exposure: {
+        Args: Record<string, never>;
+        Returns: { view_name: string; problem: string }[];
+      };
+      audit_profile_email_drift: {
+        Args: Record<string, never>;
+        Returns: { user_id: string; profile_email: string; verified_email: string }[];
+      };
+      audit_public_settings: {
+        Args: Record<string, never>;
+        Returns: { key: string; category: string }[];
+      };
+      audit_settings_permissions: {
+        Args: Record<string, never>;
+        Returns: { module: string; action: string; roles: string }[];
       };
       refresh_order_return_status: {
         Args: { p_order_id: string };

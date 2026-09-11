@@ -23,6 +23,12 @@ export type AdminModule =
   | "support"
   | "users"
   | "settings"
+  // The Setup & Connections modules. Split from `settings` because the blast
+  // radius differs: a wrong shipping threshold is an hour of wrong prices, a
+  // replaced payment credential is the shop's money.
+  | "integrations"
+  | "secrets"
+  | "security"
   | "audit";
 
 export type AdminAction =
@@ -52,6 +58,9 @@ export const MODULE_LABELS: Record<AdminModule, string> = {
   support: "admin.module.support",
   users: "admin.module.users",
   settings: "admin.module.settings",
+  integrations: "admin.module.integrations",
+  secrets: "admin.module.secrets",
+  security: "admin.module.security",
   audit: "admin.module.audit",
 };
 
