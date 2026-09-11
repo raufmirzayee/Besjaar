@@ -72,6 +72,7 @@ run_sql() {
 run_sql "inventory" supabase/tests/inventory.test.sql
 run_sql "row-level security" supabase/tests/rls.test.sql
 run_sql "write authorization" supabase/tests/rls-writes.test.sql
+run_sql "integrity constraints" supabase/tests/constraints.test.sql
 
 echo "--- concurrency"
 if ./supabase/tests/concurrency.test.sh "$DB" 2>&1 | sed 's/^/  /'; then

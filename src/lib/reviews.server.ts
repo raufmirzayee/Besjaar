@@ -114,14 +114,20 @@ export async function insertReview(
   if (existing) throw new Error("Je hebt dit product al beoordeeld.");
 
   // Verified purchase: the customer has a paid order containing this product.
+  //
+  // Both filters belong in the query. This used to take the first matching
+  // order item for the product and *then* check in JavaScript whether it
+  // happened to be this customer's and happened to be paid — so a customer
+  // with an unpaid order for the product alongside a paid one could have the
+  // unpaid row come back and lose their verified badge.
   const { data: purchased } = await supabase
     .from("order_items")
     .select("id, orders!inner ( user_id, payment_status )")
     .eq("product_id", productId)
+    .eq("orders.user_id", userId)
+    .eq("orders.payment_status", "paid")
     .limit(1);
-  const verified = ((purchased ?? []) as any[]).some(
-    (row) => row.orders?.user_id === userId && row.orders?.payment_status === "paid",
-  );
+  const verified = ((purchased ?? []) as any[]).length > 0;
 
   const { error } = await supabase.from("product_reviews").insert({
     product_id: productId,
@@ -133,7 +139,15 @@ export async function insertReview(
     verified_purchase: verified,
     status: "pending",
   });
-  if (error) throw new Error(error.message);
+  if (error) {
+    // The SELECT above and this INSERT are two statements, so two submissions
+    // in flight together both read "no review yet". The unique index is what
+    // decides; this turns its error into the same message the check gives.
+    if (error.code === "23505" || error.message.toLowerCase().includes("duplicate key")) {
+      throw new Error("Je hebt dit product al beoordeeld.");
+    }
+    throw new Error(error.message);
+  }
   return { ok: true };
 }
 
