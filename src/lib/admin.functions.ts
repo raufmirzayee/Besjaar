@@ -24,27 +24,12 @@ export const getMyRoles = createServerFn({ method: "GET" })
     return fetchMyRoles(context.supabase, context.userId);
   });
 
-export const getAdminDashboard = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    await requirePermission(context, "dashboard", "view");
-    return fetchDashboard(context.supabase);
-  });
-
 export const getAdminProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(v.validator(v.searchOnly))
   .handler(async ({ context, data }) => {
     await requirePermission(context, "products", "view");
     return fetchAdminProducts(context.supabase, data?.search);
-  });
-
-export const saveProduct = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator(v.validator(v.productPatch))
-  .handler(async ({ context, data }) => {
-    await requirePermission(context, "products", "edit");
-    return updateProduct(context.supabase, data);
   });
 
 export const getAdminOrders = createServerFn({ method: "POST" })
@@ -137,6 +122,24 @@ export const setUserRole = createServerFn({ method: "POST" })
       if (data.userId === context.userId && data.role === "super_admin") {
         throw new Error("Je kunt je eigen super admin rol niet verwijderen");
       }
+
+      // Removing the last super admin locks the shop out of user management
+      // permanently: only a super admin may call this, and claimFirstAdmin
+      // refuses as soon as any staff role exists — so a warehouse account left
+      // behind is enough to keep the bootstrap closed too. The way back would
+      // be SQL against the production database.
+      if (data.role === "super_admin") {
+        const { count, error: countError } = await supabaseAdmin
+          .from("user_roles")
+          .select("id", { count: "exact", head: true })
+          .eq("role", "super_admin");
+        if (countError) throw new Error(countError.message);
+        if ((count ?? 0) <= 1) {
+          throw new Error(
+            "Dit is de laatste super admin. Wijs eerst iemand anders aan voordat je deze rol verwijdert.",
+          );
+        }
+      }
       const { error } = await supabaseAdmin
         .from("user_roles")
         .delete()
@@ -148,12 +151,64 @@ export const setUserRole = createServerFn({ method: "POST" })
   });
 
 /**
- * Bootstrap: the very first signed-in user may claim super admin when the shop
- * has no staff member yet. Afterwards this endpoint always refuses.
+ * Gathers the facts `decideFirstAdminClaim` decides on.
+ *
+ * Shared by the check below and the claim itself, so the button and the action
+ * behind it can never disagree about who is allowed.
  */
+async function firstAdminDecision(userId: string) {
+  const { decideFirstAdminClaim } = await import("./admin-bootstrap");
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  // The address comes from the verified session, never from the request body.
+  const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
+  if (userError) throw new Error(userError.message);
+
+  const { data: existing, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("id")
+    .neq("role", "customer")
+    .limit(1);
+  if (error) throw new Error(error.message);
+
+  return {
+    decision: decideFirstAdminClaim({
+      configuredEmail: process.env.ADMIN_BOOTSTRAP_EMAIL,
+      callerEmail: userData?.user?.email,
+      staffExists: (existing ?? []).length > 0,
+    }),
+    email: userData?.user?.email ?? null,
+  };
+}
+
+/**
+ * Whether this caller may claim the first admin role.
+ *
+ * Drawn on for one thing only: whether to offer the button. It answers a plain
+ * boolean and never says why not, because "no, because a beheerder already
+ * exists" and "no, because you are not the configured address" are two
+ * different disclosures to someone who should be seeing an ordinary 404.
+ */
+export const canClaimFirstAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    try {
+      const { decision } = await firstAdminDecision(context.userId);
+      return { allowed: decision.allowed };
+    } catch (error) {
+      // A failure to establish the facts is not a licence to offer the claim.
+      console.error("[bootstrap] could not evaluate the first-admin claim:", error);
+      return { allowed: false };
+    }
+  });
+
 /**
  * First-run admin bootstrap. The rule itself lives in `admin-bootstrap.ts`
  * so it is covered by tests; this only gathers the facts it decides on.
+ *
+ * The very first signed-in user may claim super admin when the shop has no
+ * staff member yet AND their address is the one the operator configured.
+ * Afterwards this endpoint always refuses.
  */
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -173,34 +228,15 @@ export const claimFirstAdmin = createServerFn({ method: "POST" })
       failClosed: true,
     });
 
-    const { decideFirstAdminClaim } = await import("./admin-bootstrap");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    // The address comes from the verified session, never from the request body.
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(
-      context.userId,
-    );
-    if (userError) throw new Error(userError.message);
-
-    const { data: existing, error } = await supabaseAdmin
-      .from("user_roles")
-      .select("id")
-      .neq("role", "customer")
-      .limit(1);
-    if (error) throw new Error(error.message);
-
-    const decision = decideFirstAdminClaim({
-      configuredEmail: process.env.ADMIN_BOOTSTRAP_EMAIL,
-      callerEmail: userData?.user?.email,
-      staffExists: (existing ?? []).length > 0,
-    });
+    const { decision, email } = await firstAdminDecision(context.userId);
     if (!decision.allowed) throw new Error(decision.reason);
 
     // The staff pool comes first: the database refuses a staff role for an
     // account that is not in it.
     const { error: poolError } = await supabaseAdmin.from("staff_accounts").insert({
       user_id: context.userId,
-      email: userData?.user?.email ?? null,
+      email,
       created_by: context.userId,
     });
     if (poolError && !poolError.message.toLowerCase().includes("duplicate")) {

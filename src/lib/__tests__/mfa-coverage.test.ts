@@ -28,6 +28,11 @@ const EXEMPT: Record<string, string> = {
   // First-run bootstrap. It cannot require a second factor because no account
   // has one yet; it is gated on ADMIN_BOOTSTRAP_EMAIL instead.
   "admin.functions.ts:claimFirstAdmin": "bootstrap; gated on ADMIN_BOOTSTRAP_EMAIL",
+  // Whether to offer the bootstrap button, on the same footing: it has to
+  // answer before any account has a second factor. It returns one boolean and
+  // never says why not, so a caller learns nothing they could not learn by
+  // pressing the button.
+  "admin.functions.ts:canClaimFirstAdmin": "bootstrap check; same gate as the claim",
   // Customer-facing, scoped to the caller's own orders and reviews. Staff
   // cannot own orders at all, so these never touch a staff session.
   "returns.functions.ts:getMyReturns": "customer's own returns",

@@ -152,6 +152,12 @@ const nl = {
 
   // The gate itself
   "admin.gate.loading": "Laden…",
+  "admin.bootstrap.title": "Nog geen beheerder",
+  "admin.bootstrap.body":
+    "Deze winkel heeft nog geen medewerkers. Jouw adres staat ingesteld als ADMIN_BOOTSTRAP_EMAIL, dus je kunt jezelf nu eenmalig super admin maken.",
+  "admin.bootstrap.submit": "Eerste beheerder worden",
+  "admin.bootstrap.working": "Bezig…",
+  "admin.bootstrap.failed": "Aanvraag geweigerd",
   "admin.signIn.eyebrow": "Besjaar beheer",
   "admin.signIn.title": "Inloggen",
   "admin.signIn.subtitle": "Alleen voor medewerkersaccounts.",
@@ -802,6 +808,12 @@ const en: Record<Key, string> = {
   "admin.bol.offerId": "Offer ID",
 
   "admin.gate.loading": "Loading…",
+  "admin.bootstrap.title": "No administrator yet",
+  "admin.bootstrap.body":
+    "This shop has no staff members yet. Your address is the one set as ADMIN_BOOTSTRAP_EMAIL, so you can make yourself super admin once.",
+  "admin.bootstrap.submit": "Become the first administrator",
+  "admin.bootstrap.working": "Working…",
+  "admin.bootstrap.failed": "Request refused",
   "admin.signIn.eyebrow": "Besjaar admin",
   "admin.signIn.title": "Sign in",
   "admin.signIn.subtitle": "Staff accounts only.",

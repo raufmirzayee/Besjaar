@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 
 import { AdminAccessProvider, AdminShell } from "@/components/admin/admin-shell";
 import { LoadingState } from "@/components/admin/admin-ui";
+import { FirstAdminClaim } from "@/components/admin/first-admin-claim";
 import { NotFound } from "@/components/not-found";
 import { StaffSignIn } from "@/components/admin/staff-sign-in";
 import { StaffMfaChallenge, StaffMfaEnrol } from "@/components/admin/staff-mfa";
@@ -11,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { staffGateState } from "@/lib/mfa";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
+import { canClaimFirstAdmin } from "@/lib/admin.functions";
 import { getMyAccess } from "@/lib/admin-core.functions";
 import type { AdminAccess } from "@/lib/admin-access";
 
@@ -72,6 +74,18 @@ function BeheerLayout() {
     },
   });
 
+  // Only asked once the access query has come back without a staff role: on a
+  // shop that already has staff this never runs, so the usual case costs
+  // nothing. The server answers a plain boolean and never says why not.
+  const isStaffRole = (accessQuery.data?.roles ?? []).some((role) => role !== "customer");
+  const mayClaim = useServerFn(canClaimFirstAdmin);
+  const claimQuery = useQuery({
+    queryKey: ["first-admin-claim", user?.id],
+    enabled: Boolean(user) && accessQuery.isSuccess && !isStaffRole,
+    retry: false,
+    queryFn: () => mayClaim({}) as Promise<{ allowed: boolean }>,
+  });
+
   /** After enrolling or answering the challenge, pick up the upgraded session. */
   async function refreshSession() {
     await supabase.auth.refreshSession();
@@ -96,7 +110,24 @@ function BeheerLayout() {
 
   // Signed in as a customer: identical to any unknown URL. No "no access"
   // message, because that message is itself a disclosure.
-  if (!isStaff) return <NotFound />;
+  //
+  // The single exception is a shop with no staff at all, where the operator's
+  // configured address is offered the one-time claim. That is not a
+  // disclosure: on a shop in that state there is no backoffice to hide yet,
+  // and every other address still gets the 404 below.
+  if (!isStaff) {
+    if (claimQuery.isPending) {
+      return (
+        <div className="container-page py-20">
+          <LoadingState label={t("admin.gate.loading")} />
+        </div>
+      );
+    }
+    if (claimQuery.data?.allowed) {
+      return <FirstAdminClaim onClaimed={() => void refreshSession()} />;
+    }
+    return <NotFound />;
+  }
 
   // Staff, but the second factor is still outstanding. This only decides what
   // to draw; the server refuses every admin call on a password-only session
