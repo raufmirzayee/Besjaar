@@ -1,0 +1,17 @@
+<section class="besjaar-ui-section besjaar-ui-custom-liquid{% if section.settings.narrow %} besjaar-ui-custom-liquid--narrow{% endif %}">
+  <div class="besjaar-ui-shell">
+    {% if section.settings.heading != blank %}<h2 class="besjaar-ui-title">{{ section.settings.heading }}</h2>{% endif %}
+    <div class="besjaar-ui-custom-liquid__content rte">{{ section.settings.custom_liquid }}</div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Custom Liquid",
+  "settings": [
+    {"type":"text","id":"heading","label":"Optional heading"},
+    {"type":"liquid","id":"custom_liquid","label":"Custom Liquid"},
+    {"type":"checkbox","id":"narrow","label":"Use narrow content width","default":false}
+  ],
+  "presets": [{"name":"Custom Liquid"}]
+}
+{% endschema %}

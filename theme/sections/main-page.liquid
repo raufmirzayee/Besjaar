@@ -1,0 +1,185 @@
+{% liquid
+  assign page_handle_lc = page.handle | downcase
+  assign page_title_lc = page.title | downcase
+  assign is_about_page = false
+  assign is_faq_page = false
+  if page_handle_lc == 'over-ons' or page_handle_lc == 'overons' or page_handle_lc == 'about-us' or page_handle_lc == 'about' or page_title_lc contains 'over ons' or page_title_lc contains 'about'
+    assign is_about_page = true
+  elsif page_handle_lc == 'veelgestelde-vragen' or page_handle_lc == 'faq' or page_handle_lc == 'frequently-asked-questions' or page_title_lc contains 'veelgestelde vragen' or page_title_lc contains 'frequently asked'
+    assign is_faq_page = true
+  endif
+
+  capture about_shower_url
+    render 'shower-store-url'
+  endcapture
+  assign about_shower_url = about_shower_url | strip
+
+  assign besjaar_ui_contact_page = settings.contact_page
+  if besjaar_ui_contact_page == blank
+    assign besjaar_ui_contact_page = pages['contact']
+  endif
+  if besjaar_ui_contact_page == blank
+    assign besjaar_ui_contact_page = pages['contact-us']
+  endif
+  capture besjaar_ui_contact_url
+    if besjaar_ui_contact_page != blank
+      render 'localized-internal-url', url: besjaar_ui_contact_page.url
+    else
+      render 'localized-internal-url', url: '/pages/contact'
+    endif
+  endcapture
+  assign besjaar_ui_contact_url = besjaar_ui_contact_url | strip
+
+  assign besjaar_ui_faq_page = settings.faq_page
+  if besjaar_ui_faq_page == blank
+    assign besjaar_ui_faq_page = pages['veelgestelde-vragen']
+  endif
+  if besjaar_ui_faq_page == blank
+    assign besjaar_ui_faq_page = pages['faq']
+  endif
+  if besjaar_ui_faq_page == blank
+    assign besjaar_ui_faq_page = pages['frequently-asked-questions']
+  endif
+  capture besjaar_ui_faq_url
+    if besjaar_ui_faq_page != blank
+      render 'localized-internal-url', url: besjaar_ui_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  assign besjaar_ui_faq_url = besjaar_ui_faq_url | strip
+
+  assign besjaar_ui_tracking_page = settings.tracking_page
+  if besjaar_ui_tracking_page == blank
+    assign besjaar_ui_tracking_page = pages['track-order']
+  endif
+  if besjaar_ui_tracking_page == blank
+    assign besjaar_ui_tracking_page = pages['tracking']
+  endif
+  capture besjaar_ui_faq_tracking_url
+    if besjaar_ui_tracking_page != blank
+      render 'localized-internal-url', url: besjaar_ui_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+  assign besjaar_ui_faq_tracking_url = besjaar_ui_faq_tracking_url | strip
+%}
+{% if is_about_page %}
+<section class="besjaar-ui-section besjaar-ui-about-v461 besjaar-ui-about-shower-focus">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-about-v461__hero">
+      <div class="besjaar-ui-about-v461__hero-copy">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.about.kicker' | t }}</p>
+        <h1>{{ 'besjaar_ui.about.title' | t }}</h1>
+        <p>{{ 'besjaar_ui.about.lead' | t }}</p>
+        <div class="besjaar-ui-about-v461__hero-actions">
+          <a class="besjaar-ui-button besjaar-ui-button--primary" href="{% render 'localized-internal-url', url: about_shower_url %}">{{ 'besjaar_ui.about.shop_cta' | t }}</a>
+          <a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ besjaar_ui_contact_url }}">{{ 'besjaar_ui.about.contact_cta' | t }}</a>
+        </div>
+      </div>
+      <div class="besjaar-ui-about-v461__brand-stage" aria-label="Besjaar" translate="no">
+        <span class="besjaar-ui-about-v461__monogram" aria-hidden="true">5</span>
+        <strong>Besjaar</strong>
+        <small>{{ 'besjaar_ui.about.brand_note' | t }}</small>
+      </div>
+    </div>
+
+    <div class="besjaar-ui-about-v461__principles" data-reveal>
+      <article><span>01</span><h2>{{ 'besjaar_ui.about.principle_1_title' | t }}</h2><p>{{ 'besjaar_ui.about.principle_1_copy' | t }}</p></article>
+      <article><span>02</span><h2>{{ 'besjaar_ui.about.principle_2_title' | t }}</h2><p>{{ 'besjaar_ui.about.principle_2_copy' | t }}</p></article>
+      <article><span>03</span><h2>{{ 'besjaar_ui.about.principle_3_title' | t }}</h2><p>{{ 'besjaar_ui.about.principle_3_copy' | t }}</p></article>
+    </div>
+
+    <div class="besjaar-ui-about-v461__story" data-reveal>
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.about.story_kicker' | t }}</p>
+      <div><h2>{{ 'besjaar_ui.about.story_title' | t }}</h2><p>{{ 'besjaar_ui.about.story_copy' | t }}</p></div>
+    </div>
+
+    <div class="besjaar-ui-about-v461__category-head" data-reveal>
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.about.categories_kicker' | t }}</p><h2>{{ 'besjaar_ui.about.categories_title' | t }}</h2></div>
+      <a href="{% render 'localized-internal-url', url: about_shower_url %}">{{ 'besjaar_ui.about.view_all' | t }} <span aria-hidden="true">›</span></a>
+    </div>
+    <div class="besjaar-ui-about-v461__categories besjaar-ui-about-v461__categories--shower">
+      <a href="{% render 'localized-internal-url', url: about_shower_url %}" data-reveal><span>01</span><strong>{{ 'besjaar_ui.shower_store.about.category_1' | t }}</strong><small>{{ 'besjaar_ui.shower_store.about.category_1_copy' | t }}</small><i aria-hidden="true">↗</i></a>
+      <a href="{{ routes.root_url }}#besjaar-store-product" data-reveal><span>02</span><strong>{{ 'besjaar_ui.shower_store.about.category_2' | t }}</strong><small>{{ 'besjaar_ui.shower_store.about.category_2_copy' | t }}</small><i aria-hidden="true">↗</i></a>
+      <a href="{{ routes.root_url }}#besjaar-store-details" data-reveal><span>03</span><strong>{{ 'besjaar_ui.shower_store.about.category_3' | t }}</strong><small>{{ 'besjaar_ui.shower_store.about.category_3_copy' | t }}</small><i aria-hidden="true">↗</i></a>
+      <a href="{{ besjaar_ui_faq_url }}" data-reveal><span>04</span><strong>{{ 'besjaar_ui.shower_store.about.category_4' | t }}</strong><small>{{ 'besjaar_ui.shower_store.about.category_4_copy' | t }}</small><i aria-hidden="true">↗</i></a>
+    </div>
+
+    <div class="besjaar-ui-about-v461__service" data-reveal>
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.about.service_kicker' | t }}</p><h2>{{ 'besjaar_ui.about.service_title' | t }}</h2><p>{{ 'besjaar_ui.about.service_copy' | t }}</p></div>
+      <div class="besjaar-ui-about-v461__service-points"><span>✓ {{ 'besjaar_ui.about.service_1' | t }}</span><span>✓ {{ 'besjaar_ui.about.service_2' | t }}</span><span>✓ {{ 'besjaar_ui.about.service_3' | t }}</span></div>
+    </div>
+
+    {% render 'besjaar-brand-answers' %}
+  </div>
+</section>
+{% elsif is_faq_page %}
+<section class="besjaar-ui-section besjaar-ui-faq-page">
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-faq-page__head">
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.faq_general.kicker' | t }}</p>
+      <h1>{{ 'besjaar_ui.faq_general.title' | t }}</h1>
+      <p>{{ 'besjaar_ui.faq_general.intro' | t }}</p>
+      <nav class="besjaar-ui-faq-page__topics" aria-label="{{ 'besjaar_ui.faq_general.topic_nav_label' | t | escape }}">
+        <a href="#faq-products">{{ 'besjaar_ui.faq_general.topic_products' | t }}</a>
+        <a href="#faq-orders">{{ 'besjaar_ui.faq_general.topic_orders' | t }}</a>
+        <a href="#faq-filter-support">{{ 'besjaar_ui.faq_general.topic_filter_support' | t }}</a>
+      </nav>
+    </header>
+
+    <div class="besjaar-ui-faq-page__groups">
+      <section class="besjaar-ui-faq-page__group" id="faq-products" data-reveal>
+        <div class="besjaar-ui-faq-page__group-head">
+          <span>01</span>
+          <div><p>{{ 'besjaar_ui.faq_general.group_products_kicker' | t }}</p><h2>{{ 'besjaar_ui.faq_general.group_products_title' | t }}</h2></div>
+        </div>
+        <div class="besjaar-ui-product-v16__accordion besjaar-ui-faq-page__accordion">
+          <details open><summary><b aria-hidden="true">01</b><span>{{ 'besjaar_ui.faq_general.q1' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a1' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">02</b><span>{{ 'besjaar_ui.faq_general.q2' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a2' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">03</b><span>{{ 'besjaar_ui.faq_general.q3' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a3' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">04</b><span>{{ 'besjaar_ui.faq_general.q4' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a4' | t }}</p></div></details>
+        </div>
+      </section>
+
+      <section class="besjaar-ui-faq-page__group" id="faq-orders" data-reveal>
+        <div class="besjaar-ui-faq-page__group-head">
+          <span>02</span>
+          <div><p>{{ 'besjaar_ui.faq_general.group_orders_kicker' | t }}</p><h2>{{ 'besjaar_ui.faq_general.group_orders_title' | t }}</h2></div>
+        </div>
+        <div class="besjaar-ui-product-v16__accordion besjaar-ui-faq-page__accordion">
+          <details><summary><b aria-hidden="true">05</b><span>{{ 'besjaar_ui.faq_general.q5' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a5' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">06</b><span>{{ 'besjaar_ui.faq_general.q6' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a6' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">07</b><span>{{ 'besjaar_ui.faq_general.q7' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a7' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">08</b><span>{{ 'besjaar_ui.faq_general.q11' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a11' | t }}</p></div></details>
+        </div>
+      </section>
+
+      <section class="besjaar-ui-faq-page__group" id="faq-filter-support" data-reveal>
+        <div class="besjaar-ui-faq-page__group-head">
+          <span>03</span>
+          <div><p>{{ 'besjaar_ui.faq_general.group_filter_kicker' | t }}</p><h2>{{ 'besjaar_ui.faq_general.group_filter_title' | t }}</h2></div>
+        </div>
+        <div class="besjaar-ui-product-v16__accordion besjaar-ui-faq-page__accordion">
+          <details><summary><b aria-hidden="true">09</b><span>{{ 'besjaar_ui.faq_general.q9' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a9' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">10</b><span>{{ 'besjaar_ui.faq_general.q10' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a10' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">11</b><span>{{ 'besjaar_ui.faq_general.q8' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a8' | t }}</p></div></details>
+          <details><summary><b aria-hidden="true">12</b><span>{{ 'besjaar_ui.faq_general.q12' | t }}</span><i aria-hidden="true">+</i></summary><div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content"><p>{{ 'besjaar_ui.faq_general.a12' | t }}</p></div></details>
+        </div>
+      </section>
+    </div>
+
+    <div class="besjaar-ui-faq-page__help" data-reveal>
+      <div><span>{{ 'besjaar_ui.faq_general.help_kicker' | t }}</span><strong>{{ 'besjaar_ui.faq_general.help_title' | t }}</strong><p>{{ 'besjaar_ui.faq_general.help_copy' | t }}</p></div>
+      <div class="besjaar-ui-faq-page__help-actions">
+        <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_contact_url }}">{{ 'besjaar_ui.faq_general.contact_cta' | t }}</a>
+        <a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ besjaar_ui_faq_tracking_url | strip }}">{{ 'besjaar_ui.faq_general.track_cta' | t }} <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="besjaar-ui-section"><div class="besjaar-ui-shell besjaar-ui-content"><header class="besjaar-ui-page-head"><p class="besjaar-ui-kicker">{{ 'besjaar_ui.page.generic_kicker' | t }}</p><h1 class="besjaar-ui-title">{% render 'localized-page-title', page: page %}</h1></header>{{ page.content }}</div></section>
+{% endif %}
+{% schema %}{"name":"Main page","settings":[]}{% endschema %}

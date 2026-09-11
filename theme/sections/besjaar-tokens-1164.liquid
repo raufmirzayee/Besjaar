@@ -1,0 +1,164 @@
+{%- comment -%}
+  Besjaar 11.6.4 — unified colour tokens (Track A).
+  One source of truth: the --bj-* tokens below read the Theme Editor colours
+  (Theme settings → Brand & layout). Every earlier token family — --besjaar-ui-*,
+  --lux-*, --b115-*, --besjaar-*, --bs5-*, --bc40-*, --besjaar-premium-*, --home-*,
+  --bk3-* — aliases to them, so one colour change now propagates through all
+  layers. A few surgical consistency rules follow the tokens (one focus ring,
+  no header blur on phones, button hover that fades instead of snapping,
+  colour leftovers from the green era).
+
+  This section is a temporary carrier so layout/theme.liquid did not have to
+  be rewritten by hand. During the CSS consolidation, move the <style> block
+  into the <head> after the last stylesheet and delete this section.
+{%- endcomment -%}
+<style id="besjaar-tokens-1164">
+:root{
+  --bj-navy:{{ settings.accent | default: '#153252' }};
+  --bj-navy-deep:{{ settings.accent_2 | default: '#0F2947' }};
+  --bj-navy-bright:#1D4269;
+  --bj-blue:#2F628F;
+  --bj-sky:#8CC8EC;
+  --bj-ink:{{ settings.text | default: '#11110E' }};
+  --bj-muted:{{ settings.muted | default: '#49627D' }};
+  --bj-bg:{{ settings.bg | default: '#FFFFFF' }};
+  --bj-surface:{{ settings.surface | default: '#FFFFFF' }};
+  --bj-ice-50:#F6F9FC;
+  --bj-ice-100:#EEF6FB;
+  --bj-ice-200:#DDEAF5;
+  --bj-line:rgba(21,50,82,.12);
+  --bj-line-strong:rgba(21,50,82,.22);
+  --bj-gold:#D9A441;
+  --bj-success:#19704A;
+  --bj-danger:#A63D3D;
+  --bj-shadow-xs:0 1px 2px rgba(15,41,71,.05);
+  --bj-shadow-sm:0 2px 6px rgba(15,41,71,.05),0 10px 26px rgba(15,41,71,.07);
+  --bj-shadow-md:0 4px 12px rgba(15,41,71,.06),0 18px 40px rgba(15,41,71,.10);
+  --bj-shadow-lg:0 8px 22px rgba(15,41,71,.08),0 28px 64px rgba(15,41,71,.14);
+  --bj-focus:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(47,98,143,.24);
+  --bj-ease:cubic-bezier(.22,.61,.36,1);
+  --bj-grad-primary:linear-gradient(180deg,var(--bj-navy-bright) 0%,var(--bj-navy) 58%,var(--bj-navy-deep) 100%);
+  --bj-grad-band:linear-gradient(135deg,var(--bj-navy-deep) 0%,var(--bj-navy) 52%,#1B3F66 100%);
+
+  --besjaar-ui-accent:var(--bj-navy)!important;
+  --besjaar-ui-accent-2:var(--bj-navy-deep)!important;
+  --besjaar-ui-teal:var(--bj-navy)!important;
+  --besjaar-ui-sage:var(--bj-navy)!important;
+  --besjaar-ui-shadow-xs:var(--bj-shadow-xs)!important;
+  --besjaar-ui-shadow-sm:var(--bj-shadow-sm)!important;
+  --besjaar-ui-shadow-md:var(--bj-shadow-md)!important;
+  --besjaar-ui-shadow-lg:var(--bj-shadow-lg)!important;
+  --besjaar-navy:var(--bj-navy)!important;
+  --besjaar-navy-deep:var(--bj-navy-deep)!important;
+  --besjaar-shadow-sm:var(--bj-shadow-sm)!important;
+  --besjaar-shadow-md:var(--bj-shadow-md)!important;
+  --bs5-navy:var(--bj-navy)!important;
+  --bs5-navy-deep:var(--bj-navy-deep)!important;
+  --bc40-navy:var(--bj-navy)!important;
+  --bc40-navy-deep:var(--bj-navy-deep)!important;
+  --besjaar-premium-navy:var(--bj-navy);
+  --besjaar-premium-navy-2:var(--bj-navy-deep);
+  --besjaar-premium-violet:var(--bj-navy);
+  --besjaar-premium-violet-dark:var(--bj-navy-deep);
+  --lux-navy:var(--bj-navy);
+  --lux-navy-deep:var(--bj-navy-deep);
+  --lux-navy-bright:var(--bj-navy-bright);
+  --lux-blue:var(--bj-sky);
+  --lux-gold:var(--bj-gold);
+  --lux-ink:var(--bj-ink);
+  --lux-line:var(--bj-line);
+  --lux-soft:var(--bj-ice-50);
+  --lux-tint:var(--bj-ice-100);
+  --lux-grad-primary:var(--bj-grad-primary);
+  --lux-grad-band:var(--bj-grad-band);
+  --lux-shadow-xs:var(--bj-shadow-xs);
+  --lux-shadow-sm:var(--bj-shadow-sm);
+  --lux-shadow-md:var(--bj-shadow-md);
+  --lux-shadow-lg:var(--bj-shadow-lg);
+  --lux-ring:0 0 0 3px rgba(47,98,143,.2);
+  --lux-ease:var(--bj-ease);
+  --b115-navy:var(--bj-navy);
+  --b115-navy-deep:var(--bj-navy-deep);
+  --b115-blue:var(--bj-blue);
+  --b115-ice:var(--bj-ice-100);
+  --b115-line:var(--bj-line);
+  --b115-muted:var(--bj-muted);
+  --b115-success:var(--bj-success);
+  --b115-danger:var(--bj-danger);
+  --b115-focus:var(--bj-focus);
+  --b115-shadow:var(--bj-shadow-md);
+}
+body[data-page-type="index"]{--home-navy:var(--bj-navy)!important;--home-navy-deep:var(--bj-navy-deep)!important}
+body[data-page-type="product"]{--besjaar-product-navy:var(--bj-navy)!important;--besjaar-product-navy-dark:var(--bj-navy-deep)!important}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3{--bk3-navy:var(--bj-navy)!important}
+
+/* One focus ring everywhere: blue outline, white keyline, soft halo. */
+body.besjaar-ui-polish-v34 :focus-visible{outline:2px solid var(--bj-blue)!important;outline-offset:3px!important;box-shadow:var(--bj-focus)!important}
+body.besjaar-ui-polish-v34 :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout):focus-visible,
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:focus-visible{box-shadow:var(--bj-focus),inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important}
+body[data-page-type="product"] .besjaar-store-premium-pd__select:focus-visible{outline-color:var(--bj-blue)!important;border-color:var(--bj-blue)!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-input:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-select:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-textarea:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-search-form .besjaar-ui-input:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-search__control input:focus{border-color:var(--bj-blue)!important;box-shadow:var(--lux-ring)!important}
+
+/* Header: keep the glass on desktop, drop the per-frame blur on phones. */
+@media (max-width:900px){
+  body.besjaar-ui-polish-v34 .besjaar-ui-header{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:rgba(255,255,255,.97)!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-header.is-scrolled{background:#fff!important}
+}
+
+/* Primary buttons: hover brightens the same gradient instead of swapping to a second one. */
+body.besjaar-ui-polish-v34 .besjaar-ui-button--primary,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--primary,
+body[data-page-type="product"] .besjaar-store-premium-pd__add,
+body[data-page-type="cart"] .besjaar-cart-summary__checkout,
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick,
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button{transition:filter .22s var(--bj-ease),box-shadow .22s var(--bj-ease),transform .22s var(--bj-ease)!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-button--primary:hover,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--primary:hover,
+body[data-page-type="index"] .besjaar-store-hero--premium-exact .besjaar-store-btn--primary:hover,
+body[data-page-type="product"] .besjaar-store-premium-pd__add:hover,
+body[data-page-type="cart"] .besjaar-cart-summary__checkout:hover,
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick:hover,
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:hover{background:var(--bj-grad-primary)!important;filter:brightness(1.08)!important}
+@media (hover:none){
+  body.besjaar-ui-polish-v34 .besjaar-ui-button--primary:hover,
+  body.besjaar-ui-polish-v34 .besjaar-store-btn--primary:hover,
+  body[data-page-type="index"] .besjaar-store-hero--premium-exact .besjaar-store-btn--primary:hover,
+  body[data-page-type="product"] .besjaar-store-premium-pd__add:hover,
+  body[data-page-type="cart"] .besjaar-cart-summary__checkout:hover,
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick:hover,
+  body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:hover{filter:none!important}
+}
+@media (prefers-reduced-motion:reduce){
+  body.besjaar-ui-polish-v34 .besjaar-ui-button--primary,
+  body.besjaar-ui-polish-v34 .besjaar-store-btn--primary,
+  body[data-page-type="product"] .besjaar-store-premium-pd__add,
+  body[data-page-type="cart"] .besjaar-cart-summary__checkout,
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick,
+  body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button{transition:none!important}
+}
+
+/* Colour leftovers: green-era ink, second gold, second green. */
+.besjaar-cart-note textarea{color:var(--bj-ink)}
+.b116-recent__copy strong{color:var(--bj-ink)}
+.besjaar-ui-review-stars--judgeme .jdgm-star{color:var(--bj-gold)!important}
+body[data-page-type="cart"] .besjaar-cart-progress__track[aria-valuenow="100"] i{background:linear-gradient(90deg,#1E7F55,var(--bj-success))!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-free-shipping__track i{background:linear-gradient(90deg,var(--bj-navy-bright),var(--bj-navy))!important}
+</style>
+{% schema %}
+{
+  "name": "Besjaar colour tokens",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Unified colour tokens (11.6.4). Keep this section first in the header group. Change the colours under Theme settings → Brand & layout."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

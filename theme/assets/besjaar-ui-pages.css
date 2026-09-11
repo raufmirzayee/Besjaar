@@ -1,0 +1,245 @@
+/* BesjaarUI 5.0 — content pages */
+.besjaar-ui-404{min-height:66vh;display:grid;place-items:center;text-align:center;}
+.besjaar-ui-404__code{font-size:clamp(7rem,20vw,16rem);line-height:.75;font-weight:950;letter-spacing:-.08em;color:transparent;-webkit-text-stroke:1px rgba(83,231,224,.45);text-shadow:0 0 70px rgba(83,231,224,.14);}
+.besjaar-ui-account-head,.besjaar-ui-order-head,.besjaar-ui-contact-head{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;}
+.besjaar-ui-contact-service{min-width:220px;padding:15px 17px;border:1px solid rgba(53,231,216,.12);border-radius:14px;background:rgba(53,231,216,.025);display:grid;gap:3px;}
+.besjaar-ui-contact-service span{color:var(--besjaar-ui-muted);font-size:.62rem;text-transform:uppercase;letter-spacing:.09em;}
+.besjaar-ui-contact-service strong{font-size:.84rem;}
+.besjaar-ui-contact-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:18px;align-items:start;}
+.besjaar-ui-contact-form-card,.besjaar-ui-support-panel{padding:24px;border:1px solid rgba(255,255,255,.065);border-radius:18px;background:rgba(255,255,255,.018);}
+.besjaar-ui-contact-message{margin:13px 0;}
+.besjaar-ui-support-panel{position:sticky;top:104px;background:linear-gradient(145deg,rgba(53,231,216,.028),rgba(255,255,255,.015));}
+.besjaar-ui-support-panel h2{margin:5px 0 8px;}
+.besjaar-ui-support-links{display:grid;margin-top:18px;border-top:1px solid rgba(255,255,255,.06);}
+.besjaar-ui-support-links a{display:flex;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:.82rem;}
+.besjaar-ui-support-links b{color:var(--besjaar-ui-accent-2);}
+.besjaar-ui-404--v21 .besjaar-ui-404__actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px;}
+.besjaar-ui-404__search{margin:18px auto 0;max-width:620px;}
+@media (max-width:1050px){.besjaar-ui-account-head,.besjaar-ui-order-head,.besjaar-ui-contact-head{align-items:flex-start;flex-direction:column;}.besjaar-ui-order-layout,.besjaar-ui-contact-layout{grid-template-columns:1fr;}.besjaar-ui-order-summary,.besjaar-ui-support-panel{position:static;}}
+@media (max-width:700px){.besjaar-ui-contact-form-card,.besjaar-ui-support-panel,.besjaar-ui-auth-card{padding:19px;}.besjaar-ui-404__search{grid-template-columns:1fr;}}
+.besjaar-ui-account-head,.besjaar-ui-order-head,.besjaar-ui-contact-head{color:#1d2b22;}
+.besjaar-ui-account-head p,.besjaar-ui-order-head p,.besjaar-ui-contact-head p{color:#718078;}
+.besjaar-ui-account-stat,.besjaar-ui-account-order,.besjaar-ui-address-card,.besjaar-ui-auth-card,.besjaar-ui-contact-form-card,.besjaar-ui-contact-service,.besjaar-ui-support-panel,.besjaar-ui-order-summary,.besjaar-ui-order-items,.besjaar-ui-order-tracking,.besjaar-ui-order-address,.besjaar-ui-empty--panel{background:#fff;border-color:#dde3da;box-shadow:var(--besjaar-ui-shadow-soft);}
+.besjaar-ui-support-links a{background:#fff;border-color:#dce2d8;color:#405047;}
+.besjaar-ui-support-links a:hover{border-color:#bfd0c4;color:var(--besjaar-ui-teal);}
+.besjaar-ui-404{background:transparent;}
+.besjaar-ui-404__code{color:rgba(31,61,52,.15);}
+.besjaar-ui-404 h1{color:#1d2b22;}
+.besjaar-ui-404 p{color:#6a776f;}
+.besjaar-ui-404__search{background:#fff;border-color:#dce3d9;box-shadow:var(--besjaar-ui-shadow-soft);}
+.besjaar-ui-track-v412__hero{display:grid;grid-template-columns:minmax(0,1fr) 190px;align-items:end;gap:40px;padding:60px 0 72px;border-bottom:1px solid var(--journey-line);}
+.besjaar-ui-track-v412__hero h1{max-width:960px;margin:.35rem 0 .85rem;font-size:clamp(4.2rem,9vw,9rem);line-height:.84;letter-spacing:-.078em;}
+.besjaar-ui-track-v412__hero>div:first-child>p:last-child{max-width:760px;margin:0;color:#6e6e73;font-size:clamp(.95rem,1.25vw,1.1rem);line-height:1.65;}
+.besjaar-ui-track-v412__hero-mark{width:180px;height:180px;border-radius:42px;background:linear-gradient(145deg,#e9f1ed,#f7f8f6);color:#1f3d34;display:grid;place-items:center;}
+.besjaar-ui-track-v412__hero-mark svg{width:90px;height:90px;}
+.besjaar-ui-track-v412__primary-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin:38px 0 70px;}
+.besjaar-ui-track-v412__primary-card{min-height:330px;padding:30px;border:1px solid var(--journey-line);border-radius:32px;background:#fff;display:flex;flex-direction:column;justify-content:space-between;gap:30px;}
+.besjaar-ui-track-v412__primary-card.is-dark{background:#1d1d1f;border-color:#1d1d1f;color:#fff;}
+.besjaar-ui-track-v412__primary-card.is-dark h2{color:#fff;}
+.besjaar-ui-track-v412__primary-card.is-dark p{color:#aaaab0;}
+.besjaar-ui-track-v412__number{font-size:.7rem;font-weight:850;letter-spacing:.08em;color:#789a56;}
+.besjaar-ui-track-v412__primary-card h2{max-width:560px;margin:.35rem 0 .7rem;font-size:clamp(2rem,4vw,4rem);line-height:.98;letter-spacing:-.055em;}
+.besjaar-ui-track-v412__primary-card p{max-width:600px;margin:0;color:#727277;font-size:.82rem;line-height:1.6;}
+.besjaar-ui-track-v412__hint{padding-top:20px;border-top:1px solid #38383c;color:#b5b5ba;font-size:.72rem;}
+.besjaar-ui-track-v412__section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px;}
+.besjaar-ui-track-v412__section-head h2{margin:.25rem 0 0;font-size:clamp(1.8rem,3.2vw,3rem);letter-spacing:-.05em;}
+.besjaar-ui-track-v412__orders{margin-bottom:70px;}
+.besjaar-ui-track-v412__order-list{display:grid;gap:8px;}
+.besjaar-ui-track-v412__order{display:grid;grid-template-columns:76px minmax(0,1fr) minmax(170px,.55fr) 22px;gap:16px;align-items:center;padding:12px;border:1px solid var(--journey-line);border-radius:22px;background:#fff;color:inherit;text-decoration:none;}
+.besjaar-ui-track-v412__order:hover{box-shadow:0 16px 42px rgba(31,40,34,.05);}
+.besjaar-ui-track-v412__order-media{width:76px;height:76px;border-radius:16px;background:#f5f5f7;display:grid;place-items:center;overflow:hidden;}
+.besjaar-ui-track-v412__order-media img{width:100%;height:100%;object-fit:contain;padding:5px;}
+.besjaar-ui-track-v412__order>div:nth-child(2)>span{color:#929297;font-size:.63rem;}
+.besjaar-ui-track-v412__order h3{margin:.25rem 0;font-size:.92rem;}
+.besjaar-ui-track-v412__order p{margin:0;color:#77777c;font-size:.69rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.besjaar-ui-track-v412__order-status{display:flex;align-items:flex-end;flex-direction:column;gap:7px;}
+.besjaar-ui-track-v412__order-status span{padding:6px 9px;border-radius:999px;background:#eef4f0;color:#4f6c5b;font-size:.61rem;font-weight:750;}
+.besjaar-ui-track-v412__order-status strong{font-size:.82rem;}
+.besjaar-ui-track-v412__how{margin-bottom:70px;}
+.besjaar-ui-track-v412__how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.besjaar-ui-track-v412__how-grid article{min-height:240px;padding:25px;border:1px solid var(--journey-line);border-radius:26px;background:#fff;display:flex;flex-direction:column;}
+.besjaar-ui-track-v412__how-grid article>span{color:#789a56;font-size:.67rem;font-weight:850;letter-spacing:.08em;}
+.besjaar-ui-track-v412__how-grid strong{display:block;margin-top:auto;font-size:1.12rem;}
+.besjaar-ui-track-v412__how-grid p{margin:.55rem 0 0;color:#77777c;font-size:.74rem;line-height:1.55;}
+.besjaar-ui-track-v412__app{margin-bottom:70px;}
+.besjaar-ui-track-v412__help{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:32px;border-radius:32px;background:linear-gradient(145deg,#eef4f0,#f8f7f3);border:1px solid #dfe5df;}
+.besjaar-ui-track-v412__help h2{margin:.35rem 0 .6rem;font-size:clamp(1.8rem,3.2vw,3rem);letter-spacing:-.05em;}
+.besjaar-ui-track-v412__help p{max-width:720px;margin:0;color:#707771;font-size:.8rem;line-height:1.6;}
+.besjaar-ui-track-v412__help-actions{display:flex;gap:8px;flex-wrap:wrap;}
+@media (max-width:1020px){.besjaar-ui-track-v412__primary-grid{grid-template-columns:1fr;}.besjaar-ui-track-v412__primary-card{min-height:290px;}.besjaar-ui-track-v412__hero{grid-template-columns:1fr 140px;}.besjaar-ui-track-v412__hero-mark{width:140px;height:140px;border-radius:34px;}.besjaar-ui-track-v412__hero-mark svg{width:72px;height:72px;}}
+@media (max-width:700px){.besjaar-ui-track-v412{padding-top:14px;}.besjaar-ui-track-v412__hero{grid-template-columns:1fr;padding:24px 0 42px;}.besjaar-ui-track-v412__hero h1{font-size:clamp(3.7rem,18vw,5.8rem);}.besjaar-ui-track-v412__hero-mark{display:none;}.besjaar-ui-track-v412__primary-grid{margin:24px 0 52px;}.besjaar-ui-track-v412__primary-card{min-height:275px;padding:22px;border-radius:25px;}.besjaar-ui-track-v412__primary-card h2{font-size:clamp(2rem,10vw,3.2rem);}.besjaar-ui-track-v412__section-head{align-items:flex-start;flex-direction:column;}.besjaar-ui-track-v412__order{grid-template-columns:62px minmax(0,1fr) auto;gap:11px;border-radius:19px;}.besjaar-ui-track-v412__order-media{width:62px;height:62px;border-radius:13px;}.besjaar-ui-track-v412__order-status{grid-column:2;align-items:flex-start;flex-direction:row;flex-wrap:wrap;}.besjaar-ui-track-v412__order>span:last-child{grid-column:3;grid-row:1/3;}.besjaar-ui-track-v412__how-grid{grid-template-columns:1fr;}.besjaar-ui-track-v412__how-grid article{min-height:180px;border-radius:22px;}.besjaar-ui-track-v412__help{align-items:flex-start;flex-direction:column;padding:23px;border-radius:24px;}}
+.besjaar-ui-about-v461{background:#f5f5f7;color:#1d1d1f;padding-top:38px!important;}
+.besjaar-ui-about-v461__hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(340px,.7fr);min-height:610px;border-radius:32px;overflow:hidden;background:#fff;}
+.besjaar-ui-about-v461__hero-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(44px,6vw,86px);}
+.besjaar-ui-about-v461__hero-copy h1{max-width:850px;margin:0;font-size:clamp(3.6rem,6.7vw,7.3rem);line-height:.9;letter-spacing:-.07em;}
+.besjaar-ui-about-v461__hero-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:28px;}
+.besjaar-ui-about-v461__brand-stage{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(145deg,#eaf0ea,#dde8e3);text-align:center;}
+.besjaar-ui-about-v461__brand-stage:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:rgba(255,255,255,.46);filter:blur(1px);}
+.besjaar-ui-about-v461__monogram{position:relative;z-index:1;font-size:clamp(10rem,19vw,18rem);font-weight:900;line-height:.75;letter-spacing:-.13em;color:rgba(31,61,52,.14);}
+.besjaar-ui-about-v461__brand-stage strong{position:relative;z-index:2;margin-top:-12px;font-size:clamp(2rem,3vw,3.4rem);letter-spacing:-.055em;}
+.besjaar-ui-about-v461__brand-stage small{position:relative;z-index:2;max-width:260px;margin-top:8px;color:#65736b;font-size:.76rem;line-height:1.45;}
+.besjaar-ui-about-v461__principles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+.besjaar-ui-about-v461__principles article{min-height:250px;padding:28px;border-radius:25px;background:#fff;}
+.besjaar-ui-about-v461__principles span{color:#1f3d34;font-size:.66rem;font-weight:800;letter-spacing:.08em;}
+.besjaar-ui-about-v461__principles h2{margin:48px 0 10px;font-size:clamp(1.6rem,2.2vw,2.35rem);line-height:1;letter-spacing:-.045em;}
+.besjaar-ui-about-v461__principles p{margin:0;color:#747479;font-size:.82rem;line-height:1.55;}
+.besjaar-ui-about-v461__story{display:grid;grid-template-columns:.38fr 1fr;gap:40px;align-items:start;padding:clamp(82px,9vw,140px) clamp(10px,3vw,44px);}
+.besjaar-ui-about-v461__story h2{max-width:900px;margin:0;font-size:clamp(2.8rem,5vw,5.7rem);line-height:.94;letter-spacing:-.06em;}
+.besjaar-ui-about-v461__story div p{max-width:760px;margin:24px 0 0;color:#6f6f74;font-size:1rem;line-height:1.7;}
+.besjaar-ui-about-v461__category-head{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:22px;}
+.besjaar-ui-about-v461__category-head h2{margin:0;font-size:clamp(2.4rem,4.2vw,4.8rem);line-height:.96;letter-spacing:-.055em;}
+.besjaar-ui-about-v461__category-head>a{color:#1f3d34;font-size:.86rem;font-weight:700;}
+.besjaar-ui-about-v461__categories{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.besjaar-ui-about-v461__categories>a{position:relative;min-height:260px;padding:24px;border-radius:24px;background:#fff;display:flex;flex-direction:column;}
+.besjaar-ui-about-v461__categories>a:nth-child(2){background:#1b1d1f;color:#fff;}
+.besjaar-ui-about-v461__categories>a:nth-child(2) small{color:#aaaeb1;}
+.besjaar-ui-about-v461__categories>a:nth-child(3){background:#e8eee7;}
+.besjaar-ui-about-v461__categories>a:nth-child(4){background:#f1ece5;}
+.besjaar-ui-about-v461__categories span{font-size:.62rem;font-weight:800;letter-spacing:.08em;opacity:.7;}
+.besjaar-ui-about-v461__categories strong{margin-top:auto;font-size:clamp(1.45rem,2vw,2rem);line-height:1.03;letter-spacing:-.04em;}
+.besjaar-ui-about-v461__categories small{margin-top:10px;color:#77777c;font-size:.73rem;line-height:1.5;}
+.besjaar-ui-about-v461__categories i{position:absolute;right:20px;top:20px;font-style:normal;font-size:1.2rem;}
+.besjaar-ui-about-v461__service{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.72fr);gap:70px;align-items:center;margin-top:90px;padding:clamp(42px,6vw,78px);border-radius:30px;background:#1c2722;color:#f8faf8;}
+.besjaar-ui-about-v461__service h2{margin:0;font-size:clamp(2.5rem,4.4vw,5rem);line-height:.95;letter-spacing:-.06em;}
+.besjaar-ui-about-v461__service-points{display:grid;gap:9px;}
+.besjaar-ui-about-v461__service-points span{padding:14px 16px;border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(255,255,255,.04);font-size:.78rem;}
+@media (max-width:900px){.besjaar-ui-about-v461__hero{grid-template-columns:1fr;}.besjaar-ui-about-v461__brand-stage{min-height:340px;}.besjaar-ui-about-v461__principles{grid-template-columns:1fr;}.besjaar-ui-about-v461__principles article{min-height:180px;}.besjaar-ui-about-v461__principles h2{margin-top:28px;}.besjaar-ui-about-v461__categories{grid-template-columns:repeat(2,1fr);}.besjaar-ui-about-v461__story{grid-template-columns:1fr;gap:15px;}.besjaar-ui-about-v461__service{grid-template-columns:1fr;gap:30px;}}
+@media (max-width:700px){.besjaar-ui-about-v461{padding-top:12px!important;}.besjaar-ui-about-v461__hero{min-height:0;border-radius:22px;}.besjaar-ui-about-v461__hero-copy{padding:44px 20px;}.besjaar-ui-about-v461__hero-copy h1{font-size:clamp(3rem,16vw,4.6rem);}.besjaar-ui-about-v461__brand-stage{min-height:270px;}.besjaar-ui-about-v461__monogram{font-size:11rem;}.besjaar-ui-about-v461__principles{gap:8px;margin-top:8px;}.besjaar-ui-about-v461__principles article{padding:22px;border-radius:20px;}.besjaar-ui-about-v461__story{padding:68px 6px;}.besjaar-ui-about-v461__story h2{font-size:clamp(2.6rem,13vw,4rem);}.besjaar-ui-about-v461__category-head{align-items:flex-start;flex-direction:column;}.besjaar-ui-about-v461__categories{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:8px;margin:0 -10px;padding:0 10px 10px;scrollbar-width:none;}.besjaar-ui-about-v461__categories::-webkit-scrollbar{display:none;}.besjaar-ui-about-v461__categories>a{flex:0 0 82%;min-height:240px;scroll-snap-align:start;}.besjaar-ui-about-v461__service{margin-top:58px;padding:34px 22px;border-radius:22px;}.besjaar-ui-about-v461__service h2{font-size:clamp(2.5rem,12vw,3.8rem);}}
+body.besjaar-ui-parcelpanel-page #MainContent{background:#f7f6f1;padding:44px 0 64px;min-height:66vh;}
+.besjaar-ui-parcelpanel-hero,.besjaar-ui-parcelpanel-app-frame,.besjaar-ui-parcelpanel-support{width:min(calc(100% - 32px),1160px);margin-inline:auto;}
+.besjaar-ui-parcelpanel-hero{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:36px;align-items:center;background:#fff;border:1px solid #e2e5df;border-radius:28px;padding:42px 46px;margin-bottom:22px;box-shadow:0 18px 50px rgba(27,38,30,.055);}
+.besjaar-ui-parcelpanel-hero h1{font-size:clamp(2.8rem,5vw,5.3rem);line-height:.93;letter-spacing:-.055em;margin:8px 0 18px;color:#1d1d1f;max-width:780px;}
+.besjaar-ui-parcelpanel-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;}
+.besjaar-ui-parcelpanel-chips span{display:inline-flex;align-items:center;min-height:34px;padding:7px 11px;border-radius:999px;background:#f1f5ef;border:1px solid #dfe8dc;color:#49604f;font-size:.72rem;font-weight:750;}
+.besjaar-ui-parcelpanel-chips span:before{content:"";width:6px;height:6px;border-radius:50%;background:#789a56;margin-right:7px;}
+.besjaar-ui-parcelpanel-hero__mark{height:180px;border-radius:24px;background:#173229;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:20px;}
+.besjaar-ui-parcelpanel-hero__mark span{font-size:.65rem;letter-spacing:.16em;opacity:.62;}
+.besjaar-ui-parcelpanel-hero__mark strong{font-size:5.2rem;line-height:.8;letter-spacing:-.08em;}
+.besjaar-ui-parcelpanel-app-frame{background:#fff;border:1px solid #e2e5df;border-radius:26px;padding:30px 34px!important;box-shadow:0 14px 40px rgba(27,38,30,.04);overflow:hidden;}
+.besjaar-ui-parcelpanel-app-frame+.besjaar-ui-parcelpanel-app-frame{margin-top:16px;}
+.besjaar-ui-parcelpanel-original-heading{display:none!important;}
+.besjaar-ui-parcelpanel-app-frame input:not([type="checkbox"]):not([type="radio"]){min-height:48px!important;border:1px solid #cfd5cf!important;border-radius:10px!important;background:#fff!important;padding:10px 13px!important;font:inherit!important;color:#1d1d1f!important;box-shadow:none!important;outline:none!important;}
+.besjaar-ui-parcelpanel-app-frame input:focus{border-color:#1f3d34!important;box-shadow:0 0 0 3px rgba(31,61,52,.12)!important;}
+.besjaar-ui-parcelpanel-app-frame button,.besjaar-ui-parcelpanel-app-frame input[type="submit"],.besjaar-ui-parcelpanel-app-frame input[type="button"]{min-height:44px!important;padding:10px 20px!important;border:1px solid #173229!important;border-radius:999px!important;background:#173229!important;color:#fff!important;font:inherit!important;font-weight:780!important;cursor:pointer!important;box-shadow:none!important;}
+.besjaar-ui-parcelpanel-app-frame button:hover,.besjaar-ui-parcelpanel-app-frame input[type="submit"]:hover{background:#1f3d34!important;border-color:#1f3d34!important;}
+.besjaar-ui-parcelpanel-app-frame label{font-weight:700!important;color:#303632!important;}
+.besjaar-ui-parcelpanel-app-frame p,.besjaar-ui-parcelpanel-app-frame span,.besjaar-ui-parcelpanel-app-frame div{font-family:inherit;}
+.besjaar-ui-parcelpanel-app-frame a{color:#1f3d34;}
+.besjaar-ui-parcelpanel-app-frame hr{border:0;border-top:1px solid #e7e9e5;}
+.besjaar-ui-parcelpanel-support{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 28px;background:#edf3ec;border:1px solid #dce7d9;border-radius:20px;}
+.besjaar-ui-parcelpanel-support strong{display:block;color:#263128;font-size:.95rem;}
+@media (max-width:760px){body.besjaar-ui-parcelpanel-page #MainContent{padding:22px 0 46px;}.besjaar-ui-parcelpanel-hero{grid-template-columns:1fr;padding:28px 22px;border-radius:22px;}.besjaar-ui-parcelpanel-hero__mark{display:none;}.besjaar-ui-parcelpanel-hero h1{font-size:clamp(2.5rem,13vw,4rem);}.besjaar-ui-parcelpanel-app-frame{padding:22px 18px!important;border-radius:20px;}.besjaar-ui-parcelpanel-app-frame input:not([type="checkbox"]):not([type="radio"]){width:100%!important;max-width:none!important;}.besjaar-ui-parcelpanel-support{align-items:flex-start;flex-direction:column;}}
+.besjaar-ui-faq-page{padding:clamp(42px,5.5vw,74px) 0 clamp(58px,7vw,92px);background:radial-gradient(circle at 78% 5%,rgba(31,61,52,.055),transparent 28rem);}
+.besjaar-ui-faq-page__head{max-width:980px;margin:0 0 clamp(32px,4vw,48px);}
+.besjaar-ui-faq-page__head h1{max-width:14ch;margin:0;color:#1d1d1f;font-size:clamp(2.65rem,5.15vw,5.35rem);font-weight:820;line-height:.94;letter-spacing:-.062em;text-wrap:balance;}
+.besjaar-ui-faq-page__head>p:last-child{max-width:720px;margin:18px 0 0;color:#73777a;font-size:clamp(1rem,1.35vw,1.18rem);line-height:1.55;}
+.besjaar-ui-faq-page__accordion{max-width:1080px;margin:0;border:0;background:transparent;box-shadow:none;display:grid;gap:10px;}
+.besjaar-ui-faq-page__accordion details{margin:0!important;border:1px solid #dde3dc!important;border-radius:20px!important;background:rgba(255,255,255,.86)!important;box-shadow:0 9px 28px rgba(25,39,30,.045)!important;overflow:hidden;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;}
+.besjaar-ui-faq-page__accordion details:hover{border-color:#cfd9d1!important;box-shadow:0 14px 34px rgba(25,39,30,.065)!important;}
+.besjaar-ui-faq-page__accordion details[open]{border-color:#c9d7cd!important;box-shadow:0 16px 38px rgba(25,39,30,.07)!important;}
+.besjaar-ui-faq-page__accordion summary{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:15px;min-height:74px;padding:12px 16px!important;color:#25332b!important;font-size:1rem!important;font-weight:790!important;line-height:1.35;}
+.besjaar-ui-faq-page__accordion summary b{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:#f0f4f0;color:#718078;font-size:.63rem;font-weight:850;letter-spacing:.06em;}
+.besjaar-ui-faq-page__accordion summary i{display:grid;place-items:center;width:34px;height:34px;border:1px solid #d9e1da;border-radius:999px;background:#fbfcfb;color:#45685a!important;font-size:1rem!important;font-weight:600;transition:transform .2s ease,background .2s ease,color .2s ease,border-color .2s ease;}
+.besjaar-ui-faq-page__accordion details[open] summary i{transform:rotate(45deg);background:#1f3d34;color:#fff!important;border-color:#1f3d34;}
+.besjaar-ui-faq-page__help{max-width:1080px;margin-top:30px;padding:24px 26px;border:1px solid #dce3dc;border-radius:24px;background:linear-gradient(135deg,#f4f7f3,#eef4f0);display:flex;align-items:center;justify-content:space-between;gap:28px;box-shadow:0 14px 36px rgba(25,39,30,.045);}
+.besjaar-ui-faq-page__help>div:first-child{max-width:650px;}
+.besjaar-ui-faq-page__help>div:first-child>span{display:block;margin-bottom:5px;color:#5f7468;font-size:.62rem;font-weight:850;letter-spacing:.15em;}
+.besjaar-ui-faq-page__help strong{display:block;color:#203028;font-size:1.18rem;letter-spacing:-.02em;}
+.besjaar-ui-faq-page__help p{margin:5px 0 0;color:#68756d;font-size:.83rem;line-height:1.5;}
+.besjaar-ui-faq-page__help-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px;flex:0 0 auto;}
+@media (max-width:700px){.besjaar-ui-faq-page{padding-top:34px}.besjaar-ui-faq-page__head{margin-bottom:26px}.besjaar-ui-faq-page__head h1{max-width:none;font-size:clamp(2.25rem,12vw,3.5rem);line-height:.96}.besjaar-ui-faq-page__head>p:last-child{margin-top:13px;font-size:.96rem}.besjaar-ui-faq-page__accordion summary{grid-template-columns:30px minmax(0,1fr) 34px;gap:10px;min-height:68px;padding:10px 12px!important;font-size:.91rem!important}.besjaar-ui-faq-page__accordion summary b{width:28px;height:28px;border-radius:9px;font-size:.57rem}.besjaar-ui-faq-page__help{margin-top:22px;padding:20px;border-radius:20px;align-items:flex-start;flex-direction:column}.besjaar-ui-faq-page__help-actions{width:100%;justify-content:flex-start}}
+.besjaar-ui-about-v461__service{position:relative;overflow:hidden;background:
+  radial-gradient(circle at 18% 18%, rgba(77,165,139,.16), transparent 24%),
+  radial-gradient(circle at 78% 16%, rgba(146,211,121,.12), transparent 22%),
+  linear-gradient(135deg,#10211a 0%,#0d1c17 52%,#0a1512 100%)!important;
+  box-shadow:0 20px 50px rgba(11,23,18,.18);
+}
+.besjaar-ui-about-v461__service:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.02),transparent 36%,transparent 64%,rgba(255,255,255,.02));}
+.besjaar-ui-about-v461__service>div{position:relative;z-index:1;}
+.besjaar-ui-about-v461__service h2{color:#f4f8f4!important;text-shadow:0 2px 18px rgba(0,0,0,.16);}
+.besjaar-ui-about-v461__service-points span{color:#f3f7f4;border-color:rgba(255,255,255,.14)!important;background:rgba(255,255,255,.05)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);}
+
+/* BesjaarUI 5.5.7 — mobile 404 polish */
+@media (max-width:700px){
+  .besjaar-ui-404{min-height:auto;padding:28px 0 42px;place-items:start center;}
+  .besjaar-ui-404 .besjaar-ui-shell{width:100%;padding-inline:18px;}
+  .besjaar-ui-404__code{font-size:clamp(6.2rem,35vw,9rem);line-height:.72;letter-spacing:-.075em;}
+  .besjaar-ui-404 .besjaar-ui-kicker{margin:4px 0 18px;font-size:.66rem;letter-spacing:.15em;}
+  .besjaar-ui-404 h1{max-width:330px;margin:0 auto;font-size:clamp(2.2rem,10vw,3.25rem);line-height:.98;letter-spacing:-.05em;}
+  .besjaar-ui-404 .besjaar-ui-copy{max-width:340px;margin:18px auto 0!important;font-size:1rem;line-height:1.55;}
+  .besjaar-ui-404--v21 .besjaar-ui-404__actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;max-width:390px;margin:24px auto 0;}
+  .besjaar-ui-404--v21 .besjaar-ui-404__actions .besjaar-ui-button{width:100%;min-height:48px;padding-inline:12px;}
+  .besjaar-ui-404__search{display:grid;grid-template-columns:1fr!important;gap:9px;width:100%;max-width:390px;margin:18px auto 0;padding:0;background:transparent;border:0;box-shadow:none;}
+  .besjaar-ui-404__search .besjaar-ui-input{min-height:52px;border-radius:16px;background:#fff;}
+  .besjaar-ui-404__search .besjaar-ui-button{min-height:48px;border-radius:16px;}
+}
+@media (max-width:390px){
+  .besjaar-ui-404--v21 .besjaar-ui-404__actions{grid-template-columns:1fr;}
+}
+
+/* BesjaarUI 5.5.7 — built-in homepage FAQ + contact fallback */
+.besjaar-ui-home-faq,.besjaar-ui-home-contact{scroll-margin-top:96px;}
+.besjaar-ui-home-support__head{max-width:720px;}
+.besjaar-ui-home-support__head h2{margin:.35rem 0 .7rem;font-size:clamp(2.2rem,4.2vw,4.4rem);line-height:.96;letter-spacing:-.055em;color:#1c2b22;}
+.besjaar-ui-home-support__head>p:last-child{max-width:660px;margin:0;color:#6b786f;line-height:1.65;}
+.besjaar-ui-home-faq__accordion{margin-top:28px;}
+.besjaar-ui-home-contact__grid{display:grid;grid-template-columns:minmax(0,.75fr) minmax(420px,1.25fr);gap:clamp(28px,6vw,90px);align-items:start;}
+.besjaar-ui-home-contact__form{padding:26px;border:1px solid #dde4db;border-radius:24px;background:#fff;box-shadow:0 18px 46px rgba(31,45,36,.05);}
+.besjaar-ui-home-contact__form form{display:grid;gap:15px;}
+.besjaar-ui-home-contact__fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.besjaar-ui-home-contact__form label{display:grid;gap:7px;color:#48584f;font-size:.72rem;font-weight:750;}
+.besjaar-ui-home-contact__form textarea.besjaar-ui-input{min-height:140px;padding-top:13px;resize:vertical;}
+.besjaar-ui-home-contact__form .besjaar-ui-button{justify-self:start;min-width:160px;}
+@media (max-width:800px){
+  .besjaar-ui-home-contact__grid{grid-template-columns:1fr;gap:22px;}
+}
+@media (max-width:600px){
+  .besjaar-ui-home-faq,.besjaar-ui-home-contact{padding-block:34px;}
+  .besjaar-ui-home-support__head h2{font-size:clamp(2rem,10vw,3rem);}
+  .besjaar-ui-home-contact__form{padding:18px;border-radius:20px;}
+  .besjaar-ui-home-contact__fields{grid-template-columns:1fr;}
+  .besjaar-ui-home-contact__form .besjaar-ui-button{width:100%;}
+}
+
+
+/* BesjaarUI 5.8.6 — dedicated FAQ page */
+.besjaar-ui-faq-page__topics{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px;}
+.besjaar-ui-faq-page__topics a{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid #d8e1da;border-radius:999px;background:#fff;color:#365247;text-decoration:none;font-size:.76rem;font-weight:800;transition:background .2s ease,border-color .2s ease,transform .2s ease;}
+.besjaar-ui-faq-page__topics a:hover{transform:translateY(-1px);background:#f2f7f3;border-color:#c8d8ce;}
+.besjaar-ui-faq-page__groups{display:grid;gap:clamp(34px,5vw,64px);max-width:1080px;}
+.besjaar-ui-faq-page__group{scroll-margin-top:110px;}
+.besjaar-ui-faq-page__group-head{display:grid;grid-template-columns:52px minmax(0,1fr);gap:16px;align-items:start;margin-bottom:16px;}
+.besjaar-ui-faq-page__group-head>span{display:grid;place-items:center;width:46px;height:46px;border-radius:15px;background:#eaf4ef;color:#1f3d34;font-size:.72rem;font-weight:900;letter-spacing:.08em;}
+.besjaar-ui-faq-page__group-head p{margin:2px 0 5px;color:#718078;font-size:.62rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;}
+.besjaar-ui-faq-page__group-head h2{margin:0;color:#1f3028;font-size:clamp(1.55rem,2.7vw,2.45rem);line-height:1.03;letter-spacing:-.045em;}
+@media(max-width:700px){.besjaar-ui-faq-page__topics{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:18px;}.besjaar-ui-faq-page__topics a{justify-content:center;min-height:42px;padding:0 10px;text-align:center;font-size:.7rem;}.besjaar-ui-faq-page__topics a:last-child{grid-column:1/-1;}.besjaar-ui-faq-page__groups{gap:34px;}.besjaar-ui-faq-page__group-head{grid-template-columns:42px minmax(0,1fr);gap:11px;margin-bottom:12px;}.besjaar-ui-faq-page__group-head>span{width:40px;height:40px;border-radius:13px;font-size:.66rem;}.besjaar-ui-faq-page__group-head h2{font-size:1.55rem;}.besjaar-ui-faq-page__group-head p{font-size:.56rem;}}
+
+/* BesjaarUI 7.3.8 — 404 recovery shortcuts */
+.besjaar-ui-404__popular{display:grid;gap:10px;justify-items:center;margin:18px auto 0;max-width:720px}.besjaar-ui-404__popular>span{font-size:.68rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase;color:var(--besjaar-ui-muted)}.besjaar-ui-404__popular .besjaar-ui-search-shortcuts{justify-content:center}
+
+/* Besjaar UI 7.4.1 — dedicated FAQ page */
+.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-page__hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;max-width:1080px;margin-bottom:26px}
+.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-page__hero h1{max-width:13ch;margin:0;color:#1d2b24;font-size:clamp(2.7rem,5vw,5.2rem);font-weight:830;line-height:.94;letter-spacing:-.06em;text-wrap:balance}
+.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-page__hero>div:first-child>p:last-child{max-width:720px;margin:18px 0 0;color:#68746d;font-size:clamp(.98rem,1.35vw,1.16rem);line-height:1.58}
+.besjaar-ui-faq-page__hero-mark{display:grid;place-items:center;width:122px;height:122px;border:1px solid #d8e3db;border-radius:32px;background:linear-gradient(145deg,#fff,#edf5f0);box-shadow:0 18px 46px rgba(30,55,40,.07);color:#1f3d34}
+.besjaar-ui-faq-page__hero-mark span{font-size:3.4rem;font-weight:760;line-height:.9}
+.besjaar-ui-faq-page__hero-mark small{font-size:.56rem;font-weight:900;letter-spacing:.18em}
+.besjaar-ui-faq-search{max-width:1080px;margin:0 0 16px;padding:18px;border:1px solid #dce5de;border-radius:22px;background:rgba(255,255,255,.82);box-shadow:0 12px 34px rgba(25,45,32,.045)}
+.besjaar-ui-faq-search__label{display:block;margin:0 0 9px;color:#2d4035;font-size:.72rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.besjaar-ui-faq-search__control{position:relative;display:flex;align-items:center}
+.besjaar-ui-faq-search__control>svg{position:absolute;left:15px;width:20px;height:20px;color:#607369;pointer-events:none}
+.besjaar-ui-faq-search__control input{width:100%;min-height:54px;padding:0 52px 0 46px;border:1px solid #d4dfd7;border-radius:15px;background:#fff;color:#1f3028;font:inherit;font-size:.95rem;outline:none;transition:border-color .18s ease,box-shadow .18s ease}
+.besjaar-ui-faq-search__control input:focus{border-color:#6b9580;box-shadow:0 0 0 3px rgba(31,61,52,.13)}
+.besjaar-ui-faq-search__control input::placeholder{color:#8a948e}
+.besjaar-ui-faq-search__clear{position:absolute;right:8px;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:12px;background:#eef4f0;color:#365a49;font-size:1.35rem;cursor:pointer}
+.besjaar-ui-faq-search__clear:hover{background:#e3eee7}
+.besjaar-ui-faq-search__meta{display:flex;justify-content:space-between;gap:16px;margin:9px 2px 0;color:#7a857f;font-size:.72rem;line-height:1.4}
+.besjaar-ui-faq-search__meta strong{color:#3d6654;font-weight:850;white-space:nowrap}
+.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-group{scroll-margin-top:120px}
+.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-group[hidden],.besjaar-ui-faq-page--dedicated details[hidden]{display:none!important}
+.besjaar-ui-faq-no-results{max-width:1080px;margin:24px 0 0;padding:22px;display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:16px;align-items:center;border:1px dashed #cddbd1;border-radius:20px;background:#f4f8f5;color:#33493d}
+.besjaar-ui-faq-no-results[hidden]{display:none!important}
+.besjaar-ui-faq-no-results>span{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#e5f0e9;color:#1f3d34;font-size:1.35rem;font-weight:850}
+.besjaar-ui-faq-no-results strong{display:block;margin-bottom:3px;font-size:.94rem}
+.besjaar-ui-faq-no-results p{margin:0;color:#718078;font-size:.79rem;line-height:1.5}
+@media(max-width:700px){.besjaar-ui-faq-page--dedicated .besjaar-ui-faq-page__hero{grid-template-columns:1fr;gap:14px;margin-bottom:20px}.besjaar-ui-faq-page__hero-mark{display:none}.besjaar-ui-faq-search{padding:14px;border-radius:18px}.besjaar-ui-faq-search__control input{min-height:50px;font-size:.9rem}.besjaar-ui-faq-search__meta{display:grid;gap:4px}.besjaar-ui-faq-search__meta strong{white-space:normal}.besjaar-ui-faq-no-results{grid-template-columns:40px 1fr;padding:17px}.besjaar-ui-faq-no-results .besjaar-ui-button{grid-column:1/-1;width:100%}}

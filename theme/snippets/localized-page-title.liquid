@@ -1,0 +1,45 @@
+{%- liquid
+  assign besjaar_ui_page = page
+  assign besjaar_ui_handle = handle | default: besjaar_ui_page.handle | downcase | strip
+  assign besjaar_ui_title = title | default: besjaar_ui_page.title
+  assign besjaar_ui_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  case besjaar_ui_handle
+    when 'contact', 'contact-us', 'contacteer-ons', 'klantenservice'
+      case besjaar_ui_lang
+        when 'de'
+          assign besjaar_ui_title = 'Besjaar kontaktieren'
+        when 'fr'
+          assign besjaar_ui_title = 'Contacter Besjaar'
+        else
+          assign besjaar_ui_title = 'Contact Besjaar'
+      endcase
+    when 'veelgestelde-vragen', 'faq', 'frequently-asked-questions'
+      assign besjaar_ui_title = 'besjaar_ui.navigation.faq' | t
+    when 'volg-uw-bestelling', 'track-order', 'track-your-order', 'order-tracking', 'tracking'
+      assign besjaar_ui_title = 'besjaar_ui.navigation.track_order' | t
+    when 'over-ons', 'overons', 'about-us', 'about'
+      case besjaar_ui_lang
+        when 'en'
+          assign besjaar_ui_title = 'About Besjaar'
+        when 'de'
+          assign besjaar_ui_title = 'Über Besjaar'
+        when 'fr'
+          assign besjaar_ui_title = 'À propos de Besjaar'
+        else
+          assign besjaar_ui_title = 'Over Besjaar'
+      endcase
+    when 'zakelijk', 'business', 'business-orders'
+      case besjaar_ui_lang
+        when 'en'
+          assign besjaar_ui_title = 'Business orders'
+        when 'de'
+          assign besjaar_ui_title = 'Geschäftskunden'
+        when 'fr'
+          assign besjaar_ui_title = 'Commandes professionnelles'
+        else
+          assign besjaar_ui_title = 'Zakelijk bestellen'
+      endcase
+  endcase
+  echo besjaar_ui_title
+-%}

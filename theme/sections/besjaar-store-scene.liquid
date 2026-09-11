@@ -1,0 +1,58 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_kicker = 'besjaar_store.scene.kicker' | t
+    assign v_quote = 'besjaar_store.scene.quote' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_quote = section.settings.quote
+  endif
+
+  comment
+    Besjaar 11.6.20: the scene photo used alt="" — correct for a decorative
+    background, but this one is a full-bleed shot of the product in use and
+    the desktop carrier swaps it for a second photo, so it carries meaning.
+    A real description now, localised, describing what both photos show:
+    a Besjaar showerhead running in a bathroom. A merchant-picked image uses
+    its own alt text from the media library when one is set.
+  endcomment
+  assign v_lang = request.locale.iso_code | split: '-' | first | downcase
+  case v_lang
+    when 'en'
+      assign v_alt = 'A woman enjoying a shower with a Besjaar showerhead in a bright bathroom'
+    when 'de'
+      assign v_alt = 'Eine Frau genießt eine Dusche mit einem Besjaar-Duschkopf in einem hellen Badezimmer'
+    when 'fr'
+      assign v_alt = 'Une femme profite de sa douche avec un pommeau Besjaar dans une salle de bain lumineuse'
+    else
+      assign v_alt = 'Een vrouw geniet van een douche met een Besjaar douchekop in een lichte badkamer'
+  endcase
+%}
+<section class="besjaar-store besjaar-store-scene">
+  <div class="besjaar-store-scene__media">
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 2200 | image_tag: alt: section.settings.image.alt | default: v_alt, loading: 'lazy' }}
+    {% else %}
+      <picture>
+        <source media="(max-width: 760px)" srcset="{{ 'besjaar-lady-shower-mobile.webp' | asset_url }}">
+        <img src="{{ 'besjaar-lady-shower-desktop.webp' | asset_url }}" alt="{{ v_alt | escape }}" width="1800" height="700" loading="lazy" decoding="async">
+      </picture>
+    {% endif %}
+  </div>
+  <div class="besjaar-store-scene__veil"></div>
+  <div class="besjaar-store-shell besjaar-store-scene__inner">
+    <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
+    <p class="besjaar-store-scene__quote">{{ v_quote | escape }}</p>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium lifestyle scene",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true},
+    {"type": "image_picker", "id": "image", "label": "Achtergrond"},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "EVERYDAY, ELEVATED"},
+    {"type": "text", "id": "quote", "label": "Quote", "default": "Turn an everyday shower into the best part of your routine."}
+  ],
+  "presets": [{"name": "Premium lifestyle scene"}]
+}
+{% endschema %}

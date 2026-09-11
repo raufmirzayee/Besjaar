@@ -1,0 +1,14 @@
+{%- liquid
+  assign besjaar_ui_item = product
+  assign besjaar_ui_hose = false
+  if besjaar_ui_item != blank
+    if besjaar_ui_item.metafields.custom.hose_included != blank
+      assign besjaar_ui_hose = besjaar_ui_item.metafields.custom.hose_included.value
+    else
+      assign besjaar_ui_title = besjaar_ui_item.title | downcase
+      if besjaar_ui_title contains 'met slang' or besjaar_ui_title contains 'with hose' or besjaar_ui_title contains 'incl. hose' or besjaar_ui_title contains 'incl hose' or besjaar_ui_title contains 'slang inbegrepen'
+        assign besjaar_ui_hose = true
+      endif
+    endif
+  endif
+-%}{{- besjaar_ui_hose -}}

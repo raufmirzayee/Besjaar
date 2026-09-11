@@ -1,0 +1,125 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "besjaar-tokens": {
+      "type": "besjaar-tokens-1164",
+      "settings": {}
+    },
+    "besjaar-nav": {
+      "type": "besjaar-nav-1170",
+      "settings": {}
+    },
+    "besjaar-runtime": {
+      "type": "besjaar-runtime-1167",
+      "settings": {}
+    },
+    "besjaar-features": {
+      "type": "besjaar-features-1170",
+      "settings": {}
+    },
+    "besjaar-catalog": {
+      "type": "besjaar-catalog-1168",
+      "settings": {}
+    },
+    "besjaar-cart": {
+      "type": "besjaar-cart-1168",
+      "settings": {}
+    },
+    "besjaar-home": {
+      "type": "besjaar-home-1168",
+      "settings": {}
+    },
+    "besjaar-desktop": {
+      "type": "besjaar-desktop-1169",
+      "settings": {}
+    },
+    "besjaar-desktop-fixes": {
+      "type": "besjaar-desktop-fixes-1170",
+      "settings": {}
+    },
+    "besjaar-footer": {
+      "type": "besjaar-footer-1170",
+      "settings": {}
+    },
+    "besjaar-collection": {
+      "type": "besjaar-collection-1170",
+      "settings": {}
+    },
+    "besjaar-about": {
+      "type": "besjaar-about-1170",
+      "settings": {}
+    },
+    "besjaar-leaf": {
+      "type": "besjaar-leaf-1170",
+      "settings": {}
+    },
+    "besjaar-product": {
+      "type": "besjaar-product-1170",
+      "settings": {}
+    },
+    "besjaar-seo": {
+      "type": "besjaar-seo-1170",
+      "settings": {}
+    },
+    "besjaar-answers": {
+      "type": "besjaar-answers-1170",
+      "settings": {}
+    },
+    "besjaar-reviews": {
+      "type": "besjaar-reviews-1171",
+      "settings": {}
+    },
+    "header": {
+      "type": "site-header",
+      "settings": {
+        "show_announcement": true,
+        "use_localized_announcement": true,
+        "announcement": "GRATIS VERZENDING IN NL VANAF €25 — BESJAAR DOUCHEKOPPEN, DUIDELIJK VERGELEKEN",
+        "announcement_mobile": "GRATIS NL VERZENDING VANAF €25",
+        "announcement_link": "",
+        "announcement_discount_code": "",
+        "announcement_start_at": "",
+        "announcement_end_at": "",
+        "announcement_show_countdown": false,
+        "mega_featured_product": "",
+        "use_shopify_account_component": true,
+        "customer_account_menu": "customer-account-main-menu"
+      }
+    },
+    "besjaar-colors": {
+      "type": "besjaar-colors-1172",
+      "settings": {}
+    }
+  },
+  "order": [
+    "besjaar-tokens",
+    "besjaar-nav",
+    "besjaar-runtime",
+    "besjaar-features",
+    "besjaar-catalog",
+    "besjaar-cart",
+    "besjaar-home",
+    "besjaar-desktop",
+    "besjaar-desktop-fixes",
+    "besjaar-footer",
+    "besjaar-collection",
+    "besjaar-about",
+    "besjaar-leaf",
+    "besjaar-product",
+    "besjaar-seo",
+    "besjaar-answers",
+    "besjaar-reviews",
+    "besjaar-colors",
+    "header"
+  ]
+}

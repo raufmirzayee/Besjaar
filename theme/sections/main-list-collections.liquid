@@ -1,0 +1,126 @@
+{% liquid
+  assign shower_collection = section.settings.shower_collection | default: settings.shower_collection
+  if shower_collection == blank
+    assign shower_collection = collections['badkamer-douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['shower']
+  endif
+  capture shower_url
+    render 'shower-store-url'
+  endcapture
+  assign shower_url = shower_url | strip
+  assign source = collections['all']
+%}
+<section class="besjaar-ui-section besjaar-ui-five-catalog">
+  <div class="besjaar-ui-shell">
+    {% render 'shower-confidence-strip' %}
+    <header class="besjaar-ui-five-catalog__head" data-reveal>
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_store.catalog.kicker' | t }}</p><h1>{{ 'besjaar_ui.shower_store.catalog.heading' | t }}</h1></div>
+      <p>{{ 'besjaar_ui.shower_store.catalog.copy' | t }}</p>
+    </header>
+
+    <div class="besjaar-ui-five-catalog__bar" data-reveal>
+      <span>01</span><strong>{{ 'besjaar_ui.shower_store.catalog.collection_name' | t }}</strong><small>{{ 'besjaar_ui.shower_store.catalog.five_models' | t }}</small>
+    </div>
+
+    <div class="besjaar-ui-five-catalog__grid">
+      {% assign shown_heads = 0 %}
+      {% assign shown_handles = '|' %}
+
+      {% comment %}Show hose-equipped showerheads first, then the remaining showerheads.{% endcomment %}
+      {% if source != blank %}
+        {% for pass_index in (1..2) %}
+          {% for product in source.products limit: 50 %}
+            {% if shown_heads >= section.settings.max_showerheads %}{% break %}{% endif %}
+            {% capture product_token %}|{{ product.handle }}|{% endcapture %}
+            {% if shown_handles contains product_token %}{% continue %}{% endif %}
+            {% capture is_head_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+            {% assign is_head = is_head_capture | strip %}
+            {% if is_head != 'true' %}{% continue %}{% endif %}
+            {% capture hose_capture %}{% render 'shower-hose-state', product: product %}{% endcapture %}
+            {% assign hose_state = hose_capture | strip %}
+            {% if pass_index == 1 and hose_state != 'true' %}{% continue %}{% endif %}
+            {% if pass_index == 2 and hose_state == 'true' %}{% continue %}{% endif %}
+            {% render 'product-card', product: product %}
+            {% assign shown_heads = shown_heads | plus: 1 %}
+            {% assign shown_handles = shown_handles | append: product.handle | append: '|' %}
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% comment %}Comparison removed in BesjaarUI 5.8.5 to keep the catalogue simple and product-led.{% endcomment %}
+
+    {% comment %}Accessories such as the Besjaar Shower Filter are separated and appended after the showerhead range.{% endcomment %}
+    {% assign accessory_count = 0 %}
+    {% if source != blank %}
+      {% for product in source.products limit: 50 %}
+        {% capture is_range_capture %}{% render 'is-shower-range-product', product: product %}{% endcapture %}
+        {% assign is_range = is_range_capture | strip %}
+        {% capture is_head_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+        {% assign is_head = is_head_capture | strip %}
+        {% if is_range == 'true' and is_head != 'true' %}
+          {% assign accessory_count = accessory_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if accessory_count > 0 %}
+      <div class="besjaar-ui-five-catalog__accessories" data-reveal>
+        <div class="besjaar-ui-five-catalog__accessory-label"><span>{{ 'besjaar_ui.shower_store.catalog.accessories_kicker' | t }}</span><strong>{{ 'besjaar_ui.shower_store.catalog.accessories_heading' | t }}</strong></div>
+        <div class="besjaar-ui-five-catalog__accessory-layout">
+          <div class="besjaar-ui-five-catalog__accessory-grid">
+            {% assign accessories_shown = 0 %}
+            {% for product in source.products limit: 50 %}
+              {% if accessories_shown >= section.settings.max_accessories %}{% break %}{% endif %}
+              {% capture is_range_capture %}{% render 'is-shower-range-product', product: product %}{% endcapture %}
+              {% assign is_range = is_range_capture | strip %}
+              {% capture is_head_capture %}{% render 'is-shower-head', product: product %}{% endcapture %}
+              {% assign is_head = is_head_capture | strip %}
+              {% if is_range == 'true' and is_head != 'true' %}
+                {% render 'product-card', product: product %}
+                {% assign accessories_shown = accessories_shown | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <aside class="besjaar-ui-five-catalog__filter-explainer" aria-labelledby="BesjaarUIFilterExplainer-{{ section.id }}">
+            <div class="besjaar-ui-five-catalog__filter-explainer-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2.8S6.1 9.3 6.1 14.1A5.9 5.9 0 0 0 12 20a5.9 5.9 0 0 0 5.9-5.9C17.9 9.3 12 2.8 12 2.8Z" stroke="currentColor" stroke-width="1.7"/><path d="M9.3 14.7c.4 1.4 1.4 2.2 2.9 2.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            </div>
+            <div class="besjaar-ui-five-catalog__filter-explainer-copy">
+              <span class="besjaar-ui-five-catalog__filter-explainer-kicker">{{ 'besjaar_ui.shower_store.catalog.filter_info_kicker' | t }}</span>
+              <h3 id="BesjaarUIFilterExplainer-{{ section.id }}">{{ 'besjaar_ui.shower_store.catalog.filter_info_title' | t }}</h3>
+              <p>{{ 'besjaar_ui.shower_store.catalog.filter_info_copy' | t }}</p>
+            </div>
+            <div class="besjaar-ui-five-catalog__filter-points">
+              <div><span aria-hidden="true">01</span><p><strong>{{ 'besjaar_ui.shower_store.catalog.filter_point_one_title' | t }}</strong><small>{{ 'besjaar_ui.shower_store.catalog.filter_point_one_copy' | t }}</small></p></div>
+              <div><span aria-hidden="true">02</span><p><strong>{{ 'besjaar_ui.shower_store.catalog.filter_point_two_title' | t }}</strong><small>{{ 'besjaar_ui.shower_store.catalog.filter_point_two_copy' | t }}</small></p></div>
+              <div><span aria-hidden="true">03</span><p><strong>{{ 'besjaar_ui.shower_store.catalog.filter_point_three_title' | t }}</strong><small>{{ 'besjaar_ui.shower_store.catalog.filter_point_three_copy' | t }}</small></p></div>
+            </div>
+            <div class="besjaar-ui-five-catalog__filter-replace">
+              <strong>{{ 'besjaar_ui.shower_store.catalog.filter_replace_title' | t }}</strong>
+              <p>{{ 'besjaar_ui.shower_store.catalog.filter_replace_copy' | t }}</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if shown_heads == 0 and accessory_count == 0 %}<div class="besjaar-ui-empty">{{ 'besjaar_ui.shower_store.catalog.empty' | t }}</div>{% endif %}
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Showerhead catalogue",
+  "settings":[
+    {"type":"collection","id":"shower_collection","label":"Showerhead collection"},
+    {"type":"range","id":"max_showerheads","label":"Maximum showerheads shown","min":4,"max":12,"step":1,"default":8},
+    {"type":"range","id":"max_accessories","label":"Maximum accessories shown","min":1,"max":4,"step":1,"default":2}
+  ]
+}
+{% endschema %}

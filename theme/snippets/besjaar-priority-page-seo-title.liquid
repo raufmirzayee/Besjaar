@@ -1,0 +1,58 @@
+{%- liquid
+  assign bj_page = page
+  assign bj_handle = bj_page.handle | downcase | strip
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign bj_title = ''
+
+  case bj_handle
+    when 'over-ons', 'overons', 'about-us', 'about'
+      case bj_lang
+        when 'en'
+          assign bj_title = 'About Besjaar | Showerheads, Shower Filters & Support'
+        when 'de'
+          assign bj_title = 'Über Besjaar | Duschköpfe, Duschfilter & Service'
+        when 'fr'
+          assign bj_title = 'À propos de Besjaar | Pommeaux, filtres de douche & service'
+        else
+          assign bj_title = 'Over Besjaar | Douchekoppen, Douchefilters & Service'
+      endcase
+
+    when 'contact', 'contact-us', 'contacteer-ons', 'klantenservice'
+      case bj_lang
+        when 'en'
+          assign bj_title = 'Contact Besjaar | Product Advice & Customer Support'
+        when 'de'
+          assign bj_title = 'Besjaar Kontakt | Produktberatung & Kundenservice'
+        when 'fr'
+          assign bj_title = 'Contact Besjaar | Conseils produits & service client'
+        else
+          assign bj_title = 'Contact Besjaar | Productadvies & Klantenservice'
+      endcase
+
+    when 'veelgestelde-vragen', 'faq', 'frequently-asked-questions'
+      case bj_lang
+        when 'en'
+          assign bj_title = 'Besjaar FAQ | Showerheads, Filters, Delivery & Returns'
+        when 'de'
+          assign bj_title = 'Besjaar FAQ | Duschköpfe, Filter, Versand & Rückgabe'
+        when 'fr'
+          assign bj_title = 'FAQ Besjaar | Pommeaux, filtres, livraison & retours'
+        else
+          assign bj_title = 'Besjaar FAQ | Douchekoppen, Filters, Levering & Retouren'
+      endcase
+
+    when 'zakelijk', 'business', 'business-orders'
+      case bj_lang
+        when 'en'
+          assign bj_title = 'Besjaar Business Orders | Volume Purchasing & B2B'
+        when 'de'
+          assign bj_title = 'Besjaar Geschäftskunden | Mengenbestellungen & B2B'
+        when 'fr'
+          assign bj_title = 'Besjaar Professionnels | Commandes en volume & B2B'
+        else
+          assign bj_title = 'Zakelijk bestellen bij Besjaar | Grotere aantallen & B2B'
+      endcase
+  endcase
+
+  echo bj_title
+-%}

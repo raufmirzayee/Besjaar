@@ -1,0 +1,107 @@
+{%- comment -%}
+  Besjaar 11.6.18 — page-template polish (About + Zakelijk).
+
+  ABOUT, phones:
+  1. Overflow. The hero is a two-column grid with no mobile breakpoint, and
+     grid items default to min-width:auto, so a long word ("Douchekoppen.")
+     at display size forces its column wider than the viewport. One column
+     below 901px, min-width:0 on the items, a headline size that fits, and
+     word breaking as a backstop.
+  2. Parity with desktop — pill kickers, white photo cards, navy numbers,
+     laid out two-up instead of four-up, replacing the original
+     green-and-black sideways-scrolling cards.
+
+  ZAKELIJK, every width: the same min-width:auto trap. The hero photo's
+  natural width pushed its grid item past the viewport, which scrolled the
+  whole page sideways and left the content pinned to the left with an uneven
+  margin. The shell width is also pinned here rather than inherited, so the
+  section cannot drift out of the page grid.
+{%- endcomment -%}
+{%- if request.page_type == 'page' -%}
+<style id="besjaar-about-1170">
+/* Zakelijk — all widths */
+body[data-page-type="page"] .bj-b2b{overflow-x:clip!important}
+body[data-page-type="page"] .bj-b2b .besjaar-store-shell{box-sizing:border-box!important;width:min(100% - 32px,1240px)!important;max-width:1240px!important;margin-left:auto!important;margin-right:auto!important;padding-left:0!important;padding-right:0!important}
+body[data-page-type="page"] .bj-b2b__hero>*,
+body[data-page-type="page"] .bj-b2b__quote>*,
+body[data-page-type="page"] .bj-b2b__cards>*,
+body[data-page-type="page"] .bj-b2b__grid>*{min-width:0!important;max-width:100%!important}
+body[data-page-type="page"] .bj-b2b__hero-visual{min-width:0!important;max-width:100%!important;overflow:hidden!important}
+body[data-page-type="page"] .bj-b2b__hero-visual img{width:100%!important;max-width:100%!important;height:auto!important}
+body[data-page-type="page"] .bj-b2b__title,
+body[data-page-type="page"] .bj-b2b h2{overflow-wrap:break-word!important}
+body[data-page-type="page"] .bj-b2b__mail{overflow-wrap:anywhere!important}
+
+@media (max-width:900px){
+  /* About — overflow guards */
+  body[data-page-type="page"] .besjaar-ui-about-v461{overflow-x:clip!important;background:#FFFFFF!important;color:var(--bj-ink,#11110E)!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__hero{display:grid!important;grid-template-columns:minmax(0,1fr)!important;align-items:start!important;gap:26px!important;padding:18px 0 30px!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__hero>*{min-width:0!important;max-width:100%!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles>*,
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>*,
+  body[data-page-type="page"] .besjaar-ui-about-v461__story>*,
+  body[data-page-type="page"] .besjaar-ui-about-v461__service>*{min-width:0!important}
+
+  /* About — type and palette */
+  body[data-page-type="page"] .besjaar-ui-about-v461 .besjaar-ui-kicker{display:inline-flex!important;align-items:center!important;gap:8px!important;margin:0 0 12px!important;padding:6px 12px!important;border:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-radius:999px!important;background:var(--bj-ice-100,#EEF6FB)!important;color:var(--bj-blue,#2F628F)!important;font-size:.62rem!important;font-weight:700!important;letter-spacing:.12em!important;text-transform:uppercase!important;line-height:1!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461 h1{max-width:none!important;margin:0 0 14px!important;color:var(--bj-navy-deep,#0F2947)!important;font-size:clamp(1.95rem,8.4vw,2.8rem)!important;font-weight:600!important;line-height:1.06!important;letter-spacing:-.03em!important;overflow-wrap:break-word!important;hyphens:auto}
+  body[data-page-type="page"] .besjaar-ui-about-v461 h2{color:var(--bj-navy-deep,#0F2947)!important;font-weight:600!important;letter-spacing:-.025em!important;line-height:1.12!important;overflow-wrap:break-word!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461 p{color:var(--bj-muted,#49627D)!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__hero-copy>p:not(.besjaar-ui-kicker){max-width:none!important;font-size:1rem!important;line-height:1.6!important;overflow-wrap:break-word!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__hero-actions{display:flex!important;flex-wrap:wrap!important;gap:10px!important;margin-top:20px!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461 .besjaar-ui-button{flex:1 1 auto!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-height:52px!important;padding:0 18px!important;border-radius:999px!important;font-size:.95rem!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important;text-decoration:none!important;white-space:nowrap!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461 .besjaar-ui-button--primary{border:0!important;background:var(--bj-navy,#153252)!important;color:#FFFFFF!important;box-shadow:0 12px 28px rgba(15,41,71,.2)!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461 .besjaar-ui-button--ghost{border:1.5px solid var(--bj-navy,#153252)!important;background:#FFFFFF!important;color:var(--bj-navy,#153252)!important;box-shadow:none!important}
+
+  /* About — principles */
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;margin:4px 0 36px!important;padding:0!important;border:0!important;overflow:visible!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles article{margin:0!important;padding:18px!important;border:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-radius:16px!important;background:var(--bj-ice-50,#F6F9FC)!important;box-shadow:none!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles article span{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:32px!important;height:32px!important;margin:0 0 12px!important;border-radius:50%!important;background:var(--bj-navy,#153252)!important;color:#FFFFFF!important;font-size:.68rem!important;font-weight:700!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles article h2{margin:0 0 6px!important;font-size:1.05rem!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__principles article p{margin:0!important;font-size:.9rem!important;line-height:1.5!important}
+
+  /* About — story */
+  body[data-page-type="page"] .besjaar-ui-about-v461__story{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;margin:0 0 36px!important;padding:26px 0!important;border-top:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-bottom:1px solid var(--bj-line,rgba(21,50,82,.12))!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__story h2{margin:0 0 8px!important;font-size:1.35rem!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__story p:not(.besjaar-ui-kicker){font-size:.98rem!important;line-height:1.6!important;max-width:none!important}
+
+  /* About — category head */
+  body[data-page-type="page"] .besjaar-ui-about-v461__category-head{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:10px!important;margin:0 0 16px!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__category-head h2{margin:0!important;max-width:none!important;font-size:clamp(1.5rem,6.6vw,2rem)!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__category-head a{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:0!important;color:var(--bj-blue,#2F628F)!important;font-size:.9rem!important;font-weight:600!important;text-decoration:none!important;white-space:nowrap!important}
+
+  /* About — category cards */
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:0 0 36px!important;padding:0!important;overflow:visible!important;scroll-snap-type:none!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a{position:relative!important;display:flex!important;flex-direction:column!important;width:auto!important;min-width:0!important;max-width:none!important;min-height:0!important;margin:0!important;padding:0!important;border:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-radius:16px!important;background:#FFFFFF!important;color:var(--bj-navy-deep,#0F2947)!important;overflow:hidden!important;box-shadow:none!important;text-decoration:none!important;flex:0 1 auto!important;scroll-snap-align:none!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a::before{content:""!important;display:block!important;width:100%!important;aspect-ratio:4/3!important;background:var(--bj-card-img) center center / cover no-repeat!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a:nth-child(1){--bj-card-img:var(--bj-about-1)}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a:nth-child(2){--bj-card-img:var(--bj-about-2)}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a:nth-child(3){--bj-card-img:var(--bj-about-3)}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a:nth-child(4){--bj-card-img:var(--bj-about-4)}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a>span{position:absolute!important;top:10px!important;left:10px!important;z-index:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:30px!important;height:24px!important;margin:0!important;padding:0 8px!important;border-radius:999px!important;background:rgba(255,255,255,.92)!important;color:var(--bj-navy,#153252)!important;font-size:.62rem!important;font-weight:700!important;letter-spacing:.08em!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a>i{position:absolute!important;top:10px!important;right:10px!important;z-index:1!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:28px!important;height:28px!important;margin:0!important;border-radius:50%!important;background:rgba(255,255,255,.92)!important;color:var(--bj-navy,#153252)!important;font-style:normal!important;font-size:.85rem!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a>strong{display:block!important;margin:12px 12px 4px!important;color:var(--bj-navy-deep,#0F2947)!important;font-size:.98rem!important;font-weight:600!important;line-height:1.25!important;letter-spacing:-.015em!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__categories>a>small{display:block!important;margin:0 12px 14px!important;color:var(--bj-muted,#49627D)!important;font-size:.8rem!important;line-height:1.45!important}
+
+  /* About — service */
+  body[data-page-type="page"] .besjaar-ui-about-v461__service{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;margin:0 0 20px!important;padding:22px!important;border:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-radius:18px!important;background:var(--bj-ice-50,#F6F9FC)!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__service h2{margin:0 0 8px!important;font-size:1.3rem!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__service-points{display:flex!important;flex-direction:column!important;gap:8px!important}
+  body[data-page-type="page"] .besjaar-ui-about-v461__service-points span{display:flex!important;align-items:center!important;gap:10px!important;padding:12px 14px!important;border:1px solid var(--bj-line,rgba(21,50,82,.12))!important;border-radius:12px!important;background:#FFFFFF!important;color:var(--bj-navy,#153252)!important;font-size:.9rem!important;font-weight:600!important}
+}
+</style>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar page polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: About page on phones (hero fits the screen, navy/ice cards two-up) and the Zakelijk page at every width (stops the hero photo overflowing sideways and pinning the content to the left). Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

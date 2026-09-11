@@ -1,0 +1,79 @@
+{%- comment -%}
+  Besjaar 11.6.17 — collection pages: hide the "Eén collectie…" banner.
+
+  The heading stays in the DOM, visually hidden, so the page keeps its h1 for
+  search engines — it just no longer takes up the first screen before the
+  product groups. Applies at every width (the desktop carrier already did
+  this above 901px; this covers phones as well).
+
+  11.6.21 — product-card rating rows read "★★★★★ (69)" on a single line.
+
+  Judge.me writes its own label ("69 beoordelingen"), which is too long for a
+  card in the two-up phone grid. Worse, its badge is a flex row whose two
+  children were both free to shrink, and a flex item only refuses to shrink
+  below min-content — for a run of inline star spans that is a single star.
+  So the browser squeezed the group and wrapped it, stranding the fifth star
+  on its own line.
+
+  The label is replaced with a compact "(69)" built from the badge's own
+  data-number-of-reviews attribute, so the figure always matches whatever
+  Judge.me rendered — no metafield assumptions, nothing to keep in sync.
+  Every element in the chain is pinned nowrap and flex:0 0 auto, so the row
+  cannot break at any width, and a badge reporting zero reviews is hidden
+  rather than showing "(0)".
+
+  11.6.21 — card bodies no longer carry a fixed height floor, so removing the
+  spec chips does not leave a gap above the buttons.
+{%- endcomment -%}
+<style id="besjaar-collection-1170">
+body[data-page-type="collection"] .besjaar-collection-collection__header--all{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important}
+body[data-page-type="collection"] .besjaar-collection-collection__shell{padding-top:16px!important}
+
+/* Judge.me badge: stars, then the count in brackets — always one row. */
+.besjaar-ui-review-stars--judgeme{flex-wrap:nowrap!important;white-space:nowrap!important;min-width:0!important}
+.besjaar-ui-review-stars--judgeme .jdgm-preview-badge{display:inline-flex!important;flex:0 0 auto!important;align-items:center!important;min-width:0!important}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:6px!important;min-width:0!important}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge__stars{flex:0 0 auto!important;display:inline-flex!important;align-items:center!important;white-space:nowrap!important;line-height:1!important}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge__stars .jdgm-star{flex:0 0 auto!important}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge__text{display:none!important}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge[data-number-of-reviews]::after{content:"(" attr(data-number-of-reviews) ")";flex:0 0 auto;color:var(--b115-muted,#49627D);font-size:.72rem;font-weight:700;line-height:1;white-space:nowrap}
+.besjaar-ui-review-stars--judgeme .jdgm-prev-badge[data-number-of-reviews="0"]{display:none!important}
+
+/* Card height: the body fills the stretched card instead of a fixed floor.
+
+   .besjaar-collection-product-grid stretches every .besjaar-collection-product-card to the row height, but the
+   card was a block, so the body's 250px min-height was the only thing giving
+   margin-top:auto room to pin the buttons. That floor was sized for the spec
+   chips that no longer render, which left dead space under the price. Making
+   the card a flex column lets the body fill the real card height, so the
+   actions sit on the true bottom edge and stay aligned across the row without
+   a magic number to retune whenever card content changes. */
+.besjaar-collection-product-card{display:flex!important;flex-direction:column!important}
+.besjaar-collection-product-card__media{flex:0 0 auto!important}
+.besjaar-collection-product-card__body{flex:1 1 auto!important;min-height:0!important}
+
+/* Native star markup gets the same no-break guards. */
+.besjaar-ui-review-stars{flex-wrap:nowrap!important;min-width:0!important}
+.besjaar-ui-review-stars__icons{flex:0 0 auto!important;white-space:nowrap!important}
+.besjaar-ui-review-stars__count{flex:0 0 auto!important;white-space:nowrap!important}
+.besjaar-ui-review-stars strong{flex:0 0 auto!important;white-space:nowrap!important}
+
+@media (max-width:480px){
+  .besjaar-ui-review-stars--judgeme .jdgm-prev-badge__stars .jdgm-star{font-size:.74rem!important}
+  .besjaar-ui-review-stars--judgeme .jdgm-prev-badge[data-number-of-reviews]::after{font-size:.68rem}
+}
+</style>
+{% schema %}
+{
+  "name": "Besjaar collection polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.17: hides the shop hub banner heading at every width while keeping it in the page for SEO. 11.6.21: product-card ratings now read as stars followed by the review count in brackets, on a single line that cannot break, and product-card bodies stretch to the card instead of a fixed height floor, so the action buttons sit flush at the bottom. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

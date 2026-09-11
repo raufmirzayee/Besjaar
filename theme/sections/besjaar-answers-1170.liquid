@@ -1,0 +1,18 @@
+{%- comment -%}
+  Besjaar v8 compatibility section.
+  About-page brand answers now render as normal server-side content from
+  snippets/besjaar-brand-answers.liquid inside sections/main-page.liquid.
+  Keeping this empty section avoids breaking existing header-group settings.
+{%- endcomment -%}
+{% schema %}
+{
+  "name": "Besjaar brand answers",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "v8: brand Q&A is rendered directly in the About page HTML; this compatibility section is intentionally empty."
+    }
+  ],
+  "enabled_on": {"groups": ["header"]}
+}
+{% endschema %}

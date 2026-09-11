@@ -1,0 +1,94 @@
+{% liquid
+  assign card_product = product
+  assign image_loading_mode = image_loading | default: 'lazy'
+  assign image_priority_mode = image_priority | default: 'auto'
+  capture display_title_capture
+    render 'localized-product-title', product: card_product
+  endcapture
+  assign display_title = display_title_capture | strip
+
+  capture product_url_capture
+    render 'localized-internal-url', url: card_product.url
+  endcapture
+  assign product_url = product_url_capture | strip
+
+  assign selected_variant = card_product.selected_or_first_available_variant
+  assign sale_percent = 0
+  if selected_variant.compare_at_price > selected_variant.price and selected_variant.compare_at_price > 0
+    assign sale_difference = selected_variant.compare_at_price | minus: selected_variant.price
+    assign sale_percent = sale_difference | times: 100 | divided_by: selected_variant.compare_at_price
+  endif
+  assign alternate_image = blank
+  if card_product.images.size > 1
+    assign alternate_image = card_product.images[1]
+  endif
+%}
+
+<article class="besjaar-collection-product-card{% unless card_product.available %} is-sold-out{% endunless %}">
+  <div class="besjaar-collection-product-card__media">
+    <a class="besjaar-collection-product-card__media-link" href="{{ product_url }}" aria-label="{{ display_title | escape }}">
+      {% if card_product.featured_image != blank %}
+        {% if image_priority_mode == 'high' %}
+          {{ card_product.featured_image | image_url: width: 1200 | image_tag: class: 'besjaar-collection-product-card__image besjaar-collection-product-card__image--primary', loading: image_loading_mode, fetchpriority: 'high', decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: display_title }}
+        {% else %}
+          {{ card_product.featured_image | image_url: width: 1200 | image_tag: class: 'besjaar-collection-product-card__image besjaar-collection-product-card__image--primary', loading: image_loading_mode, decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: display_title }}
+        {% endif %}
+        {% if alternate_image != blank %}
+          {% liquid
+            assign alternate_view_label = 'alternatieve productweergave'
+            assign alternate_view_lang = request.locale.iso_code | split: '-' | first | downcase
+            case alternate_view_lang
+              when 'en'
+                assign alternate_view_label = 'alternate product view'
+              when 'de'
+                assign alternate_view_label = 'alternative Produktansicht'
+              when 'fr'
+                assign alternate_view_label = 'vue alternative du produit'
+            endcase
+          %}
+          {% capture alternate_image_alt %}{{ display_title }} — {{ alternate_view_label }}{% endcapture %}
+          {{ alternate_image | image_url: width: 1200 | image_tag: class: 'besjaar-collection-product-card__image besjaar-collection-product-card__image--alternate', loading: 'lazy', decoding: 'async', widths: '320,480,640,800,1000,1200', sizes: '(max-width: 760px) 48vw, (max-width: 1100px) 46vw, 31vw', alt: alternate_image_alt }}
+        {% endif %}
+      {% else %}
+        <span class="besjaar-collection-product-card__placeholder" aria-hidden="true"></span>
+      {% endif %}
+    </a>
+
+    <div class="besjaar-collection-product-card__badges">
+      {% if card_product.compare_at_price_max > card_product.price %}
+        <span class="besjaar-collection-badge besjaar-collection-badge--sale">{% if sale_percent > 0 %}-{{ sale_percent }}%{% else %}{{ 'besjaar_ui.product_card.sale' | t }}{% endif %}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="besjaar-collection-product-card__body">
+    <div class="besjaar-collection-product-card__meta">
+      <span>BESJAAR</span>
+      <span class="besjaar-collection-product-card__availability{% unless card_product.available %} is-unavailable{% endunless %}"><i aria-hidden="true"></i>{% if card_product.available %}{{ 'besjaar_ui.product_card.in_stock' | t }}{% else %}{{ 'besjaar_ui.product_card.sold_out' | t }}{% endif %}</span>
+    </div>
+
+    {% if settings.show_card_review_ratings %}
+      <div class="besjaar-collection-product-card__rating">{% render 'review-stars', product: card_product, compact: true %}</div>
+    {% endif %}
+
+    <h3><a href="{{ product_url }}">{{ display_title }}</a></h3>
+
+    <div class="besjaar-collection-product-card__price">
+      <strong>{{ card_product.price | money }}</strong>
+      {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+    </div>
+
+    <div class="besjaar-collection-product-card__action besjaar-collection-product-card__action--dual">
+      <a class="besjaar-collection-product-card__view" href="{{ product_url }}"><span>{{ 'besjaar_ui.product_card.view_product' | t }}</span><span aria-hidden="true">→</span></a>
+      {% if card_product.available and selected_variant != blank %}
+        <form class="besjaar-ui-card-quick-form besjaar-collection-product-card__quick-form" method="post" action="{{ routes.cart_add_url }}">
+          <input type="hidden" name="id" value="{{ selected_variant.id }}">
+          <input type="hidden" name="quantity" value="1">
+          <button class="besjaar-collection-product-card__quick" type="submit" data-card-quick-add="{{ selected_variant.id }}" aria-label="{{ 'besjaar_ui.product_card.quick_add_label' | t: title: display_title | escape }}"><span>{{ 'besjaar_ui.product_card.quick_add' | t }}</span><span aria-hidden="true">+</span></button>
+        </form>
+      {% else %}
+        <span class="is-disabled besjaar-collection-product-card__quick-disabled">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

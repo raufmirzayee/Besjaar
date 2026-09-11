@@ -1,0 +1,89 @@
+{% liquid
+  assign besjaar_ui_contact_faq_page = section.settings.faq_page | default: settings.faq_page
+  if besjaar_ui_contact_faq_page == blank
+    assign besjaar_ui_contact_faq_page = pages['veelgestelde-vragen']
+  endif
+  if besjaar_ui_contact_faq_page == blank
+    assign besjaar_ui_contact_faq_page = pages['faq']
+  endif
+  capture besjaar_ui_contact_faq_url
+    if besjaar_ui_contact_faq_page != blank
+      render 'localized-internal-url', url: besjaar_ui_contact_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  assign besjaar_ui_contact_faq_url = besjaar_ui_contact_faq_url | strip
+
+  assign besjaar_ui_contact_tracking_page = section.settings.tracking_page | default: settings.tracking_page
+  if besjaar_ui_contact_tracking_page == blank
+    assign besjaar_ui_contact_tracking_page = pages['track-order']
+  endif
+  if besjaar_ui_contact_tracking_page == blank
+    assign besjaar_ui_contact_tracking_page = pages['tracking']
+  endif
+  capture besjaar_ui_contact_tracking_url
+    if besjaar_ui_contact_tracking_page != blank
+      render 'localized-internal-url', url: besjaar_ui_contact_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+  assign besjaar_ui_contact_tracking_url = besjaar_ui_contact_tracking_url | strip
+  assign besjaar_ui_contact_email = settings.support_email | default: 'info@univexbv.com'
+  assign besjaar_ui_contact_phone = settings.support_phone | default: '+31 6 16745062'
+  assign besjaar_ui_contact_phone_href = besjaar_ui_contact_phone | replace: ' ', '' | replace: '(', '' | replace: ')', '' | replace: '-', ''
+%}
+<section class="besjaar-ui-section besjaar-ui-contact-page">
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-page-head besjaar-ui-contact-head">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.contact.kicker' | t }}</p>
+        <h1 class="besjaar-ui-title">{% if page != blank %}{% render 'localized-page-title', page: page %}{% else %}{{ 'besjaar_ui.navigation.contact' | t }}{% endif %}</h1>
+        {% if page.content != blank %}<div class="besjaar-ui-copy">{{ page.content }}</div>{% else %}<p class="besjaar-ui-copy">{{ 'besjaar_ui.contact.intro' | t }}</p>{% endif %}
+      </div>
+      <div class="besjaar-ui-contact-service">
+        <span>{{ 'besjaar_ui.contact.response_label' | t }}</span>
+        <strong>{% if section.settings.response_time != blank %}{{ section.settings.response_time }}{% else %}{{ 'besjaar_ui.contact.response_default' | t }}{% endif %}</strong>
+      </div>
+    </header>
+
+    <div class="besjaar-ui-contact-layout">
+      <div class="besjaar-ui-contact-form-card">
+        {% form 'contact', id: 'BesjaarUIContactForm' %}
+          {% if form.errors %}<div id="BesjaarUIContactFormErrors" class="besjaar-ui-form-message besjaar-ui-form-message--error" role="alert" aria-live="assertive"><strong>{{ 'besjaar_ui.forms.error_heading' | t }}</strong><span>{{ 'besjaar_ui.forms.error_copy' | t }}</span>{{ form.errors | default_errors }}</div>{% endif %}
+          <div class="besjaar-ui-form-grid besjaar-ui-form-grid--2">
+            <div><label class="besjaar-ui-label" for="ContactName">{{ 'besjaar_ui.contact.name' | t }}</label><input class="besjaar-ui-input" id="ContactName" type="text" name="contact[name]" autocomplete="name" value="{{ form.name | default: customer.name | escape }}"></div>
+            <div><label class="besjaar-ui-label" for="ContactEmail">{{ 'besjaar_ui.contact.email' | t }}</label><input class="besjaar-ui-input" id="ContactEmail" type="email" name="contact[email]" autocomplete="email" required aria-required="true"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="BesjaarUIContactFormErrors"{% endif %} value="{{ form.email | default: customer.email | escape }}"></div>
+            <div><label class="besjaar-ui-label" for="ContactTopic">{{ 'besjaar_ui.contact.topic' | t }}</label><select class="besjaar-ui-select" id="ContactTopic" name="contact[Topic]"><option value="Product">{{ 'besjaar_ui.contact.topic_product' | t }}</option><option value="Order">{{ 'besjaar_ui.contact.topic_order' | t }}</option><option value="Return">{{ 'besjaar_ui.contact.topic_return' | t }}</option><option value="Stock">{{ 'besjaar_ui.contact.topic_stock' | t }}</option><option value="Other">{{ 'besjaar_ui.contact.topic_other' | t }}</option></select></div>
+            <div><label class="besjaar-ui-label" for="ContactOrder">{{ 'besjaar_ui.contact.order_number' | t }}</label><input class="besjaar-ui-input" id="ContactOrder" type="text" name="contact[Order number]" placeholder="#1001"></div>
+            <div><label class="besjaar-ui-label" for="ContactPhone">{{ 'besjaar_ui.contact.phone' | t }}</label><input class="besjaar-ui-input" id="ContactPhone" type="tel" name="contact[phone]" autocomplete="tel" value="{{ form.phone | escape }}"></div>
+          </div>
+          <div class="besjaar-ui-contact-message"><label class="besjaar-ui-label" for="ContactMessage">{{ 'besjaar_ui.contact.message' | t }}</label><textarea class="besjaar-ui-textarea" id="ContactMessage" name="contact[body]" required aria-required="true"{% if form.errors contains 'body' %} aria-invalid="true" aria-describedby="BesjaarUIContactFormErrors"{% endif %} placeholder="{{ 'besjaar_ui.contact.message_placeholder' | t | escape }}">{{ form.body | escape }}</textarea></div>
+          <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.contact.send' | t }}</button>
+          {% if form.posted_successfully? %}<div class="besjaar-ui-form-message besjaar-ui-form-message--success" role="status">{{ 'besjaar_ui.contact.success' | t }}</div>{% endif %}
+          
+        {% endform %}
+      </div>
+
+      <aside class="besjaar-ui-support-panel">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.contact.self_service_kicker' | t }}</p>
+        <h2>{{ 'besjaar_ui.contact.quick_help' | t }}</h2>
+        <p class="besjaar-ui-copy">{{ 'besjaar_ui.contact.quick_help_copy' | t }}</p>
+        <div class="besjaar-ui-contact-direct" aria-label="{{ 'besjaar_ui.navigation.contact' | t | escape }}">
+          {% if besjaar_ui_contact_email != blank %}<a href="mailto:{{ besjaar_ui_contact_email | escape }}"><span>{{ 'besjaar_ui.contact.email' | t }}</span><strong>{{ besjaar_ui_contact_email | escape }}</strong></a>{% endif %}
+          {% if besjaar_ui_contact_phone != blank %}<a href="tel:{{ besjaar_ui_contact_phone_href | escape }}"><span>{{ 'besjaar_ui.contact.phone' | t }}</span><strong>{{ besjaar_ui_contact_phone | escape }}</strong></a>{% endif %}
+        </div>
+        <div class="besjaar-ui-support-links">
+          <a href="{{ besjaar_ui_contact_faq_url }}"><span>{{ 'besjaar_ui.footer.faq' | t }}</span><b>→</b></a>
+          <a href="{{ besjaar_ui_contact_tracking_url }}"><span>{{ 'besjaar_ui.footer.track_order' | t }}</span><b>→</b></a>
+          <a href="{{ routes.account_url }}"><span>{{ 'besjaar_ui.footer.account' | t }}</span><b>→</b></a>
+          <a href="{{ routes.search_url }}"><span>{{ 'besjaar_ui.footer.search' | t }}</span><b>→</b></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Contact form","settings":[{"type":"text","id":"response_time","label":"Response-time message"},{"type":"page","id":"faq_page","label":"FAQ page"},{"type":"page","id":"tracking_page","label":"Track-order page"}]}
+{% endschema %}

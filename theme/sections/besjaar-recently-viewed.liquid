@@ -1,0 +1,31 @@
+{%- comment -%}
+  Besjaar 11.6 — Recently viewed products.
+  Renders client-side from localStorage (module in besjaar-1150.js), so the
+  strip is personal to the visitor's browser, needs no app, and stays hidden
+  (section [hidden]) until at least one other product has been viewed.
+{%- endcomment -%}
+<section class="besjaar-ui-section b116-recent" data-besjaar-recent-section data-empty-label="{{ 'besjaar_ui.intelligence.no_recent' | t | escape }}" hidden>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-heading-row">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.intelligence.recent_kicker' | t }}</p>
+        <h2 class="besjaar-ui-subtitle">{{ 'besjaar_ui.intelligence.recent_heading' | t }}</h2>
+        <p class="besjaar-ui-copy">{{ 'besjaar_ui.intelligence.recent_copy' | t }}</p>
+      </div>
+    </div>
+    <div class="b116-recent__grid" data-besjaar-recent-grid></div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Recently viewed",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the visitor's recently viewed products (stored in their own browser). The section stays hidden until there is something to show."
+    }
+  ],
+  "presets": [{ "name": "Recently viewed", "category": "Besjaar" }]
+}
+{% endschema %}

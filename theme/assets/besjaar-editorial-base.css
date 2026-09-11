@@ -1,0 +1,344 @@
+/* =============================================================
+   Besjaar 10.0 — Besjaar fusion
+   Palette/background: besjaar-style near-white + violet system.
+   Layout/rhythm: besjaar-style editorial shower retail.
+   Besjaar assets, copy, product data and commerce remain original.
+   ============================================================= */
+:root{
+  --besjaar-premium-bg:#f7f7fb;
+  --besjaar-premium-bg-2:#f2f1f8;
+  --besjaar-premium-surface:#ffffff;
+  --besjaar-premium-surface-soft:#f4f3fb;
+  --besjaar-premium-ink:#121218;
+  --besjaar-premium-ink-2:#22222a;
+  --besjaar-premium-muted:#6b6b78;
+  --besjaar-premium-muted-2:#91919c;
+  --besjaar-premium-line:#e6e5ed;
+  --besjaar-premium-line-strong:#d9d7e3;
+  --besjaar-premium-violet:#635bff;
+  --besjaar-premium-violet-dark:#5047ee;
+  --besjaar-premium-violet-soft:#eceaff;
+  --besjaar-premium-violet-soft-2:#f3f2ff;
+  --besjaar-premium-shadow:0 20px 60px rgba(29,26,68,.08);
+  --besjaar-premium-font:Inter,"Inter Fallback",ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  /* Remap every legacy Besjaar design token so older compatibility CSS cannot leak the former green/cream palette. */
+  --besjaar-store-bg:#f7f7fb;--besjaar-store-paper:#fff;--besjaar-store-cream:#f4f3fb;--besjaar-store-sage:#f3f2ff;--besjaar-store-text:#121218;--besjaar-store-soft:#6b6b78;--besjaar-store-muted:#91919c;--besjaar-store-line:#e6e5ed;--besjaar-store-accent:#635bff;--besjaar-store-accent-700:#5047ee;--besjaar-store-accent-900:#4038d0;--besjaar-store-head:var(--besjaar-premium-font);--besjaar-store-body:var(--besjaar-premium-font);
+  --bes83-paper:#f7f7fb;--bes83-white:#fff;--bes83-ink:#121218;--bes83-soft:#6b6b78;--bes83-muted:#91919c;--bes83-line:#e6e5ed;--bes83-line-strong:#d9d7e3;--bes83-green:#635bff;--bes83-green-dark:#5047ee;--bes83-sage:#f3f2ff;--bes83-serif:var(--besjaar-premium-font);--bes83-sans:var(--besjaar-premium-font);
+  --bp-brand:#635bff;--bp-brand-dark:#5047ee;--bp-ink:#121218;--bp-muted:#6b6b78;--bp-line:#e6e5ed;
+}
+html{background:var(--besjaar-premium-bg)!important}
+body.besjaar-ui-polish-v34{
+  background:
+    radial-gradient(circle at 10% -8%,rgba(99,91,255,.09),transparent 27rem),
+    radial-gradient(circle at 92% 4%,rgba(128,113,255,.055),transparent 25rem),
+    var(--besjaar-premium-bg)!important;
+  color:var(--besjaar-premium-ink)!important;
+  font-family:var(--besjaar-premium-font)!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body.besjaar-ui-polish-v34 h1,body.besjaar-ui-polish-v34 h2,body.besjaar-ui-polish-v34 h3,body.besjaar-ui-polish-v34 h4,
+.besjaar-store h1,.besjaar-store h2,.besjaar-store h3,.besjaar-store h4{font-family:var(--besjaar-premium-font)!important;font-weight:600!important;letter-spacing:-.048em!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-shell,.besjaar-store-shell{width:min(1380px,calc(100% - clamp(28px,5.5vw,84px)))!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-section{background:transparent}
+
+/* ---------- header / announcement ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-announcement{
+  min-height:34px!important;padding:5px 16px!important;border:0!important;border-bottom:1px solid var(--besjaar-premium-line)!important;
+  background:var(--besjaar-premium-surface)!important;color:var(--besjaar-premium-ink)!important;box-shadow:none!important;
+  font-family:var(--besjaar-premium-font)!important;font-size:.69rem!important;font-weight:500!important;letter-spacing:0!important
+}
+.besjaar-ui-polish-v34 .besjaar-ui-announcement__inner{min-height:24px!important;justify-content:center!important;gap:16px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-announcement__inner>button{border-color:var(--besjaar-premium-line-strong)!important;color:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-header{
+  position:sticky!important;top:0!important;z-index:190!important;border:0!important;border-bottom:1px solid rgba(230,229,237,.95)!important;
+  background:rgba(247,247,251,.94)!important;box-shadow:none!important;backdrop-filter:blur(22px) saturate(145%)!important
+}
+.besjaar-ui-polish-v34 .besjaar-ui-header__row{min-height:72px!important;grid-template-columns:minmax(160px,auto) minmax(0,1fr) auto!important;gap:28px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-brand{color:var(--besjaar-premium-ink)!important;font-family:var(--besjaar-premium-font)!important;font-size:1.16rem!important;font-weight:700!important;letter-spacing:.16em!important}
+.besjaar-ui-polish-v34 .besjaar-ui-brand img{max-height:32px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-nav{gap:clamp(22px,2.5vw,38px)!important;justify-content:center!important}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a,.besjaar-ui-polish-v34 .besjaar-ui-nav__link{
+  padding:27px 0 25px!important;color:#45454e!important;font-family:var(--besjaar-premium-font)!important;font-size:.78rem!important;font-weight:500!important;letter-spacing:-.01em!important
+}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a::after,.besjaar-ui-polish-v34 .besjaar-ui-nav__link::after{bottom:18px!important;height:2px!important;background:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a:hover,.besjaar-ui-polish-v34 .besjaar-ui-nav__link:hover,.besjaar-ui-polish-v34 .besjaar-ui-nav__link[aria-current="page"]{color:var(--besjaar-premium-ink)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-icon-btn,.besjaar-ui-polish-v34 .besjaar-ui-account-trigger{width:40px!important;height:40px!important;min-width:40px!important;border-radius:50%!important;color:var(--besjaar-premium-ink)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-icon-btn:hover,.besjaar-ui-polish-v34 .besjaar-ui-account-trigger:hover{background:var(--besjaar-premium-violet-soft)!important;color:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-count{background:var(--besjaar-premium-violet)!important;color:#fff!important;border:2px solid var(--besjaar-premium-bg)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu{background:var(--besjaar-premium-bg)!important;border-color:var(--besjaar-premium-line)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu>a{border-color:var(--besjaar-premium-line)!important;font-size:1.22rem!important;font-weight:600!important;letter-spacing:-.03em!important}
+.besjaar-ui-polish-v34 .besjaar-ui-search-panel{background:rgba(247,247,251,.98)!important;border-color:var(--besjaar-premium-line)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-search-panel__inner{padding-block:38px 46px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-search-form .besjaar-ui-input{border:1px solid var(--besjaar-premium-line-strong)!important;border-radius:12px!important;background:#fff!important;color:var(--besjaar-premium-ink)!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-search-form .besjaar-ui-input:focus{border-color:var(--besjaar-premium-violet)!important;box-shadow:0 0 0 4px rgba(99,91,255,.10)!important}
+
+/* ---------- global controls ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-button,.besjaar-store-btn{
+  min-height:50px!important;border-radius:10px!important;font-family:var(--besjaar-premium-font)!important;font-size:.79rem!important;font-weight:650!important;letter-spacing:-.01em!important;text-transform:none!important;box-shadow:none!important
+}
+.besjaar-ui-polish-v34 .besjaar-ui-button--primary,.besjaar-store-btn--primary{border-color:var(--besjaar-premium-violet)!important;background:var(--besjaar-premium-violet)!important;color:#fff!important}
+.besjaar-ui-polish-v34 .besjaar-ui-button--primary:hover,.besjaar-store-btn--primary:hover{background:var(--besjaar-premium-violet-dark)!important;border-color:var(--besjaar-premium-violet-dark)!important;transform:translateY(-1px)}
+.besjaar-ui-polish-v34 .besjaar-ui-button--ghost,.besjaar-store-btn--secondary{border-color:var(--besjaar-premium-line-strong)!important;background:#fff!important;color:var(--besjaar-premium-ink)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-button--ghost:hover,.besjaar-store-btn--secondary:hover{border-color:#b9b6c8!important;background:var(--besjaar-premium-violet-soft-2)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-input,.besjaar-ui-polish-v34 .besjaar-ui-select{border-color:var(--besjaar-premium-line-strong)!important;border-radius:10px!important;background:#fff!important;color:var(--besjaar-premium-ink)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-kicker,.besjaar-store-kicker{color:var(--besjaar-premium-violet)!important;font-family:var(--besjaar-premium-font)!important;font-size:.69rem!important;font-weight:650!important;letter-spacing:.06em!important;text-transform:none!important}
+.besjaar-store-kicker::before{display:none!important}
+
+/* ---------- homepage foundation ---------- */
+.besjaar-store{background:transparent!important;color:var(--besjaar-premium-ink)!important;font-family:var(--besjaar-premium-font)!important}
+.besjaar-store-h2{font-family:var(--besjaar-premium-font)!important;font-size:clamp(2.6rem,4.8vw,5rem)!important;font-weight:600!important;line-height:.96!important;letter-spacing:-.06em!important}
+.besjaar-store-note{color:var(--besjaar-premium-muted)!important}
+.besjaar-store-tag{border-color:var(--besjaar-premium-line)!important;border-radius:8px!important;background:#fff!important;color:var(--besjaar-premium-violet)!important;font-weight:600!important}
+
+/* Hero — close to Besjaar's current text-left / portrait-image-right structure. */
+.besjaar-store-hero--premium-exact{min-height:0!important;padding:clamp(44px,6vw,86px) 0 0!important;overflow:visible!important;background:transparent!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__grid{display:grid!important;grid-template-columns:minmax(0,.88fr) minmax(440px,.82fr)!important;gap:clamp(48px,7vw,112px)!important;align-items:center!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__content{width:auto!important;max-width:700px!important;padding:26px 0 46px!important;align-items:flex-start!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__kicker{margin-bottom:25px!important;color:var(--besjaar-premium-violet)!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__title{max-width:8.5ch!important;font-family:var(--besjaar-premium-font)!important;font-size:clamp(4.35rem,7vw,7.8rem)!important;font-weight:600!important;line-height:.88!important;letter-spacing:-.075em!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__title span,.besjaar-store-hero--premium-exact .besjaar-store-hero__title em{display:block!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__title em{margin:0!important;color:var(--besjaar-premium-ink)!important;font-style:normal!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__copy{max-width:600px!important;margin-top:28px!important;color:var(--besjaar-premium-muted)!important;font-size:1.04rem!important;line-height:1.65!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__actions{gap:10px!important;margin-top:30px!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__trust{display:flex!important;gap:10px 22px!important;margin-top:28px!important;color:#5a5964!important;font-size:.71rem!important;font-weight:500!important}
+.besjaar-store-hero--premium-exact .besjaar-store-hero__trust i{width:18px!important;height:18px!important;background:var(--besjaar-premium-violet-soft)!important;color:var(--besjaar-premium-violet)!important}
+.besjaar-store-hero__visual{position:relative!important;margin:0!important;min-width:0!important;padding:0 0 42px!important}
+.besjaar-store-hero__image-card{position:relative!important;aspect-ratio:3/4!important;overflow:hidden!important;border-radius:18px!important;background:var(--besjaar-premium-bg-2)!important;box-shadow:var(--besjaar-premium-shadow)!important}
+.besjaar-store-hero__image-card img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;transform:none!important}
+.besjaar-store-hero__floating-card{position:absolute!important;left:-48px!important;bottom:0!important;display:grid!important;gap:5px!important;width:min(290px,62%)!important;padding:18px 20px!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:14px!important;background:rgba(255,255,255,.94)!important;box-shadow:0 18px 46px rgba(30,28,72,.10)!important;backdrop-filter:blur(14px)!important}
+.besjaar-store-hero__floating-label{color:var(--besjaar-premium-violet)!important;font-size:.66rem!important;font-weight:700!important;letter-spacing:.16em!important}
+.besjaar-store-hero__floating-card strong{font-size:1rem!important;font-weight:600!important;letter-spacing:-.025em!important}
+.besjaar-store-hero__floating-card small{color:var(--besjaar-premium-muted)!important;font-size:.69rem!important;line-height:1.45!important}
+.besjaar-store-hero__proofbar{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;margin-top:28px!important;border-top:1px solid var(--besjaar-premium-line)!important;border-bottom:1px solid var(--besjaar-premium-line)!important}
+.besjaar-store-hero__proofitem{min-height:88px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:5px!important;padding:16px 26px!important;border-right:1px solid var(--besjaar-premium-line)!important}
+.besjaar-store-hero__proofitem:last-child{border-right:0!important}.besjaar-store-hero__proofitem strong{font-size:.9rem!important;font-weight:600!important}.besjaar-store-hero__proofitem span{color:var(--besjaar-premium-muted)!important;font-size:.68rem!important}
+
+/* Besjaar-style compact benefit strip */
+.besjaar-store-strip{border:0!important;background:transparent!important}
+.besjaar-store-strip__row{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;padding:34px 0 4px!important}
+.besjaar-store-strip__row span{min-height:64px!important;justify-content:flex-start!important;padding:14px 20px 14px 0!important;border:0!important;color:var(--besjaar-premium-ink)!important;font-size:.73rem!important;font-weight:550!important;letter-spacing:-.01em!important;text-align:left!important;text-transform:none!important}
+.besjaar-store-strip__row i{display:grid!important;place-items:center!important;flex:0 0 auto!important;width:24px!important;height:24px!important;margin-right:9px!important;border-radius:50%!important;background:var(--besjaar-premium-violet-soft)!important;color:var(--besjaar-premium-violet)!important;font-style:normal!important}
+
+/* Product range — image-led, minimal like Besjaar category/product row. */
+.besjaar-store-products{background:transparent!important}
+.besjaar-store-products__inner{padding-block:clamp(92px,10vw,145px)!important}
+.besjaar-store-products__head{grid-template-columns:minmax(0,1fr) minmax(300px,.55fr)!important;gap:60px!important;margin-bottom:40px!important}
+.besjaar-store-products__head .besjaar-store-h2{max-width:720px!important;margin-top:12px!important}
+.besjaar-store-products__intro{max-width:420px!important;color:var(--besjaar-premium-muted)!important;font-size:.92rem!important;line-height:1.68!important}
+.besjaar-store-products__intro a{color:var(--besjaar-premium-violet)!important;font-size:.74rem!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important}
+.besjaar-store-products__grid{gap:clamp(12px,1.5vw,22px)!important}
+.besjaar-store-products .bp-model-card__media{aspect-ratio:.86!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:16px!important;background:var(--besjaar-premium-surface-soft)!important}
+.besjaar-store-products .bp-model-card__media img{padding:clamp(16px,2vw,28px)!important}
+.besjaar-store-products .bp-model-card__badge{top:12px!important;left:12px!important;min-height:26px!important;border-radius:7px!important;background:var(--besjaar-premium-violet)!important;font-size:.57rem!important;font-weight:600!important;letter-spacing:.02em!important;text-transform:none!important}
+.besjaar-store-products .bp-model-card__body{padding:15px 2px 0!important}
+.besjaar-store-products .bp-model-card__heading{grid-template-columns:minmax(0,1fr) auto!important;gap:14px!important}
+.besjaar-store-products .bp-model-card__heading h3{font-family:var(--besjaar-premium-font)!important;font-size:1rem!important;font-weight:600!important;line-height:1.28!important;letter-spacing:-.03em!important}
+.besjaar-store-products .bp-model-card__price strong{font-size:.88rem!important}.besjaar-store-products .bp-model-card__price s{font-size:.72rem!important}
+.besjaar-store-products .bp-model-card__best-for,.besjaar-store-products .bp-model-card__facts,.besjaar-store-products .bp-model-card__stock{display:none!important}
+.besjaar-store-products .bp-model-card__foot{justify-content:flex-start!important;margin-top:9px!important;padding-top:0!important;border:0!important}
+.besjaar-store-products .bp-model-card__link{color:var(--besjaar-premium-violet)!important;font-size:.7rem!important;font-weight:550!important;text-transform:none!important}
+.besjaar-store-products .besjaar-ui-review-stars{margin-top:6px!important}
+
+/* Detail explorer — white image card + accordion copy. */
+.besjaar-store-detail{padding-block:clamp(92px,10vw,145px)!important;background:var(--besjaar-premium-surface)!important;border-block:1px solid var(--besjaar-premium-line)!important}
+.besjaar-store-detail__grid{grid-template-columns:minmax(0,1.05fr) minmax(390px,.8fr)!important;gap:clamp(60px,8vw,120px)!important}
+.besjaar-store-detail__visual{border:1px solid var(--besjaar-premium-line)!important;border-radius:18px!important;background:var(--besjaar-premium-surface-soft)!important;box-shadow:none!important}
+.besjaar-store-detail__image-wrap>img{padding:clamp(26px,4.5vw,64px)!important}
+.besjaar-store-detail__mark{border-color:rgba(99,91,255,.22)!important;background:#fff!important;color:var(--besjaar-premium-violet)!important;box-shadow:0 7px 20px rgba(35,32,90,.12)!important}
+.besjaar-store-detail__mark.is-active{background:var(--besjaar-premium-violet)!important;border-color:var(--besjaar-premium-violet)!important;color:#fff!important}
+.besjaar-store-detail__visual figcaption{border-color:var(--besjaar-premium-line)!important;background:#fff!important;color:var(--besjaar-premium-muted)!important;letter-spacing:.04em!important;text-transform:none!important}
+.besjaar-store-detail__copy .besjaar-store-h2{margin:14px 0 22px!important}.besjaar-store-detail__intro{color:var(--besjaar-premium-muted)!important}
+.besjaar-store-detail__list{border-color:var(--besjaar-premium-line)!important}.besjaar-store-detail__row{grid-template-columns:minmax(0,1fr) auto!important;border-color:var(--besjaar-premium-line)!important}
+.besjaar-store-detail__row strong{font-family:var(--besjaar-premium-font)!important;font-size:1.05rem!important;font-weight:600!important;letter-spacing:-.025em!important}
+.besjaar-store-detail__row small{color:var(--besjaar-premium-muted)!important;font-size:.75rem!important}.besjaar-store-detail__arrow{color:var(--besjaar-premium-violet)!important}
+
+/* Feature cards */
+.besjaar-store-features{background:transparent!important}.besjaar-store-features__inner{padding-block:clamp(92px,10vw,145px)!important}
+.besjaar-store-cards{gap:16px!important}.besjaar-store-card{border:1px solid var(--besjaar-premium-line)!important;border-radius:16px!important;background:#fff!important;box-shadow:none!important}
+.besjaar-store-card__media{background:var(--besjaar-premium-surface-soft)!important}.besjaar-store-card__body{padding:24px 24px 30px!important}
+.besjaar-store-card__kicker{color:var(--besjaar-premium-violet)!important;font-size:.69rem!important;font-weight:600!important;letter-spacing:.03em!important;text-transform:none!important}
+.besjaar-store-card__title{font-family:var(--besjaar-premium-font)!important;font-size:clamp(1.35rem,2vw,1.75rem)!important;font-weight:600!important;line-height:1.05!important;letter-spacing:-.045em!important}
+.besjaar-store-card__text{color:var(--besjaar-premium-muted)!important;font-size:.86rem!important}
+
+/* Lifestyle intermission */
+.besjaar-store-scene{min-height:clamp(540px,70vh,760px)!important;margin:0 clamp(14px,2vw,30px)!important;border-radius:18px!important;background:var(--besjaar-premium-bg-2)!important}
+.besjaar-store-scene__veil{background:linear-gradient(180deg,rgba(12,12,20,.04),rgba(12,12,20,.53))!important}
+.besjaar-store-scene .besjaar-store-kicker{color:#fff!important}.besjaar-store-scene__quote{max-width:16ch!important;font-family:var(--besjaar-premium-font)!important;font-size:clamp(2.9rem,5.5vw,5.7rem)!important;font-weight:600!important;line-height:.94!important;letter-spacing:-.065em!important;text-shadow:none!important}
+
+/* Spec/results block in Besjaar clinical-stat rhythm, but using Besjaar specs. */
+.besjaar-store-specs{background:var(--besjaar-premium-violet-soft-2)!important}
+.besjaar-store-specs__inner{padding-block:clamp(90px,10vw,145px)!important}
+.besjaar-store-specs__head{grid-template-columns:minmax(0,1fr) minmax(300px,.55fr)!important;gap:52px!important}
+.besjaar-store-specs__intro{color:var(--besjaar-premium-muted)!important}
+.besjaar-store-specs__stats{margin-top:48px!important;border-color:rgba(99,91,255,.16)!important}
+.besjaar-store-specs__stats>div{min-height:158px!important;border-color:rgba(99,91,255,.16)!important}
+.besjaar-store-specs__stats strong{color:var(--besjaar-premium-violet)!important;font-family:var(--besjaar-premium-font)!important;font-size:clamp(2.15rem,3.7vw,4.2rem)!important;font-weight:600!important;letter-spacing:-.06em!important}
+.besjaar-store-specs__stats span{color:#676477!important;font-size:.7rem!important;font-weight:550!important;letter-spacing:0!important;text-transform:none!important}
+.besjaar-store-specs__lower{gap:60px!important}.besjaar-store-table td{border-color:rgba(99,91,255,.13)!important}.besjaar-store-table td:first-child{color:#7c788c!important;font-weight:600!important;letter-spacing:.02em!important;text-transform:none!important}.besjaar-store-table td:last-child{color:var(--besjaar-premium-ink)!important;font-weight:550!important}
+
+/* Review proof */
+.besjaar-store-reviews{background:var(--besjaar-premium-surface)!important}.besjaar-store-reviews__inner{grid-template-columns:minmax(0,1fr) minmax(360px,.62fr)!important;gap:70px!important;padding-block:clamp(90px,10vw,140px)!important}
+.besjaar-store-reviews__note{color:var(--besjaar-premium-muted)!important}.besjaar-store-reviews__link{color:var(--besjaar-premium-violet)!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important}
+.besjaar-store-rating-card{min-height:330px!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:18px!important;background:var(--besjaar-premium-surface-soft)!important;box-shadow:none!important}
+.besjaar-store-rating-card__stars{color:var(--besjaar-premium-violet)!important}.besjaar-store-rating-card strong{font-family:var(--besjaar-premium-font)!important;color:var(--besjaar-premium-ink)!important;font-weight:600!important}.besjaar-store-rating-card span{color:var(--besjaar-premium-muted)!important}.besjaar-store-rating-card small{color:var(--besjaar-premium-violet)!important;letter-spacing:.14em!important}
+
+/* Closing CTA: Besjaar violet rather than dark green. */
+.besjaar-store-cta{background:var(--besjaar-premium-violet)!important;color:#fff!important}
+.besjaar-store-cta__grid{min-height:590px!important}.besjaar-store-cta__kicker{color:rgba(255,255,255,.72)!important}.besjaar-store-cta__title{font-family:var(--besjaar-premium-font)!important;font-weight:600!important;line-height:.89!important;letter-spacing:-.07em!important}
+.besjaar-store-cta .besjaar-store-btn--paper{border-color:#fff!important;background:#fff!important;color:var(--besjaar-premium-violet)!important}.besjaar-store-cta .besjaar-store-btn--ghostlight{border-color:rgba(255,255,255,.4)!important;background:transparent!important;color:#fff!important}
+.besjaar-store-cta__assure{color:rgba(255,255,255,.74)!important;text-transform:none!important;letter-spacing:0!important}.besjaar-store-cta__visual::before{background:rgba(255,255,255,.10)!important}
+
+/* ---------- footer — Besjaar-style large utility footer ---------- */
+.besjaar-store-foot--premium{border-top:0!important;background:#111116!important;color:#fff!important}
+.besjaar-store-foot__top{display:grid!important;grid-template-columns:minmax(360px,.9fr) minmax(0,1.1fr)!important;gap:clamp(70px,10vw,150px)!important;padding-block:76px 64px!important}
+.besjaar-store-foot__newsletter{max-width:520px!important}.besjaar-store-foot__brand{display:block!important;margin-bottom:28px!important;color:#fff!important;font-size:1.1rem!important;font-weight:700!important;letter-spacing:.18em!important}
+.besjaar-store-foot__newsletter h2{max-width:11ch!important;color:#fff!important;font-size:clamp(2rem,3.7vw,3.7rem)!important;font-weight:600!important;line-height:.98!important;letter-spacing:-.055em!important}
+.besjaar-store-foot__newsletter>p{max-width:470px!important;margin:17px 0 22px!important;color:#aaaab3!important;font-size:.88rem!important;line-height:1.65!important}
+.besjaar-store-foot__form{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;max-width:480px!important;border-bottom:1px solid #4a4a52!important}
+.besjaar-store-foot__form input{min-width:0!important;height:54px!important;padding:0!important;border:0!important;background:transparent!important;color:#fff!important;font:inherit!important;outline:0!important}.besjaar-store-foot__form input::placeholder{color:#777780!important}
+.besjaar-store-foot__form button{padding:0 4px 0 18px!important;border:0!important;background:transparent!important;color:#fff!important;font:600 .78rem var(--besjaar-premium-font)!important;cursor:pointer!important}.besjaar-store-foot__newsletter small{display:block!important;margin-top:11px!important;color:#707079!important;font-size:.66rem!important}
+.besjaar-store-foot__form-note{grid-column:1/-1!important;padding:8px 0!important;color:#bab3ff!important;font-size:.72rem!important}.besjaar-store-foot__form-note--error{color:#ffabab!important}
+.besjaar-store-foot__columns{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:40px!important;padding-top:9px!important}.besjaar-store-foot__columns h3{margin:0 0 21px!important;color:#fff!important;font-size:.76rem!important;font-weight:600!important;letter-spacing:0!important}.besjaar-store-foot__columns a{display:block!important;width:max-content!important;max-width:100%!important;margin:0 0 13px!important;color:#92929c!important;font-size:.78rem!important;transition:color .15s}.besjaar-store-foot__columns a:hover{color:#fff!important}
+.besjaar-store-foot__bottom{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:22px!important;padding-block:24px!important;border-top:1px solid #2b2b31!important;color:#74747d!important;font-size:.68rem!important}
+
+/* ---------- product page — close to Besjaar purchase layout ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16{background:transparent!important;padding:38px 0 100px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__breadcrumbs{margin:0 0 28px!important;color:#777681!important;font-size:.72rem!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__grid{grid-template-columns:minmax(0,1.06fr) minmax(410px,.72fr)!important;gap:clamp(48px,5vw,82px)!important;align-items:start!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__media-stage{overflow:hidden!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:16px!important;background:var(--besjaar-premium-surface-soft)!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__image{background:transparent!important;padding:clamp(18px,3vw,42px)!important;object-fit:contain!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__thumb{border:1px solid var(--besjaar-premium-line)!important;border-radius:10px!important;background:#fff!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__thumb.is-active{border-color:var(--besjaar-premium-violet)!important;box-shadow:0 0 0 1px var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__summary{position:sticky!important;top:116px!important;padding:4px 0 0!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__eyebrow{color:var(--besjaar-premium-violet)!important;font-size:.7rem!important;font-weight:650!important;letter-spacing:.04em!important;text-transform:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__title{margin-top:12px!important;color:var(--besjaar-premium-ink)!important;font-size:clamp(2.4rem,4vw,4.25rem)!important;font-weight:600!important;line-height:.97!important;letter-spacing:-.062em!important}
+.besjaar-ui-polish-v34 .besjaar-ui-shower-product-subtitle{margin:18px 0 0!important;color:var(--besjaar-premium-muted)!important;font-size:.94rem!important;line-height:1.62!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__buybox{margin-top:24px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__price{font-family:var(--besjaar-premium-font)!important;font-size:1.55rem!important;font-weight:650!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__save{border-radius:7px!important;background:var(--besjaar-premium-violet-soft)!important;color:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__option,.besjaar-ui-polish-v34 .besjaar-ui-purchase-options{margin-top:18px!important;padding-top:18px!important;border-top:1px solid var(--besjaar-premium-line)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-label{color:var(--besjaar-premium-ink)!important;font-size:.76rem!important;font-weight:600!important;letter-spacing:0!important;text-transform:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__purchase-row{display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;gap:10px!important;margin-top:20px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-quantity{height:52px!important;border:1px solid var(--besjaar-premium-line-strong)!important;border-radius:10px!important;background:#fff!important}.besjaar-ui-polish-v34 .besjaar-ui-quantity button{color:var(--besjaar-premium-ink)!important}.besjaar-ui-polish-v34 .besjaar-ui-quantity input{font-weight:600!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__add{min-height:52px!important;width:100%!important;background:var(--besjaar-premium-violet)!important;border-color:var(--besjaar-premium-violet)!important;color:#fff!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v75__confidence{margin-top:16px!important;padding:16px!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:12px!important;background:#fff!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__facts{margin-top:18px!important;border:1px solid var(--besjaar-premium-line)!important;border-radius:12px!important;background:var(--besjaar-premium-surface-soft)!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__fact{border-color:var(--besjaar-premium-line)!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__fact span{color:var(--besjaar-premium-muted)!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__fact strong{color:var(--besjaar-premium-ink)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v749__journey{border-color:var(--besjaar-premium-line)!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v749__journey a:hover{color:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-sticky-atc{background:rgba(247,247,251,.96)!important;border-color:var(--besjaar-premium-line)!important}.besjaar-ui-polish-v34 .besjaar-ui-sticky-atc .besjaar-ui-button{background:var(--besjaar-premium-violet)!important}
+
+/* ---------- collection / search ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-collection-page,.besjaar-ui-polish-v34 .besjaar-ui-search-page{padding:56px 0 110px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-collection-hero,.besjaar-ui-polish-v34 .besjaar-ui-search-page__head{margin-bottom:42px!important;padding:0!important;border:0!important;background:transparent!important}
+.besjaar-ui-polish-v34 .besjaar-ui-collection-hero__copy{max-width:760px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-title{color:var(--besjaar-premium-ink)!important;font-family:var(--besjaar-premium-font)!important;font-size:clamp(2.7rem,5.2vw,5.4rem)!important;font-weight:600!important;line-height:.95!important;letter-spacing:-.065em!important}
+.besjaar-ui-polish-v34 .besjaar-ui-copy{color:var(--besjaar-premium-muted)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-catalog-toolbar{border-color:var(--besjaar-premium-line)!important;background:transparent!important}
+.besjaar-ui-polish-v34 .besjaar-ui-filters{border:1px solid var(--besjaar-premium-line)!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-card,.besjaar-ui-polish-v34 .besjaar-ui-search-products .besjaar-ui-product-card{border:0!important;background:transparent!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-card__media{border:1px solid var(--besjaar-premium-line)!important;border-radius:14px!important;background:var(--besjaar-premium-surface-soft)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-card__body{padding:14px 2px 0!important}.besjaar-ui-polish-v34 .besjaar-ui-product-card__title{font-family:var(--besjaar-premium-font)!important;font-size:1rem!important;font-weight:600!important;line-height:1.25!important;letter-spacing:-.03em!important}
+.besjaar-ui-polish-v34 .besjaar-ui-product-card__facts{display:none!important}.besjaar-ui-polish-v34 .besjaar-ui-product-card__foot{border:0!important;padding-top:4px!important}.besjaar-ui-polish-v34 .besjaar-ui-mini-link{color:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-search-shortcuts a{border-color:var(--besjaar-premium-line)!important;background:#fff!important;color:var(--besjaar-premium-ink)!important}.besjaar-ui-polish-v34 .besjaar-ui-search-shortcuts a:hover{border-color:var(--besjaar-premium-violet)!important;color:var(--besjaar-premium-violet)!important}
+
+/* ---------- cart / drawers ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-cart-page{padding:62px 0 110px!important}.besjaar-ui-polish-v34 .besjaar-ui-cart__items,.besjaar-ui-polish-v34 .besjaar-ui-cart__summary{border-color:var(--besjaar-premium-line)!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 .besjaar-ui-cart-item{border-color:var(--besjaar-premium-line)!important}.besjaar-ui-polish-v34 .besjaar-ui-cart-item__media{border-radius:10px!important;background:var(--besjaar-premium-surface-soft)!important}.besjaar-ui-polish-v34 .besjaar-ui-cart__summary{position:sticky!important;top:116px!important}
+.besjaar-ui-polish-v34 .besjaar-ui-free-shipping__track{background:var(--besjaar-premium-bg-2)!important}.besjaar-ui-polish-v34 .besjaar-ui-free-shipping__track i{background:var(--besjaar-premium-violet)!important}
+.besjaar-ui-polish-v34 .besjaar-ui-drawer{background:#fff!important}.besjaar-ui-polish-v34 .besjaar-ui-drawer__header,.besjaar-ui-polish-v34 .besjaar-ui-drawer__footer{border-color:var(--besjaar-premium-line)!important;background:#fff!important}
+
+/* ---------- account / content pages ---------- */
+.besjaar-ui-polish-v34 .besjaar-ui-page-head{margin-bottom:38px!important}.besjaar-ui-polish-v34 .besjaar-ui-content,.besjaar-ui-polish-v34 .besjaar-ui-account-card,.besjaar-ui-polish-v34 .besjaar-ui-faq-page,.besjaar-ui-polish-v34 .besjaar-ui-contact-page{border-color:var(--besjaar-premium-line)!important;background:#fff!important;box-shadow:none!important}
+.besjaar-ui-polish-v34 :focus-visible{outline:2px solid var(--besjaar-premium-violet)!important;outline-offset:3px!important}
+
+@media(max-width:1050px){
+  .besjaar-store-hero--premium-exact .besjaar-store-hero__grid{grid-template-columns:minmax(0,.95fr) minmax(380px,.78fr)!important;gap:48px!important}
+  .besjaar-store-hero--premium-exact .besjaar-store-hero__title{font-size:clamp(3.8rem,7vw,6.3rem)!important}
+  .besjaar-ui-polish-v34 .besjaar-ui-product-v16__grid{grid-template-columns:minmax(0,1fr) minmax(380px,.75fr)!important;gap:40px!important}
+}
+@media(max-width:820px){
+  .besjaar-ui-polish-v34 .besjaar-ui-header__row{min-height:64px!important;grid-template-columns:auto 1fr auto!important}.besjaar-ui-polish-v34 .besjaar-ui-nav{display:none!important}
+  .besjaar-store-hero--premium-exact{padding-top:28px!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__grid{grid-template-columns:1fr!important;gap:30px!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__content{padding:22px 0 0!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__title{max-width:9ch!important;font-size:clamp(3.55rem,13vw,5.9rem)!important}.besjaar-store-hero__visual{padding:0 0 28px!important}.besjaar-store-hero__image-card{aspect-ratio:4/5!important}.besjaar-store-hero__floating-card{left:14px!important;bottom:0!important;width:min(300px,72%)!important}
+  .besjaar-store-hero__proofbar{grid-template-columns:1fr!important}.besjaar-store-hero__proofitem{min-height:72px!important;padding:13px 0!important;border-right:0!important;border-bottom:1px solid var(--besjaar-premium-line)!important}.besjaar-store-hero__proofitem:last-child{border-bottom:0!important}
+  .besjaar-store-strip{overflow-x:auto!important}.besjaar-store-strip__row{display:flex!important;width:max-content!important;min-width:100%!important;padding-top:24px!important}.besjaar-store-strip__row span{min-width:215px!important}
+  .besjaar-store-products__head,.besjaar-store-specs__head,.besjaar-store-reviews__inner{grid-template-columns:1fr!important;gap:22px!important}.besjaar-store-products__intro,.besjaar-store-specs__intro{justify-self:start!important}
+  .besjaar-store-detail__grid{grid-template-columns:1fr!important;gap:40px!important}
+  .besjaar-store-cards{grid-template-columns:1fr!important}.besjaar-store-card__media{height:420px!important}
+  .besjaar-store-scene{margin-inline:10px!important}.besjaar-store-specs__stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}.besjaar-store-specs__stats>div:nth-child(2){border-right:0!important}.besjaar-store-specs__stats>div:nth-child(-n+2){border-bottom:1px solid rgba(99,91,255,.16)!important}
+  .besjaar-store-foot__top{grid-template-columns:1fr!important;gap:58px!important}.besjaar-store-foot__columns{max-width:760px!important}
+  .besjaar-ui-polish-v34 .besjaar-ui-product-v16__grid{grid-template-columns:1fr!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__summary{position:static!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__title{font-size:clamp(2.4rem,9vw,3.7rem)!important}.besjaar-ui-polish-v34 .besjaar-ui-cart__summary{position:static!important}
+}
+@media(max-width:560px){
+  body.besjaar-ui-polish-v34 .besjaar-ui-shell,.besjaar-store-shell{width:min(100% - 28px,1380px)!important}
+  .besjaar-ui-polish-v34 .besjaar-ui-announcement{font-size:.62rem!important}.besjaar-ui-polish-v34 .besjaar-ui-header__row{min-height:60px!important}.besjaar-ui-polish-v34 .besjaar-ui-brand{font-size:1rem!important}
+  .besjaar-store-hero--premium-exact .besjaar-store-hero__kicker{margin-bottom:16px!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__title{font-size:clamp(3.2rem,15vw,4.75rem)!important;line-height:.89!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__copy{margin-top:20px!important;font-size:.9rem!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__actions{display:grid!important;grid-template-columns:1fr!important;width:100%!important}.besjaar-store-hero--premium-exact .besjaar-store-hero__trust{display:grid!important;grid-template-columns:1fr!important}
+  .besjaar-store-products__inner,.besjaar-store-features__inner,.besjaar-store-specs__inner{padding-block:76px!important}.besjaar-store-products__grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:24px 10px!important}.besjaar-store-products .bp-model-card__heading{grid-template-columns:1fr!important;gap:6px!important}.besjaar-store-products .bp-model-card__price{align-items:flex-start!important}.besjaar-store-products .bp-model-card__media{border-radius:12px!important}.besjaar-store-products .bp-model-card__media img{padding:10px!important}.besjaar-store-products .bp-model-card__heading h3{font-size:.9rem!important}
+  .besjaar-store-card__media{height:330px!important}.besjaar-store-scene{min-height:520px!important;border-radius:14px!important}.besjaar-store-scene__quote{font-size:clamp(2.7rem,12vw,4rem)!important}
+  .besjaar-store-specs__stats>div{min-height:124px!important;padding:22px 12px!important}.besjaar-store-specs__stats strong{font-size:2.35rem!important}.besjaar-store-specs__lower{grid-template-columns:1fr!important;gap:22px!important}
+  .besjaar-store-rating-card{min-height:260px!important;padding:30px!important}.besjaar-store-cta__grid{grid-template-columns:1fr!important;min-height:0!important;padding-block:70px 28px!important}.besjaar-store-cta__title{font-size:clamp(3rem,13vw,4.5rem)!important}.besjaar-store-cta__visual{min-height:300px!important}.besjaar-store-cta__visual img{max-height:320px!important}
+  .besjaar-store-foot__top{padding-block:58px 46px!important}.besjaar-store-foot__columns{grid-template-columns:1fr 1fr!important;gap:34px 26px!important}.besjaar-store-foot__newsletter h2{font-size:2.6rem!important}.besjaar-store-foot__bottom{align-items:flex-start!important;flex-direction:column!important}
+  .besjaar-ui-polish-v34 .besjaar-ui-product-v16{padding-top:24px!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__purchase-row{grid-template-columns:96px minmax(0,1fr)!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__title{font-size:2.55rem!important}.besjaar-ui-polish-v34 .besjaar-ui-product-v16__media-stage{border-radius:12px!important}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.besjaar-store-hero__image-card img,.besjaar-store-card__media img,.besjaar-store-products .bp-model-card__media img{transition:none!important;transform:none!important}}
+
+/* Besjaar 11.2.18 — safe Shipping & Returns footer panel merged into grouped collections build */
+.besjaar-store-foot__columns .besjaar-store-foot__link-button{
+  display:block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin:0 0 13px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#92929c!important;
+  font:inherit!important;
+  font-size:.78rem!important;
+  line-height:inherit!important;
+  text-align:left!important;
+  cursor:pointer!important;
+  transition:color .15s!important;
+}
+.besjaar-store-foot__columns .besjaar-store-foot__link-button:hover{color:#fff!important}
+.besjaar-store-shipping-dialog{
+  width:min(620px,calc(100vw - 32px))!important;
+  max-width:620px!important;
+  padding:0!important;
+  border:1px solid #dfe5e8!important;
+  border-radius:22px!important;
+  background:#fff!important;
+  color:#101820!important;
+  box-shadow:0 30px 90px rgba(16,35,59,.24)!important;
+  overflow:hidden!important;
+}
+.besjaar-store-shipping-dialog::backdrop{background:rgba(11,26,42,.44)!important;backdrop-filter:blur(3px)!important}
+.besjaar-store-shipping-dialog__head{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:20px!important;
+  padding:25px 26px 20px!important;
+  border-bottom:1px solid #e8ecef!important;
+}
+.besjaar-store-shipping-dialog__eyebrow{margin:0 0 7px!important;color:#6f7f8e!important;font-size:.64rem!important;font-weight:800!important;letter-spacing:.15em!important}
+.besjaar-store-shipping-dialog__head h2{margin:0!important;color:#101820!important;font-size:1.65rem!important;font-weight:560!important;line-height:1.08!important;letter-spacing:-.04em!important}
+.besjaar-store-shipping-dialog__close{
+  display:grid!important;place-items:center!important;width:38px!important;height:38px!important;min-height:38px!important;
+  padding:0!important;border:0!important;border-radius:50%!important;background:#f4f6f7!important;color:#4c5b68!important;
+  font:inherit!important;font-size:1.5rem!important;line-height:1!important;cursor:pointer!important;
+}
+.besjaar-store-shipping-dialog__body{display:grid!important;gap:0!important;padding:0 26px 12px!important}
+.besjaar-store-shipping-dialog__body section{display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;gap:15px!important;padding:22px 0!important;border-bottom:1px solid #edf0f2!important}
+.besjaar-store-shipping-dialog__body section:last-child{border-bottom:0!important}
+.besjaar-store-shipping-dialog__icon{display:grid!important;place-items:center!important;width:42px!important;height:42px!important;border-radius:50%!important;background:#f3f7fa!important;color:#173555!important}
+.besjaar-store-shipping-dialog__icon svg{width:21px!important;height:21px!important}
+.besjaar-store-shipping-dialog__body h3{margin:1px 0 7px!important;color:#16283b!important;font-size:.93rem!important;font-weight:720!important}
+.besjaar-store-shipping-dialog__body p{margin:0!important;color:#5c6c7c!important;font-size:.81rem!important;line-height:1.58!important}
+.besjaar-store-shipping-dialog__body a{display:inline-flex!important;margin-top:10px!important;color:#173555!important;font-size:.76rem!important;font-weight:720!important;text-decoration:none!important}
+@media(max-width:600px){
+  .besjaar-store-shipping-dialog{width:calc(100vw - 22px)!important;border-radius:18px!important}
+  .besjaar-store-shipping-dialog__head{padding:21px 20px 17px!important}
+  .besjaar-store-shipping-dialog__head h2{font-size:1.4rem!important}
+  .besjaar-store-shipping-dialog__body{padding:0 20px 8px!important}
+  .besjaar-store-shipping-dialog__body section{grid-template-columns:38px minmax(0,1fr)!important;gap:12px!important;padding:18px 0!important}
+  .besjaar-store-shipping-dialog__icon{width:36px!important;height:36px!important}
+  .besjaar-store-shipping-dialog__icon svg{width:18px!important;height:18px!important}
+}

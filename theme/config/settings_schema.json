@@ -1,0 +1,764 @@
+[
+  {
+    "name": "Brand & layout",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Note: the premium navy design layers (Besjaar 10.2+) intentionally pin the storefront palette. Changing the colors below only affects legacy components; the navy system keeps its designed colors."
+      },
+      {
+        "type": "color",
+        "id": "bg",
+        "label": "Background",
+        "default": "#FBFCFD"
+      },
+      {
+        "type": "color",
+        "id": "surface",
+        "label": "Surface",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "text",
+        "label": "Text",
+        "default": "#132A3E"
+      },
+      {
+        "type": "color",
+        "id": "muted",
+        "label": "Muted text",
+        "default": "#61798E"
+      },
+      {
+        "type": "color",
+        "id": "accent",
+        "label": "Primary accent",
+        "default": "#173B5E"
+      },
+      {
+        "type": "color",
+        "id": "accent_2",
+        "label": "Secondary accent",
+        "default": "#102D49"
+      },
+      {
+        "type": "color",
+        "id": "accent_warm",
+        "label": "Warm accent",
+        "default": "#EEF6FB"
+      },
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page width",
+        "min": 1080,
+        "max": 1600,
+        "step": 20,
+        "default": 1280,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "card_radius",
+        "label": "Card radius",
+        "min": 0,
+        "max": 32,
+        "step": 1,
+        "default": 12,
+        "unit": "px"
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon"
+      },
+      {
+        "type": "image_picker",
+        "id": "social_share_image",
+        "label": "Social share image"
+      },
+      {
+        "type": "header",
+        "content": "Brand profiles & support"
+      },
+      {
+        "type": "url",
+        "id": "social_instagram",
+        "label": "Instagram profile URL",
+        "info": "Used in Organization structured data (sameAs)."
+      },
+      {
+        "type": "url",
+        "id": "social_facebook",
+        "label": "Facebook page URL"
+      },
+      {
+        "type": "url",
+        "id": "social_tiktok",
+        "label": "TikTok profile URL"
+      },
+      {
+        "type": "url",
+        "id": "social_youtube",
+        "label": "YouTube channel URL"
+      },
+      {
+        "type": "text",
+        "id": "support_email",
+        "label": "Support email",
+        "info": "Customer-service email used in structured data and theme support links.",
+        "default": "info@univexbv.com"
+      },
+      {
+        "type": "text",
+        "id": "support_phone",
+        "label": "Support phone",
+        "info": "International format, e.g. +31 20 123 4567.",
+        "default": "+31 6 16745062"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_polished_motion",
+        "label": "Premium motion",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_section_reveal",
+        "label": "Section reveal animations",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_card_lift",
+        "label": "Card hover lift",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Shower store",
+    "settings": [
+      {
+        "type": "collection",
+        "id": "shower_collection",
+        "label": "Primary showerheads collection"
+      },
+      {
+        "type": "product",
+        "id": "shower_model_1",
+        "label": "Featured shower model 1"
+      },
+      {
+        "type": "product",
+        "id": "shower_model_2",
+        "label": "Featured shower model 2"
+      },
+      {
+        "type": "product",
+        "id": "shower_model_3",
+        "label": "Featured shower model 3"
+      },
+      {
+        "type": "product",
+        "id": "shower_model_4",
+        "label": "Featured shower model 4"
+      },
+      {
+        "type": "product",
+        "id": "shower_model_5",
+        "label": "Featured shower model 5"
+      },
+      {
+        "type": "product",
+        "id": "bundle_accessory_1",
+        "label": "Bundle accessory 1"
+      },
+      {
+        "type": "product",
+        "id": "bundle_accessory_2",
+        "label": "Bundle accessory 2"
+      },
+      {
+        "type": "product",
+        "id": "bundle_accessory_3",
+        "label": "Bundle accessory 3"
+      },
+      {
+        "type": "checkbox",
+        "id": "bundle_accessories_preselected",
+        "label": "Preselect bundle accessories",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_shower_bundle",
+        "label": "Enable shower bundles",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_smart_recommendations",
+        "label": "Enable smart recommendations",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cart_addons",
+        "label": "Show cart add-ons",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Navigation & pages",
+    "settings": [
+      {
+        "type": "page",
+        "id": "faq_page",
+        "label": "FAQ page"
+      },
+      {
+        "type": "page",
+        "id": "contact_page",
+        "label": "Contact page"
+      },
+      {
+        "type": "page",
+        "id": "tracking_page",
+        "label": "Tracking page"
+      },
+      {
+        "type": "page",
+        "id": "delivery_info_page",
+        "label": "Delivery information page"
+      },
+      {
+        "type": "page",
+        "id": "returns_info_page",
+        "label": "Returns information page"
+      },
+      {
+        "type": "page",
+        "id": "warranty_info_page",
+        "label": "Warranty information page"
+      },
+      {
+        "type": "page",
+        "id": "account_support_page",
+        "label": "Account support page"
+      },
+      {
+        "type": "page",
+        "id": "account_rewards_page",
+        "label": "Account rewards page"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_header_localization",
+        "label": "Show language selector in header",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_footer_localization",
+        "label": "Show language selector in footer",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_markets_localization",
+        "label": "Enable Shopify Markets localization",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_mobile_bottom_nav",
+        "label": "Show mobile bottom navigation",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_nav_account",
+        "label": "Show account in mobile navigation",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_compact_header",
+        "label": "Use compact mobile header",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_fullscreen_search",
+        "label": "Fullscreen search on mobile",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Delivery & trust",
+    "settings": [
+      {
+        "type": "range",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "default": 25
+      },
+      {
+        "type": "number",
+        "id": "standard_shipping_rate",
+        "label": "Standard shipping rate (EUR)",
+        "info": "Rate advertised in product structured data for orders below the free-shipping threshold. Leave 0 to omit.",
+        "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "show_free_shipping_bar",
+        "label": "Show free-shipping progress",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "delivery_region_label",
+        "label": "Shipping origin label",
+        "default": "Netherlands"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_delivery_estimates",
+        "label": "Show delivery estimates",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "order_cutoff_hour",
+        "label": "Order cutoff hour",
+        "min": 0,
+        "max": 23,
+        "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "processing_business_days",
+        "label": "Processing business days",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 0
+      },
+      {
+        "type": "range",
+        "id": "transit_min_business_days",
+        "label": "Minimum transit business days",
+        "min": 0,
+        "max": 14,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "transit_max_business_days",
+        "label": "Maximum transit business days",
+        "min": 0,
+        "max": 21,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "skip_delivery_weekends",
+        "label": "Skip weekends in estimates",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "return_window_days",
+        "label": "Return window",
+        "min": 7,
+        "max": 90,
+        "step": 1,
+        "default": 30,
+        "unit": "d"
+      },
+      {
+        "type": "range",
+        "id": "warranty_months",
+        "label": "Warranty",
+        "min": 0,
+        "max": 60,
+        "step": 1,
+        "default": 12,
+        "unit": "mo"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_home_delivery_section",
+        "label": "Show delivery section on home",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Product & collection",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_product_brand_badges",
+        "label": "Show product brand badges",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_product_spec_chips",
+        "label": "Show product spec chips",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "compact_card_titles",
+        "label": "Compact product card titles",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_card_review_ratings",
+        "label": "Show product card ratings",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_card_quick_add",
+        "label": "Show quick add on cards",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_swipe_gallery",
+        "label": "Enable mobile swipe gallery",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "sticky_desktop_buybox",
+        "label": "Sticky desktop buy box",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "mobile_filter_sheet",
+        "label": "Use mobile filter sheet",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_home_review_summary",
+        "label": "Show home review summary",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_review_app_surface",
+        "label": "Show review app surface",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_product_qa",
+        "label": "Enable product Q&A",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_restock_requests",
+        "label": "Enable restock requests",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_merchandising_badges",
+        "label": "Show merchandising badges",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Search",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_recent_searches",
+        "label": "Show recent searches",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "recent_search_limit",
+        "label": "Recent search limit",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_popular",
+        "label": "Show popular searches",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "search_popular_terms",
+        "label": "Popular search terms",
+        "default": "douchekop,showerhead,sproeistanden,aansluiting,Besjaar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_brands",
+        "label": "Show brands in search",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_filters",
+        "label": "Show search filters",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_sort",
+        "label": "Show search sorting",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_search_collection_discovery",
+        "label": "Show collection discovery in search",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Accounts & club",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_account_labels",
+        "label": "Show account labels in header",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_account_home_section",
+        "label": "Show account section on home",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_account_cart_prompt",
+        "label": "Show account prompt in cart",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "account_member_label",
+        "label": "Account member label",
+        "default": "Besjaar Account"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_besjaar_club",
+        "label": "Enable Besjaar Club",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "club_name",
+        "label": "Club name",
+        "default": "Besjaar Club"
+      },
+      {
+        "type": "page",
+        "id": "club_page",
+        "label": "Club page"
+      },
+      {
+        "type": "page",
+        "id": "club_referral_page",
+        "label": "Club referral page"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_club_home_section",
+        "label": "Show club section on home",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_club_account_panel",
+        "label": "Show club panel in account",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_club_header_link",
+        "label": "Show club link in account menu",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Privacy & analytics",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_cookie_preferences",
+        "label": "Show cookie preferences",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_campaign_attribution",
+        "label": "Enable campaign attribution",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_campaign_countdowns",
+        "label": "Enable campaign countdowns",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "analytics_debug_mode",
+        "label": "Analytics debug mode",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_measurement_layer",
+        "label": "Enable measurement layer",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Welcome offer",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "welcome_offer_enabled",
+        "label": "Enable new-customer Welcome Drop",
+        "default": true
+      },
+      {
+        "type": "paragraph",
+        "content": "Create the matching codes in Shopify Admin > Discounts before publishing. Recommended: new customers only + one use per customer. Prize weights are relative and do not need to total 100."
+      },
+      {
+        "type": "header",
+        "content": "Triggering"
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_delay_seconds",
+        "label": "Delay before opening to guests",
+        "min": 1,
+        "max": 30,
+        "step": 1,
+        "default": 3,
+        "unit": "s"
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_scroll_percent",
+        "label": "Open after scroll",
+        "min": 10,
+        "max": 80,
+        "step": 5,
+        "default": 35,
+        "unit": "%"
+      },
+      {
+        "type": "checkbox",
+        "id": "welcome_offer_exit_intent",
+        "label": "Enable desktop exit intent",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Discount codes — create matching codes in Shopify Admin > Discounts"
+      },
+      {
+        "type": "text",
+        "id": "welcome_offer_code_10",
+        "label": "10% code",
+        "default": "WELKOM10"
+      },
+      {
+        "type": "text",
+        "id": "welcome_offer_code_15",
+        "label": "15% code",
+        "default": "WELKOM15"
+      },
+      {
+        "type": "text",
+        "id": "welcome_offer_code_20",
+        "label": "20% code",
+        "default": "WELKOM20"
+      },
+      {
+        "type": "text",
+        "id": "welcome_offer_code_shipping",
+        "label": "Free shipping code",
+        "default": "WELKOMSHIP"
+      },
+      {
+        "type": "header",
+        "content": "Prize weighting"
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_weight_10",
+        "label": "10% chance weight",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 25
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_weight_15",
+        "label": "15% chance weight",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 55
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_weight_20",
+        "label": "20% chance weight",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "welcome_offer_weight_shipping",
+        "label": "Free shipping chance weight",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 10
+      }
+    ]
+  }
+]

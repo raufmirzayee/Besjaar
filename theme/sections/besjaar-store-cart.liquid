@@ -1,0 +1,196 @@
+
+{% liquid
+  assign threshold = settings.free_shipping_threshold | default: 25 | times: 100
+  assign remaining = threshold | minus: cart.total_price
+  assign progress = 0
+  assign remaining_money = remaining | money
+  if threshold > 0
+    assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+  endif
+  capture continue_url_capture
+    render 'shower-store-url'
+  endcapture
+  assign continue_url = continue_url_capture | strip
+  comment
+    Besjaar 11.6: the continue/empty links are merchant-overridable via the two
+    theme-editor URL settings; the focused shower collection stays the default.
+  endcomment
+  if section.settings.continue_link != blank
+    capture continue_url_capture
+      render 'localized-internal-url', url: section.settings.continue_link
+    endcapture
+    assign continue_url = continue_url_capture | strip
+  endif
+  assign empty_url = continue_url
+  if section.settings.empty_link != blank
+    capture empty_url_capture
+      render 'localized-internal-url', url: section.settings.empty_link
+    endcapture
+    assign empty_url = empty_url_capture | strip
+  endif
+%}
+
+<section class="besjaar-store besjaar-cart-page">
+  <div class="besjaar-store-shell">
+    {% if cart.item_count == 0 %}
+      <div class="besjaar-cart-empty">
+        <span class="besjaar-store-kicker">{{ 'besjaar_ui.catalog.cart' | t }}</span>
+        <h1>{{ 'besjaar_ui.cart.empty' | t }}</h1>
+        <p>{{ 'besjaar_ui.shower_collection.default_intro' | t }}</p>
+        <a class="besjaar-store-btn besjaar-store-btn--primary" href="{{ empty_url }}">{{ 'besjaar_ui.cart.shop_products' | t }}</a>
+      </div>
+    {% else %}
+      <header class="besjaar-cart-head">
+        <div>
+          <span class="besjaar-store-kicker">{{ 'besjaar_ui.catalog.cart' | t }}</span>
+          <h1>{{ 'besjaar_ui.cart.title' | t }}</h1>
+        </div>
+        <p data-cart-page-item-count data-count-template-one="{{ 'besjaar_ui.cart.items_kicker' | t: count: 1 | replace: '1', '__COUNT__' | escape }}" data-count-template="{{ 'besjaar_ui.cart.items_kicker' | t: count: 2 | replace: '2', '__COUNT__' | escape }}">{{ 'besjaar_ui.cart.items_kicker' | t: count: cart.item_count }}</p>
+      </header>
+
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="besjaar-cart" id="besjaar-store-cart-form" data-cart-page-form>
+        <p class="besjaar-ui-visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-cart-page-status></p>
+        <div class="besjaar-cart__main">
+          {% if settings.show_free_shipping_bar and threshold > 0 %}
+            <section class="besjaar-cart-progress" aria-label="{{ 'besjaar_ui.cart.free_shipping_progress' | t | escape }}" data-cart-page-free-shipping data-shipping-state="{% if remaining > 0 %}progress{% else %}unlocked{% endif %}">
+              <div class="besjaar-cart-progress__copy">
+                {% if remaining > 0 %}
+                  <strong data-cart-page-free-shipping-text>{{ 'besjaar_ui.cart.free_shipping_remaining' | t: amount: remaining_money }}</strong>
+                {% else %}
+                  <strong data-cart-page-free-shipping-text>{{ 'besjaar_ui.cart.free_shipping_unlocked' | t }}</strong>
+                {% endif %}
+                <span>{{ 'besjaar_ui.cart.shipping_checkout_note' | t }}</span>
+              </div>
+              <div class="besjaar-cart-progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}" data-cart-page-free-shipping-track><i style="width:{{ progress }}%" data-cart-page-free-shipping-progress></i></div>
+            </section>
+          {% endif %}
+
+          <div class="besjaar-cart-lines">
+            {% for item in cart.items %}
+              {% capture cart_item_title_capture %}{% render 'localized-product-title', product: item.product %}{% endcapture %}
+              {% assign cart_item_title = cart_item_title_capture | strip | default: item.product.title %}
+              {% capture cart_item_url_capture %}{% render 'localized-internal-url', url: item.url %}{% endcapture %}
+              {% assign cart_item_url = cart_item_url_capture | strip %}
+              {% assign cart_item_image_alt = item.image.alt | default: cart_item_title %}
+              <article class="besjaar-cart-line" data-cart-page-line data-cart-line-key="{{ item.key | escape }}" aria-busy="false">
+                <a class="besjaar-cart-line__media" href="{{ cart_item_url }}" aria-label="{{ cart_item_title | escape }}">
+                  {% if item.image %}{{ item.image | image_url: width: 260 | image_tag: loading: 'lazy', widths: '120,180,260', sizes: '120px', alt: cart_item_image_alt }}{% else %}<span class="besjaar-cart-line__placeholder" aria-hidden="true"></span>{% endif %}
+                </a>
+                <div class="besjaar-cart-line__info">
+                  <div class="besjaar-cart-line__top">
+                    <div>
+                      <span class="besjaar-cart-line__brand" translate="no">Besjaar</span>
+                      <h2><a href="{{ cart_item_url }}">{{ cart_item_title | escape }}</a></h2>
+                      {% unless item.variant.title == 'Default Title' %}<small>{{ item.variant.title | escape }}</small>{% endunless %}
+                      {% if item.selling_plan_allocation %}<small class="besjaar-cart-line__plan">{{ item.selling_plan_allocation.selling_plan.name | escape }}</small>{% endif %}
+                      {% for property in item.properties %}
+                        {% assign property_prefix = property.first | slice: 0 %}
+                        {% unless property.last == blank or property_prefix == '_' %}
+                          <small class="besjaar-cart-line__property"><span>{{ property.first | escape }}:</span> {% if property.last contains '/uploads/' %}<a href="{{ property.last | escape }}" target="_blank" rel="noopener noreferrer">{{ property.last | split: '/' | last | escape }}<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>{% else %}{{ property.last | escape }}{% endif %}</small>
+                        {% endunless %}
+                      {% endfor %}
+                    </div>
+                    <div class="besjaar-cart-line__price"><strong data-cart-page-line-price>{{ item.final_line_price | money }}</strong>{% if item.unit_price_measurement %}<small>{{ item.unit_price | money | unit_price_with_measurement: item.unit_price_measurement }}</small>{% endif %}</div>
+                  </div>
+                  <div class="besjaar-cart-line__bottom">
+                    <div class="besjaar-cart-qty">
+                      <button type="button" data-cart-page-minus aria-label="{{ 'besjaar_ui.product.decrease_quantity' | t | escape }} — {{ cart_item_title | escape }}">−</button>
+                      <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" enterkeyhint="done" aria-label="{{ 'besjaar_ui.product.quantity' | t | escape }} — {{ cart_item_title | escape }}" data-cart-page-quantity>
+                      <button type="button" data-cart-page-plus aria-label="{{ 'besjaar_ui.product.increase_quantity' | t | escape }} — {{ cart_item_title | escape }}">+</button>
+                    </div>
+                    <a class="besjaar-cart-line__remove" href="{{ item.url_to_remove }}" data-cart-page-remove aria-label="{{ 'besjaar_ui.cart.remove' | t | escape }} — {{ cart_item_title | escape }}">{{ 'besjaar_ui.cart.remove' | t }}</a>
+                  </div>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+
+          {%- comment -%}Besjaar 11.6: native order-note support — posts with the same cart form, no JS needed.{%- endcomment -%}
+          {% if section.settings.show_cart_note %}
+            <details class="besjaar-cart-note"{% if cart.note != blank %} open{% endif %}>
+              <summary>{{ 'besjaar_ui.cart.note_toggle' | t }}</summary>
+              <label class="besjaar-ui-visually-hidden" for="BaCartNote-{{ section.id }}">{{ 'besjaar_ui.cart.note_label' | t }}</label>
+              <textarea id="BaCartNote-{{ section.id }}" name="note" rows="3" placeholder="{{ 'besjaar_ui.cart.note_placeholder' | t | escape }}">{{ cart.note }}</textarea>
+            </details>
+          {% endif %}
+
+          <div class="besjaar-cart__continue">
+            <a href="{{ continue_url }}">← {{ 'besjaar_ui.shower_collection.shop_models' | t }}</a>
+            <button type="submit">{{ 'besjaar_ui.cart.update' | t }}</button>
+          </div>
+        </div>
+
+        <aside class="besjaar-cart-summary">
+          <span class="besjaar-cart-summary__eyebrow">{{ 'besjaar_ui.cart.summary' | t }}</span>
+          <div class="besjaar-cart-summary__row"><span>{{ 'besjaar_ui.cart.total' | t }}</span><strong data-cart-page-total>{{ cart.total_price | money }}</strong></div>
+          <div class="besjaar-cart-summary__discount" data-cart-page-savings{% unless cart.total_discount > 0 %} hidden{% endunless %}><span>{{ 'besjaar_ui.cart.savings' | t }}</span><strong data-cart-page-savings-amount>{% if cart.total_discount > 0 %}−{{ cart.total_discount | money }}{% endif %}</strong></div>
+          <p class="besjaar-cart-summary__note">{{ 'besjaar_ui.cart.taxes_shipping' | t }}</p>
+          {%- comment -%}Besjaar 11.6: discount-code entry via Shopify's native /discount/CODE URL — the same mechanism the announcement bar uses.{%- endcomment -%}
+          {% if section.settings.show_discount_entry %}
+            <details class="besjaar-cart-discount"{% if cart.total_discount > 0 %} open{% endif %} data-cart-discount-entry data-discount-base="{{ routes.root_url }}">
+              <summary>{{ 'besjaar_ui.cart.discount_toggle' | t }}</summary>
+              <div class="besjaar-cart-discount__row">
+                <label class="besjaar-ui-visually-hidden" for="BaCartDiscount-{{ section.id }}">{{ 'besjaar_ui.cart.discount_label' | t }}</label>
+                <input id="BaCartDiscount-{{ section.id }}" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="{{ 'besjaar_ui.cart.discount_label' | t | escape }}" data-cart-discount-input>
+                <button type="button" data-cart-discount-apply>{{ 'besjaar_ui.cart.discount_apply' | t }}</button>
+              </div>
+              <small>{{ 'besjaar_ui.cart.discount_hint' | t }}</small>
+            </details>
+          {% endif %}
+          <button type="submit" name="checkout" value="Checkout" class="besjaar-cart-summary__checkout" data-cart-page-checkout>{{ 'besjaar_ui.cart.checkout' | t }}</button>
+          {%- comment -%}Besjaar 11.6: iDEAL/PayPal/card recognition next to the checkout button — standard trust practice for the NL market.{%- endcomment -%}
+          {% if shop.enabled_payment_types.size > 0 %}
+            <div class="besjaar-ui-payments besjaar-cart-summary__payments" aria-label="{{ 'besjaar_ui.footer.payments_label' | t | escape }}">
+              {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}
+            </div>
+          {% endif %}
+          <div class="besjaar-cart-summary__trust">
+            <span>✓ {{ 'besjaar_ui.product.secure_payment' | t }}</span>
+            <span>✓ {{ 'besjaar_ui.product.return' | t }}</span>
+            <span>✓ {{ 'besjaar_ui.product.shipping_nl' | t }}</span>
+          </div>
+          {% if settings.show_delivery_estimates %}
+            {% render 'delivery-promise', context: 'cart' %}
+          {% endif %}
+        </aside>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+{% if section.settings.show_discount_entry %}
+<script>
+(function () {
+  var entry = document.querySelector('[data-cart-discount-entry]');
+  if (!entry || entry.dataset.discountReady === 'true') return;
+  entry.dataset.discountReady = 'true';
+  var input = entry.querySelector('[data-cart-discount-input]');
+  var button = entry.querySelector('[data-cart-discount-apply]');
+  var apply = function () {
+    var code = String(input && input.value || '').trim();
+    if (!code) { input && input.focus(); return; }
+    var base = entry.dataset.discountBase || '/';
+    if (base.charAt(base.length - 1) !== '/') base += '/';
+    window.location.href = base + 'discount/' + encodeURIComponent(code) + '?redirect=' + encodeURIComponent(base + 'cart');
+  };
+  button && button.addEventListener('click', apply);
+  input && input.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') { event.preventDefault(); apply(); }
+  });
+})();
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Besjaar Store winkelwagen",
+  "settings": [
+    { "type": "paragraph", "content": "Teksten komen uit de vertaalbestanden (besjaar_ui.cart.*), zodat alle vier de talen kloppen." },
+    { "type": "url", "id": "empty_link", "label": "Leeg: link", "info": "Overschrijft de standaard collectielink in de lege winkelwagen." },
+    { "type": "url", "id": "continue_link", "label": "Verder winkelen link", "info": "Overschrijft de standaard collectielink onder de artikelen." },
+    { "type": "checkbox", "id": "show_cart_note", "label": "Opmerking bij bestelling toestaan", "default": true },
+    { "type": "checkbox", "id": "show_discount_entry", "label": "Kortingscodeveld tonen", "default": true }
+  ],
+  "presets": [{ "name": "Besjaar Store winkelwagen" }]
+}
+{% endschema %}

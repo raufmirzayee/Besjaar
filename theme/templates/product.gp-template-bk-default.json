@@ -1,0 +1,88 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "besjaar-store-product",
+      "settings": {
+        "show_breadcrumbs": true,
+        "enable_image_zoom": true
+      }
+    },
+    "reviews": {
+      "type": "besjaar-ui-reviews",
+      "blocks": {
+        "judge_me_reviews_preview_badge_P6GDpK": {
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {}
+        },
+        "judge_me_reviews_review_widget_yeEhVU": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_preview_badge_P6GDpK",
+        "judge_me_reviews_review_widget_yeEhVU"
+      ],
+      "settings": {
+        "show_intro": true,
+        "show_native_summary": true,
+        "show_review_form": true,
+        "enable_legacy_judgeme_widget": false
+      }
+    },
+    "recently_viewed": {
+      "type": "besjaar-recently-viewed",
+      "settings": {}
+    },
+    "proof": {
+      "type": "besjaar-store-reviews",
+      "settings": {
+        "use_localized_copy": true,
+        "rating": "4.7/5",
+        "reviews_count": "391",
+        "show_sold": true,
+        "sold_count": "100+",
+        "source_url": "",
+        "kicker": "PUBLIEK MARKETPLACE-BEWIJS",
+        "heading": "Publieke klantsignalen, mét bron.",
+        "source_note": "Publieke marketplace-cijfers met een directe bronlink.",
+        "rating_label": "Beoordeling",
+        "reviews_label": "Openbare reviews",
+        "sold_label": "Verkocht vorige maand",
+        "source_link": "Bekijk op bol.com"
+      }
+    },
+    "cta": {
+      "type": "besjaar-store-cta",
+      "settings": {
+        "use_localized_copy": true,
+        "kicker": "BESJAAR® SHOWERHEADS",
+        "heading": "Upgrade the shower you use every day.",
+        "primary_label": "SHOP SHOWERHEADS",
+        "primary_link": "",
+        "secondary_label": "EXPLORE THE DETAILS"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "reviews",
+    "recently_viewed",
+    "proof",
+    "cta"
+  ]
+}

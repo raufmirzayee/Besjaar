@@ -1,0 +1,130 @@
+/* Besjaar 11.2.32 — mobile product detail explorer clarity */
+.besjaar-store-detail__mobile-info{display:none}
+
+@media (max-width:760px){
+  body[data-page-type="product"] .besjaar-store-detail{
+    padding-block:38px 118px!important;
+    background:#f6f8f9!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__grid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:22px!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__visual{
+    margin:0!important;
+    border:1px solid #dde5ea!important;
+    border-radius:20px!important;
+    overflow:hidden!important;
+    background:#eef2f4!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__image-wrap{
+    aspect-ratio:4/5!important;
+    background:linear-gradient(145deg,#f5f7f8,#edf2f4)!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__image-wrap>img{
+    width:100%!important;
+    height:100%!important;
+    padding:18px!important;
+    object-fit:contain!important;
+  }
+  /* Mobile should explain the product directly, not ask shoppers to decode hotspot buttons. */
+  body[data-page-type="product"] .besjaar-store-detail__mark,
+  body[data-page-type="product"] .besjaar-store-detail__visual figcaption,
+  body[data-page-type="product"] .besjaar-store-detail__copy{
+    display:none!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-info{
+    display:block!important;
+    min-width:0!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-head{
+    margin:0 0 16px!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-head .besjaar-store-kicker{
+    display:block!important;
+    margin:0 0 7px!important;
+    color:#587087!important;
+    font-size:.68rem!important;
+    line-height:1.2!important;
+    font-weight:800!important;
+    letter-spacing:.14em!important;
+    text-transform:uppercase!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-head h2{
+    margin:0!important;
+    max-width:15ch!important;
+    color:#10281f!important;
+    font-family:inherit!important;
+    font-size:clamp(1.65rem,8vw,2.15rem)!important;
+    line-height:1.02!important;
+    font-weight:650!important;
+    letter-spacing:-.045em!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-head p{
+    margin:10px 0 0!important;
+    max-width:42ch!important;
+    color:#617180!important;
+    font-size:.82rem!important;
+    line-height:1.52!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-list{
+    display:grid!important;
+    gap:9px!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-card{
+    display:grid!important;
+    grid-template-columns:40px minmax(0,1fr)!important;
+    gap:12px!important;
+    align-items:start!important;
+    min-width:0!important;
+    padding:14px!important;
+    border:1px solid #dce4e9!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    box-shadow:none!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-num{
+    display:grid!important;
+    place-items:center!important;
+    width:40px!important;
+    height:40px!important;
+    border-radius:12px!important;
+    background:#123f60!important;
+    color:#fff!important;
+    font-size:.72rem!important;
+    line-height:1!important;
+    font-weight:800!important;
+    letter-spacing:.05em!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-card-copy{
+    display:block!important;
+    min-width:0!important;
+    padding-top:1px!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-card strong{
+    display:block!important;
+    margin:0!important;
+    color:#132c3c!important;
+    font-size:.84rem!important;
+    line-height:1.28!important;
+    font-weight:760!important;
+    letter-spacing:-.012em!important;
+    text-transform:none!important;
+  }
+  body[data-page-type="product"] .besjaar-store-detail__mobile-card small{
+    display:block!important;
+    margin-top:4px!important;
+    color:#697986!important;
+    font-size:.72rem!important;
+    line-height:1.45!important;
+  }
+}
+
+@media (max-width:380px){
+  body[data-page-type="product"] .besjaar-store-detail{padding-block:32px 112px!important}
+  body[data-page-type="product"] .besjaar-store-detail__image-wrap{aspect-ratio:1/1.17!important}
+  body[data-page-type="product"] .besjaar-store-detail__mobile-head h2{font-size:1.65rem!important}
+  body[data-page-type="product"] .besjaar-store-detail__mobile-card{grid-template-columns:36px minmax(0,1fr)!important;padding:12px!important;gap:10px!important}
+  body[data-page-type="product"] .besjaar-store-detail__mobile-num{width:36px!important;height:36px!important;border-radius:10px!important}
+}

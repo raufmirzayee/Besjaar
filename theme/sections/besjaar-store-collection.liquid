@@ -1,0 +1,107 @@
+<script src="{{ 'besjaar-ui-collection-filters.js' | asset_url }}" defer="defer"></script>
+
+{% liquid
+  capture localized_collection_title_capture
+    render 'localized-collection-title', collection: collection
+  endcapture
+  assign display_title = localized_collection_title_capture | strip
+
+  capture localized_description_capture
+    render 'localized-collection-description', collection: collection
+  endcapture
+  assign display_description = localized_description_capture | strip
+%}
+
+<section class="besjaar-store besjaar-collection" data-collection-root data-section-id="{{ section.id }}">
+  <div class="besjaar-store-shell">
+    <nav class="besjaar-collection__breadcrumbs" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
+      <a href="{{ routes.root_url }}">{{ 'besjaar_ui.collection.home' | t }}</a><span aria-hidden="true">/</span><strong>{{ display_title }}</strong>
+    </nav>
+
+    <header class="besjaar-collection__hero" data-reveal>
+      <div class="besjaar-collection__hero-copy">
+        <span class="besjaar-store-kicker">{{ 'besjaar_ui.shower_collection.eyebrow' | t }}</span>
+        <h1>{{ display_title }}</h1>
+        {% if display_description != blank %}<div class="besjaar-collection__description">{{ display_description | strip_html | truncatewords: 38 }}</div>{% endif %}
+      </div>
+      <div class="besjaar-collection__hero-meta">
+        <strong data-collection-part="count" role="status" aria-live="polite">{{ collection.products_count }}</strong>
+        <span>{{ 'besjaar_ui.collection.products' | t }}</span>
+      </div>
+    </header>
+
+    <div class="besjaar-collection__controls">
+      {% if section.settings.show_tag_filters and collection.all_tags.size > 0 %}
+        <nav class="besjaar-collection__filters" aria-label="{{ 'besjaar_ui.collection.filters' | t | escape }}">
+          <a data-collection-link {% if current_tags == blank %}aria-current="page"{% endif %} href="{% render 'localized-internal-url', url: collection.url %}">{{ 'besjaar_ui.collection.all' | t }}</a>
+          {% for tag in collection.all_tags limit: 6 %}
+            {% assign tag_url = collection.url | append: '/' | append: tag | handleize %}
+            <a data-collection-link {% if current_tags contains tag %}aria-current="page"{% endif %} href="{% render 'localized-internal-url', url: tag_url %}">{{ tag | escape }}</a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+
+      {% if section.settings.show_sort and collection.sort_options.size > 0 %}
+        <form method="get" class="besjaar-collection__sort" data-collection-form>
+          <label for="IndSort-{{ section.id }}">{{ 'besjaar_ui.collection.sort' | t }}</label>
+          <select id="IndSort-{{ section.id }}" name="sort_by">
+            {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+            {% for option in collection.sort_options %}<option value="{{ option.value }}"{% if option.value == sort_by %} selected{% endif %}>{{ option.name }}</option>{% endfor %}
+          </select>
+          <noscript><button type="submit">{{ 'besjaar_ui.collection.apply_filters' | t }}</button></noscript>
+        </form>
+      {% endif %}
+    </div>
+
+    <div data-collection-part="results" data-collection-anchor>
+      {% paginate collection.products by 12 %}
+        {% if collection.products_count > 0 %}
+          <div class="besjaar-collection__grid">
+            {% for product in collection.products %}
+              {% render 'besjaar-shop-card', product: product %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="besjaar-collection__empty">{{ 'besjaar_ui.collection.no_products' | t }}</div>
+        {% endif %}
+
+        {% if paginate.pages > 1 %}
+          <nav class="besjaar-pagination" aria-label="{{ 'besjaar_ui.conversion.pagination' | t | escape }}">
+            {% if paginate.previous %}<a href="{{ paginate.previous.url }}" data-collection-link data-collection-scroll aria-label="{{ 'besjaar_ui.conversion.previous_page' | t | escape }}">←</a>{% endif %}
+            {% for part in paginate.parts %}
+              {% if part.is_link %}<a href="{{ part.url }}" data-collection-link data-collection-scroll>{{ part.title }}</a>
+              {% elsif part.title == paginate.current_page %}<span class="is-current" aria-current="page">{{ part.title }}</span>
+              {% else %}<span>{{ part.title }}</span>{% endif %}
+            {% endfor %}
+            {% if paginate.next %}<a href="{{ paginate.next.url }}" data-collection-link data-collection-scroll aria-label="{{ 'besjaar_ui.conversion.next_page' | t | escape }}">→</a>{% endif %}
+          </nav>
+        {% endif %}
+      {% endpaginate %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Besjaar Store collectie",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_tag_filters",
+      "label": "Toon tag-filters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sort",
+      "label": "Toon sorteren",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Besjaar Store collectie"
+    }
+  ]
+}
+{% endschema %}

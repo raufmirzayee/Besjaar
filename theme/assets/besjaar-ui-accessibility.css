@@ -1,0 +1,55 @@
+/* Besjaar UI 7.3.9 — Accessibility & usability QA
+   11.6.4: focus colour moved from the green era (#1f3d34) to the unified blue
+   token, so the base layer agrees with the layers above it instead of being
+   overridden by them. */
+
+
+/* Skip link remains hidden until keyboard focus, including on the password layout. */
+.besjaar-ui-skip{position:fixed;left:16px;top:-120px;z-index:100000;background:#fff;color:#111;padding:11px 15px;border:2px solid #111;border-radius:8px;font-weight:800;text-decoration:none;}
+.besjaar-ui-skip:focus,.besjaar-ui-skip:focus-visible{top:16px;}
+
+/* Strong, consistent keyboard focus without changing pointer/hover styling. */
+:where(a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{
+  outline:2px solid var(--bj-blue,#2F628F)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(47,98,143,.24)!important;
+}
+.besjaar-ui-input:focus-visible,.besjaar-ui-select:focus-visible,.besjaar-ui-textarea:focus-visible{
+  border-color:var(--bj-blue,#2F628F)!important;
+}
+
+/* Closed interactive surfaces must never remain in the keyboard tab order. */
+[data-drawer][aria-hidden="true"],[data-search-panel][aria-hidden="true"],[data-mobile-menu][aria-hidden="true"]{
+  pointer-events:none!important;
+}
+
+/* Keep controls comfortably tappable on touch screens while retaining the compact cart. */
+@media (pointer:coarse){
+  .besjaar-ui-icon-btn,.besjaar-ui-drawer__close,.besjaar-ui-product-gallery-nav,.besjaar-ui-360__control,.besjaar-ui-360__play{min-width:44px!important;min-height:44px!important;}
+  .besjaar-ui-line-quantity button,.besjaar-ui-quantity button{min-width:36px!important;min-height:36px!important;}
+  .besjaar-ui-drawer--cart [data-remove-line]{min-width:36px!important;min-height:36px!important;width:36px!important;height:36px!important;}
+}
+
+/* Text links inside long-form copy remain visually identifiable without hover. */
+.besjaar-ui-content p a:not(.besjaar-ui-button),.besjaar-ui-content li a:not(.besjaar-ui-button),.besjaar-ui-copy a:not(.besjaar-ui-button),.besjaar-ui-form-message a{
+  text-decoration:underline;
+  text-decoration-thickness:.08em;
+  text-underline-offset:.18em;
+}
+
+/* Disabled states remain readable and clearly unavailable. */
+button:disabled,.besjaar-ui-button[aria-disabled="true"],input:disabled,select:disabled{opacity:.62;cursor:not-allowed;}
+
+/* Motion-sensitive visitors get stable product media and no smooth seeking/scrolling. */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important;}
+  .besjaar-ui-hero-video__media,.besjaar-ui-360__image,.besjaar-ui-product-v16__media-stage,.besjaar-ui-product-v16__thumbs{scroll-behavior:auto!important;transition:none!important;animation:none!important;}
+  [data-reveal],[data-besjaar-ui-polish-reveal]{opacity:1!important;transform:none!important;}
+}
+
+/* Windows High Contrast / forced-colors support. */
+@media (forced-colors:active){
+  :where(a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid Highlight!important;box-shadow:none!important;}
+  .besjaar-ui-button,.besjaar-ui-icon-btn,.besjaar-ui-drawer__close,.besjaar-ui-product-v16__thumb,.besjaar-ui-product-gallery-nav,.besjaar-ui-line-quantity,.besjaar-ui-quantity{border:1px solid ButtonText!important;}
+  .besjaar-ui-product-v16__thumb.is-active{outline:2px solid Highlight!important;}
+}

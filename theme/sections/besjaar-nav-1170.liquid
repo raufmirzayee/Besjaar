@@ -1,0 +1,149 @@
+{%- comment -%}
+  Besjaar 11.6.18 — "Zakelijk" navigation link.
+
+  The header and footer of this theme build their links in Liquid; neither
+  reads Shopify's Main Menu, so adding the page there surfaces nothing. The
+  footer carries the real crawlable link (besjaar-store-footer.liquid). This
+  section adds the same link to the header nav and the mobile menu, where the
+  markup lives inside a 41KB section that is safer left alone.
+
+  The mobile menu is rebuilt into tiles by the runtime section, which would
+  discard a plain injected link. So instead of inserting our own markup we
+  wait for the rebuild, clone the finished "Over ons" row and retarget the
+  clone — it therefore inherits whatever styling that row ends up with, now
+  and after any future menu change. Retries briefly, then gives up quietly.
+
+  Localised NL/EN/DE/FR.
+{%- endcomment -%}
+{%- liquid
+  assign bj_z_page = pages['zakelijk']
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_z_label = 'Business'
+    when 'de'
+      assign bj_z_label = 'Geschäftskunden'
+    when 'fr'
+      assign bj_z_label = 'Professionnels'
+    else
+      assign bj_z_label = 'Zakelijk'
+  endcase
+  capture bj_z_url
+    if bj_z_page != blank
+      render 'localized-internal-url', url: bj_z_page.url
+    else
+      render 'localized-internal-url', url: '/pages/zakelijk'
+    endif
+  endcapture
+  assign bj_z_url = bj_z_url | strip
+  assign bj_z_current = false
+  if request.page_type == 'page' and page != blank and page.handle == 'zakelijk'
+    assign bj_z_current = true
+  endif
+
+  comment
+    Mirror the header's own about-page lookup so we can find its row to clone.
+  endcomment
+  assign bj_about_page = pages['over-ons']
+  if bj_about_page == blank
+    assign bj_about_page = pages['overons']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about-us']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about']
+  endif
+  capture bj_about_url
+    if bj_about_page != blank
+      render 'localized-internal-url', url: bj_about_page.url
+    else
+      render 'localized-internal-url', url: '/pages/about-us'
+    endif
+  endcapture
+  assign bj_about_url = bj_about_url | strip
+-%}
+<script type="application/json" id="bj-nav-zakelijk">{"url":{{ bj_z_url | json }},"label":{{ bj_z_label | json }},"current":{{ bj_z_current | json }},"about":{{ bj_about_url | json }}}</script>
+<script>
+(function () {
+  'use strict';
+  var cfg;
+  try { cfg = JSON.parse(document.getElementById('bj-nav-zakelijk').textContent); } catch (e) { return; }
+  if (!cfg || !cfg.url) return;
+
+  var SVG = /^(svg|path|use|circle|rect|line|polyline|polygon|g|defs)$/i;
+
+  var relabel = function (node) {
+    var els = node.querySelectorAll('*'), target = null, i, el, txt;
+    for (i = 0; i < els.length; i += 1) {
+      el = els[i];
+      if (el.children.length || SVG.test(el.tagName)) continue;
+      txt = (el.textContent || '').trim();
+      if (txt.length > 1 && !target) target = el;
+    }
+    if (target) target.textContent = cfg.label;
+    else node.textContent = cfg.label;
+  };
+
+  /* Desktop nav: a plain link is all that is needed. */
+  var desktop = function () {
+    var nav = document.querySelector('.besjaar-ui-nav');
+    if (!nav || nav.querySelector('[data-bj-zakelijk]')) return true;
+    var a = document.createElement('a');
+    a.className = 'besjaar-ui-nav__link';
+    a.href = cfg.url;
+    a.textContent = cfg.label;
+    a.setAttribute('data-bj-zakelijk', '1');
+    if (cfg.current) a.setAttribute('aria-current', 'page');
+    nav.insertBefore(a, nav.querySelector('.besjaar-ui-more-menu') || null);
+    return true;
+  };
+
+  /* Mobile menu: clone the finished "Over ons" row so styling matches. */
+  var mobile = function () {
+    var menu = document.querySelector('[data-mobile-menu]');
+    if (!menu) return false;
+    if (menu.querySelector('[data-bj-zakelijk-m]')) return true;
+    var ref = cfg.about ? menu.querySelector('a[href="' + cfg.about + '"]') : null;
+    if (!ref) return false;
+    var clone = ref.cloneNode(true);
+    clone.setAttribute('data-bj-zakelijk-m', '1');
+    clone.removeAttribute('aria-current');
+    clone.setAttribute('href', cfg.url);
+    relabel(clone);
+    if (cfg.current) clone.setAttribute('aria-current', 'page');
+    ref.parentNode.insertBefore(clone, ref.nextSibling);
+    return true;
+  };
+
+  var tries = 0;
+  var tick = function () {
+    desktop();
+    var done = mobile();
+    tries += 1;
+    if (done || tries > 25) window.clearInterval(timer);
+  };
+  var timer = window.setInterval(tick, 200);
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tick, { once: true });
+  else tick();
+  document.addEventListener('shopify:section:load', function () {
+    tries = 0;
+    timer = window.setInterval(tick, 200);
+  });
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar zakelijk link",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: adds the Zakelijk page to the header nav and to the mobile menu (by cloning the Over ons row after the menu is rebuilt, so the styling always matches). The crawlable link lives in the footer section. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

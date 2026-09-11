@@ -1,0 +1,115 @@
+{% liquid
+  assign card_product = product
+
+  capture localized_title_capture
+    render 'localized-product-title', product: card_product
+  endcapture
+  assign card_title = localized_title_capture | strip
+  if settings.compact_card_titles
+    assign card_title = card_title | truncatewords: 9
+  endif
+
+  capture card_url_capture
+    render 'localized-internal-url', url: card_product.url
+  endcapture
+  assign card_url = card_url_capture | strip
+
+  assign image_alt = card_product.title
+  if card_product.featured_image.alt != blank
+    assign image_alt = card_product.featured_image.alt
+  endif
+
+  assign best_for = ''
+  if card_product.metafields.custom.best_for != blank
+    assign best_for = card_product.metafields.custom.best_for.value
+  endif
+
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: card_product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+
+  capture filter_state_capture
+    render 'shower-filter-state', product: card_product
+  endcapture
+  assign filter_state = filter_state_capture | strip
+  assign filter_known = false
+  if card_product.metafields.custom.filter_included != blank or filter_state == 'true'
+    assign filter_known = true
+  endif
+
+  capture hose_state_capture
+    render 'shower-hose-state', product: card_product
+  endcapture
+  assign hose_state = hose_state_capture | strip
+  assign hose_known = false
+  if card_product.metafields.custom.hose_included != blank or hose_state == 'true'
+    assign hose_known = true
+  endif
+
+  assign merch_badge_key = ''
+  if settings.show_merchandising_badges
+    for besjaar_ui_tag in card_product.tags
+      assign besjaar_ui_tag_lc = besjaar_ui_tag | downcase | strip
+      if besjaar_ui_tag_lc == 'besjaar_ui:bestseller' or besjaar_ui_tag_lc == 'bestseller'
+        assign merch_badge_key = 'besjaar_ui.product_card.bestseller'
+        break
+      elsif besjaar_ui_tag_lc == 'besjaar_ui:new' or besjaar_ui_tag_lc == 'new-arrival' or besjaar_ui_tag_lc == 'nieuw'
+        assign merch_badge_key = 'besjaar_ui.product_card.new_arrival'
+        break
+      elsif besjaar_ui_tag_lc == 'besjaar_ui:exclusive' or besjaar_ui_tag_lc == 'exclusive' or besjaar_ui_tag_lc == 'exclusief'
+        assign merch_badge_key = 'besjaar_ui.product_card.exclusive'
+        break
+      elsif besjaar_ui_tag_lc == 'besjaar_ui:limited' or besjaar_ui_tag_lc == 'limited'
+        assign merch_badge_key = 'besjaar_ui.product_card.limited'
+        break
+      endif
+    endfor
+  endif
+%}
+
+<article class="bp-model-card{% unless card_product.available %} is-unavailable{% endunless %}">
+  <a class="bp-model-card__media" href="{{ card_url }}" aria-label="{{ card_title | escape }}">
+    {% if card_product.featured_image %}
+      {{ card_product.featured_image | image_url: width: 900 | image_tag: loading: 'lazy', widths: '320,480,640,900', sizes: '(max-width: 700px) 50vw, (max-width: 960px) 50vw, 33vw', alt: image_alt }}
+    {% else %}
+      <div class="besjaar-ui-abstract-device" aria-hidden="true"></div>
+    {% endif %}
+
+    {% if card_product.compare_at_price_max > card_product.price %}
+      <span class="bp-model-card__badge">{{ 'besjaar_ui.product_card.sale' | t }}</span>
+    {% elsif card_product.available == false %}
+      <span class="bp-model-card__badge bp-model-card__badge--muted">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>
+    {% elsif merch_badge_key != blank %}
+      <span class="bp-model-card__badge">{{ merch_badge_key | t }}</span>
+    {% endif %}
+  </a>
+
+  <div class="bp-model-card__body">
+    <div class="bp-model-card__heading">
+      <h3><a href="{{ card_url }}">{{ card_title }}</a></h3>
+      <div class="bp-model-card__price">
+        <strong>{{ card_product.price | money }}</strong>
+        {% if card_product.compare_at_price_max > card_product.price %}
+          <s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if settings.show_card_review_ratings %}
+      {% render 'review-stars', product: card_product, compact: true %}
+    {% endif %}
+
+    {% if best_for != blank %}
+      <p class="bp-model-card__best-for"><span>{{ 'besjaar_ui.product.best_for' | t }}</span>{{ best_for }}</p>
+    {% endif %}
+
+    <div class="bp-model-card__foot">
+      <span class="bp-model-card__stock{% unless card_product.available %} is-muted{% endunless %}">
+        <i aria-hidden="true"></i>
+        {% if card_product.available %}{{ 'besjaar_ui.product_card.in_stock' | t }}{% else %}{{ 'besjaar_ui.product_card.sold_out' | t }}{% endif %}
+      </span>
+      <a class="bp-model-card__link" href="{{ card_url }}">{{ 'besjaar_ui.shower_collection.view_model' | t }} <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</article>

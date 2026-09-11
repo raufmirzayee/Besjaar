@@ -1,0 +1,242 @@
+/* Besjaar UI 5.7 — Product Storytelling 2.0 + Model Finder
+   Loaded only on product pages. Keeps the main product stylesheet stable while
+   adding the editorial conversion layer as an isolated module. */
+
+.besjaar-ui-shower-finder{padding:clamp(58px,7vw,104px) 0;background:linear-gradient(180deg,rgba(255,255,255,.52),rgba(240,245,240,.72));border-block:1px solid rgba(29,64,49,.08)}
+.besjaar-ui-shower-finder__head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end;margin-bottom:30px}
+.besjaar-ui-shower-finder__head h2{font-size:clamp(2rem,4.5vw,4.35rem);line-height:.97;letter-spacing:-.055em;margin:7px 0 14px;max-width:840px}
+.besjaar-ui-shower-finder__head p:not(.besjaar-ui-kicker){max-width:700px;margin:0;color:var(--besjaar-ui-muted);font-size:clamp(1rem,1.35vw,1.16rem);line-height:1.65}
+.besjaar-ui-shower-finder__compare-link{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--besjaar-ui-accent);padding-bottom:6px;border-bottom:1px solid currentColor;white-space:nowrap}
+
+.besjaar-ui-shower-finder__quiz{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.besjaar-ui-shower-finder__question{margin:0;padding:18px;border:1px solid rgba(29,64,49,.12);border-radius:22px;background:rgba(255,255,255,.78);min-width:0}
+.besjaar-ui-shower-finder__question legend{display:flex;align-items:center;gap:10px;padding:0 4px 0 0;font-weight:800;font-size:.92rem;line-height:1.25;color:var(--besjaar-ui-text)}
+.besjaar-ui-shower-finder__question legend span{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#e9f1eb;color:var(--besjaar-ui-accent);font-size:.66rem;letter-spacing:.05em}
+.besjaar-ui-shower-finder__choices{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.besjaar-ui-shower-finder__choices button{appearance:none;border:1px solid rgba(29,64,49,.13);background:#fff;color:var(--besjaar-ui-text);border-radius:999px;padding:9px 12px;min-height:38px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.besjaar-ui-shower-finder__choices button:hover{transform:translateY(-1px);border-color:rgba(36,123,105,.35)}
+.besjaar-ui-shower-finder__choices button.is-active{background:var(--besjaar-ui-accent);color:#fff;border-color:var(--besjaar-ui-accent);box-shadow:0 7px 18px rgba(25,97,82,.16)}
+.besjaar-ui-shower-finder__choices button:focus-visible{outline:2px solid var(--besjaar-ui-accent);outline-offset:2px}
+
+.besjaar-ui-shower-finder__result-summary{display:flex;align-items:center;gap:10px;min-height:46px;padding:9px 14px;margin-bottom:20px;border-radius:14px;background:rgba(229,240,232,.74);color:#294a3d}
+.besjaar-ui-shower-finder__result-summary p{margin:0;font-size:.86rem;font-weight:700;flex:1}
+.besjaar-ui-shower-finder__result-summary button{appearance:none;border:0;background:none;color:var(--besjaar-ui-accent);font:inherit;font-size:.76rem;font-weight:800;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.besjaar-ui-shower-finder__pulse{width:8px;height:8px;border-radius:50%;background:#5f9d73;box-shadow:0 0 0 5px rgba(95,157,115,.1)}
+
+.besjaar-ui-shower-finder__models{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:stretch}
+.besjaar-ui-shower-model-card{position:relative;display:flex;flex-direction:column;min-width:0;background:#fff;border:1px solid rgba(27,53,42,.10);border-radius:22px;overflow:hidden;box-shadow:0 12px 32px rgba(29,49,41,.04);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.besjaar-ui-shower-model-card:hover{transform:translateY(-3px);box-shadow:0 18px 42px rgba(29,49,41,.08)}
+.besjaar-ui-shower-model-card.is-current{border-color:rgba(36,123,105,.35)}
+.besjaar-ui-shower-model-card.is-best-match{border-color:var(--besjaar-ui-accent);box-shadow:0 20px 52px rgba(36,123,105,.14)}
+.besjaar-ui-shower-model-card.is-best-match::after{content:"";position:absolute;inset:0;border:2px solid var(--besjaar-ui-accent);border-radius:22px;pointer-events:none}
+.besjaar-ui-shower-model-card__media{position:relative;aspect-ratio:1/1.05;background:#f2f4ef;overflow:hidden}
+.besjaar-ui-shower-model-card__media img{width:100%;height:100%;object-fit:cover;transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.besjaar-ui-shower-model-card:hover .besjaar-ui-shower-model-card__media img{transform:scale(1.025)}
+.besjaar-ui-shower-model-card__current,.besjaar-ui-shower-model-card__match{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;min-height:28px;padding:6px 9px;border-radius:999px;font-size:.61rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;z-index:2}
+.besjaar-ui-shower-model-card__current{background:rgba(255,255,255,.92);color:#3b594d;border:1px solid rgba(37,83,65,.12);backdrop-filter:blur(10px)}
+.besjaar-ui-shower-model-card__match{left:auto;right:10px;background:var(--besjaar-ui-accent);color:#fff;box-shadow:0 5px 16px rgba(36,123,105,.24)}
+.besjaar-ui-shower-model-card__body{display:flex;flex-direction:column;gap:12px;padding:15px;height:100%}
+.besjaar-ui-shower-model-card__body h3{font-size:clamp(.98rem,1.25vw,1.12rem);line-height:1.18;letter-spacing:-.026em;margin:0;min-height:2.35em}
+.besjaar-ui-shower-model-card__facts{display:flex;flex-wrap:wrap;gap:5px}
+.besjaar-ui-shower-model-card__facts span{display:inline-flex;padding:5px 7px;border-radius:7px;background:#f3f5f1;color:#516259;font-size:.64rem;font-weight:700;line-height:1.2}
+.besjaar-ui-shower-model-card__footer{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:auto;padding-top:3px}
+.besjaar-ui-shower-model-card__footer strong{font-size:1rem;letter-spacing:-.02em}
+.besjaar-ui-shower-model-card__footer a{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:800;color:var(--besjaar-ui-accent)}
+.besjaar-ui-shower-model-card__footer a span{transition:transform .18s ease}
+.besjaar-ui-shower-model-card__footer a:hover span{transform:translateX(2px)}
+
+/* Storytelling 2.0 --------------------------------------------------------- */
+.besjaar-ui-shower-visual-story{padding-top:clamp(58px,7vw,110px)!important;padding-bottom:clamp(58px,7vw,110px)!important}
+.besjaar-ui-shower-visual-story .besjaar-ui-shower-heading{max-width:820px;margin-bottom:30px}
+.besjaar-ui-shower-visual-story .besjaar-ui-shower-heading h2{font-size:clamp(2.05rem,4.4vw,4.25rem);line-height:.98;letter-spacing:-.052em;margin:7px 0 14px}
+.besjaar-ui-shower-visual-story .besjaar-ui-shower-heading>p:last-child{max-width:650px;font-size:clamp(1rem,1.25vw,1.13rem);line-height:1.65}
+.besjaar-ui-shower-story-metrics{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.besjaar-ui-shower-story-metric{display:flex;align-items:center;gap:8px;padding:8px 11px;background:#edf3ed;border:1px solid rgba(35,88,68,.08);border-radius:999px}
+.besjaar-ui-shower-story-metric small{font-size:.65rem;font-weight:800;letter-spacing:.065em;text-transform:uppercase;color:#61736a}
+.besjaar-ui-shower-story-metric strong{font-size:.78rem;color:#234537}
+
+.besjaar-ui-shower-visual-hero{position:relative;margin:0 0 14px;border-radius:30px;overflow:hidden;background:#eef0eb;aspect-ratio:16/8.7;box-shadow:0 22px 60px rgba(30,48,40,.07)}
+.besjaar-ui-shower-visual-hero img{width:100%;height:100%;object-fit:cover}
+.besjaar-ui-shower-visual-hero::after{content:"";position:absolute;inset:50% 0 0;background:linear-gradient(180deg,transparent,rgba(12,24,18,.42));pointer-events:none}
+.besjaar-ui-shower-visual-hero figcaption{position:absolute;left:clamp(18px,3vw,34px);right:clamp(18px,3vw,34px);bottom:clamp(18px,3vw,30px);z-index:1;color:#fff;display:flex;flex-direction:column;gap:3px;max-width:650px;text-shadow:0 1px 14px rgba(0,0,0,.22)}
+.besjaar-ui-shower-visual-hero figcaption span{font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+.besjaar-ui-shower-visual-hero figcaption strong{font-size:clamp(1.35rem,3vw,2.75rem);letter-spacing:-.045em;line-height:1.02}
+
+.besjaar-ui-shower-visual-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+.besjaar-ui-shower-visual-card{grid-column:span 4;margin:0;display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:#fff;border:1px solid rgba(29,64,49,.09);min-width:0}
+.besjaar-ui-shower-visual-card--feature{grid-column:span 8;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr)}
+.besjaar-ui-shower-visual-card__media{aspect-ratio:4/3;background:#f1f3ef;overflow:hidden}
+.besjaar-ui-shower-visual-card--feature .besjaar-ui-shower-visual-card__media{aspect-ratio:auto;min-height:390px}
+.besjaar-ui-shower-visual-card__media img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.besjaar-ui-shower-visual-card:hover .besjaar-ui-shower-visual-card__media img{transform:scale(1.02)}
+.besjaar-ui-shower-visual-card figcaption{padding:18px 18px 20px}
+.besjaar-ui-shower-visual-card--feature figcaption{display:flex;flex-direction:column;justify-content:center;padding:clamp(22px,3vw,38px)}
+.besjaar-ui-shower-visual-card figcaption span{display:block;margin-bottom:7px;color:var(--besjaar-ui-accent);font-size:.65rem;font-weight:900;letter-spacing:.105em;text-transform:uppercase}
+.besjaar-ui-shower-visual-card figcaption strong{display:block;font-size:clamp(1.1rem,1.8vw,1.65rem);line-height:1.05;letter-spacing:-.035em;margin-bottom:7px}
+.besjaar-ui-shower-visual-card figcaption p{margin:0;color:var(--besjaar-ui-muted);font-size:.86rem;line-height:1.55}
+.besjaar-ui-shower-visual-card--generic{background:#f8f9f6}
+
+.besjaar-ui-shower-demo-video{margin-top:14px;border-radius:28px;overflow:hidden;background:#10231b;color:#fff;display:grid;grid-template-columns:minmax(280px,.36fr) minmax(0,.64fr);align-items:stretch}
+.besjaar-ui-shower-demo-video__copy{padding:clamp(26px,4vw,52px);display:flex;flex-direction:column;justify-content:center}
+.besjaar-ui-shower-demo-video__copy .besjaar-ui-kicker{color:#a9d5c4}
+.besjaar-ui-shower-demo-video__copy h3{font-size:clamp(1.6rem,3vw,3rem);line-height:1;letter-spacing:-.045em;margin:8px 0 12px}
+.besjaar-ui-shower-demo-video__copy p:last-child{color:rgba(255,255,255,.72);line-height:1.65}
+.besjaar-ui-shower-demo-video__media{min-height:430px;background:#0b1712}
+.besjaar-ui-shower-demo-video__media video,.besjaar-ui-shower-demo-video__media iframe,.besjaar-ui-shower-demo-video__player{width:100%;height:100%;min-height:430px;object-fit:cover;border:0}
+
+/* Improve existing story sections without duplicating the base theme. */
+.besjaar-ui-shower-benefit-grid{gap:12px!important}
+.besjaar-ui-shower-benefit-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.besjaar-ui-shower-benefit-card:hover{transform:translateY(-2px);border-color:rgba(36,123,105,.22)!important;box-shadow:0 15px 36px rgba(29,49,41,.06)}
+.besjaar-ui-shower-installation__steps article span{font-variant-numeric:tabular-nums}
+.besjaar-ui-shower-specification-section .besjaar-ui-shower-spec-table{overflow:hidden;border-radius:22px}
+
+@media(max-width:1180px){
+  .besjaar-ui-shower-finder__models{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .besjaar-ui-shower-visual-card{grid-column:span 6}
+  .besjaar-ui-shower-visual-card--feature{grid-column:span 12}
+}
+@media(max-width:860px){
+  .besjaar-ui-shower-finder__head{grid-template-columns:1fr;gap:16px}
+  .besjaar-ui-shower-finder__compare-link{justify-self:start}
+  .besjaar-ui-shower-finder__quiz{grid-template-columns:1fr}
+  .besjaar-ui-shower-finder__question{padding:15px}
+  .besjaar-ui-shower-finder__models{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin-inline:-12px;padding:2px 12px 16px;scrollbar-width:none}
+  .besjaar-ui-shower-finder__models::-webkit-scrollbar{display:none}
+  .besjaar-ui-shower-model-card{flex:0 0:min(78vw,315px);scroll-snap-align:start}
+  .besjaar-ui-shower-visual-hero{aspect-ratio:4/3;border-radius:22px}
+  .besjaar-ui-shower-visual-grid{grid-template-columns:1fr}
+  .besjaar-ui-shower-visual-card,.besjaar-ui-shower-visual-card--feature{grid-column:auto;display:flex;grid-template-columns:none}
+  .besjaar-ui-shower-visual-card--feature .besjaar-ui-shower-visual-card__media{min-height:0;aspect-ratio:4/3}
+  .besjaar-ui-shower-demo-video{grid-template-columns:1fr}
+  .besjaar-ui-shower-demo-video__media,.besjaar-ui-shower-demo-video__media video,.besjaar-ui-shower-demo-video__media iframe,.besjaar-ui-shower-demo-video__player{min-height:300px}
+}
+@media(max-width:560px){
+  .besjaar-ui-shower-finder{padding:48px 0}
+  .besjaar-ui-shower-finder__head h2,.besjaar-ui-shower-visual-story .besjaar-ui-shower-heading h2{font-size:2.25rem}
+  .besjaar-ui-shower-finder__choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .besjaar-ui-shower-finder__choices button{padding:8px 5px;font-size:.72rem;white-space:normal;line-height:1.15}
+  .besjaar-ui-shower-finder__result-summary{align-items:flex-start;padding:10px 12px}
+  .besjaar-ui-shower-finder__result-summary p{font-size:.78rem;line-height:1.35}
+  .besjaar-ui-shower-model-card{flex-basis:84vw}
+  .besjaar-ui-shower-visual-hero figcaption strong{font-size:1.45rem}
+  .besjaar-ui-shower-visual-card figcaption{padding:15px}
+  .besjaar-ui-shower-story-metrics{gap:6px}
+  .besjaar-ui-shower-story-metric{padding:7px 9px}
+  .besjaar-ui-shower-demo-video__copy{padding:24px 20px}
+  .besjaar-ui-shower-demo-video__media,.besjaar-ui-shower-demo-video__media video,.besjaar-ui-shower-demo-video__media iframe,.besjaar-ui-shower-demo-video__player{min-height:240px}
+}
+@media(prefers-reduced-motion:reduce){
+  .besjaar-ui-shower-model-card,.besjaar-ui-shower-model-card__media img,.besjaar-ui-shower-visual-card__media img,.besjaar-ui-shower-finder__choices button,.besjaar-ui-shower-model-card__footer a span{transition:none!important}
+  .besjaar-ui-shower-model-card:hover,.besjaar-ui-shower-finder__choices button:hover{transform:none!important}
+}
+
+.besjaar-ui-product-model-finder-link{display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:10px;margin:11px 0 2px;padding:10px 12px;border:1px solid rgba(36,123,105,.15);border-radius:14px;background:#f1f6f2;color:var(--besjaar-ui-text);transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.besjaar-ui-product-model-finder-link:hover{border-color:rgba(36,123,105,.32);background:#edf5ef;transform:translateY(-1px)}
+.besjaar-ui-product-model-finder-link>span:first-child{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#fff;color:var(--besjaar-ui-accent);font-size:1rem;border:1px solid rgba(36,123,105,.08)}
+.besjaar-ui-product-model-finder-link>span:nth-child(2){display:flex;flex-direction:column;gap:1px;min-width:0}
+.besjaar-ui-product-model-finder-link strong{font-size:.78rem;line-height:1.2}
+.besjaar-ui-product-model-finder-link small{font-size:.67rem;color:var(--besjaar-ui-muted);line-height:1.25}
+.besjaar-ui-product-model-finder-link i{font-style:normal;color:var(--besjaar-ui-accent);font-weight:900;transition:transform .18s ease}
+.besjaar-ui-product-model-finder-link:hover i{transform:translateX(2px)}
+@media(max-width:560px){.besjaar-ui-product-model-finder-link{padding:9px 10px}.besjaar-ui-product-model-finder-link small{font-size:.64rem}}
+
+/* Rendering performance for long editorial PDPs: below-fold sections can skip
+   paint/layout work until they approach the viewport while preserving space. */
+@supports (content-visibility:auto){
+  .besjaar-ui-shower-finder,.besjaar-ui-shower-visual-story,.besjaar-ui-shower-installation,.besjaar-ui-shower-specification-section,.besjaar-ui-reviews--shower,.besjaar-ui-shower-faq{content-visibility:auto;contain-intrinsic-size:auto 760px}
+}
+
+
+/* Besjaar UI 6.2 — explicit finder recommendation */
+.besjaar-ui-shower-finder__result-card{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:18px;align-items:center;margin:-4px 0 22px;padding:14px 16px;border:1px solid rgba(36,123,105,.25);border-radius:20px;background:linear-gradient(135deg,#f2f8f4 0%,#fff 72%);box-shadow:0 16px 38px rgba(36,79,67,.08);}
+.besjaar-ui-shower-finder__result-card[hidden]{display:none!important;}
+.besjaar-ui-shower-finder__result-media{width:96px;height:96px;border-radius:16px;background:#edf2ed;overflow:hidden;}
+.besjaar-ui-shower-finder__result-media img{width:100%;height:100%;object-fit:cover;}
+.besjaar-ui-shower-finder__result-copy{min-width:0;}
+.besjaar-ui-shower-finder__result-copy .besjaar-ui-kicker{margin:0 0 4px;}
+.besjaar-ui-shower-finder__result-copy h3{margin:0;color:#20372d;font-size:1.15rem;line-height:1.15;letter-spacing:-.025em;}
+.besjaar-ui-shower-finder__result-copy>p:not(.besjaar-ui-kicker){margin:6px 0 0;color:#5e6f66;font-size:.78rem;line-height:1.45;}
+.besjaar-ui-shower-finder__result-facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.besjaar-ui-shower-finder__result-facts span{padding:5px 8px;border:1px solid #dce8e1;border-radius:999px;background:#fff;color:#496258;font-size:.63rem;font-weight:760;}
+.besjaar-ui-shower-finder__result-action{display:grid;justify-items:end;gap:9px;min-width:132px;}
+.besjaar-ui-shower-finder__result-action strong{color:#20372d;font-size:1.08rem;}
+.besjaar-ui-shower-finder__result-action .besjaar-ui-button{min-height:40px;padding:9px 14px;font-size:.7rem;}
+@media(max-width:720px){
+  .besjaar-ui-shower-finder__result-card{grid-template-columns:72px minmax(0,1fr);gap:12px;padding:12px;border-radius:18px;}
+  .besjaar-ui-shower-finder__result-media{width:72px;height:72px;border-radius:13px;}
+  .besjaar-ui-shower-finder__result-action{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;width:100%;}
+  .besjaar-ui-shower-finder__result-action .besjaar-ui-button{min-width:150px;}
+}
+
+
+/* BesjaarUI 7.4.7 Step 2 — model finder reliability + product-page polish */
+#besjaar-model-finder{scroll-margin-top:110px}
+@media (min-width:901px){
+  body[data-page-type="product"] .besjaar-ui-shower-finder{padding-top:clamp(48px,5.5vw,76px);padding-bottom:clamp(54px,6vw,84px)}
+  body[data-page-type="product"] .besjaar-ui-shower-finder__head{margin-bottom:24px}
+  body[data-page-type="product"] .besjaar-ui-shower-finder__quiz{gap:10px}
+}
+@media (max-width:700px){#besjaar-model-finder{scroll-margin-top:88px}}
+
+/* BesjaarUI 7.5.3 — Step 8: clearer, evidence-aware installation experience */
+.besjaar-ui-shower-installation--v2{overflow:hidden}
+.besjaar-ui-shower-installation--v2 .besjaar-ui-shell{display:grid;gap:clamp(30px,4vw,52px)}
+.besjaar-ui-install-v2__header{display:grid;grid-template-columns:minmax(0,.88fr) minmax(420px,1.12fr);gap:clamp(28px,6vw,88px);align-items:start}
+.besjaar-ui-install-v2__intro h2{margin:0 0 15px;color:#1d2b22;font-size:clamp(2.25rem,4.3vw,4.8rem);font-weight:800;line-height:.96;letter-spacing:-.055em}
+.besjaar-ui-install-v2__intro>p:not(.besjaar-ui-kicker){max-width:660px;margin:0;color:#69766e;font-size:clamp(.98rem,1.35vw,1.1rem);line-height:1.72}
+.besjaar-ui-install-v2__badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.besjaar-ui-install-v2__badge{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #dce5df;border-radius:999px;background:#fff;color:#68756d;font-size:.7rem;font-weight:800;letter-spacing:.02em}
+.besjaar-ui-install-v2__badge--accent{border-color:#c9ded6;background:#e9f3ef;color:#2a7066}
+.besjaar-ui-install-v2__facts{padding:clamp(18px,2.4vw,28px);border:1px solid #dce5df;border-radius:24px;background:rgba(255,255,255,.88);box-shadow:0 18px 46px rgba(31,55,42,.05)}
+.besjaar-ui-install-v2__facts-title{margin:0 0 15px;color:#758178;font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.besjaar-ui-install-v2__fact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.besjaar-ui-install-v2__fact{min-width:0;padding:13px 14px;border:1px solid #e3e9e3;border-radius:15px;background:#f8faf7}
+.besjaar-ui-install-v2__fact--wide{grid-column:1/-1}
+.besjaar-ui-install-v2__fact span{display:block;margin-bottom:4px;color:#7b867f;font-size:.68rem}
+.besjaar-ui-install-v2__fact strong{display:block;color:#293a30;font-size:.82rem;line-height:1.35;overflow-wrap:anywhere}
+.besjaar-ui-install-v2__compatibility{margin-top:10px;padding:14px 15px;border:1px solid #d1e2db;border-radius:15px;background:#edf6f2}
+.besjaar-ui-install-v2__compatibility strong{display:block;margin-bottom:4px;color:#2c6c63;font-size:.75rem}
+.besjaar-ui-install-v2__compatibility p{margin:0;color:#5f7066;font-size:.78rem;line-height:1.55}
+.besjaar-ui-install-v2__hero{position:relative;margin:0;overflow:hidden;border-radius:28px;background:#edf1ec}
+.besjaar-ui-install-v2__hero img{display:block;width:100%;max-height:610px;object-fit:cover}
+.besjaar-ui-install-v2__hero figcaption{position:absolute;left:14px;right:14px;bottom:14px;width:max-content;max-width:calc(100% - 28px);padding:9px 12px;border:1px solid rgba(255,255,255,.35);border-radius:12px;background:rgba(23,36,29,.68);backdrop-filter:blur(10px);color:#fff;font-size:.67rem;line-height:1.45}
+.besjaar-ui-install-v2__steps-head{display:grid;grid-template-columns:minmax(0,.85fr) minmax(300px,.55fr);gap:30px;align-items:end;padding-top:3px}
+.besjaar-ui-install-v2__steps-head h3{margin:0;color:#213129;font-size:clamp(1.8rem,3.4vw,3.65rem);line-height:.98;letter-spacing:-.05em}
+.besjaar-ui-install-v2__steps-head>p{max-width:520px;margin:0 0 2px;color:#6d7971;font-size:.88rem;line-height:1.65}
+.besjaar-ui-install-v2__steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.besjaar-ui-install-v2__step{position:relative;overflow:hidden;min-width:0;border:1px solid #dce5df;border-radius:24px;background:#fff;box-shadow:0 12px 30px rgba(31,55,42,.045)}
+.besjaar-ui-install-v2__step-media{position:relative;display:grid;place-items:center;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(145deg,#eef4ef,#f8f8f4)}
+.besjaar-ui-install-v2__step-media>img{width:100%;height:100%;object-fit:cover}
+.besjaar-ui-install-v2__step-icon{display:grid;place-items:center;width:96px;height:96px;border-radius:28px;background:rgba(255,255,255,.84);box-shadow:0 12px 34px rgba(31,55,42,.08);color:#31776d}
+.besjaar-ui-install-v2__step-icon svg{width:58px;height:58px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.besjaar-ui-install-v2__number{position:absolute;top:12px;left:12px;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#fff;color:#2e7168;font-size:.65rem;font-weight:900;letter-spacing:.07em;box-shadow:0 8px 22px rgba(31,55,42,.09)}
+.besjaar-ui-install-v2__step-copy{padding:18px 18px 20px}
+.besjaar-ui-install-v2__step-copy strong{display:block;margin-bottom:7px;color:#25362c;font-size:1rem;line-height:1.25}
+.besjaar-ui-install-v2__step-copy p{margin:0;color:#6f7c74;font-size:.79rem;line-height:1.6}
+.besjaar-ui-install-v2__footer-note{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:13px 15px;border:1px solid #e0e6e1;border-radius:15px;background:rgba(255,255,255,.58);color:#7a867e}
+.besjaar-ui-install-v2__footer-note>span{display:grid;place-items:center;width:24px;height:24px;border:1px solid #ccd8d0;border-radius:50%;font-size:.7rem;font-weight:900;color:#4c7165}
+.besjaar-ui-install-v2__footer-note p{margin:2px 0 0!important;color:#7a867e!important;font-size:.7rem!important;line-height:1.55!important}
+@media(max-width:900px){
+  .besjaar-ui-install-v2__header{grid-template-columns:1fr;gap:24px}
+  .besjaar-ui-install-v2__steps-head{grid-template-columns:1fr;gap:10px;align-items:start}
+  .besjaar-ui-install-v2__steps{grid-template-columns:repeat(3,minmax(230px,1fr));overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-12px;padding:2px 12px 12px;scrollbar-width:none}
+  .besjaar-ui-install-v2__steps::-webkit-scrollbar{display:none}
+  .besjaar-ui-install-v2__step{scroll-snap-align:start}
+}
+@media(max-width:700px){
+  .besjaar-ui-shower-installation--v2 .besjaar-ui-shell{gap:30px}
+  .besjaar-ui-install-v2__intro h2{font-size:clamp(2.25rem,11vw,3.4rem)}
+  .besjaar-ui-install-v2__facts{padding:14px;border-radius:18px}
+  .besjaar-ui-install-v2__fact-grid{grid-template-columns:1fr 1fr}
+  .besjaar-ui-install-v2__fact{padding:11px 12px}
+  .besjaar-ui-install-v2__hero{border-radius:20px}
+  .besjaar-ui-install-v2__hero img{min-height:260px;object-fit:cover}
+  .besjaar-ui-install-v2__steps-head h3{font-size:clamp(1.8rem,9vw,2.7rem)}
+  .besjaar-ui-install-v2__steps{grid-template-columns:repeat(3,minmax(78vw,1fr));gap:10px}
+  .besjaar-ui-install-v2__step{border-radius:20px}
+  .besjaar-ui-install-v2__step-media{aspect-ratio:16/10}
+  .besjaar-ui-install-v2__step-icon{width:84px;height:84px;border-radius:24px}
+  .besjaar-ui-install-v2__step-icon svg{width:50px;height:50px}
+}
+@media(prefers-reduced-motion:reduce){.besjaar-ui-install-v2__steps{scroll-behavior:auto}}

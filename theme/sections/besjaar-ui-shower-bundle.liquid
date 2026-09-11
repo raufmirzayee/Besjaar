@@ -1,0 +1,111 @@
+{% liquid
+  capture besjaar_ui_is_shower_capture
+    render 'is-focus-showerhead', product: product
+  endcapture
+  assign besjaar_ui_is_shower = besjaar_ui_is_shower_capture | strip
+  assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first
+
+  assign accessory_1 = product.metafields.custom.bundle_accessory_1.value
+  assign accessory_2 = product.metafields.custom.bundle_accessory_2.value
+  assign accessory_3 = product.metafields.custom.bundle_accessory_3.value
+  if accessory_1 == blank
+    assign accessory_1 = settings.bundle_accessory_1
+  endif
+  if accessory_2 == blank
+    assign accessory_2 = settings.bundle_accessory_2
+  endif
+  if accessory_3 == blank
+    assign accessory_3 = settings.bundle_accessory_3
+  endif
+
+  capture accessory_1_is_head_capture
+    render 'is-shower-head', product: accessory_1
+  endcapture
+  assign accessory_1_is_head = accessory_1_is_head_capture | strip
+  capture accessory_2_is_head_capture
+    render 'is-shower-head', product: accessory_2
+  endcapture
+  assign accessory_2_is_head = accessory_2_is_head_capture | strip
+  capture accessory_3_is_head_capture
+    render 'is-shower-head', product: accessory_3
+  endcapture
+  assign accessory_3_is_head = accessory_3_is_head_capture | strip
+
+  assign bundle_count = 0
+  if accessory_1 != blank and accessory_1.id != product.id and accessory_1.available and accessory_1_is_head != 'true'
+    assign bundle_count = bundle_count | plus: 1
+  endif
+  if accessory_2 != blank and accessory_2.id != product.id and accessory_2.available and accessory_2.id != accessory_1.id and accessory_2_is_head != 'true'
+    assign bundle_count = bundle_count | plus: 1
+  endif
+  if accessory_3 != blank and accessory_3.id != product.id and accessory_3.available and accessory_3.id != accessory_1.id and accessory_3.id != accessory_2.id and accessory_3_is_head != 'true'
+    assign bundle_count = bundle_count | plus: 1
+  endif
+%}
+
+{% if settings.enable_shower_bundle and besjaar_ui_is_shower == 'true' and bundle_count > 0 %}
+<section class="besjaar-ui-section besjaar-ui-bundle besjaar-ui-bundle--v63" id="besjaar-ui-product-bundle" data-besjaar-ui-bundle data-base-variant-id="{{ selected_variant.id }}" data-base-price="{{ selected_variant.price }}" data-base-available="{{ selected_variant.available }}" data-added-message="{{ 'besjaar_ui.bundle.added' | t | escape }}" data-error-message="{{ 'besjaar_ui.bundle.error' | t | escape }}">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-section-heading besjaar-ui-bundle__heading">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.bundle.kicker' | t }}</p>
+        <h2>{% if section.settings.heading != blank %}{{ section.settings.heading }}{% else %}{{ 'besjaar_ui.bundle.heading' | t }}{% endif %}</h2>
+        <p class="besjaar-ui-copy">{% if section.settings.copy != blank %}{{ section.settings.copy }}{% else %}{{ 'besjaar_ui.bundle.copy' | t }}{% endif %}</p>
+      </div>
+      <span class="besjaar-ui-bundle__mode">{{ 'besjaar_ui.bundle.flexible' | t }}</span>
+    </div>
+
+    <div class="besjaar-ui-bundle__panel">
+      <div class="besjaar-ui-bundle__items">
+        <label class="besjaar-ui-bundle-item is-required">
+          <input type="checkbox" checked disabled aria-hidden="true">
+          <span class="besjaar-ui-bundle-item__check">✓</span>
+          <span class="besjaar-ui-bundle-item__media">{% if product.featured_image %}{{ product.featured_image | image_url: width: 220 | image_tag: loading: 'lazy', widths: '110,220', sizes: '86px', alt: product.title }}{% endif %}</span>
+          <span class="besjaar-ui-bundle-item__body"><small>{{ 'besjaar_ui.bundle.your_model' | t }}</small><strong>{% render 'localized-product-title', product: product %}</strong><span data-bundle-base-price>{{ selected_variant.price | money }}</span></span>
+        </label>
+
+        {% for bundle_index in (1..3) %}
+          {% case bundle_index %}
+            {% when 1 %}{% assign accessory = accessory_1 %}{% assign accessory_is_head = accessory_1_is_head %}
+            {% when 2 %}{% assign accessory = accessory_2 %}{% assign accessory_is_head = accessory_2_is_head %}
+            {% else %}{% assign accessory = accessory_3 %}{% assign accessory_is_head = accessory_3_is_head %}
+          {% endcase %}
+          {% if accessory != blank and accessory.id != product.id and accessory.available and accessory_is_head != 'true' %}
+            {% assign duplicate_accessory = false %}
+            {% if bundle_index == 2 and accessory.id == accessory_1.id %}{% assign duplicate_accessory = true %}{% endif %}
+            {% if bundle_index == 3 %}{% if accessory.id == accessory_1.id or accessory.id == accessory_2.id %}{% assign duplicate_accessory = true %}{% endif %}{% endif %}
+            {% unless duplicate_accessory %}
+              {% assign accessory_variant = accessory.selected_or_first_available_variant %}
+              <label class="besjaar-ui-bundle-item">
+                <input type="checkbox" data-bundle-accessory data-variant-id="{{ accessory_variant.id }}" data-product-id="{{ accessory.id }}" data-price="{{ accessory_variant.price }}"{% if settings.bundle_accessories_preselected %} checked{% endif %}>
+                <span class="besjaar-ui-bundle-item__check" aria-hidden="true"></span>
+                <span class="besjaar-ui-bundle-item__media">{% if accessory.featured_image %}{{ accessory.featured_image | image_url: width: 220 | image_tag: loading: 'lazy', widths: '110,220', sizes: '86px', alt: accessory.title }}{% endif %}</span>
+                <span class="besjaar-ui-bundle-item__body"><small>{{ 'besjaar_ui.bundle.optional' | t }}</small><strong>{% render 'localized-product-title', product: accessory %}</strong><span>{{ accessory_variant.price | money }}</span></span>
+              </label>
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <aside class="besjaar-ui-bundle__summary">
+        <p class="besjaar-ui-bundle__summary-kicker">{{ 'besjaar_ui.bundle.selected_total' | t }}</p>
+        <div><span>{{ 'besjaar_ui.bundle.total' | t }}</span><strong data-bundle-total>{{ selected_variant.price | money }}</strong></div>
+        <button class="besjaar-ui-button besjaar-ui-button--primary" type="button" data-bundle-add data-adding-label="{{ 'besjaar_ui.bundle.adding' | t | escape }}" data-default-label="{{ 'besjaar_ui.bundle.add_selected' | t | escape }}"{% unless selected_variant.available %} disabled{% endunless %}>{{ 'besjaar_ui.bundle.add_selected' | t }}</button>
+        <p>{{ 'besjaar_ui.bundle.no_fake_discount' | t }}</p>
+        <div class="besjaar-ui-bundle-status" role="status" aria-live="polite" data-bundle-status></div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "BesjaarUI shower bundle",
+  "settings": [
+    {"type":"text","id":"heading","label":"Heading"},
+    {"type":"textarea","id":"copy","label":"Copy"}
+  ],
+  "presets": [{"name":"BesjaarUI shower bundle"}]
+}
+{% endschema %}

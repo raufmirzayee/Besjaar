@@ -1,0 +1,37 @@
+{% if settings.enable_measurement_layer and settings.show_cookie_preferences %}
+<dialog class="besjaar-ui-privacy-center" data-besjaar-ui-privacy-dialog aria-labelledby="BesjaarUIPrivacyTitle">
+  <div class="besjaar-ui-privacy-center__head">
+    <div>
+      <span class="besjaar-ui-eyebrow"><span class="notranslate" translate="no" data-besjaar-ui-brand>BESJAAR</span> · {{ 'besjaar_ui.catalog.privacy' | t }}</span>
+      <h2 id="BesjaarUIPrivacyTitle">{{ 'besjaar_ui.analytics.privacy_title' | t }}</h2>
+      <p>{{ 'besjaar_ui.analytics.privacy_intro' | t }}</p>
+    </div>
+    <button class="besjaar-ui-icon-button" type="button" data-besjaar-ui-privacy-close aria-label="{{ 'besjaar_ui.analytics.cancel' | t }}">×</button>
+  </div>
+  <div class="besjaar-ui-privacy-center__options">
+    <div class="besjaar-ui-privacy-option besjaar-ui-privacy-option--essential">
+      <div><strong>{{ 'besjaar_ui.analytics.essential' | t }}</strong><span>{{ 'besjaar_ui.analytics.essential_copy' | t }}</span></div>
+      <b>{{ 'besjaar_ui.analytics.always_on' | t }}</b>
+    </div>
+    <label class="besjaar-ui-privacy-option">
+      <span><strong>{{ 'besjaar_ui.analytics.preferences' | t }}</strong><small>{{ 'besjaar_ui.analytics.preferences_copy' | t }}</small></span>
+      <input type="checkbox" data-besjaar-ui-consent="preferences"><i aria-hidden="true"></i>
+    </label>
+    <label class="besjaar-ui-privacy-option">
+      <span><strong>{{ 'besjaar_ui.analytics.analytics' | t }}</strong><small>{{ 'besjaar_ui.analytics.analytics_copy' | t }}</small></span>
+      <input type="checkbox" data-besjaar-ui-consent="analytics"><i aria-hidden="true"></i>
+    </label>
+    <label class="besjaar-ui-privacy-option">
+      <span><strong>{{ 'besjaar_ui.analytics.marketing' | t }}</strong><small>{{ 'besjaar_ui.analytics.marketing_copy' | t }}</small></span>
+      <input type="checkbox" data-besjaar-ui-consent="marketing"><i aria-hidden="true"></i>
+    </label>
+  </div>
+  <p class="besjaar-ui-privacy-center__status" data-besjaar-ui-privacy-status role="status"></p>
+  <div class="besjaar-ui-privacy-center__actions">
+    {% if shop.privacy_policy != blank %}<a class="besjaar-ui-mini-link" href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_ui.analytics.privacy_policy' | t }}</a>{% endif %}
+    <span></span>
+    <button class="besjaar-ui-button besjaar-ui-button--ghost" type="button" data-besjaar-ui-privacy-close>{{ 'besjaar_ui.analytics.cancel' | t }}</button>
+    <button class="besjaar-ui-button besjaar-ui-button--primary" type="button" data-besjaar-ui-privacy-save>{{ 'besjaar_ui.analytics.save' | t }}</button>
+  </div>
+</dialog>
+{% endif %}

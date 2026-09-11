@@ -1,0 +1,574 @@
+/* BesjaarUI 5.0 — shell/header/footer */
+.besjaar-ui-skip{position:fixed;left:16px;top:-100px;z-index:10000;background:white;color:black;padding:10px 14px;border-radius:8px;}
+.besjaar-ui-skip:focus{top:16px;}
+.besjaar-ui-announcement{background:linear-gradient(90deg,rgba(83,231,224,.08),rgba(185,255,87,.13),rgba(83,231,224,.08));border-bottom:1px solid rgba(83,231,224,.14);text-align:center;padding:9px 16px;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;}
+.besjaar-ui-header{position:sticky;top:0;z-index:100;background:rgba(5,8,7,.82);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08);}
+.besjaar-ui-header__row{min-height:76px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:28px;}
+.besjaar-ui-brand{font-size:1.65rem;line-height:1;font-weight:900;letter-spacing:-.05em;}
+.besjaar-ui-brand span{background:linear-gradient(90deg,var(--besjaar-ui-text),var(--besjaar-ui-accent-2));-webkit-background-clip:text;color:transparent;}
+.besjaar-ui-brand img{max-height:42px;width:auto;}
+.besjaar-ui-nav{display:flex;align-items:center;gap:26px;}
+.besjaar-ui-nav a{font-size:.9rem;font-weight:700;color:#dce8e1;opacity:.88;}
+.besjaar-ui-nav a:hover{color:var(--besjaar-ui-accent);opacity:1;}
+.besjaar-ui-header__actions{display:flex;align-items:center;gap:8px;}
+.besjaar-ui-icon-btn{position:relative;display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(255,255,255,.09);border-radius:13px;background:rgba(255,255,255,.035);color:var(--besjaar-ui-text);cursor:pointer;}
+.besjaar-ui-icon-btn:hover{border-color:rgba(185,255,87,.38);background:rgba(185,255,87,.06);}
+.besjaar-ui-icon-btn svg{width:20px;height:20px;}
+.besjaar-ui-count{position:absolute;right:-5px;top:-6px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--besjaar-ui-accent);color:#051006;display:grid;place-items:center;font-size:.65rem;font-weight:900;}
+.besjaar-ui-menu-toggle{display:none;}
+.besjaar-ui-mobile-menu{display:none;padding:10px 16px 20px;border-top:1px solid rgba(255,255,255,.06);}
+.besjaar-ui-mobile-menu.is-open{display:block;}
+.besjaar-ui-mobile-menu a{display:block;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.06);font-weight:700;}
+.besjaar-ui-search-panel{display:none;position:absolute;left:0;right:0;top:100%;background:rgba(5,8,7,.97);border-bottom:1px solid rgba(255,255,255,.08);padding:18px;}
+.besjaar-ui-search-panel.is-open{display:block;}
+.besjaar-ui-bottom-nav{display:none;}
+.besjaar-ui-hero__grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);align-items:center;gap:54px;min-height:610px;}
+.besjaar-ui-footer{margin-top:70px;border-top:1px solid rgba(255,255,255,.08);background:#030504;}
+.besjaar-ui-footer__grid{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:44px;padding:52px 0;}
+.besjaar-ui-footer__brand{font-size:2rem;font-weight:950;letter-spacing:-.055em;}
+.besjaar-ui-footer h3{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--besjaar-ui-muted);margin:0 0 15px;}
+.besjaar-ui-footer ul{list-style:none;padding:0;margin:0;display:grid;gap:9px;}
+.besjaar-ui-footer li a{color:#d7e3dc;}
+.besjaar-ui-footer__bottom{padding:18px 0;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;gap:18px;align-items:center;color:var(--besjaar-ui-muted);font-size:.78rem;}
+.besjaar-ui-payments{display:flex;flex-wrap:wrap;gap:5px;}
+.besjaar-ui-payments svg{width:38px;height:auto;}
+@media (max-width:1000px){.besjaar-ui-nav{display:none;}.besjaar-ui-menu-toggle{display:grid;}.besjaar-ui-hero__grid{min-height:auto;}.besjaar-ui-footer__grid{grid-template-columns:1fr 1fr;}.besjaar-ui-footer__grid>div:first-child{grid-column:1/-1;}}
+@media (max-width:700px){.besjaar-ui-header__row{min-height:64px;grid-template-columns:auto 1fr auto;gap:12px;}.besjaar-ui-brand{font-size:1.4rem;}.besjaar-ui-header__actions .besjaar-ui-account-action{display:none;}.besjaar-ui-hero__grid{gap:10px;}.besjaar-ui-footer__grid{grid-template-columns:1fr;}.besjaar-ui-footer__grid>div:first-child{grid-column:auto;}.besjaar-ui-footer__bottom{align-items:flex-start;flex-direction:column;}.besjaar-ui-bottom-nav{position:fixed;z-index:150;left:8px;right:8px;bottom:8px;display:grid;grid-template-columns:repeat(4,1fr);background:rgba(5,8,7,.91);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:7px;box-shadow:0 20px 50px rgba(0,0,0,.35);}.besjaar-ui-bottom-nav a,.besjaar-ui-bottom-nav button{border:0;background:none;color:#dbe8e1;display:grid;place-items:center;gap:3px;font-size:.62rem;font-weight:800;padding:5px;}.besjaar-ui-bottom-nav svg{width:19px;height:19px;}.besjaar-ui-footer{padding-bottom:72px;}}
+.besjaar-ui-announcement{background:linear-gradient(90deg,#081012 0%,#0b1616 48%,#0b1512 68%,#081012 100%);border-bottom-color:rgba(53,231,216,.12);color:#eef5f1;letter-spacing:.11em;}
+.besjaar-ui-header{background:rgba(6,9,11,.88);border-bottom-color:rgba(255,255,255,.07);box-shadow:0 12px 35px rgba(0,0,0,.12);}
+.besjaar-ui-brand span{background:linear-gradient(92deg,#f3f7f5 10%,#d7efea 52%,var(--besjaar-ui-accent-2));-webkit-background-clip:text;color:transparent;}
+.besjaar-ui-nav a{color:#c6d1cd;opacity:.92;}
+.besjaar-ui-nav a:hover{color:#f3f7f5;}
+.besjaar-ui-icon-btn{background:#0a1013;border-color:rgba(255,255,255,.095);}
+.besjaar-ui-icon-btn:hover{border-color:rgba(53,231,216,.38);background:rgba(53,231,216,.055);}
+.besjaar-ui-count{background:var(--besjaar-ui-accent);box-shadow:0 0 0 3px #070b0d;color:#081005;}
+.besjaar-ui-hero--v11 .besjaar-ui-hero__grid{grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr);gap:62px;min-height:620px;}
+.besjaar-ui-footer{background:#040607;border-top-color:rgba(255,255,255,.065);}
+.besjaar-ui-footer h3{color:#8b9b95;}
+.besjaar-ui-footer li a{color:#c7d2ce;}
+.besjaar-ui-footer li a:hover{color:#f3f7f5;}
+@media (max-width:1000px){.besjaar-ui-hero--v11 .besjaar-ui-hero__grid{grid-template-columns:1fr;gap:18px;}}
+@media (max-width:700px){.besjaar-ui-bottom-nav{background:rgba(7,11,13,.92);}}
+.besjaar-ui-header__row{min-height:72px;gap:32px;}
+.besjaar-ui-brand{font-size:1.5rem;}
+.besjaar-ui-brand img{max-height:38px;}
+.besjaar-ui-nav{gap:30px;}
+.besjaar-ui-nav a{font-size:.875rem;}
+.besjaar-ui-icon-btn{width:40px;height:40px;border-radius:12px;}
+.besjaar-ui-count{right:-4px;top:-5px;min-width:18px;height:18px;font-size:.6rem;box-shadow:0 0 0 2px #070b0d;}
+.besjaar-ui-hero--v12 .besjaar-ui-hero__grid{position:relative;z-index:1;grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);gap:58px;min-height:580px;}
+@media (max-width:1000px){.besjaar-ui-header__row{gap:20px;}.besjaar-ui-hero--v12 .besjaar-ui-hero__grid{grid-template-columns:1fr;gap:16px;min-height:auto;}}
+.besjaar-ui-hero--v13 .besjaar-ui-hero__grid{position:relative;z-index:1;grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr);gap:60px;min-height:548px;}
+@media (max-width:1000px){.besjaar-ui-hero--v13 .besjaar-ui-hero__grid{grid-template-columns:1fr;gap:10px;min-height:auto;}}
+.besjaar-ui-footer{margin-top:0;background:#040607;border-top-color:rgba(255,255,255,.07);}
+.besjaar-ui-footer__grid{grid-template-columns:1.3fr .8fr .9fr .8fr;gap:52px;padding:45px 0 36px;}
+.besjaar-ui-footer__brand{font-size:1.85rem;}
+.besjaar-ui-footer__column{min-width:0;}
+.besjaar-ui-footer h3{font-size:.66rem;letter-spacing:.16em;margin-bottom:13px;}
+.besjaar-ui-footer ul{gap:7px;}
+.besjaar-ui-footer li a{font-size:.86rem;color:#b8c6c0;}
+.besjaar-ui-footer li a:hover{color:white;}
+.besjaar-ui-footer__proof{display:inline-flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid rgba(53,231,216,.1);border-radius:12px;background:rgba(53,231,216,.025);}
+.besjaar-ui-footer__proof span{display:grid;place-items:center;width:27px;height:27px;border:1px solid rgba(53,231,216,.15);border-radius:8px;font-size:.62rem;font-weight:900;color:#dff5ed;}
+.besjaar-ui-footer__proof p{margin:0;font-size:.69rem;color:#84958e;}
+.besjaar-ui-footer__servicebar{display:flex;flex-wrap:wrap;align-items:center;gap:26px;padding:14px 0;border-top:1px solid rgba(255,255,255,.055);color:#899b94;font-size:.69rem;font-weight:750;}
+.besjaar-ui-footer__servicebar span{display:flex;align-items:center;gap:7px;}
+.besjaar-ui-footer__servicebar i{width:5px;height:5px;border-radius:50%;background:var(--besjaar-ui-accent-2);box-shadow:0 0 9px rgba(53,231,216,.28);}
+.besjaar-ui-footer__bottom{padding:15px 0;color:#71817b;}
+.besjaar-ui-payments svg{width:34px;}
+@media (max-width:1100px){.besjaar-ui-footer__grid{grid-template-columns:1.25fr 1fr 1fr;gap:38px;}.besjaar-ui-footer__column--legal{grid-column:2/4;}}
+@media (max-width:700px){.besjaar-ui-footer__grid{grid-template-columns:1fr 1fr;gap:28px 22px;padding:38px 0 28px;}.besjaar-ui-footer__brand-col{grid-column:1/-1;}.besjaar-ui-footer__column--legal{grid-column:auto;}.besjaar-ui-footer__servicebar{gap:14px 20px;}}
+@media (max-width:430px){.besjaar-ui-footer__grid{grid-template-columns:1fr;}.besjaar-ui-footer__column--legal{grid-column:auto;}.besjaar-ui-footer__servicebar{display:grid;gap:9px;}}
+.besjaar-ui-nav__item{height:100%;display:flex;align-items:center;}
+.besjaar-ui-nav__link{display:flex;align-items:center;gap:6px;}
+.besjaar-ui-nav__link span{font-size:.68em;color:var(--besjaar-ui-muted);}
+.besjaar-ui-mega{position:absolute;z-index:55;top:100%;left:0;right:0;visibility:hidden;opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s ease;background:rgba(6,9,11,.97);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(53,231,216,.12);box-shadow:0 30px 70px rgba(0,0,0,.34);backdrop-filter:blur(20px);}
+.besjaar-ui-nav__item:hover .besjaar-ui-mega,.besjaar-ui-nav__item:focus-within .besjaar-ui-mega{visibility:visible;opacity:1;transform:none;pointer-events:auto;}
+.besjaar-ui-mega__inner{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:38px;padding-top:30px;padding-bottom:32px;}
+.besjaar-ui-mega__columns{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:25px;}
+.besjaar-ui-mega__column{display:flex;flex-direction:column;gap:9px;}
+.besjaar-ui-mega__column>a:not(.besjaar-ui-mega__heading){color:var(--besjaar-ui-muted);font-size:.86rem;}
+.besjaar-ui-mega__column>a:hover{color:var(--besjaar-ui-accent-2);}
+.besjaar-ui-mega__heading{padding-bottom:8px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.06);font-weight:800;color:var(--besjaar-ui-text);}
+.besjaar-ui-mega__feature{display:grid;gap:8px;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025);}
+.besjaar-ui-mega__feature-media{height:150px;border-radius:12px;overflow:hidden;background:#d8e0df;}
+.besjaar-ui-mega__feature-media img{width:100%;height:100%;object-fit:contain;padding:10px;}
+.besjaar-ui-mega__feature strong{font-size:1rem;}
+.besjaar-ui-mega__feature>span{color:var(--besjaar-ui-accent);font-size:.78rem;}
+.besjaar-ui-mobile-menu details{border-bottom:1px solid rgba(255,255,255,.06);}
+.besjaar-ui-mobile-menu summary{list-style:none;padding:15px 0;cursor:pointer;}
+.besjaar-ui-mobile-menu details div{display:grid;padding:0 0 12px 12px;}
+.besjaar-ui-mobile-menu details a{padding:8px 0;}
+.besjaar-ui-mobile-menu .is-child{padding-left:14px;color:var(--besjaar-ui-muted);}
+.besjaar-ui-search-panel{padding:0;max-height:none;height:auto;background:rgba(5,8,10,.985);border-bottom:1px solid rgba(53,231,216,.12);box-shadow:0 30px 70px rgba(0,0,0,.32);}
+.besjaar-ui-search-panel__inner{padding-top:26px;padding-bottom:30px;}
+.besjaar-ui-search-panel__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.besjaar-ui-search-panel__top .besjaar-ui-drawer__close{position:static;}
+.besjaar-ui-cart-drawer__upsell{padding:0 18px;}
+.besjaar-ui-cart-drawer__foot{display:grid;gap:11px;}
+.besjaar-ui-cart-drawer__actions{display:grid;grid-template-columns:.8fr 1.2fr;gap:8px;}
+.besjaar-ui-cart-drawer__actions form,.besjaar-ui-cart-drawer__actions button{width:100%;}
+@media (max-width:1050px){.besjaar-ui-mega{display:none;}}
+@media (max-width:700px){.besjaar-ui-search-panel__inner{padding-top:16px;}.besjaar-ui-cart-drawer__actions{grid-template-columns:1fr;}}
+.besjaar-ui-mega__columns--auto{grid-template-columns:repeat(4,minmax(0,1fr));}
+.besjaar-ui-mega__auto-card{padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:rgba(255,255,255,.018);}
+.besjaar-ui-mega__auto-card span{font-size:.68rem;color:var(--besjaar-ui-muted);}
+.besjaar-ui-mobile-menu__account{margin-top:8px;color:var(--besjaar-ui-accent-2)!important;}
+@media (max-width:700px){.besjaar-ui-bottom-nav--v21{grid-template-columns:repeat(5,1fr);}.besjaar-ui-bottom-nav--v21 button,.besjaar-ui-bottom-nav--v21 a{position:relative;padding-inline:2px;}.besjaar-ui-bottom-nav__count{position:absolute;top:1px;right:calc(50% - 17px);min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--besjaar-ui-accent);color:#071007;display:grid;place-items:center;font-size:.52rem;font-weight:950;}}
+.besjaar-ui-announcement{background:linear-gradient(90deg,#eef2e6 0%,#e7efde 48%,#e4eeeb 100%);color:#2f473a;border-bottom:1px solid #d9e2d5;padding:10px 16px;letter-spacing:.095em;}
+.besjaar-ui-header{background:rgba(255,255,255,.9);border-bottom:1px solid rgba(205,213,201,.82);box-shadow:0 8px 24px rgba(32,44,36,.035);backdrop-filter:blur(18px) saturate(135%);}
+.besjaar-ui-header__row{min-height:74px;}
+.besjaar-ui-brand span{background:linear-gradient(90deg,#17211b 0%,#1f3d34 74%);-webkit-background-clip:text;color:transparent;}
+.besjaar-ui-nav a,.besjaar-ui-nav__link{color:#344139;opacity:1;}
+.besjaar-ui-nav a:hover,.besjaar-ui-nav__link:hover{color:var(--besjaar-ui-teal);}
+.besjaar-ui-icon-btn{background:#fff;color:#26342b;border-color:#dfe5dc;box-shadow:0 2px 9px rgba(35,48,39,.04);}
+.besjaar-ui-icon-btn:hover{background:#f5f7f2;border-color:#c4d2c1;color:var(--besjaar-ui-teal);}
+.besjaar-ui-count{background:var(--besjaar-ui-sage);color:white;box-shadow:0 0 0 2px white;}
+.besjaar-ui-mobile-menu{background:#fff;border-top-color:var(--besjaar-ui-line);}
+.besjaar-ui-mobile-menu a{border-bottom-color:#e8ebe5;color:#2f3c34;}
+.besjaar-ui-mobile-menu details{border-bottom:1px solid #e8ebe5;}
+.besjaar-ui-mobile-menu summary{color:#26342b;}
+.besjaar-ui-search-panel{background:rgba(250,249,245,.985);border-bottom-color:#dfe4da;box-shadow:0 22px 45px rgba(35,48,39,.10);}
+.besjaar-ui-search-panel__top{border-color:var(--besjaar-ui-line);}
+.besjaar-ui-mega{background:#fff;border-color:#dfe4da;box-shadow:0 28px 56px rgba(35,48,39,.12);}
+.besjaar-ui-mega__heading{color:#727d75;}
+.besjaar-ui-mega__column a{color:#334139;}
+.besjaar-ui-mega__column a:hover{color:var(--besjaar-ui-teal);}
+.besjaar-ui-mega__feature,.besjaar-ui-mega__auto-card{background:#f7f6f1;border-color:#e1e5dc;}
+.besjaar-ui-mega__feature-media{background:linear-gradient(145deg,#f0f2eb,#e8ede6);}
+.besjaar-ui-hero--v13 .besjaar-ui-hero__grid{grid-template-columns:minmax(0,1.08fr) minmax(340px,.92fr);min-height:570px;gap:72px;}
+.besjaar-ui-footer{background:#eef0e9;color:#465249;border-top:1px solid #d8ddd4;}
+.besjaar-ui-footer__brand{color:#17211b;}
+.besjaar-ui-footer h3{color:#6f7a72;}
+.besjaar-ui-footer li a{color:#4f5c54;}
+.besjaar-ui-footer li a:hover{color:var(--besjaar-ui-teal);}
+.besjaar-ui-footer__grid{border-color:#d9dfd6;}
+.besjaar-ui-footer__bottom{border-top-color:#d7ddd3;color:#78827b;}
+.besjaar-ui-footer__servicebar{background:#e6ebe2;border-color:#d2dacf;}
+.besjaar-ui-footer__proof{color:#58665d;}
+.besjaar-ui-footer__proof svg{color:var(--besjaar-ui-teal);}
+.besjaar-ui-bottom-nav{background:rgba(255,255,255,.95);border-top-color:#dce2d8;box-shadow:0 -10px 28px rgba(35,48,39,.09);color:#4c5a51;}
+.besjaar-ui-bottom-nav a,.besjaar-ui-bottom-nav button{color:#4b5950;}
+.besjaar-ui-bottom-nav svg{color:#526258;}
+.besjaar-ui-bottom-nav__count{background:var(--besjaar-ui-sage);color:#fff;box-shadow:0 0 0 2px #fff;}
+.besjaar-ui-payments svg,.besjaar-ui-payments img{filter:none;}
+@media (max-width:1000px){.besjaar-ui-hero--v13 .besjaar-ui-hero__grid{grid-template-columns:1fr;gap:20px;min-height:auto;}.besjaar-ui-mega{display:none;}}
+@media (max-width:700px){.besjaar-ui-announcement{font-size:.64rem;letter-spacing:.065em;}.besjaar-ui-header__row{min-height:66px;}.besjaar-ui-brand{font-size:1.4rem;}}
+.besjaar-ui-account-action{position:relative;}
+.besjaar-ui-account-trigger{height:42px;min-width:42px;padding:0 12px;border:1px solid #dce3db;border-radius:13px;background:#fff;color:#24342a;display:flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:.76rem;font-weight:850;cursor:pointer;white-space:nowrap;box-shadow:0 6px 18px rgba(30,45,36,.04);}
+.besjaar-ui-account-trigger::-webkit-details-marker{display:none;}
+.besjaar-ui-account-trigger svg{width:19px;height:19px;flex:0 0 auto;}
+.besjaar-ui-account-trigger:hover{border-color:#b9cbb8;background:#f8faf6;color:#245e57;}
+.besjaar-ui-account-popover{position:absolute;right:0;top:calc(100% + 12px);z-index:220;width:290px;padding:12px;background:#fff;border:1px solid #dbe3da;border-radius:18px;box-shadow:0 26px 65px rgba(42,61,49,.16);}
+.besjaar-ui-account-popover__head{padding:10px 10px 13px;border-bottom:1px solid #e8ece7;margin-bottom:5px;}
+.besjaar-ui-account-popover__head span{display:block;color:#7b897f;font-size:.62rem;font-weight:850;letter-spacing:.11em;text-transform:uppercase;}
+.besjaar-ui-account-popover__head strong{display:block;margin-top:4px;color:#203028;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;}
+.besjaar-ui-account-popover>a,.besjaar-ui-account-popover>button{width:100%;border:0;background:transparent;color:#293b31;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border-radius:10px;font:inherit;font-size:.82rem;font-weight:750;text-align:left;cursor:pointer;}
+.besjaar-ui-account-popover>a:hover,.besjaar-ui-account-popover>button:hover{background:#f3f6f1;color:#1f3d34;}
+.besjaar-ui-account-popover__logout{margin-top:5px;border-top:1px solid #e8ece7!important;border-radius:0!important;color:#8a5c4d!important;}
+.besjaar-ui-account-action--mobile{display:none;}
+@media (max-width:700px){.besjaar-ui-header__actions [data-open-drawer="wishlist"]{display:none;}.besjaar-ui-header__actions .besjaar-ui-account-action{display:flex;}.besjaar-ui-account-action--mobile{display:grid!important;}.besjaar-ui-account-trigger.besjaar-ui-account-action{width:42px;padding:0;}.besjaar-ui-account-trigger.besjaar-ui-account-action>span{display:none;}}
+.besjaar-ui-mobile-menu__club{color:#1f3d34!important;font-weight:850!important;}
+.besjaar-ui-announcement__inner{min-height:34px;display:flex;align-items:center;justify-content:center;gap:14px;font-size:.66rem;font-weight:850;letter-spacing:.055em;text-transform:uppercase;}
+.besjaar-ui-announcement__inner>a{color:inherit;}
+.besjaar-ui-announcement__inner>button{border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;padding:4px 9px;font:inherit;cursor:pointer;}
+.besjaar-ui-announcement__inner>button span{opacity:.68;}
+.besjaar-ui-announcement__inner>button.is-copied{background:#fff;color:#1f3d34;}
+.besjaar-ui-announcement__countdown{display:inline-flex;align-items:center;gap:5px;opacity:.82;}
+.besjaar-ui-announcement__countdown strong{font-variant-numeric:tabular-nums;color:#fff;}
+@media (max-width:650px){.besjaar-ui-announcement__inner{min-height:38px;gap:7px;justify-content:flex-start;overflow:auto;white-space:nowrap;}.besjaar-ui-announcement__countdown{display:none;}}
+.besjaar-ui-footer__link-button{appearance:none;border:0;background:transparent;color:inherit;padding:0;font:inherit;text-align:left;cursor:pointer;}
+.besjaar-ui-footer__link-button:hover{text-decoration:underline;text-underline-offset:3px;}
+.besjaar-ui-privacy-center{width:min(620px,calc(100vw - 28px));max-height:min(760px,calc(100vh - 30px));padding:0;border:1px solid #dce4da;border-radius:26px;background:#fff;color:#1d3025;box-shadow:0 32px 100px rgba(27,47,35,.22);overflow:auto;}
+.besjaar-ui-privacy-center::backdrop{background:rgba(23,33,27,.42);backdrop-filter:blur(5px);}
+.besjaar-ui-privacy-center__head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:26px 26px 20px;border-bottom:1px solid #e7ebe5;background:linear-gradient(135deg,#fbfcf8,#f4f8f2);}
+.besjaar-ui-privacy-center__head h2{margin:6px 0 6px;font-size:1.7rem;letter-spacing:-.035em;}
+.besjaar-ui-privacy-center__head p{max-width:470px;margin:0;color:#6f7d74;font-size:.82rem;line-height:1.55;}
+.besjaar-ui-privacy-center__options{display:grid;gap:10px;padding:20px 26px;}
+.besjaar-ui-privacy-option{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;padding:15px 16px;border:1px solid #e1e7df;border-radius:16px;background:#fff;}
+.besjaar-ui-privacy-option>span,.besjaar-ui-privacy-option>div{display:grid;gap:4px;}
+.besjaar-ui-privacy-option strong{font-size:.82rem;}
+.besjaar-ui-privacy-option small,.besjaar-ui-privacy-option>div span{color:#7a877f;font-size:.7rem;line-height:1.45;}
+.besjaar-ui-privacy-option--essential{background:#f8faf6;}
+.besjaar-ui-privacy-option--essential>b{padding:6px 9px;border-radius:999px;background:#e9f1e4;color:#58744f;font-size:.58rem;text-transform:uppercase;letter-spacing:.06em;}
+.besjaar-ui-privacy-option input{position:absolute;opacity:0;pointer-events:none;}
+.besjaar-ui-privacy-option>i{position:relative;width:42px;height:24px;border-radius:999px;background:#cbd3cc;transition:.18s;cursor:pointer;}
+.besjaar-ui-privacy-option>i:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:.18s;}
+.besjaar-ui-privacy-option input:checked+i{background:#1f3d34;}
+.besjaar-ui-privacy-option input:checked+i:after{transform:translateX(18px);}
+.besjaar-ui-privacy-option input:focus-visible+i{outline:3px solid rgba(31,61,52,.22);outline-offset:3px;}
+.besjaar-ui-privacy-center__status{min-height:20px;margin:0;padding:0 26px;color:#1f3d34;font-size:.7rem;font-weight:800;}
+.besjaar-ui-privacy-center__actions{display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center;padding:18px 26px 24px;}
+.besjaar-ui-measurement-debug{position:fixed;z-index:88;right:18px;bottom:18px;width:min(360px,calc(100vw - 28px));border:1px solid #cfd9ce;border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 20px 60px rgba(34,51,40,.18);backdrop-filter:blur(16px);overflow:hidden;}
+.besjaar-ui-measurement-debug summary{padding:12px 14px;background:#20372b;color:#fff;font-size:.7rem;font-weight:900;cursor:pointer;list-style:none;}
+.besjaar-ui-measurement-debug summary::-webkit-details-marker{display:none;}
+.besjaar-ui-measurement-debug__body{display:grid;gap:0;padding:8px 14px 13px;}
+.besjaar-ui-measurement-debug__body>div{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 0;border-bottom:1px solid #edf0eb;font-size:.65rem;}
+.besjaar-ui-measurement-debug__body span{color:#7b887f;}
+.besjaar-ui-measurement-debug__body strong{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#294336;}
+.besjaar-ui-measurement-debug__body p{margin:10px 0 0;color:#8a958e;font-size:.58rem;line-height:1.45;}
+@media (max-width:650px){.besjaar-ui-privacy-center{border-radius:20px;}.besjaar-ui-privacy-center__head{padding:21px 18px 16px;}.besjaar-ui-privacy-center__options{padding:16px 18px;}.besjaar-ui-privacy-center__actions{grid-template-columns:1fr 1fr;padding:15px 18px 20px;}.besjaar-ui-privacy-center__actions>span{display:none;}.besjaar-ui-measurement-debug{right:10px;bottom:72px;}}
+.besjaar-ui-localization-slot{position:relative;}
+.besjaar-ui-localization{position:relative;}
+.besjaar-ui-localization>summary{list-style:none;}
+.besjaar-ui-localization>summary::-webkit-details-marker{display:none;}
+.besjaar-ui-localization__trigger{display:flex;align-items:center;gap:8px;min-height:42px;padding:5px 9px;border:1px solid #dce3d9;border-radius:13px;background:#fff;color:#33443a;cursor:pointer;transition:.18s ease;}
+.besjaar-ui-localization__trigger:hover{border-color:#bfd0c4;background:#f8faf6;}
+.besjaar-ui-localization__trigger>svg{width:10px;height:7px;color:#839087;transition:.18s;}
+.besjaar-ui-localization[open] .besjaar-ui-localization__trigger>svg{transform:rotate(180deg);}
+.besjaar-ui-localization__panel{position:absolute;z-index:230;right:0;top:calc(100% + 9px);width:min(340px,calc(100vw - 26px));padding:17px;border:1px solid #d9e1d7;border-radius:19px;background:#fff;box-shadow:0 22px 60px rgba(34,52,40,.16);}
+.besjaar-ui-localization--footer .besjaar-ui-localization__panel{right:0;bottom:calc(100% + 9px);top:auto;}
+.besjaar-ui-footer__bottom--v33{display:grid;grid-template-columns:1fr auto auto;align-items:center;}
+.besjaar-ui-footer__localization{justify-self:end;}
+.besjaar-ui-search-panel__mobile-title{display:none;color:#203027;font-size:1.2rem;letter-spacing:-.02em;}
+.besjaar-ui-bottom-nav--v33 .is-active{color:var(--besjaar-ui-teal);}
+.besjaar-ui-bottom-nav--v33 .is-active svg{stroke-width:2;}
+.besjaar-ui-bottom-nav--v33 .is-active:after{content:"";position:absolute;bottom:1px;width:18px;height:2px;border-radius:2px;background:var(--besjaar-ui-teal);}
+@media (max-width:1000px){.besjaar-ui-localization-slot--desktop{display:none;}}
+@media (max-width:700px){.besjaar-ui-header{transition:box-shadow .18s ease,transform .18s ease;}.besjaar-ui-header.is-mobile-compact .besjaar-ui-header__row{min-height:54px;}.besjaar-ui-header.is-mobile-compact .besjaar-ui-brand img{max-height:32px;}.besjaar-ui-header.is-mobile-compact .besjaar-ui-brand{font-size:1.22rem;}.besjaar-ui-header.is-mobile-compact .besjaar-ui-icon-btn{width:38px;height:38px;}.besjaar-ui-mobile-menu{max-height:calc(100dvh - 64px);overflow:auto;padding-bottom:calc(24px + env(safe-area-inset-bottom));}.besjaar-ui-mobile-menu__localization{padding:14px 0 4px;}.besjaar-ui-mobile-menu__localization .besjaar-ui-localization__trigger{width:100%;justify-content:flex-start;padding-inline:10px;}.besjaar-ui-mobile-menu__localization .besjaar-ui-localization__trigger>svg{margin-left:auto;}.besjaar-ui-localization--mobile .besjaar-ui-localization__panel{position:static;width:100%;margin-top:8px;box-shadow:none;background:#f7f8f3;}.besjaar-ui-localization--mobile .besjaar-ui-localization__market-meta{flex-direction:column;}.besjaar-ui-mobile-search-enabled .besjaar-ui-search-panel{position:fixed;z-index:240;inset:0;top:0;padding:0;background:#fbfaf6;overflow:auto;}.besjaar-ui-mobile-search-enabled .besjaar-ui-search-panel__inner{width:100%;min-height:100dvh;padding:calc(14px + env(safe-area-inset-top)) 14px calc(95px + env(safe-area-inset-bottom));}.besjaar-ui-mobile-search-enabled .besjaar-ui-search-panel__top{position:sticky;z-index:3;top:0;margin:-1px -2px 12px;padding:6px 2px 10px;background:rgba(251,250,246,.96);backdrop-filter:blur(15px);}.besjaar-ui-mobile-search-enabled .besjaar-ui-search-panel__mobile-title{display:block;}.besjaar-ui-bottom-nav--v33{left:8px;right:8px;bottom:calc(7px + env(safe-area-inset-bottom));padding:6px;border-radius:17px;}.besjaar-ui-bottom-nav--v33 a,.besjaar-ui-bottom-nav--v33 button{position:relative;min-height:48px;border-radius:12px;}.besjaar-ui-bottom-nav--v33 .is-active{background:#eff5ed;color:#315f54;}.besjaar-ui-footer{padding-bottom:calc(82px + env(safe-area-inset-bottom));}.besjaar-ui-footer__bottom--v33{grid-template-columns:1fr;justify-items:start;gap:14px;}.besjaar-ui-footer__localization{justify-self:start;}.besjaar-ui-localization--footer .besjaar-ui-localization__panel{left:0;right:auto;bottom:calc(100% + 9px);}}
+@media (max-width:430px){.besjaar-ui-header__actions{gap:4px;}.besjaar-ui-header__actions>.besjaar-ui-icon-btn{width:39px;height:39px;}.besjaar-ui-bottom-nav--v33 span{font-size:.56rem;}.besjaar-ui-localization__panel{width:calc(100vw - 22px);}}
+body.besjaar-ui-polish-v34{background:var(--besjaar-ui-paper);color:var(--besjaar-ui-ink);font-size:16px;line-height:1.58;letter-spacing:-.005em;}
+body.besjaar-ui-polish-v34:before{position:fixed;inset:0;z-index:-2;background:radial-gradient(circle at 8% -5%,rgba(114,143,86,.08),transparent 31rem),radial-gradient(circle at 96% 4%,rgba(45,111,101,.07),transparent 30rem),linear-gradient(180deg,#faf9f5 0,#f7f6f1 36rem,#f7f6f1 100%);}
+body.besjaar-ui-polish-v34:after{display:none;}
+body.besjaar-ui-polish-v34 main{overflow:clip;}
+body.besjaar-ui-polish-v34 p{text-wrap:pretty;}
+body.besjaar-ui-polish-v34 h1,body.besjaar-ui-polish-v34 h2,body.besjaar-ui-polish-v34 h3{color:var(--besjaar-ui-ink);text-wrap:balance;}
+body.besjaar-ui-polish-v34 a,body.besjaar-ui-polish-v34 button,body.besjaar-ui-polish-v34 input,body.besjaar-ui-polish-v34 select,body.besjaar-ui-polish-v34 textarea{transition-property:color,background-color,border-color,box-shadow,opacity,transform;transition-duration:var(--besjaar-ui-fast);transition-timing-function:var(--besjaar-ui-ease);}
+body.besjaar-ui-polish-v34 :focus-visible{outline:3px solid rgba(45,111,101,.24);outline-offset:3px;}
+body.besjaar-ui-polish-v34 ::selection{background:rgba(114,143,86,.24);color:var(--besjaar-ui-ink);}
+.besjaar-ui-polish-v34 .besjaar-ui-announcement{min-height:37px;padding:8px 16px;background:linear-gradient(90deg,#eef2e8,#f3f1e8 52%,#e8f1ee);border-bottom:1px solid #dde4d9;color:#3d5145;font-size:.66rem;letter-spacing:.075em;}
+.besjaar-ui-polish-v34 .besjaar-ui-header{background:rgba(252,251,247,.88);border-bottom:1px solid rgba(211,218,208,.82);box-shadow:0 8px 26px rgba(31,46,36,.045);backdrop-filter:blur(20px) saturate(145%);}
+.besjaar-ui-polish-v34 .besjaar-ui-header__row{min-height:72px;gap:26px;}
+.besjaar-ui-polish-v34 .besjaar-ui-brand{font-size:1.52rem;font-weight:900;letter-spacing:-.055em;}
+.besjaar-ui-polish-v34 .besjaar-ui-brand img{max-height:39px;}
+.besjaar-ui-polish-v34 .besjaar-ui-nav{gap:24px;}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a,.besjaar-ui-polish-v34 .besjaar-ui-nav__link{position:relative;color:#354239;font-size:.83rem;font-weight:760;}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a:after,.besjaar-ui-polish-v34 .besjaar-ui-nav__link:after{content:"";position:absolute;left:0;right:100%;bottom:-8px;height:2px;border-radius:2px;background:var(--besjaar-ui-teal);transition:right var(--besjaar-ui-med) var(--besjaar-ui-ease);}
+.besjaar-ui-polish-v34 .besjaar-ui-nav a:hover:after,.besjaar-ui-polish-v34 .besjaar-ui-nav__link:hover:after{right:0;}
+.besjaar-ui-polish-v34 .besjaar-ui-icon-btn{width:41px;height:41px;border:1px solid #dce3d9;border-radius:12px;background:rgba(255,255,255,.88);color:#2c3b32;box-shadow:none;}
+.besjaar-ui-polish-v34 .besjaar-ui-icon-btn:hover{transform:translateY(-1px);background:#fff;border-color:#c6d2c4;color:var(--besjaar-ui-teal);box-shadow:0 7px 16px rgba(31,46,36,.07);}
+.besjaar-ui-polish-v34 .besjaar-ui-count{right:-4px;top:-5px;min-width:18px;height:18px;font-size:.59rem;background:var(--besjaar-ui-teal);box-shadow:0 0 0 2px #fbfaf6;}
+.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu{background:#fbfaf6;border-top-color:#e2e6df;box-shadow:0 18px 36px rgba(31,46,36,.07);}
+.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu a{padding:13px 8px;border-bottom-color:#e8ece5;color:#2d3931;}
+.besjaar-ui-polish-v34 .besjaar-ui-mega,.besjaar-ui-polish-v34 .besjaar-ui-search-panel{border-color:#dfe5dc;background:rgba(255,255,255,.985);box-shadow:0 26px 60px rgba(27,42,32,.12);}
+.besjaar-ui-polish-v34 .besjaar-ui-mega{border-radius:0 0 24px 24px;}
+.besjaar-ui-polish-v34 .besjaar-ui-mega__feature,.besjaar-ui-polish-v34 .besjaar-ui-mega__auto-card{border-color:#e2e7df;background:#f7f7f2;}
+.besjaar-ui-polish-v34 .besjaar-ui-localization__trigger{border-radius:12px;background:#fff;border-color:#dce3d9;box-shadow:none;}
+.besjaar-ui-polish-v34 .besjaar-ui-localization__panel{border-color:#dce3d9;border-radius:20px;box-shadow:0 24px 60px rgba(27,42,32,.14);}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13{padding:clamp(46px,6vw,78px) 0;background:linear-gradient(120deg,#faf9f5 0%,#f6f6f0 58%,#edf2ec 100%);border-bottom:1px solid #e2e6df;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13:before{background:radial-gradient(circle at 79% 43%,rgba(45,111,101,.075),transparent 25rem),radial-gradient(circle at 67% 68%,rgba(214,173,119,.08),transparent 22rem);}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__grid{grid-template-columns:minmax(0,1.06fr) minmax(350px,.94fr);min-height:540px;gap:clamp(48px,6vw,82px);}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__title{max-width:760px;margin-bottom:24px;font-size:clamp(3.25rem,5.8vw,6.45rem);line-height:.925;letter-spacing:-.067em;font-weight:780;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__title em{margin-top:.04em;color:#6f7f67;opacity:.88;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__actions{margin-top:28px;gap:10px;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__meta{margin-top:22px;gap:7px;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__visual{min-height:475px;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-orbit{opacity:.26;animation-duration:55s;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-orbit--2{opacity:.18;animation-duration:70s;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage{width:min(80%,390px);padding:9px;border-radius:26px;background:rgba(255,255,255,.96);border-color:#dce4d9;box-shadow:0 30px 68px rgba(27,42,32,.115);transform:none;}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage:hover{transform:translateY(-4px);box-shadow:0 36px 78px rgba(27,42,32,.135);}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage__media{min-height:300px;border-radius:18px;background:linear-gradient(145deg,#f6f5f0,#ecefe8);}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage__media img{height:290px;padding:26px;filter:contrast(1.01) saturate(.96) drop-shadow(0 16px 20px rgba(31,46,36,.11));}
+.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage__caption{padding:14px 7px 6px;}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__buybox-head{margin-bottom:13px;padding-bottom:11px;border-bottom:1px solid #edf0eb;}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__assurances{gap:7px;}
+.besjaar-ui-polish-v34 .besjaar-ui-product-v16__assurance{border:1px solid #e4e8e2;border-radius:12px;background:#fafbf8;}
+.besjaar-ui-polish-v34 .besjaar-ui-account-order{border-color:#e5e9e3;}
+.besjaar-ui-polish-v34 .besjaar-ui-order-statusbar{border:1px solid #dfe5dd;border-radius:18px;background:#f7f9f5;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer{margin-top:0;background:#eef0ea;color:#354239;border-top:1px solid #dde3da;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__servicebar{border-color:#dce2d8;background:#f5f5f0;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__grid{gap:clamp(28px,4vw,56px);}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__brand{color:#1f2d24;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__column h3{color:#27372d;font-size:.68rem;letter-spacing:.1em;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__column a,.besjaar-ui-polish-v34 .besjaar-ui-footer__link-button{color:#657168;}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__column a:hover,.besjaar-ui-polish-v34 .besjaar-ui-footer__link-button:hover{color:var(--besjaar-ui-teal);}
+.besjaar-ui-polish-v34 .besjaar-ui-footer__bottom{border-top-color:#d8dfd5;color:#778179;}
+.besjaar-ui-polish-v34 .besjaar-ui-privacy-center{border-color:#dce3d9;border-radius:24px;box-shadow:0 34px 90px rgba(27,42,32,.2);}
+.besjaar-ui-polish-v34 .besjaar-ui-privacy-center::backdrop{background:rgba(20,32,26,.38);backdrop-filter:blur(5px);}
+.besjaar-ui-polish-v34 .besjaar-ui-privacy-option{border-color:#e1e6df;border-radius:14px;}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal]{opacity:0;transform:translateY(14px);}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible{opacity:1;transform:none;transition:opacity 520ms var(--besjaar-ui-ease),transform 520ms var(--besjaar-ui-ease);}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal-delay="1"]{transition-delay:55ms;}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal-delay="2"]{transition-delay:105ms;}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal-delay="3"]{transition-delay:155ms;}
+@media (max-width:1100px){.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__grid{gap:38px;}}
+@media (max-width:900px){.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__grid{grid-template-columns:1fr;gap:18px;min-height:auto;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__copy{max-width:760px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__visual{min-height:410px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage{width:min(72%,370px);}}
+@media (max-width:700px){.besjaar-ui-polish-v34 .besjaar-ui-announcement{font-size:.59rem;padding-inline:10px;}.besjaar-ui-polish-v34 .besjaar-ui-header__row{min-height:60px;gap:8px;}.besjaar-ui-polish-v34 .besjaar-ui-brand{font-size:1.28rem;}.besjaar-ui-polish-v34 .besjaar-ui-header__actions{gap:4px;}.besjaar-ui-polish-v34 .besjaar-ui-icon-btn{width:39px;height:39px;border-radius:11px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13{padding:34px 0 38px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__title{font-size:clamp(3rem,13.2vw,4.65rem);line-height:.925;margin-bottom:20px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__actions{display:grid;grid-template-columns:1fr 1fr;margin-top:24px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__meta{overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__visual{min-height:350px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage{width:min(86vw,330px);border-radius:22px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage__media{min-height:240px;}.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-product-stage__media img{height:235px;padding:18px;}.besjaar-ui-polish-v34 .besjaar-ui-orbit{display:none;}.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav--v33{border:1px solid #dce3d9;background:rgba(255,255,255,.95);box-shadow:0 14px 34px rgba(27,42,32,.14);backdrop-filter:blur(16px);}.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav--v33 a,.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav--v33 button{border-radius:11px;}.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav--v33 .is-active{background:#edf4ed;color:var(--besjaar-ui-teal);}.besjaar-ui-polish-v34 .besjaar-ui-footer{padding-bottom:calc(84px + env(safe-area-inset-bottom));}}
+@media (max-width:430px){.besjaar-ui-polish-v34 .besjaar-ui-hero--v13 .besjaar-ui-hero__actions{grid-template-columns:1fr;}}
+@media (prefers-reduced-motion:reduce){.besjaar-ui-polish-v34 *,.besjaar-ui-polish-v34 *:before,.besjaar-ui-polish-v34 *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}.besjaar-ui-polish-v34 [data-besjaar-ui-polish-reveal]{opacity:1!important;transform:none!important;}}
+html.besjaar-ui-editor-safe{scroll-behavior:auto!important;}
+.besjaar-ui-editor-safe [data-besjaar-ui-polish-reveal]{opacity:1!important;transform:none!important;}
+.besjaar-ui-editor-safe .besjaar-ui-header{position:relative!important;top:auto!important;}
+.besjaar-ui-editor-safe .besjaar-ui-search-panel{display:none!important;}
+.besjaar-ui-announcement__inner{scrollbar-width:none;}
+.besjaar-ui-announcement__inner::-webkit-scrollbar{display:none;}
+.besjaar-ui-cart-drawer__foot{order:3;gap:10px;}
+.besjaar-ui-cart-drawer__upsell{order:4;padding-top:10px;padding-bottom:14px;background:#fff;border-top:1px solid #edf0eb;}
+.besjaar-ui-cart-drawer__foot .besjaar-ui-delivery-promise--drawer{margin:2px 0 0;}
+@media (max-width:700px){.besjaar-ui-announcement{padding:7px 10px;}.besjaar-ui-announcement__inner{min-height:30px;justify-content:center;overflow:hidden;white-space:nowrap;}.besjaar-ui-announcement__inner>a{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:.54rem;letter-spacing:.055em;}.besjaar-ui-announcement__inner>button{display:none;}.besjaar-ui-header__actions .besjaar-ui-account-action,.besjaar-ui-header__actions .besjaar-ui-account-action--mobile{display:none!important;}.besjaar-ui-polish-v34 .besjaar-ui-header__row{grid-template-columns:minmax(0,1fr) auto;gap:10px;min-height:58px;}.besjaar-ui-polish-v34 .besjaar-ui-brand{font-size:1.25rem;min-width:0;}.besjaar-ui-polish-v34 .besjaar-ui-header__actions{gap:6px;}.besjaar-ui-polish-v34 .besjaar-ui-icon-btn{width:40px;height:40px;border-radius:12px;}.besjaar-ui-count{right:-3px;top:-5px;min-width:18px;height:18px;font-size:.58rem;padding:0 4px;}.besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__upsell{display:none;}.besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__discount{order:2;}.besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__actions{order:4;}.besjaar-ui-cart-drawer__actions{grid-template-columns:1fr 1.25fr;}}
+.besjaar-ui-spatial-v4{--besjaar-ui-v4-bg:#f5f5f7;--besjaar-ui-v4-surface:#fff;--besjaar-ui-v4-text:#1d1d1f;--besjaar-ui-v4-muted:#6e6e73;--besjaar-ui-v4-hairline:rgba(29,29,31,.11);--besjaar-ui-v4-teal:#1f3d34;--besjaar-ui-v4-sage:#789a56;--besjaar-ui-v4-warm:#d5a56f;--besjaar-ui-v4-radius:28px;--besjaar-ui-v4-shadow:0 14px 42px rgba(0,0,0,.055);background:var(--besjaar-ui-v4-bg);color:var(--besjaar-ui-v4-text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,"Inter Fallback","Segoe UI",sans-serif;letter-spacing:-.005em;}
+.besjaar-ui-spatial-v4 main{overflow:clip;}
+.besjaar-ui-spatial-v4 .besjaar-ui-announcement{min-height:30px;background:#f5f5f7;color:#4c4c50;border-bottom:1px solid rgba(29,29,31,.06);}
+.besjaar-ui-spatial-v4 .besjaar-ui-announcement__inner{min-height:30px;justify-content:center;font-size:.66rem;letter-spacing:.035em;}
+.besjaar-ui-spatial-v4 .besjaar-ui-header{background:rgba(250,250,252,.84);border-bottom:1px solid rgba(29,29,31,.065);backdrop-filter:saturate(180%) blur(22px);box-shadow:none;}
+.besjaar-ui-spatial-v4 .besjaar-ui-header__row{min-height:52px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-brand{font-size:.93rem;letter-spacing:.17em;font-weight:800;}
+.besjaar-ui-spatial-v4 .besjaar-ui-nav__link{font-size:.73rem;font-weight:560;letter-spacing:-.005em;padding:17px 10px;color:#363639;}
+.besjaar-ui-spatial-v4 .besjaar-ui-icon-btn,.besjaar-ui-spatial-v4 .besjaar-ui-account-trigger{width:34px;height:34px;border:0;background:transparent;box-shadow:none;border-radius:999px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-icon-btn:hover,.besjaar-ui-spatial-v4 .besjaar-ui-account-trigger:hover{background:rgba(29,29,31,.055);}
+.besjaar-ui-spatial-v4 .besjaar-ui-icon-btn svg,.besjaar-ui-spatial-v4 .besjaar-ui-account-trigger svg{width:17px;height:17px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-count{min-width:15px;height:15px;font-size:.54rem;right:-1px;top:-1px;background:var(--besjaar-ui-v4-teal);}
+.besjaar-ui-spatial-v4 .besjaar-ui-mega{border-top:1px solid rgba(29,29,31,.07);background:rgba(255,255,255,.97);box-shadow:0 28px 58px rgba(0,0,0,.08);}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--mist{background:#eceff1;}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--sage{background:#e8eee7;}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--sand{background:#f2ece3;}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--ink{background:#151719;color:#f5f5f7;}
+.besjaar-ui-spatial-v4 .besjaar-ui-newsletter-shell{border:0;border-radius:30px;box-shadow:none;background:#e9efec;}
+.besjaar-ui-spatial-v4 .besjaar-ui-product-v16__buy-panel,.besjaar-ui-spatial-v4 .besjaar-ui-product-buy-panel{border:1px solid rgba(29,29,31,.08)!important;border-radius:22px!important;box-shadow:none!important;background:#fff!important;}
+.besjaar-ui-spatial-v4 .besjaar-ui-collection-title,.besjaar-ui-spatial-v4 .besjaar-ui-search-title{font-size:clamp(3.2rem,7vw,7.2rem);line-height:.9;letter-spacing:-.07em;}
+.besjaar-ui-spatial-v4 .besjaar-ui-filter-chip,.besjaar-ui-spatial-v4 .besjaar-ui-sort-select{border-color:rgba(29,29,31,.11);border-radius:999px;background:#fff;box-shadow:none;}
+@media (max-width:700px){.besjaar-ui-spatial-v4{padding-bottom:calc(66px + env(safe-area-inset-bottom));}.besjaar-ui-spatial-v4 .besjaar-ui-announcement__inner{font-size:.6rem;}.besjaar-ui-spatial-v4 .besjaar-ui-header__row{min-height:48px;}}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover{width:320px;padding:10px;border-radius:22px;border-color:#e2e2e3;box-shadow:0 28px 70px rgba(0,0,0,.12);}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover__head{padding:12px 12px 15px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover__head strong{font-size:.98rem;letter-spacing:-.02em;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover>a,.besjaar-ui-spatial-v4 .besjaar-ui-account-popover>button{padding:11px 12px;border-radius:12px;font-size:.78rem;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover__head small{display:block;margin-top:3px;color:#9a9a9f;font-size:.66rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover{width:350px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover__head{background:#f7f9f7;border-radius:15px;margin-bottom:5px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover>a,.besjaar-ui-spatial-v4 .besjaar-ui-account-popover>button{display:flex;justify-content:space-between;align-items:center;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover__logout{margin-top:7px;border-top:1px solid #ececee;border-radius:0!important;padding-top:14px!important;color:#8f5551!important;}
+.besjaar-ui-spatial-v4 .besjaar-ui-account-popover--retail .besjaar-ui-account-popover__head{display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center;}
+.besjaar-ui-account-popover__avatar{width:40px;height:40px;border-radius:12px;background:#eaf1ea;color:#1f3d34;display:grid;place-items:center;font-size:.8rem;font-weight:850;}
+.besjaar-ui-account-popover__snapshot{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px 3px 11px;border-bottom:1px solid #ececee;margin-bottom:5px;}
+.besjaar-ui-account-popover__snapshot span{text-align:center;color:#85858a;font-size:.55rem;}
+.besjaar-ui-account-popover__snapshot b{display:block;margin-bottom:2px;color:#252527;font-size:.78rem;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__upsell{padding:0 14px 14px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell{padding:12px;border-radius:18px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__label{margin-bottom:8px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product{grid-template-columns:54px minmax(0,1fr) auto;gap:9px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product img{width:54px;height:54px;}
+.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;font-size:.72rem;line-height:1.28;}
+@media (min-width:901px){.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart>.besjaar-ui-cart-drawer__upsell{grid-column:1;grid-row:1 / -1;padding:0!important;overflow:auto;border-right:1px solid #dedfd9;background:#f5f2eb;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart>.besjaar-ui-cart-drawer__upsell[hidden]{display:none!important;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart:has(>.besjaar-ui-cart-drawer__upsell[hidden]){width:min(540px,94vw);grid-template-columns:1fr;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart:has(>.besjaar-ui-cart-drawer__upsell[hidden])>.besjaar-ui-drawer__head,.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart:has(>.besjaar-ui-cart-drawer__upsell[hidden])>.besjaar-ui-drawer__body,.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart:has(>.besjaar-ui-cart-drawer__upsell[hidden])>.besjaar-ui-drawer__foot{grid-column:1;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell{min-height:100%;padding:27px 24px 34px;border:0;border-radius:0;background:transparent;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__label{display:grid;gap:6px;margin:0 0 18px;padding-bottom:17px;border-bottom:1px solid #dddcd5;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__label>span{color:#1d1d1f;font-size:1.05rem;font-weight:760;letter-spacing:-.025em;text-transform:none;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__label>small{max-width:250px;color:#6e6e73;font-size:.68rem;line-height:1.45;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__rail{display:grid;gap:0;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;row-gap:9px;align-items:center;padding:18px 0;border-top:1px solid #dddcd5;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product:first-child{border-top:0;padding-top:0;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__media{grid-column:1;grid-row:1 / 3;align-self:center;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__product img{width:76px;height:76px;padding:6px;border-radius:10px;background:#eceae3;object-fit:contain;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__copy{grid-column:2;grid-row:1;display:grid;gap:5px;min-width:0;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__copy strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;color:#1d1d1f;font-size:.77rem;line-height:1.32;font-weight:700;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__copy span{color:#656568;font-size:.68rem;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__add{grid-column:2;grid-row:2;justify-self:start;min-height:35px;padding:7px 13px;border:1px solid #303033;border-radius:0;background:transparent;color:#1d1d1f;font:inherit;font-size:.68rem;font-weight:700;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__add:hover{background:#1d1d1f;color:#fff;border-color:#1d1d1f;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-upsell__add:disabled{opacity:.5;cursor:wait;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__line{grid-template-columns:84px minmax(0,1fr) 34px;padding:16px 0;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__line>a img{width:84px;height:84px;background:#f4f4f0;}.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__line-info h3{font-size:.8rem;line-height:1.32;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:4px;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form{order:1;width:100%;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions>a{order:2;justify-self:center;width:auto;min-height:auto;padding:3px 8px;border:0!important;background:transparent!important;color:#37423b!important;text-decoration:underline;text-underline-offset:3px;font-size:.7rem;font-weight:650;}}
+@media (max-width:900px){.besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart>.besjaar-ui-cart-drawer__upsell{display:none!important;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions{display:grid;grid-template-columns:1fr;gap:8px;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form{order:1;width:100%;}.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions>a{order:2;justify-self:center;width:auto;min-height:auto;padding:2px 8px;border:0!important;background:transparent!important;text-decoration:underline;text-underline-offset:3px;}}
+.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:12px;}
+@media (max-width:700px){.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product{display:flex;overflow-x:auto;gap:7px;padding-bottom:4px;scroll-snap-type:x proximity;scrollbar-width:none;}.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product::-webkit-scrollbar{display:none;}}
+.besjaar-ui-shopify-account-wrap{display:flex;align-items:center;justify-content:center;min-width:42px;}
+.besjaar-ui-shopify-account{--shopify-account-signed-in-avatar-size:34px;--shopify-account-signed-in-avatar-color-background:#eef3ed;--shopify-account-signed-in-avatar-color-text:#20342a;}
+.besjaar-ui-shopify-account::part(signed-out-avatar){width:36px;height:36px;padding:7px;border:1px solid #dce3db;border-radius:999px;background:#fff;}
+.besjaar-ui-mobile-menu__account-component{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid rgba(27,42,32,.1);font-weight:800;}
+.besjaar-ui-shopify-account--mobile{margin-left:auto;}
+.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px;}
+@media (max-width:700px){.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product{display:flex;overflow-x:auto;gap:9px;padding-bottom:4px;scrollbar-width:none;scroll-snap-type:x proximity;}.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product::-webkit-scrollbar{display:none;}}
+.besjaar-ui-footer__column--shop{position:relative;}
+.besjaar-ui-footer__column--shop h3{display:flex;align-items:center;gap:10px;margin-bottom:16px!important;color:#1f2d24!important;font-size:.7rem!important;font-weight:900!important;letter-spacing:.13em!important;}
+.besjaar-ui-footer__column--shop h3:after{content:"";width:34px;height:1px;background:linear-gradient(90deg,#5b8f80,rgba(91,143,128,0));}
+.besjaar-ui-footer__shop-list{display:grid!important;gap:0!important;margin:0!important;padding:0!important;}
+.besjaar-ui-footer__shop-list li{position:relative;border-bottom:1px solid rgba(44,65,52,.075);}
+.besjaar-ui-footer__shop-list li:last-child{border-bottom:0;}
+.besjaar-ui-footer__shop-list a{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:42px;padding:8px 26px 8px 0!important;color:#56645b!important;font-size:.91rem!important;font-weight:540;line-height:1.35;transition:color .18s ease,transform .18s ease,padding .18s ease;}
+.besjaar-ui-footer__shop-list a:before{content:"";flex:0 0 auto;width:5px;height:5px;margin-right:3px;border-radius:50%;background:#91a79b;box-shadow:0 0 0 0 rgba(31,61,52,0);transition:background .18s ease,box-shadow .18s ease,transform .18s ease;}
+.besjaar-ui-footer__shop-list a:after{content:"→";position:absolute;right:2px;color:#8ba096;font-size:.9rem;font-weight:800;opacity:.72;transform:translateX(-2px);transition:opacity .18s ease,transform .18s ease,color .18s ease;}
+.besjaar-ui-footer__shop-list a:hover,.besjaar-ui-footer__shop-list a:focus-visible{color:#245e57!important;transform:translateX(3px);}
+.besjaar-ui-footer__shop-list a:hover:before,.besjaar-ui-footer__shop-list a:focus-visible:before{background:#1f3d34;box-shadow:0 0 0 4px rgba(31,61,52,.09);transform:scale(1.05);}
+.besjaar-ui-footer__shop-list a:hover:after,.besjaar-ui-footer__shop-list a:focus-visible:after{color:#1f3d34;opacity:1;transform:translateX(2px);}
+.besjaar-ui-footer__shop-list a:focus-visible{outline:2px solid rgba(31,61,52,.28);outline-offset:4px;border-radius:6px;}
+@media (max-width:700px){.besjaar-ui-footer__column--shop{padding:18px 18px 14px;border:1px solid #dce2db;border-radius:18px;background:rgba(255,255,255,.38);}.besjaar-ui-footer__column--shop h3{margin-bottom:10px!important;}.besjaar-ui-footer__shop-list a{min-height:46px;font-size:.94rem!important;}}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--1{background:radial-gradient(circle at 72% 22%,rgba(150,204,173,.34),transparent 32%),linear-gradient(145deg,#21332c 0%,#405b4e 48%,#18251f 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--1:after{border-radius:50%;box-shadow:0 0 0 34px rgba(255,255,255,.035),0 0 0 68px rgba(255,255,255,.022);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--2{background:radial-gradient(circle at 78% 18%,rgba(223,233,202,.26),transparent 30%),linear-gradient(135deg,#536458 0%,#263a31 56%,#1b2922 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--2:before{border-radius:34% 66% 48% 52%;transform:rotate(-18deg);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--3{background:radial-gradient(circle at 70% 26%,rgba(150,218,210,.24),transparent 32%),linear-gradient(145deg,#31564f 0%,#1d3b35 58%,#172a25 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--3:after{border-radius:50%;box-shadow:0 0 0 28px rgba(132,221,208,.08),0 0 0 58px rgba(132,221,208,.05);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--4{background:radial-gradient(circle at 80% 12%,rgba(182,210,221,.24),transparent 33%),linear-gradient(145deg,#40555a 0%,#263a3c 56%,#182729 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--4:before{width:90%;height:38%;right:-12%;top:12%;border:1px solid rgba(255,255,255,.12);background:transparent;transform:rotate(-17deg);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--5{background:radial-gradient(circle at 73% 18%,rgba(229,198,187,.25),transparent 30%),linear-gradient(145deg,#5b514a 0%,#3e463d 50%,#27332c 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--5:before{border-radius:34% 66% 68% 32%;background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.015));transform:rotate(20deg);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--6{background:radial-gradient(circle at 70% 20%,rgba(128,203,190,.27),transparent 32%),linear-gradient(145deg,#24473f 0%,#18352f 54%,#122620 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-category-card__fallback--6:after{border-radius:30%;transform:rotate(24deg);}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--ink{border-color:rgba(255,255,255,.06);background:linear-gradient(155deg,#151719 0%,#111315 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--sage{background:linear-gradient(150deg,#e9efe8 0%,#e2eae3 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--mist{background:linear-gradient(150deg,#eef1f2 0%,#e7eceb 100%);}
+.besjaar-ui-spatial-v4 .besjaar-ui-v4-story--sand{background:linear-gradient(150deg,#f3eee7 0%,#eee6dc 100%);}
+@media (min-width:981px){.besjaar-ui-spatial-v4 .besjaar-ui-delivery-promise--product{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;
+    margin-top:10px;
+  }}
+.besjaar-ui-footer{margin-top:0;padding-bottom:calc(28px + env(safe-area-inset-bottom));background:#f1f3ed;color:#344139;border-top:1px solid #dce2d9;}
+.besjaar-ui-footer__grid{display:grid;grid-template-columns:minmax(280px,1.34fr) minmax(180px,.78fr) minmax(180px,.82fr) minmax(180px,.78fr);gap:clamp(34px,4.6vw,76px);padding:52px 0 42px;border:0;align-items:start;}
+.besjaar-ui-footer__brand-col{min-width:0;padding-right:clamp(4px,2vw,24px);}
+.besjaar-ui-footer__brand{margin:0;color:#17231c;font-size:1.72rem;font-weight:950;line-height:1;letter-spacing:.055em;text-shadow:none;}
+.besjaar-ui-footer__proof{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:6px 13px 6px 7px;border:1px solid #d7e3da;border-radius:999px;background:rgba(255,255,255,.46);box-shadow:none;}
+.besjaar-ui-footer__proof span{display:grid;place-items:center;width:30px;height:30px;border:1px solid #d6e6de;border-radius:999px;background:#eef5f0;color:#356b5f;font-size:.59rem;font-weight:900;letter-spacing:.05em;}
+.besjaar-ui-footer__proof p{margin:0;color:#6d7a72;font-size:.72rem;font-weight:620;line-height:1.25;}
+.besjaar-ui-footer__column{min-width:0;padding:0;background:transparent;border:0;border-radius:0;}
+.besjaar-ui-footer__column--shop{padding:0;border:0;border-radius:0;background:transparent;}
+.besjaar-ui-footer__column h3,.besjaar-ui-footer__column--shop h3{display:flex;align-items:center;gap:9px;margin:2px 0 19px!important;color:#1d2b22!important;font-size:.66rem!important;font-weight:900!important;line-height:1.2;letter-spacing:.16em!important;text-transform:uppercase;}
+.besjaar-ui-footer__column h3:after,.besjaar-ui-footer__column--shop h3:after{content:"";width:26px;height:1px;background:#9eafa5;opacity:.55;}
+.besjaar-ui-footer ul,.besjaar-ui-footer__shop-list{display:grid!important;gap:0!important;margin:0!important;padding:0!important;list-style:none;}
+.besjaar-ui-footer li,.besjaar-ui-footer__shop-list li{margin:0;border:0!important;}
+.besjaar-ui-footer li a,.besjaar-ui-footer__shop-list a,.besjaar-ui-footer__link-button{position:relative;display:inline-flex!important;align-items:center!important;min-height:36px!important;padding:5px 0!important;color:#59665e!important;background:transparent!important;border:0!important;font-size:.9rem!important;font-weight:520!important;line-height:1.35!important;letter-spacing:-.006em;transform:none!important;transition:color .18s ease,transform .18s ease!important;}
+.besjaar-ui-footer__shop-list a{justify-content:flex-start!important;gap:0!important;}
+.besjaar-ui-footer__shop-list a:before{display:none!important;content:none!important;}
+.besjaar-ui-footer__shop-list a:after{content:"↗"!important;position:static!important;margin-left:7px;color:#7f968a!important;font-size:.74rem!important;font-weight:780!important;opacity:0!important;transform:translate(-3px,2px)!important;transition:opacity .18s ease,transform .18s ease,color .18s ease!important;}
+.besjaar-ui-footer li a:hover,.besjaar-ui-footer li a:focus-visible,.besjaar-ui-footer__shop-list a:hover,.besjaar-ui-footer__shop-list a:focus-visible,.besjaar-ui-footer__link-button:hover,.besjaar-ui-footer__link-button:focus-visible{color:#21665e!important;transform:translateX(3px)!important;text-decoration:none!important;}
+.besjaar-ui-footer__shop-list a:hover:after,.besjaar-ui-footer__shop-list a:focus-visible:after{color:#21665e!important;opacity:1!important;transform:translate(0,2px)!important;}
+.besjaar-ui-footer li a:focus-visible,.besjaar-ui-footer__shop-list a:focus-visible,.besjaar-ui-footer__link-button:focus-visible{outline:2px solid rgba(31,61,52,.28);outline-offset:4px;border-radius:4px;}
+.besjaar-ui-footer__servicebar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:0;border:1px solid #dce3da;border-radius:18px;background:rgba(255,255,255,.42);overflow:hidden;color:#657169;font-size:.72rem;font-weight:720;}
+.besjaar-ui-footer__servicebar span{min-height:48px;display:flex;align-items:center;justify-content:center;gap:9px;padding:10px 18px;border-right:1px solid #dce3da;text-align:center;}
+.besjaar-ui-footer__servicebar span:last-child{border-right:0;}
+.besjaar-ui-footer__servicebar i{width:6px;height:6px;flex:0 0 6px;border-radius:999px;background:#4d8c7e;box-shadow:none;}
+.besjaar-ui-footer__bottom,.besjaar-ui-footer__bottom--v33{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:22px;padding:20px 0 0;margin-top:18px;border-top:1px solid #dce2d9;color:#78837c;font-size:.72rem;}
+.besjaar-ui-footer__localization{justify-self:end;}
+.besjaar-ui-payments{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;}
+.besjaar-ui-payments svg{width:auto;height:20px;}
+@media (max-width:1050px){.besjaar-ui-footer__grid{grid-template-columns:1.25fr repeat(3,minmax(150px,.75fr));gap:32px;padding:46px 0 36px;}}
+@media (max-width:860px){.besjaar-ui-footer__grid{grid-template-columns:1.2fr 1fr;gap:34px 38px;}.besjaar-ui-footer__brand-col{grid-column:1/-1;padding-right:0;}.besjaar-ui-footer__servicebar{grid-template-columns:1fr;}.besjaar-ui-footer__servicebar span{justify-content:flex-start;border-right:0;border-bottom:1px solid #dce3da;}.besjaar-ui-footer__servicebar span:last-child{border-bottom:0;}.besjaar-ui-footer__bottom,.besjaar-ui-footer__bottom--v33{grid-template-columns:1fr auto;}.besjaar-ui-payments{grid-column:1/-1;justify-content:flex-start;}}
+@media (max-width:560px){.besjaar-ui-footer{padding-bottom:calc(82px + env(safe-area-inset-bottom));}.besjaar-ui-footer__grid{grid-template-columns:1fr;gap:28px;padding:38px 0 30px;}.besjaar-ui-footer__brand-col{grid-column:auto;}.besjaar-ui-footer__brand{font-size:1.5rem;}.besjaar-ui-footer__column{padding-top:22px;border-top:1px solid #dce2d9;}.besjaar-ui-footer__column h3,.besjaar-ui-footer__column--shop h3{margin-bottom:10px!important;}.besjaar-ui-footer li a,.besjaar-ui-footer__shop-list a,.besjaar-ui-footer__link-button{min-height:39px!important;font-size:.92rem!important;}.besjaar-ui-footer__bottom,.besjaar-ui-footer__bottom--v33{grid-template-columns:1fr;justify-items:start;gap:12px;}.besjaar-ui-footer__localization{justify-self:start;}}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__trigger{min-width:78px;min-height:42px;justify-content:center;gap:7px;padding:6px 11px;border-radius:999px;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__language-icon{display:grid;place-items:center;width:20px;height:20px;color:#1f3d34;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__language-icon svg{width:19px;height:19px;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__language-code{font-size:.73rem;font-weight:850;letter-spacing:.08em;color:#26372e;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__chevron{width:9px;height:6px;color:#839087;transition:transform .18s ease;}
+.besjaar-ui-localization--language-only[open] .besjaar-ui-localization__chevron{transform:rotate(180deg);}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__panel{width:min(260px,calc(100vw - 26px));padding:16px;border-radius:18px;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__head{margin-bottom:12px;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__head strong{display:block;font-size:1rem;color:#213229;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__head p{margin:5px 0 0;color:#77847c;font-size:.68rem;line-height:1.45;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__form label>span{display:block;margin-bottom:6px;color:#68776f;font-size:.61rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__form select{width:100%;min-height:44px;padding:0 36px 0 12px;border:1px solid #d9e1d8;border-radius:12px;background:#fbfcfa;color:#27382f;font-weight:760;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__market-meta,.besjaar-ui-localization--language-only .besjaar-ui-localization__flag,.besjaar-ui-localization--language-only .besjaar-ui-localization__current{display:none!important;}
+@media (max-width:700px){.besjaar-ui-localization--language-only .besjaar-ui-localization__trigger{width:auto;min-width:74px;justify-content:center;padding-inline:10px}.besjaar-ui-localization--language-only .besjaar-ui-localization__trigger>.besjaar-ui-localization__chevron{margin-left:0}}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__trigger{min-width:82px;gap:8px;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__language-flag{display:inline-grid;place-items:center;width:25px;height:19px;font-size:1.08rem;line-height:1;filter:saturate(.95);transform:translateY(-.5px);}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__language-icon{display:none!important;}
+.besjaar-ui-localization--language-only .besjaar-ui-localization__form select{font-size:.82rem;}
+@media (max-width:700px){.besjaar-ui-localization--language-only .besjaar-ui-localization__trigger{min-width:78px;gap:7px}.besjaar-ui-localization--language-only .besjaar-ui-localization__language-flag{width:23px;font-size:1rem}}
+.besjaar-ui-localization--direct .besjaar-ui-localization__trigger{min-width:86px;gap:8px;padding:6px 12px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__language-flag{display:grid;place-items:center;width:25px;height:18px;overflow:hidden;border-radius:3px;box-shadow:0 0 0 1px rgba(31,50,39,.12);transform:none;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__flag-svg{display:block;width:100%;height:100%;object-fit:cover;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__flag-svg--globe{width:18px;height:18px;color:#456157;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__panel{width:min(248px,calc(100vw - 24px));padding:10px;border-radius:18px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__direct-head{padding:7px 8px 9px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__direct-head strong{display:block;color:#26362d;font-size:.67rem;font-weight:850;letter-spacing:.13em;text-transform:uppercase;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__direct-form{margin:0;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choices{display:grid;gap:5px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice{display:grid;grid-template-columns:32px minmax(0,1fr) 24px;align-items:center;gap:10px;width:100%;min-height:58px;padding:8px 10px;border:1px solid transparent;border-radius:13px;background:transparent;color:#25352c;text-align:left;cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .16s ease;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice:hover{background:#f4f7f3;border-color:#dde6dd;transform:translateY(-1px);}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice:focus-visible{outline:2px solid #1f3d34;outline-offset:2px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice.is-active{background:#eff5f0;border-color:#d9e5db;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-flag{display:grid;place-items:center;width:30px;height:21px;overflow:hidden;border-radius:4px;box-shadow:0 0 0 1px rgba(31,50,39,.13);}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-copy{display:grid;gap:1px;min-width:0;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-copy strong{overflow:hidden;color:#24352b;font-size:.84rem;font-weight:800;line-height:1.2;text-overflow:ellipsis;white-space:nowrap;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-copy small{color:#7c8881;font-size:.61rem;font-weight:800;letter-spacing:.1em;line-height:1.2;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-check,.besjaar-ui-localization--direct .besjaar-ui-localization__choice-arrow{display:grid;place-items:center;justify-self:end;width:23px;height:23px;border-radius:999px;color:#1f3d34;font-size:.86rem;font-weight:850;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-check{background:#dfece2;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-check svg{width:13px;height:13px;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice-arrow{transition:transform .16s ease;}
+.besjaar-ui-localization--direct .besjaar-ui-localization__choice:hover .besjaar-ui-localization__choice-arrow{transform:translateX(2px);}
+.besjaar-ui-localization--direct.besjaar-ui-localization--mobile .besjaar-ui-localization__panel{margin-top:8px;padding:8px;background:#fff;}
+.besjaar-ui-localization--direct.besjaar-ui-localization--mobile .besjaar-ui-localization__choice{min-height:56px;}
+@media (max-width:700px){.besjaar-ui-localization--direct .besjaar-ui-localization__trigger{min-width:82px;padding-inline:10px}.besjaar-ui-localization--direct .besjaar-ui-localization__panel{width:100%}}
+.besjaar-ui-footer__shop-list li{border-bottom:1px solid rgba(44,65,52,.085)!important;}
+.besjaar-ui-footer__shop-list a{font-weight:600!important;}
+.besjaar-ui-footer__shop-list a:before{background:#9ab0a4!important;}
+.besjaar-ui-footer__shop-list a:after{opacity:.62!important;}
+
+/* BesjaarUI 5.3 — app block wrapper */
+.besjaar-ui-apps-section{padding:42px 0;}
+.besjaar-ui-apps-section__inner{min-width:0;}
+.besjaar-ui-apps-section__inner>*{max-width:100%;}
+@media(max-width:700px){.besjaar-ui-apps-section{padding:28px 0;}}
+
+
+/* BesjaarUI 5.3.1 — mobile footer and cart drawer cleanup */
+@media(max-width:700px){
+  .besjaar-ui-footer__grid{grid-template-columns:1fr 1fr!important;gap:22px 18px!important;padding:30px 0 24px!important;}
+  .besjaar-ui-footer__brand-col{grid-column:1 / -1!important;}
+  .besjaar-ui-footer__column--shop{grid-column:1 / -1!important;padding-top:16px!important;}
+  .besjaar-ui-footer__column--legal{grid-column:auto!important;}
+  .besjaar-ui-footer__column{padding-top:16px!important;}
+  .besjaar-ui-footer__shop-list{grid-template-columns:1fr 1fr!important;column-gap:18px!important;}
+  .besjaar-ui-footer__column h3,.besjaar-ui-footer__column--shop h3{margin-bottom:8px!important;font-size:.61rem!important;}
+  .besjaar-ui-footer li a,.besjaar-ui-footer__shop-list a,.besjaar-ui-footer__link-button{min-height:34px!important;padding:4px 0!important;font-size:.82rem!important;line-height:1.3!important;}
+  .besjaar-ui-footer__servicebar{margin-top:2px!important;}
+
+  .besjaar-ui-spatial-v4 .besjaar-ui-drawer--cart>.besjaar-ui-drawer__body,
+  .besjaar-ui-drawer--cart>.besjaar-ui-drawer__body{padding:2px 16px 6px!important;}
+  .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__line{grid-template-columns:70px minmax(0,1fr) 28px!important;gap:10px!important;align-items:start!important;padding:12px 0!important;}
+  .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__line>a img{width:70px!important;height:70px!important;padding:5px!important;border-radius:12px!important;background:#f2f3ee!important;}
+  .besjaar-ui-cart-drawer__line-info{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:8px;min-width:0;}
+  .besjaar-ui-cart-drawer__line-info>a,.besjaar-ui-cart-drawer__line-info>small{grid-column:1 / -1;min-width:0;}
+  .besjaar-ui-cart-drawer__line-info h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0!important;font-size:.78rem!important;line-height:1.28!important;}
+  .besjaar-ui-cart-drawer__line-info>strong{grid-column:1;margin-top:7px!important;font-size:.8rem!important;}
+  .besjaar-ui-cart-drawer__line-info>.besjaar-ui-line-quantity{grid-column:2;margin-top:7px!important;grid-template-columns:27px 30px 27px!important;border-radius:8px!important;}
+  .besjaar-ui-cart-drawer__line-info>.besjaar-ui-line-quantity button{height:28px!important;}
+  .besjaar-ui-drawer--cart [data-remove-line]{width:28px;height:28px;display:grid;place-items:center;padding:0!important;border-radius:8px!important;background:#f5f6f2!important;color:#516058!important;font-size:1.1rem!important;}
+  .besjaar-ui-drawer--cart .besjaar-ui-free-shipping{padding:10px 0 2px!important;}
+  .besjaar-ui-drawer--cart .besjaar-ui-drawer__foot{padding:12px 16px calc(14px + env(safe-area-inset-bottom))!important;}
+}
+@media(max-width:420px){
+  .besjaar-ui-footer__grid{grid-template-columns:1fr 1fr!important;}
+  .besjaar-ui-footer__brand-col,.besjaar-ui-footer__column--shop{grid-column:1 / -1!important;}
+  .besjaar-ui-footer__column:not(.besjaar-ui-footer__column--shop){min-width:0;}
+  .besjaar-ui-footer li a,.besjaar-ui-footer__shop-list a,.besjaar-ui-footer__link-button{font-size:.78rem!important;}
+}
+
+/* BesjaarUI 5.5.7 — mobile localization sheet + support fallbacks */
+@media (max-width:700px){
+  .besjaar-ui-footer__localization .besjaar-ui-localization--footer .besjaar-ui-localization__panel{
+    position:fixed!important;
+    left:14px!important;
+    right:14px!important;
+    bottom:calc(88px + env(safe-area-inset-bottom))!important;
+    top:auto!important;
+    width:auto!important;
+    max-width:none!important;
+    max-height:min(58vh,360px);
+    overflow:auto;
+    margin:0!important;
+    padding:12px!important;
+    z-index:320!important;
+    border-radius:22px!important;
+    box-shadow:0 24px 70px rgba(22,34,28,.24)!important;
+  }
+  .besjaar-ui-footer__localization .besjaar-ui-localization__direct-head{padding:8px 10px 10px;}
+  .besjaar-ui-footer__localization .besjaar-ui-localization__choice{grid-template-columns:38px minmax(0,1fr) 28px;min-height:62px;padding:10px 12px;}
+  .besjaar-ui-footer__localization .besjaar-ui-localization__choice-copy strong{font-size:.94rem;white-space:normal;}
+  .besjaar-ui-footer__localization .besjaar-ui-localization__choice-copy small{font-size:.66rem;}
+}
+
+/* BesjaarUI 5.7.1 — concise announcement copy on mobile */
+.besjaar-ui-announcement__mobile-copy{display:none;}
+@media(max-width:700px){
+  .besjaar-ui-announcement{padding:7px 12px;}
+  .besjaar-ui-announcement__inner{min-height:30px;justify-content:center;overflow:hidden;}
+  .besjaar-ui-announcement__inner>a{display:block;max-width:100%;overflow:visible;text-overflow:clip;white-space:nowrap;font-size:.59rem;letter-spacing:.045em;}
+  .besjaar-ui-announcement__desktop-copy{display:none;}
+  .besjaar-ui-announcement__mobile-copy{display:inline;}
+}
+
+
+/* Besjaar UI 7.0 — launch accessibility + stability hardening */
+.besjaar-ui-launch-v7 .besjaar-ui-nav__link[aria-current="page"]{color:var(--besjaar-ui-accent,#1f3d34);}
+.besjaar-ui-launch-v7 .besjaar-ui-nav__link[aria-current="page"]:after{transform:scaleX(1);}
+.besjaar-ui-launch-v7 .besjaar-ui-mobile-menu a[aria-current="page"]{color:var(--besjaar-ui-accent,#1f3d34);font-weight:850;}
+.besjaar-ui-launch-v7 .besjaar-ui-predictive img,.besjaar-ui-launch-v7 .besjaar-ui-cart-drawer__line img,.besjaar-ui-launch-v7 .besjaar-ui-wishlist-line img{object-fit:cover;}
+.besjaar-ui-launch-v7 [aria-busy="true"]{cursor:progress;}
+@media (forced-colors:active){.besjaar-ui-launch-v7 :focus-visible{outline:2px solid CanvasText!important;}.besjaar-ui-launch-v7 .besjaar-ui-button{border:1px solid ButtonText;}.besjaar-ui-launch-v7 .besjaar-ui-count{border:1px solid CanvasText;}}
+
+/* Besjaar 11.7 — compact segmented language switch (header + mobile menu). */
+.besjaar-ui-language-switch{display:inline-flex;margin:0;padding:0}
+.besjaar-ui-language-switch__track{display:inline-flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:#ececec}
+.besjaar-ui-language-switch__option{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:36px;margin:0;padding:0 13px;border:0;border-radius:999px;background:transparent;color:#777;font:inherit;font-size:.82rem;font-weight:500;line-height:1;letter-spacing:0;text-transform:uppercase;cursor:pointer;box-shadow:none;transition:background-color .16s ease,color .16s ease,transform .16s ease}
+.besjaar-ui-language-switch__option:hover{color:#171717;background:rgba(255,255,255,.58)}
+.besjaar-ui-language-switch__option.is-active{background:#111;color:#fff}
+.besjaar-ui-language-switch__option:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.besjaar-ui-language-switch__option:active{transform:scale(.98)}
+@media(max-width:700px){
+  .besjaar-ui-mobile-menu__localization .besjaar-ui-language-switch{width:auto;max-width:100%}
+  .besjaar-ui-mobile-menu__localization .besjaar-ui-language-switch__track{max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .besjaar-ui-mobile-menu__localization .besjaar-ui-language-switch__track::-webkit-scrollbar{display:none}
+  .besjaar-ui-mobile-menu__localization .besjaar-ui-language-switch__option{min-width:46px;height:34px;padding-inline:12px;font-size:.78rem}
+}
+@media(prefers-reduced-motion:reduce){.besjaar-ui-language-switch__option{transition:none}}

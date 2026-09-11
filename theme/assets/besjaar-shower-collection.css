@@ -1,0 +1,114 @@
+:root{
+  --besjaar-collection-ink:#101820;
+  --besjaar-collection-blue:#0d4fb3;
+  --besjaar-collection-line:#e7e9eb;
+  --besjaar-collection-soft:#f3f4f4;
+  --besjaar-collection-sale:#1d2430;
+}
+.besjaar-collection-collection{background:#fff;color:var(--besjaar-collection-ink)}
+.besjaar-collection-collection__shell{width:min(calc(100% - 44px),1380px);margin:0 auto;padding:0 0 80px}
+.besjaar-collection-collection__crumbs-wrap{padding:22px 0 18px;border-bottom:1px solid var(--besjaar-collection-line)}
+.besjaar-collection-breadcrumbs{display:flex;align-items:center;justify-content:center;gap:10px;color:#525a61;font-size:.9rem}
+.besjaar-collection-breadcrumbs a{color:#525a61;text-decoration:none}
+.besjaar-collection-collection__header{padding:42px 0 34px}
+.besjaar-collection-collection__heading-wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:44px}
+.besjaar-collection-collection__eyebrow{margin:0 0 10px;color:#587087;font-size:.67rem;font-weight:750;letter-spacing:.14em}
+.besjaar-collection-collection h1{margin:0;color:#101820;font-size:clamp(2.45rem,4.3vw,4.3rem);line-height:.98;font-weight:520;letter-spacing:-.052em}
+.besjaar-collection-collection__intro{margin:0;max-width:570px;color:#667582;font-size:1rem;line-height:1.62}
+.besjaar-collection-collection-jump{display:flex;flex-wrap:wrap;gap:8px;padding:0 0 34px;border-bottom:1px solid var(--besjaar-collection-line)}
+.besjaar-collection-collection-jump a{display:inline-flex;align-items:center;min-height:40px;padding:0 15px;border:1px solid #dce2e6;border-radius:999px;background:#fff;color:#173555;font-size:.76rem;font-weight:700;text-decoration:none;transition:.16s ease}
+.besjaar-collection-collection-jump a:hover{border-color:#173555;background:#173555;color:#fff}
+.besjaar-collection-collection-groups{display:grid;gap:76px;padding-top:50px}
+.besjaar-collection-collection-group{scroll-margin-top:130px}
+.besjaar-collection-collection-group__head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--besjaar-collection-line)}
+.besjaar-collection-collection-group__head>div{max-width:700px}
+.besjaar-collection-collection-group__count{margin:0 0 7px;color:#72808d;font-size:.72rem;font-weight:650}
+.besjaar-collection-collection-group__head h2{margin:0;color:#101820;font-size:clamp(1.7rem,2.8vw,2.6rem);font-weight:520;letter-spacing:-.045em;line-height:1.05}
+.besjaar-collection-collection-group__head p:not(.besjaar-collection-collection-group__count){margin:9px 0 0;color:#687582;font-size:.9rem;line-height:1.52}
+.besjaar-collection-collection-group__head>a{flex:0 0 auto;color:#173555;font-size:.78rem;font-weight:750;text-decoration:none}
+.besjaar-collection-single-collection-meta{display:flex;align-items:center;gap:18px;margin:0 0 24px;color:#202a33;font-size:.94rem}
+.besjaar-collection-single-collection-meta>span{font-size:1.7rem;font-weight:300}
+.besjaar-collection-single-collection-meta strong{font-weight:550}
+
+.besjaar-collection-product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.besjaar-collection-product-card{min-width:0;background:#fff;overflow:hidden}
+.besjaar-collection-product-card__media{position:relative;border-radius:22px;background:var(--besjaar-collection-soft);overflow:hidden;aspect-ratio:1/1.04}
+.besjaar-collection-product-card__media>a{display:block;width:100%;height:100%}
+.besjaar-collection-product-card__media img{display:block;width:100%;height:100%;object-fit:contain;padding:20px;transition:transform .28s ease}
+.besjaar-collection-product-card:hover .besjaar-collection-product-card__media img{transform:scale(1.018)}
+.besjaar-collection-product-card__placeholder{display:block;width:100%;height:100%;background:linear-gradient(135deg,#f2f3f1,#e7e9e8)}
+.besjaar-collection-product-card__badges{position:absolute;inset:13px auto auto 13px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none}
+.besjaar-collection-badge{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:8px;background:var(--besjaar-collection-blue);color:#fff;font-size:.68rem;font-weight:750}
+.besjaar-collection-badge--sale{background:var(--besjaar-collection-sale)}
+.besjaar-collection-product-card__body{display:flex;flex-direction:column;padding:16px 3px 4px}
+.besjaar-collection-product-card h3{margin:0;font-size:1.02rem;font-weight:550;line-height:1.22;letter-spacing:-.025em}
+.besjaar-collection-product-card h3 a{color:#101820;text-decoration:none}
+.besjaar-collection-product-card__price{display:flex;align-items:baseline;gap:9px;margin-top:10px}
+.besjaar-collection-product-card__price strong{color:#111820;font-size:1.02rem;font-weight:700}
+.besjaar-collection-product-card__price s{color:#8c979f;font-size:.8rem}
+.besjaar-collection-product-card__facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.besjaar-collection-product-card__facts span{padding:5px 8px;border-radius:999px;background:#f4f7f9;color:#536980;font-size:.61rem;font-weight:650}
+.besjaar-collection-product-card__action{margin-top:14px}
+.besjaar-collection-product-card__action form{margin:0}
+.besjaar-collection-product-card__action button,.besjaar-collection-product-card__action>a,.besjaar-collection-product-card__action .is-disabled{display:inline-flex;align-items:center;justify-content:center;min-width:104px;min-height:40px;padding:0 15px;border:1px solid #173555;border-radius:999px;background:#fff;color:#173555;font:inherit;font-size:.74rem;font-weight:750;text-decoration:none;cursor:pointer;transition:.16s ease}
+.besjaar-collection-product-card__action button:hover,.besjaar-collection-product-card__action>a:hover{background:#173555;color:#fff}
+.besjaar-collection-product-card__action .is-disabled{border-color:#d8dde2;color:#98a2ac;cursor:not-allowed}
+.besjaar-collection-pagination{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:48px}
+.besjaar-collection-pagination a,.besjaar-collection-pagination span{display:grid;place-items:center;min-width:38px;height:38px;padding:0 9px;border:1px solid #d9e0e5;border-radius:999px;color:#233f59;font-size:.78rem;text-decoration:none}
+.besjaar-collection-pagination .is-current{background:#173555;border-color:#173555;color:#fff}
+.besjaar-collection-empty{padding:70px 20px;text-align:center}
+.besjaar-collection-empty h2{font-size:1.6rem}
+.besjaar-collection-trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:76px;padding:21px 0;border-top:1px solid var(--besjaar-collection-line);border-bottom:1px solid var(--besjaar-collection-line);color:#344e67;font-size:.78rem;font-weight:650;text-align:center}
+.besjaar-collection-trust-row span+span{border-left:1px solid var(--besjaar-collection-line)}
+
+@media (max-width:1040px){
+  .besjaar-collection-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .besjaar-collection-collection__heading-wrap{align-items:flex-start;flex-direction:column;gap:18px}
+  .besjaar-collection-collection__intro{max-width:720px}
+}
+@media (max-width:760px){
+  .besjaar-collection-collection__shell{width:min(calc(100% - 28px),1380px);padding-bottom:68px}
+  .besjaar-collection-collection__crumbs-wrap{padding:15px 0 13px}
+  .besjaar-collection-breadcrumbs{justify-content:flex-start;font-size:.82rem}
+  .besjaar-collection-collection__header{padding:30px 0 24px}
+  .besjaar-collection-collection h1{font-size:clamp(2.15rem,10vw,3.2rem)}
+  .besjaar-collection-collection__intro{font-size:.9rem;line-height:1.55}
+  .besjaar-collection-collection-jump{gap:6px;padding-bottom:24px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .besjaar-collection-collection-jump::-webkit-scrollbar{display:none}
+  .besjaar-collection-collection-jump a{flex:0 0 auto;min-height:36px;padding:0 12px;font-size:.68rem}
+  .besjaar-collection-collection-groups{gap:54px;padding-top:34px}
+  .besjaar-collection-collection-group__head{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:16px}
+  .besjaar-collection-collection-group__head h2{font-size:1.75rem}
+  .besjaar-collection-collection-group__head p:not(.besjaar-collection-collection-group__count){font-size:.82rem}
+  .besjaar-collection-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .besjaar-collection-product-card__media{border-radius:15px}
+  .besjaar-collection-product-card__media img{padding:10px}
+  .besjaar-collection-product-card__badges{inset:8px auto auto 8px;gap:4px}
+  .besjaar-collection-badge{min-height:22px;padding:0 7px;font-size:.55rem}
+  .besjaar-collection-product-card__body{padding:11px 1px 3px}
+  .besjaar-collection-product-card h3{font-size:.82rem;line-height:1.2}
+  .besjaar-collection-product-card__price{margin-top:7px;gap:5px}
+  .besjaar-collection-product-card__price strong{font-size:.86rem}
+  .besjaar-collection-product-card__price s{font-size:.66rem}
+  .besjaar-collection-product-card__facts{display:none}
+  .besjaar-collection-product-card__action{margin-top:10px}
+  .besjaar-collection-product-card__action button,.besjaar-collection-product-card__action>a,.besjaar-collection-product-card__action .is-disabled{min-width:0;width:100%;min-height:36px;padding:0 8px;font-size:.63rem}
+  .besjaar-collection-trust-row{grid-template-columns:1fr;margin-top:50px;padding:0;text-align:left}
+  .besjaar-collection-trust-row span{padding:14px 0}
+  .besjaar-collection-trust-row span+span{border-left:0;border-top:1px solid var(--besjaar-collection-line)}
+}
+@media (max-width:390px){
+  .besjaar-collection-product-grid{gap:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  .besjaar-collection-product-card__media img{transition:none!important}
+}
+
+
+/* Besjaar 11.2.21 — /collections/all begins directly with Shower Heads. */
+.besjaar-collection-collection--grouped .besjaar-collection-collection-groups--shop-first{
+  padding-top:clamp(34px,4vw,64px);
+}
+.besjaar-collection-collection--grouped .besjaar-collection-collection-groups--shop-first .besjaar-collection-collection-group:first-child{
+  margin-top:0;
+}

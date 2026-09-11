@@ -1,0 +1,172 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "besjaar_store_hero": {
+      "type": "besjaar-store-hero",
+      "settings": {
+        "use_localized_copy": true,
+        "eyebrow": "PRESSURE · COMFORT · ROUTINE",
+        "heading": "A better shower.",
+        "heading_accent": "Every day.",
+        "text": "Premium showerheads for a strong, comfortable flow and flexible spray modes — a simple upgrade for every day.",
+        "primary_label": "Shop showerheads",
+        "primary_link": "",
+        "secondary_label": "Why Besjaar"
+      }
+    },
+    "besjaar_store_strip": {
+      "type": "besjaar-store-strip",
+      "settings": {
+        "use_localized_copy": true
+      }
+    },
+    "besjaar_store_products": {
+      "type": "besjaar-store-products",
+      "settings": {
+        "collection": "",
+        "products_to_show": 4
+      }
+    },
+    "besjaar_store_scene": {
+      "type": "besjaar-store-scene",
+      "settings": {
+        "use_localized_copy": true,
+        "kicker": "EVERYDAY, ELEVATED",
+        "quote": "Turn an everyday shower into the best part of your routine."
+      }
+    },
+    "besjaar_store_features": {
+      "type": "besjaar-store-features",
+      "blocks": {
+        "f1": {
+          "type": "feature",
+          "settings": {
+            "asset_image": "besjaar-web-real-nozzles.webp",
+            "kicker": "NOZZLES",
+            "title": "Zelfreinigende nozzles",
+            "text": "Flexibele siliconen punten waar kalk niet aan hecht. Eén veeg met je duim en de straal is weer strak — ook met hard Nederlands leidingwater."
+          }
+        },
+        "f2": {
+          "type": "feature",
+          "settings": {
+            "asset_image": "besjaar-web-real-modes.webp",
+            "kicker": "STANDEN",
+            "title": "Tien straalstanden",
+            "text": "Van zachte regen tot gerichte massagestraal. De zones van de sproeikop schakel je met één klik — zonder de greep los te laten."
+          }
+        },
+        "f3": {
+          "type": "feature",
+          "settings": {
+            "asset_image": "besjaar-web-real-water.webp",
+            "kicker": "FILTER",
+            "title": "Mineraalfilter in de greep",
+            "text": "Zeven filterlagen verzachten het water vóór het je huid raakt. Het venster in de greep laat zien wanneer vervangen tijd is."
+          }
+        }
+      },
+      "block_order": [
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "settings": {
+        "use_localized_copy": true,
+        "kicker": "WHY BESJAAR",
+        "heading": "Built around the way you actually shower."
+      }
+    },
+    "besjaar_store_reviews": {
+      "type": "besjaar-store-reviews",
+      "settings": {
+        "use_localized_copy": true,
+        "rating": "4.7/5",
+        "reviews_count": "391",
+        "show_sold": true,
+        "sold_count": "100+",
+        "source_url": "https://www.bol.com/nl/nl/p/besjaar-douchekop-met-slang-douchekop-regendouche-wellness-3-sproeistanden-hoge-druk-betere-huid-handdouche-luxe-moderne-handdouche-chrome/9300000187428486/",
+        "kicker": "PUBLIEK MARKETPLACE-BEWIJS",
+        "heading": "Publieke klantsignalen, mét bron.",
+        "source_note": "Publieke marketplace-cijfers met een directe bronlink.",
+        "rating_label": "Beoordeling",
+        "reviews_label": "Openbare reviews",
+        "sold_label": "Verkocht vorige maand",
+        "source_link": "Bekijk op bol.com"
+      }
+    },
+    "besjaar_store_cta": {
+      "type": "besjaar-store-cta",
+      "settings": {
+        "use_localized_copy": true,
+        "kicker": "BESJAAR® SHOWERHEADS",
+        "heading": "Upgrade the shower you use every day.",
+        "primary_label": "SHOP SHOWERHEADS",
+        "primary_link": "",
+        "secondary_label": "EXPLORE THE DETAILS"
+      }
+    },
+    "17881022079efec756": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_cards_carousel_cXBqbC": {
+          "type": "shopify://apps/judge-me-reviews/blocks/cards_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "show_sample_reviews": false,
+            "reviews_selection": "all",
+            "products": [],
+            "filter_pinned": false,
+            "filter_featured": false,
+            "filter_custom_tags": "",
+            "star_rating": "all",
+            "show_review_media": false,
+            "display_order": "media_first",
+            "no_image_fallback": "review_text_only",
+            "max_reviews": 30,
+            "review_length": "medium",
+            "text_size": "medium",
+            "image_ratio": "1",
+            "reviews_shown": 4,
+            "show_reviewer_name": true,
+            "show_product_name": true,
+            "hide_arrows_mobile": false,
+            "arrows_position": "sides",
+            "max_width": 1100,
+            "corner_styling": "soft",
+            "header_text_color": "#0F2947",
+            "text_color": "#0F2947",
+            "card_color": "#FFFFFF",
+            "stars_color": "#D79545",
+            "arrows_color": "#153252",
+            "transition_speed": 5,
+            "header_text": "Wat klanten zeggen",
+            "show_average_rating": true,
+            "rating_display": "default"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_cards_carousel_cXBqbC"
+      ],
+      "settings": {}
+    }
+  },
+  "order": [
+    "besjaar_store_hero",
+    "besjaar_store_strip",
+    "besjaar_store_products",
+    "besjaar_store_scene",
+    "besjaar_store_features",
+    "besjaar_store_reviews",
+    "besjaar_store_cta",
+    "17881022079efec756"
+  ]
+}

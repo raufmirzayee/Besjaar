@@ -1,0 +1,961 @@
+{% capture besjaar_ui_focus_head_capture %}{% render 'is-focus-showerhead', product: product %}{% endcapture %}
+{% assign besjaar_ui_focus_head = besjaar_ui_focus_head_capture | strip %}
+{% if besjaar_ui_focus_head != 'true' %}
+  {% capture besjaar_ui_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+  <section class="besjaar-ui-section besjaar-ui-shower-retired-product">
+    <div class="besjaar-ui-shell">
+      <div class="besjaar-ui-shower-retired-product__panel">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_store.retired.kicker' | t }}</p>
+        <h1>{{ 'besjaar_ui.shower_store.retired.heading' | t }}</h1>
+        <p>{{ 'besjaar_ui.shower_store.retired.copy' | t }}</p>
+        <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.shower_store.retired.cta' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+{% else %}
+{% if section.settings.shower_editorial_mode %}{{ 'besjaar-ui-conversion-qa.css' | asset_url | stylesheet_tag }}{% endif %}
+{% liquid
+  assign selected_variant = product.selected_or_first_available_variant | default: product.variants.first
+  assign product_form_id = 'product-form-' | append: section.id
+  assign product_status_id = 'BesjaarUIProductStatus-' | append: section.id
+  assign first_collection = product.collections.first
+  assign selected_media = selected_variant.featured_media | default: product.featured_media
+  assign selected_media_index = 1
+  for media in product.media
+    if media.id == selected_media.id
+      assign selected_media_index = forloop.index
+      break
+    endif
+  endfor
+  assign rating_metafield = product.metafields.reviews.rating
+  assign rating_count_metafield = product.metafields.reviews.rating_count
+  assign title_downcase = product.title | downcase
+  assign allow_legacy_title_fallback = false
+  if product.metafields.custom.product_family == blank
+    assign allow_legacy_title_fallback = true
+  endif
+  capture besjaar_ui_localized_product_title
+    render 'localized-product-title', product: product
+  endcapture
+  assign display_title = besjaar_ui_localized_product_title | strip
+  assign product_subtitle = ''
+  if product.metafields.descriptors.subtitle != blank
+    assign product_subtitle = product.metafields.descriptors.subtitle.value
+  elsif product.metafields.custom.product_subtitle != blank
+    assign product_subtitle = product.metafields.custom.product_subtitle.value
+  endif
+  assign best_for = ''
+  if product.metafields.custom.best_for != blank
+    assign best_for = product.metafields.custom.best_for.value
+  endif
+  assign why_choose = ''
+  if product.metafields.custom.why_choose != blank
+    assign why_choose = product.metafields.custom.why_choose.value
+  endif
+
+  capture besjaar_ui_product_family
+    render 'product-family', product: product, template_hint: template.suffix
+  endcapture
+  assign product_family = besjaar_ui_product_family | strip
+  assign is_shower_product = false
+  if product_family == 'shower'
+    assign is_shower_product = true
+  endif
+
+  assign shower_family = ''
+  if product.metafields.custom.shower_family != blank
+    assign shower_family = product.metafields.custom.shower_family.value | downcase | strip
+  endif
+  if shower_family != blank
+    assign is_shower_product = true
+    assign product_family = 'shower'
+  endif
+
+  assign product_360_frames = product.metafields.custom.product_360_frames.value
+  assign has_360_frames = false
+  if product_360_frames != blank and product_360_frames.size >= 8
+    assign has_360_frames = true
+  elsif product.handle == 'besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver'
+    assign has_360_frames = true
+  endif
+  assign has_product_video = false
+  assign has_product_model = false
+  for media in product.media
+    if media.media_type == 'video' or media.media_type == 'external_video'
+      assign has_product_video = true
+    elsif media.media_type == 'model'
+      assign has_product_model = true
+    endif
+  endfor
+
+  assign shower_type = ''
+  if product.metafields.custom.shower_type != blank
+    assign shower_type = product.metafields.custom.shower_type.value
+  endif
+  assign shower_spray_modes = ''
+  if product.metafields.custom.spray_modes != blank
+    assign shower_spray_modes = product.metafields.custom.spray_modes.value
+  endif
+  assign shower_diameter = ''
+  if product.metafields.custom.diameter_mm != blank
+    assign shower_diameter = product.metafields.custom.diameter_mm.value
+  endif
+  assign shower_material = ''
+  if product.metafields.custom.material != blank
+    assign shower_material = product.metafields.custom.material.value
+  elsif product.metafields.custom.materials != blank
+    assign shower_material = product.metafields.custom.materials.value
+  endif
+  assign shower_colour = ''
+  if product.metafields.custom.colour != blank
+    assign shower_colour = product.metafields.custom.colour.value
+  endif
+  assign shower_filter_defined = false
+  assign shower_filter_included = false
+  if product.metafields.custom.filter_included != blank
+    assign shower_filter_defined = true
+    assign shower_filter_included = product.metafields.custom.filter_included.value
+  endif
+  assign shower_filter_type = ''
+  if product.metafields.custom.filter_type != blank
+    assign shower_filter_type = product.metafields.custom.filter_type.value
+  endif
+  assign shower_hose_defined = false
+  assign shower_hose_included = false
+  if product.metafields.custom.hose_included != blank
+    assign shower_hose_defined = true
+    assign shower_hose_included = product.metafields.custom.hose_included.value
+  endif
+  assign shower_hose_length = ''
+  if product.metafields.custom.hose_length_cm != blank
+    assign shower_hose_length = product.metafields.custom.hose_length_cm.value
+  endif
+  assign shower_connection = ''
+  if product.metafields.custom.connection_size != blank
+    assign shower_connection = product.metafields.custom.connection_size.value
+  endif
+  assign shower_anti_limescale_defined = false
+  assign shower_anti_limescale = false
+  if product.metafields.custom.anti_limescale != blank
+    assign shower_anti_limescale_defined = true
+    assign shower_anti_limescale = product.metafields.custom.anti_limescale.value
+  endif
+  assign shower_installation_time = ''
+  if product.metafields.custom.installation_time_min != blank
+    assign shower_installation_time = product.metafields.custom.installation_time_min.value
+  endif
+  assign shower_warranty_months = ''
+  if product.metafields.custom.warranty_months != blank
+    assign shower_warranty_months = product.metafields.custom.warranty_months.value
+  endif
+  assign shower_compatibility = ''
+  if product.metafields.custom.compatibility_note != blank
+    assign shower_compatibility = product.metafields.custom.compatibility_note.value
+  elsif product.metafields.custom.compatibility != blank
+    assign shower_compatibility = product.metafields.custom.compatibility.value
+  endif
+
+  assign display_vendor = product.vendor | default: 'Besjaar'
+  if is_shower_product or title_downcase contains 'besjaar'
+    assign display_vendor = 'Besjaar'
+  endif
+
+  assign retail_spray_modes = shower_spray_modes
+  if retail_spray_modes == blank and allow_legacy_title_fallback
+    if title_downcase contains '12 sproei' or title_downcase contains '12 spray'
+      assign retail_spray_modes = 12
+    elsif title_downcase contains '11 sproei' or title_downcase contains '11 spray'
+      assign retail_spray_modes = 11
+    elsif title_downcase contains '10 sproei' or title_downcase contains '10 spray'
+      assign retail_spray_modes = 10
+    elsif title_downcase contains '9 sproei' or title_downcase contains '9 spray'
+      assign retail_spray_modes = 9
+    elsif title_downcase contains '8 sproei' or title_downcase contains '8 spray'
+      assign retail_spray_modes = 8
+    elsif title_downcase contains '7 sproei' or title_downcase contains '7 spray'
+      assign retail_spray_modes = 7
+    elsif title_downcase contains '6 sproei' or title_downcase contains '6 spray'
+      assign retail_spray_modes = 6
+    elsif title_downcase contains '5 sproei' or title_downcase contains '5 spray'
+      assign retail_spray_modes = 5
+    elsif title_downcase contains '4 sproei' or title_downcase contains '4 spray'
+      assign retail_spray_modes = 4
+    elsif title_downcase contains '3 sproei' or title_downcase contains '3 spray'
+      assign retail_spray_modes = 3
+    elsif title_downcase contains '2 sproei' or title_downcase contains '2 spray'
+      assign retail_spray_modes = 2
+    endif
+  endif
+  assign retail_has_filter = shower_filter_included
+  if shower_filter_defined == false and allow_legacy_title_fallback
+    if title_downcase contains 'met filter' or title_downcase contains 'with filter' or title_downcase contains 'filtered shower'
+      assign retail_has_filter = true
+    endif
+  endif
+  assign retail_has_hose = shower_hose_included
+  if shower_hose_defined == false and allow_legacy_title_fallback
+    if title_downcase contains 'met slang' or title_downcase contains 'with hose'
+      assign retail_has_hose = true
+    endif
+  endif
+  assign retail_package_count = product.metafields.custom.package_quantity.value | default: 0
+  if retail_package_count == 0 and allow_legacy_title_fallback
+    if title_downcase contains '2 stuks' or title_downcase contains '2-pack' or title_downcase contains '2 pack' or title_downcase contains '2 filters' or title_downcase contains '2 vervangingsfilters'
+      assign retail_package_count = 2
+    endif
+  endif
+
+  assign retail_colour = shower_colour | default: ''
+  if retail_colour == blank and allow_legacy_title_fallback
+    if title_downcase contains 'zilver' or title_downcase contains 'silver'
+      assign retail_colour = 'silver'
+    elsif title_downcase contains 'chroom' or title_downcase contains 'chrome'
+      assign retail_colour = 'chrome'
+    elsif title_downcase contains 'zwart' or title_downcase contains 'black'
+      assign retail_colour = 'black'
+    elsif title_downcase contains 'wit' or title_downcase contains 'white'
+      assign retail_colour = 'white'
+    endif
+  endif
+  assign retail_colour_key = retail_colour | downcase | strip
+  assign localized_retail_colour = retail_colour
+  case retail_colour_key
+    when 'zilver', 'silver'
+      assign localized_retail_colour = 'besjaar_ui.product.color_silver' | t
+    when 'chroom', 'chrome'
+      assign localized_retail_colour = 'besjaar_ui.product.color_chrome' | t
+    when 'zwart', 'black'
+      assign localized_retail_colour = 'besjaar_ui.product.color_black' | t
+    when 'wit', 'white'
+      assign localized_retail_colour = 'besjaar_ui.product.color_white' | t
+  endcase
+
+  assign retail_is_filter_only = false
+  if shower_family == 'shower_filter'
+    assign retail_is_filter_only = true
+  elsif allow_legacy_title_fallback
+    if title_downcase contains 'douchefilter' or title_downcase contains 'shower filter'
+      unless title_downcase contains 'douchekop' or title_downcase contains 'shower head'
+        assign retail_is_filter_only = true
+      endunless
+    endif
+  endif
+
+  if is_shower_product and product.metafields.custom.short_title == blank
+    assign retail_is_filter_only = false
+    if shower_family == 'shower_filter'
+      assign retail_is_filter_only = true
+    elsif allow_legacy_title_fallback
+      if title_downcase contains 'douchefilter' or title_downcase contains 'shower filter'
+        unless title_downcase contains 'douchekop' or title_downcase contains 'shower head'
+          assign retail_is_filter_only = true
+        endunless
+      endif
+    endif
+    if retail_is_filter_only
+      if retail_package_count == 2
+        assign display_title = 'besjaar_ui.product.retail_shower_filter_two_pack' | t
+      else
+        assign display_title = 'besjaar_ui.product.retail_shower_filter' | t
+      endif
+    else
+      assign display_title = 'besjaar_ui.product.retail_shower_head' | t
+      if retail_has_filter and retail_has_hose
+        assign retail_suffix = 'besjaar_ui.product.retail_with_filter_hose' | t
+        assign display_title = display_title | append: ' ' | append: retail_suffix
+      elsif retail_has_filter
+        assign retail_suffix = 'besjaar_ui.product.retail_with_filter' | t
+        assign display_title = display_title | append: ' ' | append: retail_suffix
+      elsif retail_has_hose
+        assign retail_suffix = 'besjaar_ui.product.retail_with_hose' | t
+        assign display_title = display_title | append: ' ' | append: retail_suffix
+      endif
+      if retail_spray_modes != blank
+        assign retail_modes_text = 'besjaar_ui.product.retail_spray_modes' | t: count: retail_spray_modes
+        assign display_title = display_title | append: ' – ' | append: retail_modes_text
+      endif
+    endif
+    if localized_retail_colour != blank and retail_is_filter_only == false
+      assign display_title = display_title | append: ' – ' | append: localized_retail_colour
+    endif
+  endif
+
+  assign description_needs_locale_fallback = false
+  assign description_plain_lc = product.description | strip_html | downcase
+  if request.locale.iso_code == 'en'
+    if description_plain_lc contains 'douche' or description_plain_lc contains 'sproei' or description_plain_lc contains 'dankzij' or description_plain_lc contains 'kies uit' or description_plain_lc contains 'waterbespar' or description_plain_lc contains 'huisdieren' or description_plain_lc contains 'geschikt voor' or description_plain_lc contains 'wordt geleverd' or description_plain_lc contains 'inclusief' or description_plain_lc contains 'eenvoudig'
+      assign description_needs_locale_fallback = true
+    endif
+  elsif request.locale.iso_code == 'nl'
+    if description_plain_lc contains 'shower head' or description_plain_lc contains 'spray modes' or description_plain_lc contains 'choose from' or description_plain_lc contains 'designed for' or description_plain_lc contains 'includes' or description_plain_lc contains 'easy to use'
+      assign description_needs_locale_fallback = true
+    endif
+  elsif request.locale.iso_code == 'de' or request.locale.iso_code == 'fr'
+    if description_plain_lc contains 'douche' or description_plain_lc contains 'sproei' or description_plain_lc contains 'dankzij' or description_plain_lc contains 'kies uit' or description_plain_lc contains 'waterbespar' or description_plain_lc contains 'huisdieren' or description_plain_lc contains 'geschikt voor' or description_plain_lc contains 'wordt geleverd' or description_plain_lc contains 'inclusief' or description_plain_lc contains 'eenvoudig' or description_plain_lc contains 'shower head' or description_plain_lc contains 'spray modes' or description_plain_lc contains 'choose from' or description_plain_lc contains 'designed for' or description_plain_lc contains 'includes' or description_plain_lc contains 'easy to use'
+      assign description_needs_locale_fallback = true
+    endif
+  endif
+
+  assign has_shower_specs = false
+  if is_shower_product
+    if shower_type != blank or retail_spray_modes != blank or shower_diameter != blank or shower_material != blank or shower_colour != blank or shower_filter_defined or retail_has_filter or shower_filter_type != blank or shower_hose_defined or retail_has_hose or shower_hose_length != blank or shower_connection != blank or shower_anti_limescale_defined or shower_installation_time != blank or shower_warranty_months != blank or shower_compatibility != blank
+      assign has_shower_specs = true
+    endif
+  endif
+  assign has_shower_quick_facts = false
+  if is_shower_product
+    if retail_spray_modes != blank or shower_filter_defined or retail_has_filter or shower_hose_defined or retail_has_hose or shower_connection != blank or shower_diameter != blank or retail_package_count > 0
+      assign has_shower_quick_facts = true
+    endif
+  endif
+
+
+  assign has_specs = false
+  if product.metafields.custom.materials != blank or product.metafields.custom.dimensions != blank or product.metafields.custom.weight != blank or product.metafields.custom.warranty != blank or product.metafields.custom.compatibility != blank or has_shower_specs
+    assign has_specs = true
+  endif
+
+  assign quick_fact_count = 0
+  assign has_quick_facts = false
+  if product.metafields.custom.warranty != blank or product.metafields.custom.weight != blank or has_shower_quick_facts
+    assign has_quick_facts = true
+  endif
+
+  assign show_fact_strip = false
+  if section.settings.show_quick_facts
+    if has_quick_facts
+      assign show_fact_strip = true
+    endif
+  endif
+
+  assign show_model_finder_link = false
+  assign model_finder_collection = settings.shower_collection
+  if model_finder_collection == blank
+    assign model_finder_collection = collections['badkamer-douche']
+  endif
+  if model_finder_collection == blank
+    assign model_finder_collection = collections['douchekoppen']
+  endif
+  if model_finder_collection == blank
+    assign model_finder_collection = collections['showerheads']
+  endif
+  if model_finder_collection == blank
+    assign model_finder_collection = collections['douche']
+  endif
+  if model_finder_collection == blank
+    assign model_finder_collection = collections['shower']
+  endif
+  if is_shower_product
+    if settings.shower_model_1 != blank and settings.shower_model_2 != blank
+      assign show_model_finder_link = true
+    elsif model_finder_collection != blank and model_finder_collection.products_count > 1
+      assign show_model_finder_link = true
+    endif
+  endif
+%}
+
+<section
+  class="besjaar-ui-product-v16 besjaar-ui-product-v17 besjaar-ui-product-v18 besjaar-ui-product-v20{% if section.settings.shower_editorial_mode and is_shower_product %} besjaar-ui-product-shower-editorial{% endif %}{% if is_shower_product %} besjaar-ui-product--shower{% endif %}{% if product.media.size > 1 %} besjaar-ui-mobile-gallery-enabled besjaar-ui-desktop-gallery-enabled{% endif %}"
+  data-product-root
+  data-product-family="{{ product_family | escape }}"
+  data-add-label="{{ 'besjaar_ui.product.add_to_cart_label' | t | escape }}"
+  data-sold-out-label="{{ 'besjaar_ui.product.sold_out' | t | escape }}"
+  data-in-stock-label="{{ 'besjaar_ui.product.in_stock' | t | escape }}"
+  data-out-of-stock-label="{{ 'besjaar_ui.product.out_of_stock' | t | escape }}"
+  data-add-error="{{ 'besjaar_ui.conversion.add_error' | t | escape }}"
+  data-added-status="{{ 'besjaar_ui.conversion.added_status' | t | escape }}"
+  data-purchase-option-price-label="{{ 'besjaar_ui.product.purchase_option_price' | t | escape }}"
+  data-one-time-purchase-label="{{ 'besjaar_ui.product.one_time_purchase' | t | escape }}"
+  data-requires-selling-plan="{{ product.requires_selling_plan | json }}"
+>
+  {% if request.design_mode %}
+    {% if product.metafields.custom.product_family == blank %}<div class="besjaar-ui-product-data-health"><strong>Besjaar showerhead data:</strong> set <code>custom.product_family</code> to <code>shower</code> and complete the showerhead metafields for this model. Current migration fallback: <code>{{ product_family }}</code>.</div>
+    {% elsif product_family == 'shower' and template.suffix != 'shower' %}<div class="besjaar-ui-product-data-health"><strong>BesjaarUI 5.4 setup:</strong> this product is marked <code>shower</code>. Assign the <code>shower</code> theme template to enable the dedicated shower sections.</div>{% endif %}
+  {% endif %}
+  <div class="besjaar-ui-shell">
+    {% if section.settings.show_breadcrumbs %}
+      <nav class="besjaar-ui-product-v16__breadcrumbs" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
+        <a href="{{ routes.root_url }}">{{ 'besjaar_ui.product.home' | t }}</a>
+        <span>/</span>
+        {% if section.settings.show_collection_breadcrumb and collection != blank %}
+          <a href="{% render 'localized-internal-url', url: collection.url %}">{% render 'localized-collection-title', collection: collection %}</a>
+          <span>/</span>
+        {% endif %}
+        <span aria-current="page">{{ display_title | truncate: 54 }}</span>
+      </nav>
+    {% endif %}
+
+    <div class="besjaar-ui-product-v16__grid">
+      <div class="besjaar-ui-product-v16__gallery" data-reveal>
+        <div class="besjaar-ui-product-v16__media-stage"{% if product.media.size > 1 %} tabindex="0" role="region" aria-label="{{ 'besjaar_ui.product.gallery_browse_label' | t | escape }}"{% endif %}>
+          {% if product.media.size > 0 %}
+            {% for media in product.media %}
+              <div
+                class="besjaar-ui-product-v16__media{% if media.id == selected_media.id %} is-active{% endif %}{% if media.media_type == 'image' %} is-image{% endif %}"
+                data-product-media="{{ media.id }}"
+                data-media-type="{{ media.media_type }}"
+                {% unless media.id == selected_media.id %}hidden aria-hidden="true"{% else %}aria-hidden="false"{% endunless %}
+              >
+                {% case media.media_type %}
+                  {% when 'image' %}
+                    {% assign media_alt = media.alt | default: display_title %}
+                    {% assign zoom_src = media | image_url: width: 2400 %}
+                    <img
+                      class="besjaar-ui-product-v16__image"
+                      src="{{ media | image_url: width: 1200 }}"
+                      srcset="{{ media | image_url: width: 600 }} 600w, {{ media | image_url: width: 900 }} 900w, {{ media | image_url: width: 1200 }} 1200w, {{ media | image_url: width: 1500 }} 1500w, {{ media | image_url: width: 1800 }} 1800w"
+                      sizes="(min-width: 1000px) 56vw, 100vw"
+                      alt="{{ media_alt | escape }}"
+                      width="{{ media.preview_image.width }}"
+                      height="{{ media.preview_image.height }}"
+                      loading="{% if media.id == selected_media.id %}eager{% else %}lazy{% endif %}"
+                      fetchpriority="{% if media.id == selected_media.id %}high{% else %}auto{% endif %}"
+                      decoding="async"
+                      data-product-image
+                      data-zoom-src="{{ zoom_src }}"
+                    >
+                  {% when 'video' %}
+                    {{ media | video_tag: controls: true, preload: 'metadata', image_size: '1200x', class: 'besjaar-ui-product-v16__video' }}
+                  {% when 'external_video' %}
+                    {{ media | external_video_tag: class: 'besjaar-ui-product-v16__external-video' }}
+                  {% when 'model' %}
+                    {{ media | model_viewer_tag: image_size: '1200x', reveal: 'interaction', toggleable: true, class: 'besjaar-ui-product-v16__model' }}
+                  {% else %}
+                    {{ media.preview_image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: display_title }}
+                {% endcase %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="besjaar-ui-product-v16__media is-active is-image"><div class="besjaar-ui-abstract-device"></div></div>
+          {% endif %}
+
+          {% if product.media.size > 1 %}
+            <button type="button" class="besjaar-ui-product-gallery-nav besjaar-ui-product-gallery-nav--prev" data-gallery-prev aria-label="{{ 'besjaar_ui.accessibility.previous_product_image' | t | escape }}">←</button>
+            <button type="button" class="besjaar-ui-product-gallery-nav besjaar-ui-product-gallery-nav--next" data-gallery-next aria-label="{{ 'besjaar_ui.accessibility.next_product_image' | t | escape }}">→</button>
+            <div class="besjaar-ui-product-v16__media-count" role="status" aria-live="polite" aria-atomic="true"><span data-media-current>{{ selected_media_index }}</span> / {{ product.media.size }}</div>
+          {% endif %}
+        </div>
+
+        {% if product.media.size > 1 %}<p class="besjaar-ui-mobile-gallery-hint besjaar-ui-gallery-interaction-hint"><span aria-hidden="true">↔</span><span class="besjaar-ui-gallery-hint--desktop">{{ 'besjaar_ui.product.drag_gallery' | t }}</span><span class="besjaar-ui-gallery-hint--mobile">{{ 'besjaar_ui.mobile.swipe_gallery' | t }}</span></p>{% endif %}
+
+        {% if product.media.size > 1 %}
+          <div class="besjaar-ui-product-v16__thumbs" role="group" aria-label="{{ 'besjaar_ui.product.product_media' | t | escape }}">
+            {% for media in product.media limit: 12 %}
+              <button
+                class="besjaar-ui-product-v16__thumb{% if media.id == selected_media.id %} is-active{% endif %}"
+                type="button"
+                data-product-media-thumb="{{ media.id }}"
+                data-media-index="{{ forloop.index }}"
+                aria-label="{{ 'besjaar_ui.accessibility.view_image' | t: index: forloop.index }}"
+                aria-pressed="{% if media.id == selected_media.id %}true{% else %}false{% endif %}"
+              >
+                {% if media.preview_image != blank %}
+                  {{ media.preview_image | image_url: width: 220 | image_tag: loading: 'lazy', alt: media.alt | default: display_title }}
+                {% endif %}
+                {% unless media.media_type == 'image' %}
+                  <span class="besjaar-ui-product-v16__media-type">{% if media.media_type == 'model' %}3D{% else %}{{ 'besjaar_ui.immersive.video_short' | t }}{% endif %}</span>
+                {% endunless %}
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if has_360_frames or has_product_video or has_product_model %}
+          <div class="besjaar-ui-product-media-dock" aria-label="{{ 'besjaar_ui.immersive.media_options' | t | escape }}">
+            {% if has_360_frames %}<a class="besjaar-ui-product-media-dock__item" href="#BesjaarUIProduct360-{{ product.id }}"><span class="besjaar-ui-product-media-dock__icon" aria-hidden="true">↻</span>{{ 'besjaar_ui.immersive.view_360' | t }}</a>{% endif %}
+            {% if has_product_video %}<span class="besjaar-ui-product-media-dock__item"><span class="besjaar-ui-product-media-dock__icon" aria-hidden="true">▶</span>{{ 'besjaar_ui.immersive.product_video' | t }}</span>{% endif %}
+            {% if has_product_model %}<span class="besjaar-ui-product-media-dock__item"><span class="besjaar-ui-product-media-dock__icon" aria-hidden="true">◇</span>{{ 'besjaar_ui.immersive.view_3d' | t }}</span>{% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <aside class="besjaar-ui-product-v16__summary" data-reveal>
+        {% if section.settings.show_reviews and rating_metafield != blank and rating_count_metafield != blank %}
+          {% assign besjaar_ui_product_rating_count = rating_count_metafield.value | default: 0 | plus: 0 %}
+          {% if besjaar_ui_product_rating_count > 0 %}
+            <a class="besjaar-ui-product-v24__rating-link besjaar-ui-product-v569__rating" href="#besjaar-ui-reviews">{% render 'review-stars', product: product, compact: true %}</a>
+          {% endif %}
+        {% endif %}
+
+        <div class="besjaar-ui-product-v16__eyebrow-row">
+          <span class="besjaar-ui-product-v16__eyebrow">{% if section.settings.shower_editorial_mode and is_shower_product %}{{ 'besjaar_ui.shower.product_eyebrow' | t }}{% else %}<span translate="no">{{ display_vendor }}</span>{% endif %}</span>
+        </div>
+
+        <h1 class="besjaar-ui-product-v16__title">{{ display_title }}</h1>
+
+        {% if product_subtitle != blank %}<p class="besjaar-ui-shower-product-subtitle besjaar-ui-product-v465__subtitle">{{ product_subtitle }}</p>{% endif %}
+
+        {% if is_shower_product and has_shower_quick_facts %}
+          <div class="besjaar-ui-product-v61__decision-chips besjaar-ui-product-v105__benefits" aria-label="{{ 'besjaar_ui.product.decision_specs' | t | escape }}">
+            {% if retail_spray_modes != blank %}<span><b>{{ retail_spray_modes }}</b> {{ 'besjaar_ui.product.retail_spray_modes' | t: count: retail_spray_modes }}</span>{% endif %}
+            {% if shower_filter_defined and retail_has_filter %}<span>✓ {{ 'besjaar_ui.product.shower_filter_chip' | t }}</span>{% endif %}
+            {% if shower_hose_defined and retail_has_hose %}<span>✓ {{ 'besjaar_ui.product.shower_hose_chip' | t }}</span>{% endif %}
+            {% if shower_connection != blank %}<span>✓ {{ shower_connection }}</span>{% endif %}
+          </div>
+        {% endif %}
+        {% if best_for != blank %}
+          <div class="besjaar-ui-product-v61__best-for"><span>{{ 'besjaar_ui.product.best_for' | t }}</span><strong>{{ best_for }}</strong></div>
+        {% endif %}
+
+        <div class="besjaar-ui-product-v16__buybox" data-product-buybox>
+          <div class="besjaar-ui-product-v465__commerce-head">
+            <div class="besjaar-ui-product-v16__price-row besjaar-ui-product-v17__commerce">
+          <div class="besjaar-ui-product-v17__price-group">
+            <div class="besjaar-ui-price besjaar-ui-product-v16__price">
+              <span data-product-price>{{ selected_variant.price | money }}</span>
+              <s data-product-compare-price{% unless selected_variant.compare_at_price > selected_variant.price %} hidden{% endunless %}>{% if selected_variant.compare_at_price > selected_variant.price %}{{ selected_variant.compare_at_price | money }}{% endif %}</s>
+            </div>
+            <small class="besjaar-ui-unit-price" data-product-unit-price{% unless selected_variant.unit_price_measurement %} hidden{% endunless %}>{% if selected_variant.unit_price_measurement %}{{ selected_variant.unit_price | money | unit_price_with_measurement: selected_variant.unit_price_measurement }}{% endif %}</small>
+            {% if selected_variant.compare_at_price > selected_variant.price %}
+              {% assign summary_saving_percent = selected_variant.compare_at_price | minus: selected_variant.price | times: 100 | divided_by: selected_variant.compare_at_price | round %}
+              <span class="besjaar-ui-product-v17__discount" data-product-summary-sale>-{{ summary_saving_percent }}%</span>
+            {% else %}
+              <span class="besjaar-ui-product-v17__discount" data-product-summary-sale hidden></span>
+            {% endif %}
+          </div>
+          <div class="besjaar-ui-product-v16__stock{% if selected_variant.available %} is-available{% endif %}" data-product-stock>
+            <i></i><span>{% if selected_variant.available %}{{ 'besjaar_ui.product.in_stock' | t }}{% else %}{{ 'besjaar_ui.product.out_of_stock' | t }}{% endif %}</span>
+          </div>
+        </div>
+
+          </div>
+
+          {% if why_choose != blank %}
+            <details class="besjaar-ui-product-v62__why">
+              <summary>{{ 'besjaar_ui.product.why_choose' | t }} <span aria-hidden="true">+</span></summary>
+              <div>{{ why_choose | newline_to_br }}</div>
+            </details>
+          {% endif %}
+
+          {% form 'product', product, id: product_form_id, class: 'besjaar-ui-product-v16__form', data-ajax-product-form: '', data-product-form: '' %}
+            <input type="hidden" name="id" value="{{ selected_variant.id }}" data-variant-id>
+
+            {% unless product.has_only_default_variant %}
+              <div class="besjaar-ui-product-v16__options">
+                {% for option in product.options_with_values %}
+                  {% if option.values.size > 1 %}
+                    {% liquid
+                      assign option_label = option.name
+                      assign option_name_lc = option.name | downcase | strip
+                      if option_name_lc == 'slang' or option_name_lc == 'hose'
+                        assign option_label = 'besjaar_ui.product.option_hose' | t
+                      elsif option_name_lc == 'kleur' or option_name_lc == 'color' or option_name_lc == 'colour'
+                        assign option_label = 'besjaar_ui.product.option_color' | t
+                      endif
+                    %}
+                    <label class="besjaar-ui-label" for="ProductOption-{{ section.id }}-{{ option.position }}">{{ option_label }}</label>
+                    <select class="besjaar-ui-select besjaar-ui-product-v16__option" id="ProductOption-{{ section.id }}-{{ option.position }}" data-product-option data-option-position="{{ option.position }}">
+                      {% for value in option.values %}
+                        {% liquid
+                          assign value_label = value
+                          assign value_lc = value | downcase | strip
+                          case value_lc
+                            when 'inclusief', 'included'
+                              assign value_label = 'besjaar_ui.common.included' | t
+                            when 'exclusief', 'not included', 'niet inbegrepen'
+                              assign value_label = 'besjaar_ui.product.option_not_included' | t
+                            when 'zonder slang', 'without hose'
+                              assign value_label = 'besjaar_ui.product.option_without_hose' | t
+                            when 'zilver', 'silver'
+                              assign value_label = 'besjaar_ui.product.color_silver' | t
+                            when 'chroom', 'chrome'
+                              assign value_label = 'besjaar_ui.product.color_chrome' | t
+                            when 'zwart', 'black'
+                              assign value_label = 'besjaar_ui.product.color_black' | t
+                            when 'wit', 'white'
+                              assign value_label = 'besjaar_ui.product.color_white' | t
+                          endcase
+                        %}
+                        <option value="{{ value | escape }}"{% if value.selected or option.selected_value == value %} selected{% endif %}>{{ value_label }}</option>
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endunless %}
+
+            {% if product.selling_plan_groups.size > 0 %}
+              <div class="besjaar-ui-purchase-options" data-selling-plan-wrap>
+                <label class="besjaar-ui-label" for="SellingPlan-{{ section.id }}">{{ 'besjaar_ui.product.purchase_options' | t }}</label>
+                <select class="besjaar-ui-select" id="SellingPlan-{{ section.id }}" name="selling_plan" data-selling-plan-select>
+                  {% unless product.requires_selling_plan %}<option value="">{{ 'besjaar_ui.product.one_time_purchase' | t }} — {{ selected_variant.price | money }}</option>{% endunless %}
+                  {% for allocation in selected_variant.selling_plan_allocations %}
+                    <option value="{{ allocation.selling_plan.id }}"{% if allocation.selling_plan.selected %} selected{% endif %}>{{ allocation.selling_plan.name }} — {{ allocation.price | money }}</option>
+                  {% endfor %}
+                </select>
+                <small class="besjaar-ui-purchase-options__price" data-selling-plan-price></small>
+              </div>
+            {% endif %}
+
+            <div class="besjaar-ui-product-v16__purchase-row">
+              <div class="besjaar-ui-product-v16__quantity-wrap">
+                <span class="besjaar-ui-label">{{ 'besjaar_ui.product.quantity' | t }}</span>
+                <div class="besjaar-ui-quantity" data-quantity-control>
+                  <button type="button" data-quantity-minus aria-label="{{ 'besjaar_ui.product.decrease_quantity' | t | escape }}">−</button>
+                  <input type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" aria-label="{{ 'besjaar_ui.product.quantity' | t | escape }}" data-product-quantity>
+                  <button type="button" data-quantity-plus aria-label="{{ 'besjaar_ui.product.increase_quantity' | t | escape }}">+</button>
+                </div>
+              </div>
+              <button class="besjaar-ui-button besjaar-ui-button--primary besjaar-ui-product-v16__add" type="submit" name="add" data-product-submit aria-describedby="{{ product_status_id }}" {% unless selected_variant.available %}disabled{% endunless %}>
+                {% if selected_variant.available %}{{ 'besjaar_ui.product.add_to_cart' | t: price: selected_variant.price | money }}{% else %}{{ 'besjaar_ui.product.sold_out' | t }}{% endif %}
+              </button>
+            </div>
+
+            {% if section.settings.show_dynamic_checkout and selected_variant.available %}
+              <div class="besjaar-ui-product-v16__dynamic">{{ form | payment_button }}</div>
+            {% endif %}
+          {% endform %}
+          <div id="{{ product_status_id }}" class="besjaar-ui-product-form-status" role="status" aria-live="polite" aria-atomic="true" data-product-form-status></div>
+
+          <div class="besjaar-ui-product-v75__confidence" aria-label="{{ 'besjaar_ui.product.purchase_confidence' | t | escape }}">
+            {% render 'delivery-promise', context: 'product' %}
+            {% if section.settings.show_payment_icons and shop.enabled_payment_types.size > 0 %}
+              {% assign besjaar_ui_payment_label = 'besjaar_ui.product.secure_checkout_short' | t %}
+              <div class="besjaar-ui-product-v16__payments" aria-label="{{ besjaar_ui_payment_label | escape }}">
+                <span>{{ besjaar_ui_payment_label }}</span>
+                <div>{% for type in shop.enabled_payment_types limit: 8 %}{{ type | payment_type_svg_tag }}{% endfor %}</div>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if section.settings.show_restock_fallback %}<div class="besjaar-ui-restock" data-restock-fallback{% if selected_variant.available %} hidden{% endif %}>
+            <div><strong>{{ 'besjaar_ui.product.restock_title' | t }}</strong><p>{{ 'besjaar_ui.product.restock_copy' | t }}</p></div>
+            <div class="besjaar-ui-restock__actions">
+              {% if settings.enable_restock_requests %}<a class="besjaar-ui-button besjaar-ui-button--ghost" href="#besjaar-ui-restock">{{ 'besjaar_ui.restock.request_update' | t }}</a>{% elsif section.settings.restock_contact_link != blank %}<a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ section.settings.restock_contact_link }}">{{ 'besjaar_ui.product.restock_contact' | t }}</a>{% endif %}
+            </div>
+          </div>{% endif %}
+
+        {% if show_fact_strip %}
+          <div class="besjaar-ui-product-v16__facts besjaar-ui-product-v465__highlights besjaar-ui-product-v569__purchase-highlights{% if is_shower_product %} besjaar-ui-product-v16__facts--shower{% endif %}" aria-label="{{ 'besjaar_ui.product.purchase_highlights' | t | escape }}">
+            {% if is_shower_product and has_shower_quick_facts %}
+              {% if retail_package_count > 0 and quick_fact_count < 4 %}
+                {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.package_quantity' | t }}</span><strong>{{ 'besjaar_ui.product.package_quantity_value' | t: count: retail_package_count }}</strong></div>
+              {% endif %}
+              {% if retail_spray_modes != blank and quick_fact_count < 4 %}
+                {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.shower_spray_modes' | t }}</span><strong>{{ retail_spray_modes }}</strong></div>
+              {% endif %}
+              {% if shower_filter_defined or retail_has_filter %}
+                {% if quick_fact_count < 4 %}
+                  {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                  <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.shower_filter' | t }}</span><strong>{% if retail_has_filter %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>
+                {% endif %}
+              {% endif %}
+              {% if shower_hose_defined or retail_has_hose %}
+                {% if quick_fact_count < 4 %}
+                  {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                  <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.shower_hose' | t }}</span><strong>{% if retail_has_hose %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>
+                {% endif %}
+              {% endif %}
+              {% if shower_connection != blank and quick_fact_count < 4 %}
+                {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.shower_connection' | t }}</span><strong>{{ shower_connection }}</strong></div>
+              {% endif %}
+              {% if shower_diameter != blank and quick_fact_count < 4 %}
+                {% assign quick_fact_count = quick_fact_count | plus: 1 %}
+                <div class="besjaar-ui-product-v16__fact"><span>{{ 'besjaar_ui.product.shower_diameter' | t }}</span><strong>Ø {{ shower_diameter }} mm</strong></div>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endif %}
+
+          {% if show_model_finder_link %}
+            <a class="besjaar-ui-product-model-finder-link" href="#besjaar-model-finder">
+              <span aria-hidden="true">⌁</span>
+              <span><strong>{{ 'besjaar_ui.product.fbesjaar_store_model_title' | t }}</strong><small>{{ 'besjaar_ui.product.fbesjaar_store_model_copy' | t }}</small></span>
+              <i aria-hidden="true">→</i>
+            </a>
+          {% endif %}
+
+          {% if is_shower_product %}
+            <nav class="besjaar-ui-product-v749__journey" aria-label="{{ 'besjaar_ui.product.journey_nav_label' | t | escape }}">
+              {% if has_360_frames %}<a href="#BesjaarUIProduct360-{{ product.id }}"><span>360°</span>{{ 'besjaar_ui.product.journey_360' | t }}</a>{% endif %}
+              <a href="#besjaar-ui-product-installation"><span aria-hidden="true">↧</span>{{ 'besjaar_ui.product.journey_install' | t }}</a>
+              <a href="#besjaar-ui-product-specs"><span aria-hidden="true">≡</span>{{ 'besjaar_ui.product.journey_specs' | t }}</a>
+              <a href="#besjaar-ui-reviews"><span aria-hidden="true">★</span>{{ 'besjaar_ui.product.journey_reviews' | t }}</a>
+            </nav>
+          {% endif %}
+
+          {% if is_shower_product and retail_has_filter and retail_is_filter_only == false %}
+            <div class="besjaar-ui-product-filter-note" aria-label="{{ 'besjaar_ui.product.filter_note_title' | t | escape }}">
+              <div class="besjaar-ui-product-filter-note__icon" aria-hidden="true">💧</div>
+              <div class="besjaar-ui-product-filter-note__body">
+                <strong>{{ 'besjaar_ui.product.filter_note_title' | t }}</strong>
+                <p>{{ 'besjaar_ui.product.filter_note_copy' | t }}</p>
+                <div class="besjaar-ui-product-filter-note__chips" aria-hidden="true">
+                  <span>{{ 'besjaar_ui.product.filter_note_chip_replaceable' | t }}</span>
+                  <span>{{ 'besjaar_ui.product.filter_note_chip_easy' | t }}</span>
+                </div>
+                <small><b>{{ 'besjaar_ui.product.filter_note_when_title' | t }}</b> {{ 'besjaar_ui.product.filter_note_when_copy' | t }}</small>
+              </div>
+            </div>
+          {% endif %}
+
+
+        </div>
+
+        {% if section.settings.show_short_description and product.description != blank %}
+          <div class="besjaar-ui-product-v16__lead besjaar-ui-product-v17__post-purchase-copy">{% if description_needs_locale_fallback %}{{ 'besjaar_ui.product.localized_product_short' | t }}{% else %}{{ product.description | strip_html | truncatewords: 26 }}{% endif %}</div>
+        {% endif %}
+
+        {% if section.settings.show_details %}
+          <div class="besjaar-ui-product-v16__meta">
+            {% if display_vendor != blank %}<div><span>{{ 'besjaar_ui.product.brand' | t }}</span><strong translate="no">{{ display_vendor }}</strong></div>{% endif %}
+            {% if selected_variant.sku != blank %}<div data-product-sku-row><span>SKU</span><strong data-product-sku>{{ selected_variant.sku }}</strong></div>{% endif %}
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+
+  {% if product.description != blank %}
+    <div class="besjaar-ui-shell besjaar-ui-product-description" data-reveal>
+      <div class="besjaar-ui-product-description__head">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.product.description_kicker' | t }}</p>
+        <h2>{{ 'besjaar_ui.product.description_title' | t }}</h2>
+      </div>
+      <div class="besjaar-ui-product-description__body besjaar-ui-content">{{ product.description }}</div>
+    </div>
+  {% endif %}
+
+  {% assign besjaar_ui_has_product_app_block = false %}
+  {% for block in section.blocks %}
+    {% if block.type == '@app' %}{% assign besjaar_ui_has_product_app_block = true %}{% break %}{% endif %}
+  {% endfor %}
+  {% if besjaar_ui_has_product_app_block %}
+    <div class="besjaar-ui-shell besjaar-ui-product-apps" data-product-apps>
+      {% for block in section.blocks %}
+        {% if block.type == '@app' %}{% render block %}{% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if section.settings.show_details %}
+  <div class="besjaar-ui-shell besjaar-ui-product-v16__details" data-reveal>
+    <div class="besjaar-ui-product-v16__details-head">
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.product.details_kicker' | t }}</p>
+      <h2 class="besjaar-ui-title">{{ 'besjaar_ui.product.everything_to_know' | t }}</h2>
+    </div>
+    <div class="besjaar-ui-product-v16__accordion">
+      {% if product.description != blank or description_needs_locale_fallback %}
+        <details open>
+          <summary><span>{{ 'besjaar_ui.product.information' | t }}</span><i>+</i></summary>
+          <div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content">
+            {% if description_needs_locale_fallback %}
+              {% if is_shower_product %}
+                <p>{{ 'besjaar_ui.product.localized_shower_intro' | t }}</p>
+                <ul class="besjaar-ui-product-v463__verified-list">
+                  {% if retail_spray_modes != blank %}<li><strong>{{ 'besjaar_ui.product.shower_spray_modes' | t }}:</strong> {{ retail_spray_modes }}</li>{% endif %}
+                  {% if shower_filter_defined or retail_has_filter %}<li><strong>{{ 'besjaar_ui.product.shower_filter' | t }}:</strong> {% if retail_has_filter %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</li>{% endif %}
+                  {% if shower_hose_defined %}<li><strong>{{ 'besjaar_ui.product.shower_hose' | t }}:</strong> {% if retail_has_hose %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</li>{% endif %}
+                  {% if shower_diameter != blank %}<li><strong>{{ 'besjaar_ui.product.shower_diameter' | t }}:</strong> Ø {{ shower_diameter }} mm</li>{% endif %}
+                  {% if shower_connection != blank %}<li><strong>{{ 'besjaar_ui.product.shower_connection' | t }}:</strong> {{ shower_connection }}</li>{% endif %}
+                  {% if localized_retail_colour != blank %}<li><strong>{{ 'besjaar_ui.product.shower_colour' | t }}:</strong> {{ localized_retail_colour }}</li>{% endif %}
+                </ul>
+                <p>{{ 'besjaar_ui.product.localized_shower_note' | t }}</p>
+              {% else %}
+                <p>{{ 'besjaar_ui.product.localized_product_intro' | t }}</p>
+                <p>{{ 'besjaar_ui.product.localized_product_note' | t }}</p>
+              {% endif %}
+            {% else %}
+              {{ product.description }}
+            {% endif %}
+          </div>
+        </details>
+      {% endif %}
+
+      {% if has_specs %}
+        <details>
+          <summary><span>{{ 'besjaar_ui.product.specifications' | t }}</span><i>+</i></summary>
+          <div class="besjaar-ui-product-v16__specs{% if is_shower_product %} besjaar-ui-product-v16__specs--shower{% endif %}">
+            {% if is_shower_product and has_shower_specs %}
+              {% if shower_type != blank %}<div><span>{{ 'besjaar_ui.product.shower_type' | t }}</span><strong>{{ shower_type }}</strong></div>{% endif %}
+              {% if retail_spray_modes != blank %}<div><span>{{ 'besjaar_ui.product.shower_spray_modes' | t }}</span><strong>{{ retail_spray_modes }}</strong></div>{% endif %}
+              {% if shower_diameter != blank %}<div><span>{{ 'besjaar_ui.product.shower_diameter' | t }}</span><strong>Ø {{ shower_diameter }} mm</strong></div>{% endif %}
+              {% if shower_material != blank %}<div><span>{{ 'besjaar_ui.product.shower_material' | t }}</span><strong>{{ shower_material }}</strong></div>{% endif %}
+              {% if shower_colour != blank %}<div><span>{{ 'besjaar_ui.product.shower_colour' | t }}</span><strong>{{ shower_colour }}</strong></div>{% endif %}
+              {% if shower_filter_defined or retail_has_filter %}<div><span>{{ 'besjaar_ui.product.shower_filter' | t }}</span><strong>{% if retail_has_filter %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>{% endif %}
+              {% if shower_filter_type != blank %}<div><span>{{ 'besjaar_ui.product.shower_filter_type' | t }}</span><strong>{{ shower_filter_type }}</strong></div>{% endif %}
+              {% if shower_hose_defined or retail_has_hose %}<div><span>{{ 'besjaar_ui.product.shower_hose' | t }}</span><strong>{% if retail_has_hose %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>{% endif %}
+              {% if shower_hose_length != blank %}<div><span>{{ 'besjaar_ui.product.shower_hose_length' | t }}</span><strong>{{ shower_hose_length }} cm</strong></div>{% endif %}
+              {% if shower_connection != blank %}<div><span>{{ 'besjaar_ui.product.shower_connection' | t }}</span><strong>{{ shower_connection }}</strong></div>{% endif %}
+              {% if shower_anti_limescale_defined %}<div><span>{{ 'besjaar_ui.product.shower_anti_limescale' | t }}</span><strong>{% if shower_anti_limescale %}{{ 'besjaar_ui.common.yes' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>{% endif %}
+              {% if shower_installation_time != blank %}<div><span>{{ 'besjaar_ui.product.shower_installation' | t }}</span><strong>{{ 'besjaar_ui.product.shower_minutes' | t: count: shower_installation_time }}</strong></div>{% endif %}
+              {% if shower_warranty_months != blank %}<div><span>{{ 'besjaar_ui.product.spec_warranty' | t }}</span><strong>{{ 'besjaar_ui.product.shower_months' | t: count: shower_warranty_months }}</strong></div>{% elsif product.metafields.custom.warranty != blank %}<div><span>{{ 'besjaar_ui.product.spec_warranty' | t }}</span><strong>{{ product.metafields.custom.warranty.value }}</strong></div>{% endif %}
+              {% if shower_compatibility != blank %}<div><span>{{ 'besjaar_ui.product.shower_compatibility' | t }}</span><strong>{{ shower_compatibility }}</strong></div>{% endif %}
+            {% endif %}
+          </div>
+        </details>
+      {% endif %}
+
+      {% if product.metafields.custom.package_contents != blank or product.metafields.custom.box_contents != blank %}
+        <details>
+          <summary><span>{{ 'besjaar_ui.product.box_contents' | t }}</span><i>+</i></summary>
+          <div class="besjaar-ui-product-v16__accordion-content">{% if product.metafields.custom.package_contents != blank %}{{ product.metafields.custom.package_contents.value | newline_to_br }}{% else %}{{ product.metafields.custom.box_contents.value }}{% endif %}</div>
+        </details>
+      {% endif %}
+
+      {% if is_shower_product and product.metafields.custom.care_instructions != blank or is_shower_product and product.metafields.custom.filter_replacement_interval != blank %}
+        <details>
+          <summary><span>{{ 'besjaar_ui.product.shower_care' | t }}</span><i>+</i></summary>
+          <div class="besjaar-ui-product-v16__accordion-content besjaar-ui-content">
+            {% if product.metafields.custom.care_instructions != blank %}<p>{{ product.metafields.custom.care_instructions.value | newline_to_br }}</p>{% endif %}
+            {% if product.metafields.custom.filter_replacement_interval != blank %}<p><strong>{{ 'besjaar_ui.product.shower_filter_replacement' | t }}:</strong> {{ product.metafields.custom.filter_replacement_interval.value }}</p>{% endif %}
+          </div>
+        </details>
+      {% endif %}
+
+      <details>
+        <summary><span>{{ 'besjaar_ui.product.delivery_returns' | t }}</span><i>+</i></summary>
+        <div class="besjaar-ui-product-v16__service-copy">
+          <div><strong>{{ 'besjaar_ui.delivery.estimate_title' | t }}</strong><p>{% if settings.show_delivery_estimates %}<span data-delivery-estimate>{{ 'besjaar_ui.delivery.estimate_fallback' | t: min: settings.transit_min_business_days, max: settings.transit_max_business_days }}</span>. {% endif %}{{ 'besjaar_ui.delivery.checkout_confirmation' | t }}</p></div>
+          <div><strong>{{ 'besjaar_ui.delivery.returns_title' | t }}</strong><p>{{ 'besjaar_ui.delivery.returns_value' | t: days: settings.return_window_days }}. {{ 'besjaar_ui.delivery.returns_note' | t }}</p></div>
+          <div><strong>{{ 'besjaar_ui.product.secure_payment' | t }}</strong><p>{{ 'besjaar_ui.product.payment_long' | t }}</p></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  {% endif %}
+  {% if section.settings.show_sticky_atc %}
+    <div class="besjaar-ui-sticky-atc" data-sticky-atc aria-hidden="true" inert>
+      <div class="besjaar-ui-sticky-atc__product">
+        {% if product.featured_image != blank %}{{ product.featured_image | image_url: width: 120 | image_tag: loading: 'lazy', alt: display_title }}{% endif %}
+        <div><strong data-sticky-title>{{ display_title | truncate: 48 }}</strong><span class="besjaar-ui-sticky-atc__meta"><span data-sticky-price>{{ selected_variant.price | money }}</span>{% if section.settings.show_reviews and rating_metafield != blank and rating_count_metafield != blank and rating_count_metafield.value > 0 %}<span class="besjaar-ui-sticky-atc__rating">★ {{ rating_metafield.value.rating | default: rating_metafield.value }}</span>{% endif %}</span></div>
+      </div>
+      <button class="besjaar-ui-button besjaar-ui-button--primary" type="button" data-sticky-submit aria-describedby="{{ product_status_id }}" {% unless selected_variant.available %}disabled{% endunless %}>{% if selected_variant.available %}{{ 'besjaar_ui.product.add_to_cart' | t: price: selected_variant.price | money }}{% else %}{{ 'besjaar_ui.product.sold_out' | t }}{% endif %}</button>
+    </div>
+  {% endif %}
+
+  <dialog class="besjaar-ui-product-zoom" data-product-zoom-dialog aria-label="{{ 'besjaar_ui.product.zoom_image' | t | escape }}">
+    <button type="button" class="besjaar-ui-product-zoom__close" data-product-zoom-close aria-label="{{ 'besjaar_ui.product.close_zoom' | t | escape }}">×</button>
+    <img src="" alt="{{ display_title | escape }}" width="{{ product.featured_image.width | default: 1600 }}" height="{{ product.featured_image.height | default: 1600 }}" data-product-zoom-image>
+  </dialog>
+
+
+  <script type="application/json" data-besjaar-ui-product-context>
+    {
+      "id": {{ product.id | json }},
+      "title": {{ display_title | json }},
+      "family": {{ product_family | json }},
+      "url": {{ product.url | json }},
+      "image": {% if product.featured_image %}{{ product.featured_image | image_url: width: 700 | json }}{% else %}""{% endif %},
+      "price": {{ product.price | money | json }},
+      "brand": {{ display_vendor | json }}
+    }
+  </script>
+
+  <script type="application/json" data-product-variants-json>
+    [
+      {% for variant in product.variants %}
+        {
+          "id": {{ variant.id | json }},
+          "options": {{ variant.options | json }},
+          "available": {{ variant.available | json }},
+          "price": {{ variant.price | json }},
+          "priceFormatted": {{ variant.price | money | json }},
+          "compareAtPrice": {{ variant.compare_at_price | default: 0 | json }},
+          "compareAtPriceFormatted": {{ variant.compare_at_price | money | json }},
+          "unitPriceFormatted": {% if variant.unit_price_measurement %}{{ variant.unit_price | money | unit_price_with_measurement: variant.unit_price_measurement | json }}{% else %}""{% endif %},
+          "sellingPlans": [
+            {% for allocation in variant.selling_plan_allocations %}
+              {
+                "id": {{ allocation.selling_plan.id | json }},
+                "name": {{ allocation.selling_plan.name | json }},
+                "priceFormatted": {{ allocation.price | money | json }},
+                "checkoutChargeFormatted": {{ allocation.checkout_charge_amount | money | json }},
+                "selected": {{ allocation.selling_plan.selected | json }}
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ],
+          "sku": {{ variant.sku | json }},
+          "featuredMediaId": {% if variant.featured_media %}{{ variant.featured_media.id | json }}{% else %}null{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  </script>
+</section>
+
+{% endif %}
+{% schema %}{
+  "name": "Main product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_breadcrumb",
+      "label": "Show contextual collection in breadcrumb",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show review rating when available",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_short_description",
+      "label": "Show short description below purchase box",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_facts",
+      "label": "Show metafield quick facts",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment icons",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sticky_atc",
+      "label": "Show sticky purchase bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "shower_editorial_mode",
+      "label": "Use shower editorial purchase styling",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_details",
+      "label": "Show product metadata",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_restock_fallback",
+      "label": "Show sold-out fallback panel",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "restock_contact_link",
+      "label": "Restock contact / notification link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    }
+  ]
+}{% endschema %}

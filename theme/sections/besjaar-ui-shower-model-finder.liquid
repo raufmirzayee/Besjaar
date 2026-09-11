@@ -1,0 +1,230 @@
+{% if request.page_type == 'index' %}{{ 'besjaar-ui-product-story.css' | asset_url | stylesheet_tag }}{% endif %}
+{% liquid
+  capture besjaar_ui_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip
+  assign besjaar_ui_show_finder = false
+  if besjaar_ui_is_focus == 'true'
+    assign besjaar_ui_show_finder = true
+  elsif request.page_type == 'index'
+    assign besjaar_ui_show_finder = true
+  endif
+  assign shower_collection = settings.shower_collection
+  if shower_collection == blank
+    assign shower_collection = collections['badkamer-douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['douchekoppen']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['showerheads']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['douche']
+  endif
+  if shower_collection == blank
+    assign shower_collection = collections['shower']
+  endif
+  assign configured_count = 0
+  for i in (1..5)
+    assign model_key = 'shower_model_' | append: i
+    assign configured_model = settings[model_key]
+    if configured_model != blank
+      capture configured_is_head_capture
+        render 'is-shower-head', product: configured_model
+      endcapture
+      assign configured_is_head = configured_is_head_capture | strip
+      if configured_is_head == 'true'
+        assign configured_count = configured_count | plus: 1
+      endif
+    endif
+  endfor
+  assign candidate_count = configured_count
+  if candidate_count < 2 and shower_collection != blank
+    assign candidate_count = 0
+    for candidate in shower_collection.products limit: 12
+      capture candidate_is_head_capture
+        render 'is-shower-head', product: candidate
+      endcapture
+      assign candidate_is_head = candidate_is_head_capture | strip
+      if candidate_is_head == 'true'
+        assign candidate_count = candidate_count | plus: 1
+      endif
+      if candidate_count >= 2
+        break
+      endif
+    endfor
+  endif
+%}
+
+{% if besjaar_ui_show_finder and candidate_count > 1 %}
+<section class="besjaar-ui-shower-section besjaar-ui-shower-finder" id="besjaar-model-finder" data-shower-finder data-reveal>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-shower-finder__head">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower.finder.kicker' | t }}</p>
+        <h2>{{ 'besjaar_ui.shower.finder.heading' | t }}</h2>
+        <p>{{ 'besjaar_ui.shower.finder.copy' | t }}</p>
+      </div>
+      <a class="besjaar-ui-shower-finder__compare-link" href="#besjaar-model-finder-results">{{ 'besjaar_ui.shower.finder.jump_to_models' | t }} <span aria-hidden="true">↓</span></a>
+    </div>
+
+    <div class="besjaar-ui-shower-finder__quiz" aria-label="{{ 'besjaar_ui.shower.finder.quiz_label' | t | escape }}">
+      <fieldset class="besjaar-ui-shower-finder__question" data-finder-question="hose">
+        <legend><span>01</span>{{ 'besjaar_ui.shower.finder.hose_question' | t }}</legend>
+        <div class="besjaar-ui-shower-finder__choices">
+          <button type="button" class="is-active" data-finder-choice="any" aria-pressed="true">{{ 'besjaar_ui.shower.finder.any' | t }}</button>
+          <button type="button" data-finder-choice="yes" aria-pressed="false">{{ 'besjaar_ui.shower.finder.hose_yes' | t }}</button>
+          <button type="button" data-finder-choice="no" aria-pressed="false">{{ 'besjaar_ui.shower.finder.hose_no' | t }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="besjaar-ui-shower-finder__question" data-finder-question="filter">
+        <legend><span>02</span>{{ 'besjaar_ui.shower.finder.filter_question' | t }}</legend>
+        <div class="besjaar-ui-shower-finder__choices">
+          <button type="button" class="is-active" data-finder-choice="any" aria-pressed="true">{{ 'besjaar_ui.shower.finder.any' | t }}</button>
+          <button type="button" data-finder-choice="yes" aria-pressed="false">{{ 'besjaar_ui.shower.finder.filter_yes' | t }}</button>
+          <button type="button" data-finder-choice="no" aria-pressed="false">{{ 'besjaar_ui.shower.finder.filter_no' | t }}</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="besjaar-ui-shower-finder__question" data-finder-question="priority">
+        <legend><span>03</span>{{ 'besjaar_ui.shower.finder.priority_question' | t }}</legend>
+        <div class="besjaar-ui-shower-finder__choices">
+          <button type="button" class="is-active" data-finder-choice="any" aria-pressed="true">{{ 'besjaar_ui.shower.finder.any' | t }}</button>
+          <button type="button" data-finder-choice="simple" aria-pressed="false">{{ 'besjaar_ui.shower.finder.priority_simple' | t }}</button>
+          <button type="button" data-finder-choice="versatile" aria-pressed="false">{{ 'besjaar_ui.shower.finder.priority_versatile' | t }}</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="besjaar-ui-shower-finder__result-summary" role="status" aria-live="polite">
+      <span class="besjaar-ui-shower-finder__pulse" aria-hidden="true"></span>
+      <p data-finder-status data-match-prefix="{{ 'besjaar_ui.shower.finder.status_match_prefix' | t | escape }}">{{ 'besjaar_ui.shower.finder.status_default' | t }}</p>
+      <button type="button" data-finder-reset>{{ 'besjaar_ui.shower.finder.reset' | t }}</button>
+    </div>
+
+    <aside class="besjaar-ui-shower-finder__result-card" data-finder-result-card hidden aria-live="polite">
+      <div class="besjaar-ui-shower-finder__result-media" data-finder-result-media hidden><img data-finder-result-image src="" alt="Besjaar showerhead recommendation" width="320" height="320" loading="lazy" decoding="async"></div>
+      <div class="besjaar-ui-shower-finder__result-copy">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower.finder.result_kicker' | t }}</p>
+        <h3 data-finder-result-title></h3>
+        <p data-finder-result-best-for hidden></p>
+        <div class="besjaar-ui-shower-finder__result-facts" data-finder-result-facts></div>
+      </div>
+      <div class="besjaar-ui-shower-finder__result-action">
+        <strong data-finder-result-price></strong>
+        <a class="besjaar-ui-button besjaar-ui-button--primary" data-finder-result-link href="#besjaar-model-finder-results">{{ 'besjaar_ui.shower.finder.view_match' | t }}</a>
+      </div>
+    </aside>
+
+    <div class="besjaar-ui-shower-finder__models" id="besjaar-model-finder-results" data-finder-models>
+      {% assign rendered_count = 0 %}
+      {% assign rendered_ids = '|' %}
+
+      {% if configured_count > 0 %}
+        {% for i in (1..5) %}
+          {% assign model_key = 'shower_model_' | append: i %}
+          {% assign model = settings[model_key] %}
+          {% if model == blank %}{% continue %}{% endif %}
+          {% capture is_head_capture %}{% render 'is-shower-head', product: model %}{% endcapture %}
+          {% assign is_head = is_head_capture | strip %}
+          {% if is_head != 'true' %}{% continue %}{% endif %}
+          {% capture model_token %}|{{ model.id }}|{% endcapture %}
+          {% if rendered_ids contains model_token %}{% continue %}{% endif %}
+          {% capture model_spray_capture %}{% render 'shower-spray-modes', product: model %}{% endcapture %}
+          {% assign model_spray = model_spray_capture | strip | default: 0 %}
+          {% capture model_filter_capture %}{% render 'shower-filter-state', product: model %}{% endcapture %}
+          {% assign model_filter = model_filter_capture | strip %}
+          {% capture model_hose_capture %}{% render 'shower-hose-state', product: model %}{% endcapture %}
+          {% assign model_hose = model_hose_capture | strip %}
+          {% capture model_title_capture %}{% render 'localized-product-title', product: model %}{% endcapture %}
+          {% assign model_title = model_title_capture | strip %}
+          {% assign model_best_for = '' %}
+          {% if model.metafields.custom.best_for != blank %}{% assign model_best_for = model.metafields.custom.best_for.value %}{% endif %}
+          {% assign rendered_count = rendered_count | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: model.id | append: '|' %}
+
+          <article class="besjaar-ui-shower-model-card{% if model.id == product.id %} is-current{% endif %}" data-finder-model data-model-id="{{ model.id }}" data-model-hose="{{ model_hose }}" data-model-filter="{{ model_filter }}" data-model-spray="{{ model_spray }}" data-model-title="{{ model_title | escape }}" data-model-url="{% if model.id == product.id %}#MainContent{% else %}{% render 'localized-internal-url', url: model.url %}{% endif %}" data-model-price="{{ model.price | money | escape }}" data-model-best-for="{{ model_best_for | escape }}"{% if model.featured_image != blank %} data-model-image="{{ model.featured_image | image_url: width: 360 }}"{% endif %}>
+            <div class="besjaar-ui-shower-model-card__media">
+              {% if model.featured_image != blank %}
+                {{ model.featured_image | image_url: width: 850 | image_tag: loading: 'lazy', widths: '360, 520, 700, 850', sizes: '(min-width: 1000px) 20vw, 72vw', alt: model_title }}
+              {% endif %}
+              {% if model.id == product.id %}<span class="besjaar-ui-shower-model-card__current">{{ 'besjaar_ui.shower.finder.current_model' | t }}</span>{% endif %}
+              <span class="besjaar-ui-shower-model-card__match" data-finder-match hidden>{{ 'besjaar_ui.shower.finder.best_match' | t }}</span>
+            </div>
+            <div class="besjaar-ui-shower-model-card__body">
+              <h3>{{ model_title }}</h3>
+              <div class="besjaar-ui-shower-model-card__facts">
+                {% if model_spray != blank and model_spray != '0' %}<span>{{ 'besjaar_ui.shower.finder.spray_fact' | t: count: model_spray }}</span>{% endif %}
+                <span>{% if model_hose == 'true' %}{{ 'besjaar_ui.shower.finder.with_hose' | t }}{% else %}{{ 'besjaar_ui.shower.finder.without_hose' | t }}{% endif %}</span>
+                <span>{% if model_filter == 'true' %}{{ 'besjaar_ui.shower.finder.with_filter' | t }}{% else %}{{ 'besjaar_ui.shower.finder.without_filter' | t }}{% endif %}</span>
+              </div>
+              <div class="besjaar-ui-shower-model-card__footer">
+                <strong>{{ model.price | money }}</strong>
+                {% if model.id == product.id %}
+                  <a href="#MainContent" aria-label="{{ 'besjaar_ui.shower.finder.current_model' | t | escape }}">{{ 'besjaar_ui.shower.finder.view_current' | t }} <span aria-hidden="true">↑</span></a>
+                {% else %}
+                  <a href="{% render 'localized-internal-url', url: model.url %}">{{ 'besjaar_ui.shower.finder.view_model' | t }} <span aria-hidden="true">→</span></a>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% endif %}
+
+      {% if rendered_count < 2 and shower_collection != blank %}
+        {% for model in shower_collection.products limit: 12 %}
+          {% if rendered_count >= 5 %}{% break %}{% endif %}
+          {% capture model_token %}|{{ model.id }}|{% endcapture %}
+          {% if rendered_ids contains model_token %}{% continue %}{% endif %}
+          {% capture is_head_capture %}{% render 'is-shower-head', product: model %}{% endcapture %}
+          {% assign is_head = is_head_capture | strip %}
+          {% if is_head != 'true' %}{% continue %}{% endif %}
+          {% capture model_spray_capture %}{% render 'shower-spray-modes', product: model %}{% endcapture %}
+          {% assign model_spray = model_spray_capture | strip | default: 0 %}
+          {% capture model_filter_capture %}{% render 'shower-filter-state', product: model %}{% endcapture %}
+          {% assign model_filter = model_filter_capture | strip %}
+          {% capture model_hose_capture %}{% render 'shower-hose-state', product: model %}{% endcapture %}
+          {% assign model_hose = model_hose_capture | strip %}
+          {% capture model_title_capture %}{% render 'localized-product-title', product: model %}{% endcapture %}
+          {% assign model_title = model_title_capture | strip %}
+          {% assign model_best_for = '' %}
+          {% if model.metafields.custom.best_for != blank %}{% assign model_best_for = model.metafields.custom.best_for.value %}{% endif %}
+          {% assign rendered_count = rendered_count | plus: 1 %}
+          {% assign rendered_ids = rendered_ids | append: model.id | append: '|' %}
+          <article class="besjaar-ui-shower-model-card{% if model.id == product.id %} is-current{% endif %}" data-finder-model data-model-id="{{ model.id }}" data-model-hose="{{ model_hose }}" data-model-filter="{{ model_filter }}" data-model-spray="{{ model_spray }}" data-model-title="{{ model_title | escape }}" data-model-url="{% if model.id == product.id %}#MainContent{% else %}{% render 'localized-internal-url', url: model.url %}{% endif %}" data-model-price="{{ model.price | money | escape }}" data-model-best-for="{{ model_best_for | escape }}"{% if model.featured_image != blank %} data-model-image="{{ model.featured_image | image_url: width: 360 }}"{% endif %}>
+            <div class="besjaar-ui-shower-model-card__media">
+              {% if model.featured_image != blank %}{{ model.featured_image | image_url: width: 850 | image_tag: loading: 'lazy', widths: '360, 520, 700, 850', sizes: '(min-width: 1000px) 20vw, 72vw', alt: model_title }}{% endif %}
+              {% if model.id == product.id %}<span class="besjaar-ui-shower-model-card__current">{{ 'besjaar_ui.shower.finder.current_model' | t }}</span>{% endif %}
+              <span class="besjaar-ui-shower-model-card__match" data-finder-match hidden>{{ 'besjaar_ui.shower.finder.best_match' | t }}</span>
+            </div>
+            <div class="besjaar-ui-shower-model-card__body">
+              <h3>{{ model_title }}</h3>
+              <div class="besjaar-ui-shower-model-card__facts">
+                {% if model_spray != blank and model_spray != '0' %}<span>{{ 'besjaar_ui.shower.finder.spray_fact' | t: count: model_spray }}</span>{% endif %}
+                <span>{% if model_hose == 'true' %}{{ 'besjaar_ui.shower.finder.with_hose' | t }}{% else %}{{ 'besjaar_ui.shower.finder.without_hose' | t }}{% endif %}</span>
+                <span>{% if model_filter == 'true' %}{{ 'besjaar_ui.shower.finder.with_filter' | t }}{% else %}{{ 'besjaar_ui.shower.finder.without_filter' | t }}{% endif %}</span>
+              </div>
+              <div class="besjaar-ui-shower-model-card__footer">
+                <strong>{{ model.price | money }}</strong>
+                {% if model.id == product.id %}<a href="#MainContent">{{ 'besjaar_ui.shower.finder.view_current' | t }} <span aria-hidden="true">↑</span></a>{% else %}<a href="{% render 'localized-internal-url', url: model.url %}">{{ 'besjaar_ui.shower.finder.view_model' | t }} <span aria-hidden="true">→</span></a>{% endif %}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<script src="{{ 'besjaar-ui-shower-finder.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+{
+  "name": "Shower model finder",
+  "settings": [],
+  "presets": [{"name":"Shower model finder"}]
+}
+{% endschema %}

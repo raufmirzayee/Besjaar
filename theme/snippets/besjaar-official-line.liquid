@@ -1,0 +1,28 @@
+{%- comment -%}
+  Besjaar v8 SEO: server-rendered brand identity copy for the homepage.
+  This replaces the old <template> + JavaScript insertion so crawlers and
+  visitors receive the same visible HTML in the initial response.
+{%- endcomment -%}
+{%- liquid
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_official = 'This is the official Besjaar website. Besjaar showerheads and shower filters are designed and sold by Besjaar in Assen, the Netherlands, and are also available on Bol.com.'
+    when 'de'
+      assign bj_official = 'Dies ist die offizielle Besjaar-Website. Besjaar-Duschköpfe und -Duschfilter werden von Besjaar in Assen (Niederlande) entwickelt und verkauft und sind auch auf Bol.com erhältlich.'
+    when 'fr'
+      assign bj_official = 'Ceci est le site officiel de Besjaar. Les pommeaux et filtres de douche Besjaar sont conçus et vendus par Besjaar à Assen, aux Pays-Bas, et sont également disponibles sur Bol.com.'
+    else
+      assign bj_official = 'Dit is de officiële website van Besjaar. Besjaar douchekoppen en douchefilters worden ontworpen en verkocht door Besjaar in Assen, Nederland, en zijn ook verkrijgbaar op Bol.com.'
+  endcase
+-%}
+<style id="besjaar-official-v8">
+body[data-page-type="index"] .bj-official{box-sizing:border-box;width:min(100% - 32px,1240px);margin:0 auto;padding:22px 0 30px;border-top:1px solid var(--bj-line,rgba(21,50,82,.12))}
+body[data-page-type="index"] .bj-official p{display:flex;align-items:flex-start;justify-content:center;gap:9px;max-width:76ch;margin:0 auto;color:var(--bj-muted,#49627D);font-size:.78rem;line-height:1.55;text-align:left}
+body[data-page-type="index"] .bj-official svg{flex:0 0 auto;width:14px;height:14px;margin-top:2px;color:var(--bj-blue,#2F628F)}
+body[data-page-type="index"] .bj-official strong{color:var(--bj-navy-deep,#0F2947);font-weight:600}
+@media (min-width:901px){body[data-page-type="index"] .bj-official{padding:26px 0 34px}body[data-page-type="index"] .bj-official p{font-size:.82rem;text-align:center;justify-content:center}}
+</style>
+<div class="bj-official">
+  <p><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"></path><path d="m9 12 2 2 4-4"></path></svg><span><strong>Besjaar®</strong> — {{ bj_official | escape }}</span></p>
+</div>

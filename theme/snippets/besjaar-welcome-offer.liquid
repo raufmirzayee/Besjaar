@@ -1,0 +1,170 @@
+{%- comment -%}
+  Besjaar Welcome Drop — conversion-focused first-order offer.
+  - Opens after delay / scroll / desktop exit intent.
+  - Weighted reward: 10%, 15%, 20%, or free shipping.
+  - Captures newsletter consent through Shopify's native customer form.
+  - Shows once per guest visit until claimed; after claim it stays suppressed while the welcome benefit is active.
+  - Discount codes themselves must exist in Shopify Admin > Discounts.
+{%- endcomment -%}
+{%- liquid
+  assign besjaar_offer_allowed = settings.welcome_offer_enabled
+  if customer != blank
+    assign besjaar_offer_allowed = false
+  endif
+  if request.design_mode or request.visual_preview_mode
+    assign besjaar_offer_allowed = false
+  endif
+  if request.page_type == 'cart' or request.page_type == 'search' or request.page_type == '404' or request.page_type contains 'customers'
+    assign besjaar_offer_allowed = false
+  endif
+  if request.path contains '/apps/' or request.path contains '/checkouts/' or request.path contains '/checkout'
+    assign besjaar_offer_allowed = false
+  endif
+-%}
+{%- if besjaar_offer_allowed -%}
+  {{ 'besjaar-welcome-offer.css' | asset_url | stylesheet_tag }}
+
+  <dialog
+    class="besjaar-welcome-offer"
+    data-besjaar-welcome-offer
+    data-delay="{{ settings.welcome_offer_delay_seconds | default: 3 }}"
+    data-scroll="{{ settings.welcome_offer_scroll_percent | default: 35 }}"
+    data-exit-intent="{{ settings.welcome_offer_exit_intent | json }}"
+    data-root-url="{{ routes.root_url }}"
+    data-shop-url="{{ routes.all_products_collection_url }}"
+    data-locale="{{ request.locale.iso_code | default: 'nl' | downcase | escape }}"
+    aria-labelledby="BesjaarWelcomeTitle"
+    aria-describedby="BesjaarWelcomeIntro"
+  >
+    <div class="besjaar-welcome-offer__shell">
+      <button class="besjaar-welcome-offer__close" type="button" data-besjaar-offer-close aria-label="{{ 'besjaar_ui.welcome_offer.close' | t | escape }}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+
+      <div class="besjaar-welcome-offer__brand-panel" aria-hidden="true">
+        <div class="besjaar-welcome-offer__brand-glow"></div>
+        <div class="besjaar-welcome-offer__mark">{% render 'besjaar-leaf-logo' %}</div>
+        <div class="besjaar-welcome-offer__brand-word">BESJAAR</div>
+        <div class="besjaar-welcome-offer__water-lines"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="besjaar-welcome-offer__brand-copy">
+          <span>{{ 'besjaar_ui.welcome_offer.brand_kicker' | t }}</span>
+          <strong>{{ 'besjaar_ui.welcome_offer.brand_title' | t }}</strong>
+        </div>
+      </div>
+
+      <div class="besjaar-welcome-offer__content">
+        <section class="besjaar-welcome-offer__stage is-active" data-offer-stage="intro">
+          <div class="besjaar-welcome-offer__eyebrow"><span></span>{{ 'besjaar_ui.welcome_offer.eyebrow' | t }}</div>
+          <h2 id="BesjaarWelcomeTitle">{{ 'besjaar_ui.welcome_offer.title' | t }}</h2>
+          <p id="BesjaarWelcomeIntro" class="besjaar-welcome-offer__intro">{{ 'besjaar_ui.welcome_offer.intro' | t }}</p>
+
+          <div class="besjaar-welcome-offer__drop-wrap">
+            <button class="besjaar-welcome-offer__drop" type="button" data-offer-drop aria-describedby="BesjaarDropHint">
+              <svg viewBox="0 0 180 220" aria-hidden="true">
+                <defs>
+                  <linearGradient id="besjaarDropGradient" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0" stop-color="#dff4ff"/>
+                    <stop offset="0.48" stop-color="#7bc5ec"/>
+                    <stop offset="1" stop-color="#2e6f9c"/>
+                  </linearGradient>
+                </defs>
+                <path d="M90 10C74 43 31 82 22 124c-11 52 20 87 68 87s79-35 68-87C149 82 106 43 90 10Z" fill="url(#besjaarDropGradient)"/>
+                <path d="M58 72c-18 25-29 45-29 65 0 33 24 59 57 63" fill="none" stroke="rgba(255,255,255,.74)" stroke-width="8" stroke-linecap="round"/>
+                <ellipse cx="72" cy="53" rx="16" ry="27" transform="rotate(35 72 53)" fill="rgba(255,255,255,.56)"/>
+              </svg>
+              <span>{{ 'besjaar_ui.welcome_offer.tap_drop' | t }}</span>
+            </button>
+
+            <button class="besjaar-welcome-offer__tap-cta" type="button" data-offer-drop-trigger>
+              <span>{{ 'besjaar_ui.welcome_offer.unlock' | t }}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <p id="BesjaarDropHint" class="besjaar-welcome-offer__hint">{{ 'besjaar_ui.welcome_offer.hint' | t }}</p>
+
+          <div class="besjaar-welcome-offer__prizes" aria-label="{{ 'besjaar_ui.welcome_offer.prizes_aria' | t | escape }}">
+            <span>10%</span><span class="is-featured">15%</span><span>20%</span><span>{{ 'besjaar_ui.welcome_offer.free_shipping_short' | t }}</span>
+          </div>
+        </section>
+
+        <section class="besjaar-welcome-offer__stage" data-offer-stage="email" aria-live="polite">
+          <div class="besjaar-welcome-offer__reward-badge" data-offer-found-badge>15%</div>
+          <div class="besjaar-welcome-offer__eyebrow"><span></span>{{ 'besjaar_ui.welcome_offer.found_eyebrow' | t }}</div>
+          <h2>{{ 'besjaar_ui.welcome_offer.found_title' | t }}</h2>
+          <p class="besjaar-welcome-offer__intro" data-offer-found-copy>{{ 'besjaar_ui.welcome_offer.found_copy' | t }}</p>
+
+          {% form 'customer', return_to: routes.all_products_collection_url, id: 'BesjaarWelcomeOfferForm', class: 'besjaar-welcome-offer__form' %}
+            <input type="hidden" data-offer-server-success value="{% if form.posted_successfully? %}true{% else %}false{% endif %}">
+            <input type="hidden" data-offer-server-error value="{% if form.errors %}true{% else %}false{% endif %}">
+            <input type="hidden" name="contact[tags]" value="newsletter,besjaar-welcome-offer,besjaar-welcome-email-v1,besjaar-locale-{{ request.locale.iso_code | default: 'nl' | downcase | escape }}" data-offer-tags>
+            <div class="besjaar-welcome-offer__field">
+              <label for="BesjaarWelcomeEmail">{{ 'besjaar_ui.welcome_offer.email_label' | t }}</label>
+              <input id="BesjaarWelcomeEmail" type="email" name="contact[email]" autocomplete="email" required placeholder="{{ 'besjaar_ui.welcome_offer.email_placeholder' | t | escape }}">
+            </div>
+            <label class="besjaar-welcome-offer__consent">
+              <input type="checkbox" required data-offer-consent>
+              <span>{{ 'besjaar_ui.welcome_offer.consent' | t }}</span>
+            </label>
+            <button class="besjaar-welcome-offer__primary" type="submit" data-offer-submit>
+              <span>{{ 'besjaar_ui.welcome_offer.unlock' | t }}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <p class="besjaar-welcome-offer__status" data-offer-status role="status">{% if form.errors %}{{ form.errors | default_errors }}{% endif %}</p>
+          {% endform %}
+
+          <p class="besjaar-welcome-offer__privacy">
+            {{ 'besjaar_ui.welcome_offer.privacy_note' | t }}
+            {% if shop.privacy_policy != blank %}<a href="{{ shop.privacy_policy.url }}">{{ 'besjaar_ui.welcome_offer.privacy_link' | t }}</a>{% endif %}
+          </p>
+        </section>
+
+        <section class="besjaar-welcome-offer__stage" data-offer-stage="result" aria-live="polite">
+          <div class="besjaar-welcome-offer__confetti" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="besjaar-welcome-offer__eyebrow"><span></span>{{ 'besjaar_ui.welcome_offer.result_eyebrow' | t }}</div>
+          <div class="besjaar-welcome-offer__result-value" data-offer-result-value>15%</div>
+          <h2 data-offer-result-title>{{ 'besjaar_ui.welcome_offer.result_title' | t }}</h2>
+          <p class="besjaar-welcome-offer__intro">{{ 'besjaar_ui.welcome_offer.result_copy' | t }}</p>
+
+          <div class="besjaar-welcome-offer__code-wrap">
+            <span>{{ 'besjaar_ui.welcome_offer.code_label' | t }}</span>
+            <div class="besjaar-welcome-offer__code-row">
+              <strong data-offer-code>WELKOM15</strong>
+              <button type="button" data-offer-copy>{{ 'besjaar_ui.welcome_offer.copy' | t }}</button>
+            </div>
+          </div>
+
+          <a class="besjaar-welcome-offer__primary besjaar-welcome-offer__primary--link" href="{{ routes.all_products_collection_url }}" data-offer-apply>
+            <span>{{ 'besjaar_ui.welcome_offer.shop_now' | t }}</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <p class="besjaar-welcome-offer__terms">{{ 'besjaar_ui.welcome_offer.terms' | t }}</p>
+        </section>
+
+        <div class="besjaar-welcome-offer__trust" aria-label="{{ 'besjaar_ui.welcome_offer.trust_aria' | t | escape }}">
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>{{ 'besjaar_ui.welcome_offer.trust_delivery' | t }}</span>
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6zM9 12l2 2 4-4"/></svg>{{ 'besjaar_ui.welcome_offer.trust_secure' | t }}</span>
+          <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M6 4h12l1 16H5L6 4Zm4 7h4"/></svg>{{ 'besjaar_ui.welcome_offer.trust_returns' | t }}</span>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="application/json" data-besjaar-welcome-config>
+    {
+      "rewards": [
+        {"id":"10","value":"10%","label":{{ 'besjaar_ui.welcome_offer.reward_10' | t | json }},"code":{{ settings.welcome_offer_code_10 | default: 'WELKOM10' | json }},"weight":{{ settings.welcome_offer_weight_10 | default: 25 }}},
+        {"id":"15","value":"15%","label":{{ 'besjaar_ui.welcome_offer.reward_15' | t | json }},"code":{{ settings.welcome_offer_code_15 | default: 'WELKOM15' | json }},"weight":{{ settings.welcome_offer_weight_15 | default: 55 }}},
+        {"id":"20","value":"20%","label":{{ 'besjaar_ui.welcome_offer.reward_20' | t | json }},"code":{{ settings.welcome_offer_code_20 | default: 'WELKOM20' | json }},"weight":{{ settings.welcome_offer_weight_20 | default: 10 }}},
+        {"id":"shipping","value":{{ 'besjaar_ui.welcome_offer.free_shipping_value' | t | json }},"label":{{ 'besjaar_ui.welcome_offer.reward_shipping' | t | json }},"code":{{ settings.welcome_offer_code_shipping | default: 'WELKOMSHIP' | json }},"weight":{{ settings.welcome_offer_weight_shipping | default: 10 }}}
+      ],
+      "copied": {{ 'besjaar_ui.welcome_offer.copied' | t | json }},
+      "copy": {{ 'besjaar_ui.welcome_offer.copy' | t | json }},
+      "submitting": {{ 'besjaar_ui.welcome_offer.submitting' | t | json }},
+      "unlock": {{ 'besjaar_ui.welcome_offer.unlock' | t | json }},
+      "emailError": {{ 'besjaar_ui.welcome_offer.email_error' | t | json }},
+      "consentError": {{ 'besjaar_ui.welcome_offer.consent_error' | t | json }},
+      "submitError": {{ 'besjaar_ui.welcome_offer.submit_error' | t | json }}
+    }
+  </script>
+  <script src="{{ 'besjaar-welcome-offer.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}

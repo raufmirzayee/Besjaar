@@ -1,0 +1,54 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_kicker = 'besjaar_store.cta.kicker' | t
+    assign v_heading = 'besjaar_store.cta.heading' | t
+    assign v_primary = 'besjaar_store.cta.primary' | t
+    assign v_secondary = 'besjaar_store.cta.secondary' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_heading = section.settings.heading
+    assign v_primary = section.settings.primary_label
+    assign v_secondary = section.settings.secondary_label
+  endif
+
+  assign v_visual_alt = 'Besjaar douchekop'
+  case request.locale.iso_code
+    when 'en'
+      assign v_visual_alt = 'Besjaar showerhead'
+    when 'de'
+      assign v_visual_alt = 'Besjaar Duschkopf'
+    when 'fr'
+      assign v_visual_alt = 'Pommeau de douche Besjaar'
+  endcase
+%}
+{% capture cta_primary_url %}{% render 'shower-store-url' %}{% endcapture %}
+{% assign cta_primary_url = cta_primary_url | strip %}
+{% assign cta_secondary_url = '#besjaar-store-details' %}
+{% if request.page_type == 'product' %}{% assign cta_secondary_url = '#besjaar-product-details' %}{% endif %}
+<section class="besjaar-store besjaar-store-cta" id="besjaar-store-koop">
+  <div class="besjaar-store-shell besjaar-store-cta__grid">
+    <div class="besjaar-store-cta__copy">
+      <span class="besjaar-store-cta__kicker">{{ v_kicker | escape }}</span>
+      <h2 class="besjaar-store-cta__title">{{ v_heading | escape }}</h2>
+      <div class="besjaar-store-cta__actions">
+        <a class="besjaar-store-btn besjaar-store-btn--paper" href="{% if section.settings.primary_link != blank %}{% render 'localized-internal-url', url: section.settings.primary_link %}{% else %}{{ cta_primary_url }}{% endif %}">{{ v_primary | escape }} <span aria-hidden="true">→</span></a>
+        <a class="besjaar-store-btn besjaar-store-btn--ghostlight" href="{{ cta_secondary_url }}">{{ v_secondary | escape }}</a>
+      </div>
+    </div>
+    <div class="besjaar-store-cta__visual" aria-hidden="true"><img src="{{ 'besjaar-product-front-exact.webp' | asset_url }}" alt="{{ v_visual_alt | escape }}" width="1254" height="1254" loading="lazy" decoding="async"></div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium closing CTA",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "BESJAAR® SHOWERHEADS"},
+    {"type": "text", "id": "heading", "label": "Heading", "default": "Upgrade the shower you use every day."},
+    {"type": "text", "id": "primary_label", "label": "Primary button", "default": "SHOP SHOWERHEADS"},
+    {"type": "url", "id": "primary_link", "label": "Primary link"},
+    {"type": "text", "id": "secondary_label", "label": "Secondary button", "default": "EXPLORE THE DETAILS"}
+  ],
+  "presets": [{"name": "Premium closing CTA"}]
+}
+{% endschema %}

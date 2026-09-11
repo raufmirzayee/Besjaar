@@ -1,0 +1,59 @@
+<section class="besjaar-ui-brand-search-topics" aria-labelledby="BesjaarUIBrandSearchTopics-{{ section.id }}">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-brand-search-topics__surface" data-reveal>
+      <header class="besjaar-ui-brand-search-topics__head">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.brand_search.kicker' | t }}</p>
+        <h2 id="BesjaarUIBrandSearchTopics-{{ section.id }}">{{ 'besjaar_ui.brand_search.heading' | t }}</h2>
+        <p>{{ 'besjaar_ui.brand_search.intro' | t }}</p>
+      </header>
+
+      <div class="besjaar-ui-brand-search-topics__grid">
+        {% for i in (1..7) %}
+          {% assign title_key = 'besjaar_ui.brand_search.card' | append: i | append: '_title' %}
+          {% assign copy_key = 'besjaar_ui.brand_search.card' | append: i | append: '_copy' %}
+          <article class="besjaar-ui-brand-search-topics__card">
+            <span aria-hidden="true">0{{ i }}</span>
+            <h3>{{ title_key | t }}</h3>
+            <p>{{ copy_key | t }}</p>
+          </article>
+        {% endfor %}
+      </div>
+
+      <footer class="besjaar-ui-brand-search-topics__foot">
+        <p>{{ 'besjaar_ui.brand_search.note' | t }}</p>
+      </footer>
+    </div>
+  </div>
+</section>
+<style>
+  .besjaar-ui-brand-search-topics{padding:clamp(48px,6vw,86px) 0}
+  .besjaar-ui-brand-search-topics__surface{padding:clamp(24px,4vw,48px);border:1px solid #dce4dc;border-radius:28px;background:#fbfcfa}
+  .besjaar-ui-brand-search-topics__head{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.78fr);gap:10px 44px;align-items:end;padding-bottom:26px;border-bottom:1px solid #dfe5df}
+  .besjaar-ui-brand-search-topics__head .besjaar-ui-kicker{grid-column:1/-1;margin:0;color:#65736a;font-size:.65rem;letter-spacing:.15em}
+  .besjaar-ui-brand-search-topics__head h2{margin:0;color:#17261d;font-size:clamp(1.9rem,3.6vw,3.8rem);line-height:1;letter-spacing:-.05em;max-width:780px}
+  .besjaar-ui-brand-search-topics__head>p:last-child{margin:0;color:#65736a;font-size:.92rem;line-height:1.65;max-width:620px}
+  .besjaar-ui-brand-search-topics__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
+  .besjaar-ui-brand-search-topics__card{position:relative;padding:25px 0 24px 42px;border-bottom:1px solid #e1e6e1}
+  .besjaar-ui-brand-search-topics__card>span{position:absolute;left:0;top:28px;color:#79a368;font-size:.68rem;font-weight:900;letter-spacing:.08em}
+  .besjaar-ui-brand-search-topics__card h3{margin:0 0 7px;color:#22352a;font-size:1rem}
+  .besjaar-ui-brand-search-topics__card p{margin:0;color:#68756d;font-size:.82rem;line-height:1.62}
+  .besjaar-ui-brand-search-topics__foot{padding-top:22px}
+  .besjaar-ui-brand-search-topics__foot p{margin:0;color:#718078;font-size:.76rem;line-height:1.6;max-width:920px}
+  @media(max-width:760px){
+    .besjaar-ui-brand-search-topics{padding:44px 0}
+    .besjaar-ui-brand-search-topics__surface{padding:22px 17px;border-radius:22px}
+    .besjaar-ui-brand-search-topics__head{grid-template-columns:1fr;gap:12px;padding-bottom:20px}
+    .besjaar-ui-brand-search-topics__head .besjaar-ui-kicker{grid-column:auto}
+    .besjaar-ui-brand-search-topics__head h2{font-size:clamp(1.8rem,8.5vw,2.7rem)}
+    .besjaar-ui-brand-search-topics__grid{grid-template-columns:1fr}
+    .besjaar-ui-brand-search-topics__card{padding:20px 0 19px 36px}
+    .besjaar-ui-brand-search-topics__card>span{top:23px}
+  }
+</style>
+{% schema %}
+{
+  "name": "Besjaar brand topics",
+  "settings": [],
+  "presets": [{"name": "Besjaar brand topics"}]
+}
+{% endschema %}

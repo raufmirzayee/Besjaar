@@ -1,0 +1,133 @@
+{% liquid
+  assign footer_tagline = 'besjaar_ui.footer.tagline' | t
+  if section.settings.use_localized_tagline == false and section.settings.tagline != blank
+    assign footer_tagline = section.settings.tagline
+  endif
+  capture shower_url_localized
+    render 'shower-store-url'
+  endcapture
+  assign footer_faq_page = pages['veelgestelde-vragen']
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['faq']
+  endif
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['frequently-asked-questions']
+  endif
+  capture footer_faq_url
+    if footer_faq_page != blank
+      render 'localized-internal-url', url: footer_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  assign footer_faq_url = footer_faq_url | strip
+
+  assign footer_contact_page = pages['contact']
+  if footer_contact_page == blank
+    assign footer_contact_page = pages['contact-us']
+  endif
+  capture footer_contact_url
+    if section.settings.contact_url != blank
+      echo section.settings.contact_url
+    elsif footer_contact_page != blank
+      render 'localized-internal-url', url: footer_contact_page.url
+    else
+      render 'localized-internal-url', url: '/pages/contact'
+    endif
+  endcapture
+  assign footer_contact_url = footer_contact_url | strip
+
+  assign footer_tracking_page = pages['track-order']
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['track-your-order']
+  endif
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['order-tracking']
+  endif
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['tracking']
+  endif
+  capture tracking_url
+    if footer_tracking_page != blank
+      render 'localized-internal-url', url: footer_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+  assign tracking_url = tracking_url | strip
+%}
+<footer class="besjaar-ui-footer besjaar-ui-footer--shower-focus">
+  <div class="besjaar-ui-shell besjaar-ui-footer__grid">
+    <div class="besjaar-ui-footer__brand-col">
+      <div class="besjaar-ui-footer__brand notranslate" translate="no" data-besjaar-ui-brand>BESJAAR</div>
+      <p class="besjaar-ui-copy">{{ footer_tagline }}</p>
+      <div class="besjaar-ui-footer__proof"><span>{{ localization.country.iso_code | default: 'NL' }}</span><p>{% if settings.enable_markets_localization and localization.country != blank %}{{ 'besjaar_ui.markets.delivery_to' | t: country: localization.country.name }}{% else %}{{ 'besjaar_ui.footer.nl_shipping' | t }}{% endif %}</p></div>
+    </div>
+
+    <div class="besjaar-ui-footer__column besjaar-ui-footer__column--shop">
+      <h3><span>{{ 'besjaar_ui.footer.shop' | t }}</span></h3>
+      <ul class="besjaar-ui-footer__shop-list">
+        <li><a href="{{ shower_url_localized | strip }}">{{ 'besjaar_ui.shower_store.footer.shop_all' | t }}</a></li>
+        <li><a href="{{ routes.root_url }}#besjaar-store-details">{{ 'besjaar_ui.shower_store.footer.guide' | t }}</a></li>
+      </ul>
+    </div>
+
+    <div class="besjaar-ui-footer__column">
+      <h3>{{ 'besjaar_ui.footer.service' | t }}</h3>
+      <ul>
+        <li><a href="{{ footer_contact_url }}">{{ 'besjaar_ui.footer.contact' | t }}</a></li>
+        <li><a href="{{ footer_faq_url }}">{{ 'besjaar_ui.footer.faq' | t }}</a></li>
+        <li><a href="{{ tracking_url }}">{{ 'besjaar_ui.footer.track_order' | t }}</a></li>
+        {% if shop.shipping_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ 'besjaar_ui.policies.shipping' | t }}</a></li>{% endif %}
+        {% if shop.refund_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.refund_policy.url %}">{{ 'besjaar_ui.policies.refund' | t }}</a></li>{% endif %}
+      </ul>
+    </div>
+
+    <div class="besjaar-ui-footer__column besjaar-ui-footer__column--legal">
+      <h3>{{ 'besjaar_ui.footer.info' | t }}</h3>
+      <ul>
+        {% if shop.privacy_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_ui.policies.privacy' | t }}</a></li>{% endif %}
+        {% if shop.terms_of_service != blank %}<li><a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'besjaar_ui.policies.terms' | t }}</a></li>{% endif %}
+        {% if settings.enable_measurement_layer and settings.show_cookie_preferences %}<li><button class="besjaar-ui-footer__link-button" type="button" data-besjaar-ui-privacy-open>{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>{% endif %}
+        {% if shop.customer_accounts_enabled %}<li><a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" rel="nofollow">{% if customer %}{{ 'besjaar_ui.header.my_account' | t }}{% else %}{{ 'besjaar_ui.header.sign_in_create' | t }}{% endif %}</a></li>{% endif %}
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="besjaar-ui-shell besjaar-ui-footer__bottom besjaar-ui-footer__bottom--v33">
+    <span>© {{ 'now' | date: '%Y' }} Besjaar · {{ 'besjaar_ui.footer.copyright' | t }}</span>
+    {% if settings.show_footer_localization %}{% unless request.visual_preview_mode %}<div class="besjaar-ui-footer__localization">{% render 'besjaar-ui-localization', context: 'footer', section_id: section.id %}</div>{% endunless %}{% endif %}
+    <div class="besjaar-ui-payments">{% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}</div>
+  </div>
+</footer>
+
+<dialog class="besjaar-store-shipping-dialog" data-shipping-returns-dialog aria-labelledby="SiteShippingReturnsTitle-{{ section.id }}">
+  <div class="besjaar-store-shipping-dialog__head">
+    <div><p class="besjaar-store-shipping-dialog__eyebrow">BESJAAR</p><h2 id="SiteShippingReturnsTitle-{{ section.id }}">{{ 'besjaar_store.footer.shipping_returns' | t }}</h2></div>
+    <button type="button" class="besjaar-store-shipping-dialog__close" data-shipping-returns-close aria-label="{{ 'besjaar_ui.accessibility.close' | t | escape }}">×</button>
+  </div>
+  <div class="besjaar-store-shipping-dialog__body">
+    <section>
+      <span class="besjaar-store-shipping-dialog__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h11v9H3zM14 10h3l4 4v2h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
+      <div><h3>{{ 'besjaar_ui.delivery.estimate_title' | t }}</h3><p>{% if settings.show_delivery_estimates %}{{ 'besjaar_ui.delivery.estimate_fallback' | t: min: settings.transit_min_business_days, max: settings.transit_max_business_days }}. {% endif %}{{ 'besjaar_ui.delivery.checkout_confirmation' | t }}</p></div>
+    </section>
+    <section>
+      <span class="besjaar-store-shipping-dialog__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg></span>
+      <div><h3>{{ 'besjaar_ui.delivery.returns_title' | t }}</h3><p>{{ 'besjaar_ui.delivery.returns_value' | t: days: settings.return_window_days }}. {{ 'besjaar_ui.delivery.returns_note' | t }}</p></div>
+    </section>
+  </div>
+</dialog>
+<script>
+(() => {
+  const dialog=document.querySelector('[data-shipping-returns-dialog]');
+  if(!dialog)return;
+  const open=()=>{if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','')};
+  const close=()=>{if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open')};
+  document.querySelectorAll('[data-shipping-returns-open]').forEach(button=>button.addEventListener('click',open));
+  dialog.querySelector('[data-shipping-returns-close]')?.addEventListener('click',close);
+  dialog.addEventListener('click',event=>{if(event.target===dialog)close()});
+})();
+</script>
+
+{% schema %}{"name":"Footer","settings":[{"type":"checkbox","id":"use_localized_tagline","label":"Use automatic localized tagline (EN / NL / DE / FR)","default":true},{"type":"textarea","id":"tagline","label":"Custom tagline","default":"Een gericht assortiment douchekoppen — duidelijk vergeleken en zorgvuldig gepresenteerd."},{"type":"url","id":"contact_url","label":"Contact page"}]}{% endschema %}

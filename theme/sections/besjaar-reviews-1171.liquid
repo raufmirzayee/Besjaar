@@ -1,0 +1,60 @@
+{%- comment -%}
+  Besjaar 11.6.21 — Judge.me review carousel, brought into the house system.
+
+  The app block ships with black text, a grey card and Judge.me's default
+  star colour, which reads as a third-party widget dropped onto the page.
+  Colour, copy and the empty media well are fixed in the block's own settings
+  (templates/index.json); this file is the layout and typography pass that
+  those settings cannot reach.
+
+  Everything is scoped to the section id of the app block on the home page,
+  so no other Judge.me widget — the product page badge, the review widget —
+  is touched. Selectors are written against Judge.me's jdgm- class names with
+  substring fallbacks, because the markup is the app's and can change under
+  us; if a selector stops matching, the block simply falls back to Judge.me's
+  own styling rather than breaking.
+{%- endcomment -%}
+<style id="besjaar-reviews-1171">
+#shopify-section-17881022079efec756{padding:clamp(30px,5vw,60px) 0}
+#shopify-section-17881022079efec756 [class*="jdgm-carousel"]{--bj-r-line:rgba(21,50,82,.12)}
+
+/* Heading: section type, not app type. */
+#shopify-section-17881022079efec756 [class*="jdgm-carousel-title"],
+#shopify-section-17881022079efec756 [class*="jdgm-carousel__title"]{margin:0 0 12px!important;color:#0F2947!important;font-size:clamp(1.45rem,4.2vw,2rem)!important;font-weight:600!important;line-height:1.14!important;letter-spacing:-.025em!important;text-transform:none!important}
+
+/* Rating summary row sits calmly under it. */
+#shopify-section-17881022079efec756 [class*="jdgm-carousel"] [class*="rating"]{display:inline-flex!important;align-items:center!important;flex-wrap:wrap!important;gap:8px!important;margin-bottom:22px!important;font-size:.9rem!important}
+#shopify-section-17881022079efec756 .jdgm-star{color:#D79545!important}
+
+/* Cards: white, hairline, calm. */
+#shopify-section-17881022079efec756 [class*="carousel-item"]{box-sizing:border-box!important;display:flex!important;flex-direction:column!important;gap:8px!important;padding:18px 20px!important;border:1px solid var(--bj-r-line,rgba(21,50,82,.12))!important;border-radius:16px!important;background:#FFFFFF!important;box-shadow:none!important;transition:box-shadow .2s ease,transform .2s ease}
+#shopify-section-17881022079efec756 [class*="carousel-item"]:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(15,41,71,.08)!important}
+#shopify-section-17881022079efec756 [class*="carousel-item"] [class*="review-title"]{color:#0F2947!important;font-size:.95rem!important;font-weight:600!important;letter-spacing:-.01em!important}
+#shopify-section-17881022079efec756 [class*="carousel-item"] [class*="review-body"],
+#shopify-section-17881022079efec756 [class*="carousel-item"] [class*="__review"]{color:#49627D!important;font-size:.88rem!important;line-height:1.55!important}
+#shopify-section-17881022079efec756 [class*="reviewer-name"]{color:#0F2947!important;font-size:.8rem!important;font-weight:600!important}
+#shopify-section-17881022079efec756 [class*="product-title"]{color:#49627D!important;font-size:.75rem!important;line-height:1.4!important}
+
+/* Arrows as real buttons instead of bare chevrons. */
+#shopify-section-17881022079efec756 [class*="arrow"]{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:40px!important;height:40px!important;border:1px solid var(--bj-r-line,rgba(21,50,82,.12))!important;border-radius:50%!important;background:#FFFFFF!important;color:#153252!important;box-shadow:0 2px 8px rgba(15,41,71,.06)!important;transition:background-color .18s ease,color .18s ease}
+#shopify-section-17881022079efec756 [class*="arrow"]:hover{background:#153252!important;color:#FFFFFF!important}
+
+@media (max-width:640px){
+  #shopify-section-17881022079efec756 [class*="carousel-item"]{padding:16px!important;border-radius:14px!important}
+  #shopify-section-17881022079efec756 [class*="arrow"]{width:36px!important;height:36px!important}
+}
+</style>
+{% schema %}
+{
+  "name": "Besjaar review polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.21: restyles the Judge.me cards carousel on the home page to the Besjaar type and colour system — section-weight heading, hairline white cards, gold stars, circular arrows. Scoped to that one block, so other Judge.me widgets are untouched. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

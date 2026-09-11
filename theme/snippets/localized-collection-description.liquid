@@ -1,0 +1,19 @@
+{%- liquid
+  assign besjaar_ui_collection = collection
+  assign besjaar_ui_handle = handle | default: besjaar_ui_collection.handle | downcase | strip
+  assign besjaar_ui_description = besjaar_ui_collection.description | strip_html
+  assign besjaar_ui_focus_collection = settings.shower_collection
+  assign is_focus_collection = false
+
+  if besjaar_ui_focus_collection != blank and besjaar_ui_collection != blank and besjaar_ui_collection.id == besjaar_ui_focus_collection.id
+    assign is_focus_collection = true
+  elsif besjaar_ui_handle == 'badkamer-douche' or besjaar_ui_handle == 'douche' or besjaar_ui_handle == 'shower' or besjaar_ui_handle == 'showerheads' or besjaar_ui_handle == 'douchekoppen'
+    assign is_focus_collection = true
+  endif
+
+  if is_focus_collection
+    assign besjaar_ui_description = 'besjaar_ui.shower_store.catalog.copy' | t
+  endif
+
+  echo besjaar_ui_description
+-%}

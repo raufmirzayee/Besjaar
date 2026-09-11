@@ -1,0 +1,836 @@
+/* Besjaar 11.3.0 — Premium Lux layer.
+   Loaded LAST (after besjaar-cart-polish-1140.css) so it sits on top of every
+   earlier generation. Scope pattern: body.besjaar-ui-polish-v34 / body[data-page-type]
+   plus !important on contested properties, matching the house cascade rules.
+
+   What this layer does:
+   1. Unifies the three coexisting navies (#153252 / #173555 / #173f63) onto the
+      brand pair #153252 / #0f2947 by re-pointing every generation's tokens.
+   2. Introduces the display face Jost (the homepage skin already asked for it
+      but it was never loaded) and true variable-weight Inter.
+   3. Establishes a navy-tinted elevation scale and refined motion.
+   4. Repairs the cart page layout (grid templates existed but display:grid was
+      never declared anywhere, so the page fell back to stacked block flow).
+   5. Removes the remaining violet/green palette leaks (focus rings, ghost
+      hover, FAQ/404/list-collections tints, legacy drawer checkout). */
+
+/* ---------------------------------------------------------------------------
+   1. TOKENS — navy unification + lux scale
+--------------------------------------------------------------------------- */
+:root{
+  --lux-navy:#153252;
+  --lux-navy-deep:#0f2947;
+  --lux-navy-bright:#1d4269;
+  --lux-blue:#8cc8ec;
+  --lux-gold:#d9a441;
+  --lux-ink:#0f1c2e;
+  --lux-line:#e3e9ee;
+  --lux-soft:#f4f8fb;
+  --lux-tint:#eef5fa;
+  --lux-grad-primary:linear-gradient(180deg,#1d4269 0%,#153252 58%,#122b47 100%);
+  --lux-grad-band:linear-gradient(135deg,#0f2947 0%,#153252 52%,#1b3f66 100%);
+  --lux-shadow-xs:0 1px 2px rgba(15,41,71,.05);
+  --lux-shadow-sm:0 2px 6px rgba(15,41,71,.05),0 10px 26px rgba(15,41,71,.07);
+  --lux-shadow-md:0 4px 12px rgba(15,41,71,.06),0 20px 48px rgba(15,41,71,.11);
+  --lux-shadow-lg:0 8px 22px rgba(15,41,71,.08),0 34px 84px rgba(15,41,71,.16);
+  --lux-ring:0 0 0 3px rgba(21,50,82,.14);
+  --lux-ease:cubic-bezier(.22,.61,.36,1);
+  --lux-spring:cubic-bezier(.34,1.3,.44,1);
+  --lux-font-display:'Jost','Jost Fallback',Inter,'Inter Fallback',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --lux-font-text:Inter,'Inter Fallback',ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  /* Re-point every earlier generation's navy to the brand pair. Custom
+     properties cascade normally, so this recolors hundreds of rules at once. */
+  --besjaar-ui-accent:#153252!important;
+  --besjaar-ui-accent-2:#0f2947!important;
+  --besjaar-ui-teal:#153252!important;
+  --besjaar-ui-sage:#153252!important;
+  --besjaar-navy:#153252!important;
+  --besjaar-navy-deep:#0f2947!important;
+  --besjaar-shadow-sm:var(--lux-shadow-sm)!important;
+  --besjaar-shadow-md:var(--lux-shadow-md)!important;
+  --bs5-navy:#153252!important;
+  --bs5-navy-deep:#0f2947!important;
+  --bc40-navy:#153252!important;
+  --bc40-navy-deep:#0f2947!important;
+  /* Legacy sage-tinted shadows become navy-tinted. */
+  --besjaar-ui-shadow-xs:0 1px 2px rgba(15,41,71,.06)!important;
+  --besjaar-ui-shadow-sm:0 8px 22px rgba(15,41,71,.08)!important;
+  --besjaar-ui-shadow-md:0 16px 38px rgba(15,41,71,.11)!important;
+  --besjaar-ui-shadow-lg:0 28px 72px rgba(15,41,71,.16)!important;
+  --besjaar-ui-accent-warm:#9db8d2!important;
+  --besjaar-premium-navy:#153252;
+  --besjaar-premium-navy-2:#0f2947;
+  --besjaar-premium-violet:#153252;
+  --besjaar-premium-violet-dark:#0f2947;
+}
+body[data-page-type="index"]{
+  --home-navy:#153252!important;
+  --home-navy-deep:#0f2947!important;
+}
+body[data-page-type="product"]{
+  --besjaar-product-navy:#153252!important;
+  --besjaar-product-navy-dark:#0f2947!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3{
+  --bk3-navy:#153252!important;
+}
+
+/* ---------------------------------------------------------------------------
+   2. TYPOGRAPHY — Jost display / true-weight Inter text
+--------------------------------------------------------------------------- */
+/* The homepage skin (besjaar-home-step2.css) forces Jost on all .besjaar-store content
+   but Jost never loaded, so the page rendered in the OS font. Now that Jost
+   is loaded we keep it for display type and restore Inter for reading copy. */
+body[data-page-type="index"] .besjaar-store{font-family:var(--lux-font-text)!important}
+
+/* step2's `.besjaar-store h1,h2,h3{font-family:inherit!important}` is (0,2,2) — these
+   heading rules must sit above it, so they carry the element+class chain. */
+body[data-page-type="index"] .besjaar-store :is(h1.besjaar-store-hero__title,h2.besjaar-store-h2,h2.besjaar-store-cta__title),
+body[data-page-type="index"] .besjaar-store-scene__quote{
+  font-family:var(--lux-font-display)!important;
+  font-weight:600!important;
+  letter-spacing:-.025em!important;
+}
+body[data-page-type="index"] .besjaar-store h1.besjaar-store-hero__title{letter-spacing:-.03em!important}
+body[data-page-type="index"] .besjaar-store-hero__title em{font-style:normal;color:var(--lux-navy)!important}
+body[data-page-type="index"] .besjaar-store-specs__stats>div strong{
+  font-family:var(--lux-font-display)!important;
+  font-weight:560!important;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.015em!important;
+}
+
+body.besjaar-ui-polish-v34 .besjaar-ui-title,
+body.besjaar-ui-polish-v34 .besjaar-cart-head h1,
+body.besjaar-ui-polish-v34 .besjaar-collection-collection h1,
+body.besjaar-ui-polish-v34 .besjaar-store-premium-pd__title,
+body.besjaar-ui-polish-v34 .besjaar-store-foot__newsletter h2,
+body.besjaar-ui-polish-v34 .besjaar-ui-404__code{
+  font-family:var(--lux-font-display)!important;
+  letter-spacing:-.02em!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-store-premium-pd__title{font-weight:560!important;letter-spacing:-.022em!important}
+body.besjaar-ui-polish-v34 .besjaar-collection-collection h1,
+body.besjaar-ui-polish-v34 .besjaar-cart-head h1{font-weight:580!important}
+body.besjaar-ui-polish-v34 .besjaar-store-foot__newsletter h2{font-weight:520!important;letter-spacing:-.012em!important}
+
+/* Editorial kickers: quiet caps with wide tracking. */
+body.besjaar-ui-polish-v34 .besjaar-ui-kicker,
+body.besjaar-ui-polish-v34 .besjaar-store-kicker{
+  text-transform:uppercase!important;
+  letter-spacing:.16em!important;
+  font-size:.63rem!important;
+  font-weight:700!important;
+}
+
+/* Prices read as engineered numbers. */
+body.besjaar-ui-polish-v34 .besjaar-ui-price,
+body.besjaar-ui-polish-v34 .besjaar-store-premium-pd__price,
+body.besjaar-ui-polish-v34 .besjaar-store-premium-pd__compare,
+body.besjaar-ui-polish-v34 .bp-model-card__price,
+body.besjaar-ui-polish-v34 .besjaar-collection-product-card__price,
+body.besjaar-ui-polish-v34 .besjaar-cart-line__price,
+body.besjaar-ui-polish-v34 .besjaar-cart-summary__row strong,
+body.besjaar-ui-polish-v34 .besjaar-ui-cart__total{
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   3. FOCUS, SELECTION, SCROLLBAR
+--------------------------------------------------------------------------- */
+/* Replaces both the green halo from besjaar-ui-accessibility.css and the violet
+   outline from besjaar-premium-exact.css. The light inner ring stays: it is what
+   keeps focus perceptible on the navy footer/specs/CTA bands. */
+body.besjaar-ui-polish-v34 :focus-visible{
+  outline:2px solid var(--lux-navy)!important;
+  outline-offset:3px!important;
+  box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(21,50,82,.22)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__select:focus-visible{
+  outline:2px solid var(--lux-navy)!important;
+  outline-offset:3px!important;
+  border-color:var(--lux-navy)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-search-form .besjaar-ui-input:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+::selection{background:#153252;color:#fff}
+@supports (scrollbar-width:thin){
+  html{scrollbar-width:thin;scrollbar-color:rgba(21,50,82,.35) transparent}
+}
+
+/* ---------------------------------------------------------------------------
+   4. BUTTONS — gradient primaries, honest press states
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-ui-button--primary,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--primary{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important;
+  transition:box-shadow .22s var(--lux-ease),transform .22s var(--lux-ease),filter .22s var(--lux-ease)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-button--primary:hover,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--primary:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  border-color:#0f2947!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 12px 28px rgba(15,41,71,.24)!important;
+  transform:translateY(-1px)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-button--primary:active,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--primary:active{
+  transform:translateY(0) scale(.99)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 12px rgba(15,41,71,.18)!important;
+}
+/* Hero CTAs carry (0,3,0) inert-hover rules — out-specify them. */
+body[data-page-type="index"] .besjaar-store-hero--premium-exact .besjaar-store-btn--primary:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 12px 28px rgba(15,41,71,.24)!important;
+}
+body[data-page-type="index"] .besjaar-store-hero--premium-exact .besjaar-store-btn--secondary:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 10px 24px rgba(15,41,71,.10)!important;
+}
+/* Ghost/secondary hover: retire the violet-era lavender tint. */
+body.besjaar-ui-polish-v34 .besjaar-ui-button--ghost:hover,
+body.besjaar-ui-polish-v34 .besjaar-store-btn--secondary:hover{
+  background:#f2f7fb!important;
+  border-color:#b7c9d9!important;
+  color:var(--lux-navy)!important;
+}
+/* Predictive-search submit was a near-black off-brand leftover. */
+body.besjaar-ui-polish-v34 .besjaar-ui-search-form--predictive .besjaar-ui-button{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  color:#fff!important;
+}
+
+/* ---------------------------------------------------------------------------
+   5. FORMS — navy focus ring replaces the violet one
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-ui-input:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-select:focus,
+body.besjaar-ui-polish-v34 .besjaar-ui-textarea:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+
+/* ---------------------------------------------------------------------------
+   6. HEADER — quiet glass, scroll depth, refined menus
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-ui-header{
+  background:rgba(255,255,255,.92)!important;
+  backdrop-filter:blur(16px) saturate(170%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(170%);
+  transition:box-shadow .3s var(--lux-ease),background .3s var(--lux-ease);
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-header.is-scrolled{
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:0 1px 0 rgba(15,41,71,.05),0 12px 32px rgba(15,41,71,.07)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-nav__link{color:var(--lux-navy)!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-icon-btn:active{transform:translateY(0) scale(.94)!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-announcement{
+  background:var(--lux-grad-band)!important;
+}
+/* The discount-code copy button inherited a navy text color from the token
+   re-point; keep it readable on the navy band in both states. */
+body.besjaar-ui-polish-v34 .besjaar-ui-announcement__inner>button{
+  color:#fff!important;
+  border-color:rgba(255,255,255,.35)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-announcement__inner>button.is-copied{
+  background:#fff!important;
+  color:var(--lux-navy)!important;
+}
+/* Mega menu: slightly slower, eased entrance with real depth. */
+body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega-wrap .besjaar-ui-shop-mega{
+  transform:translate(-50%,10px)!important;
+  transition:opacity .26s var(--lux-ease),transform .26s var(--lux-ease),visibility .26s var(--lux-ease)!important;
+  box-shadow:0 24px 60px rgba(15,41,71,.14),0 4px 14px rgba(15,41,71,.05)!important;
+  border-bottom:1px solid var(--lux-line)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega-wrap.is-open .besjaar-ui-shop-mega,
+body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega-wrap:hover .besjaar-ui-shop-mega,
+body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega-wrap:focus-within .besjaar-ui-shop-mega{
+  transform:translate(-50%,0)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__item:hover{
+  background:var(--lux-soft)!important;
+  transform:translateY(-2px);
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-more-menu__panel{
+  border-radius:14px!important;
+  box-shadow:0 22px 54px rgba(15,41,71,.15),0 3px 10px rgba(15,41,71,.05)!important;
+}
+/* Cart count pulse (class applied by besjaar-premium-lux.js on count change). */
+@keyframes luxCountPulse{0%{transform:scale(1)}35%{transform:scale(1.3)}100%{transform:scale(1)}}
+body.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-cart-count].lux-pulse{
+  animation:luxCountPulse .5s var(--lux-spring);
+}
+
+/* ---------------------------------------------------------------------------
+   7. HOMEPAGE — depth, warmth, and staggered life
+--------------------------------------------------------------------------- */
+body[data-page-type="index"] .besjaar-store-hero--premium-exact{
+  background:
+    radial-gradient(1100px 520px at 88% 8%,rgba(140,200,236,.18),transparent 62%),
+    linear-gradient(135deg,#fff 0%,#f7fafc 55%,#e9f2f8 100%)!important;
+}
+body[data-page-type="index"] .besjaar-store-hero__image-card{
+  box-shadow:0 30px 80px rgba(15,41,71,.14),0 6px 18px rgba(15,41,71,.05)!important;
+  background:linear-gradient(150deg,#f2f5f6 0%,#e9f0f5 100%)!important;
+}
+body[data-page-type="index"] .besjaar-store-hero__image-pill{
+  box-shadow:0 12px 30px rgba(15,41,71,.12)!important;
+  border-color:#dfe8f0!important;
+}
+body[data-page-type="index"] .besjaar-store-hero__customer-stars{
+  color:var(--lux-gold)!important;
+  letter-spacing:.08em!important;
+}
+
+/* Trust strip: give the check chips a jewelled ring. */
+body[data-page-type="index"] .besjaar-store-strip__row span{color:#3d5875!important}
+body[data-page-type="index"] .besjaar-store-strip__row i{
+  background:linear-gradient(160deg,#eef5fa,#dcebf5)!important;
+  color:var(--lux-navy)!important;
+  box-shadow:inset 0 0 0 1px rgba(21,50,82,.12);
+}
+
+/* Product range cards: cool studio tiles that lift as one object. */
+body[data-page-type="index"] .besjaar-store-products .bp-model-card__media{
+  background:linear-gradient(150deg,#f5f8fa 0%,#eaf1f6 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(21,50,82,.05)!important;
+  transition:transform .45s var(--lux-ease),box-shadow .45s var(--lux-ease)!important;
+}
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="index"] .besjaar-store-products .bp-model-card:hover .bp-model-card__media{
+    transform:translateY(-5px)!important;
+    box-shadow:inset 0 0 0 1px rgba(21,50,82,.06),0 26px 54px rgba(15,41,71,.13)!important;
+  }
+}
+body[data-page-type="index"] .besjaar-store-products .bp-model-card__badge{
+  background:var(--lux-grad-band)!important;
+  color:#fff!important;
+}
+body[data-page-type="index"] .bp-model-card__fact--positive{
+  background:var(--lux-tint)!important;
+  color:var(--lux-navy)!important;
+}
+
+/* Lifestyle scene: align radius with the rest of the page and add depth. */
+body[data-page-type="index"] .besjaar-store-scene{
+  border-radius:24px!important;
+  box-shadow:var(--lux-shadow-md)!important;
+}
+
+/* Feature cards: quiet borders, gentle lift. */
+body[data-page-type="index"] .besjaar-store-card{
+  border:1px solid var(--lux-line)!important;
+  box-shadow:var(--lux-shadow-xs)!important;
+  transition:box-shadow .35s var(--lux-ease),transform .35s var(--lux-ease);
+}
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="index"] .besjaar-store-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--lux-shadow-sm)!important;
+  }
+}
+body[data-page-type="index"] .besjaar-store-card__media{background:#eef3f7!important}
+
+/* Specs band: from flat fill to a lit navy room. */
+body[data-page-type="index"] .besjaar-store-specs{
+  background:
+    radial-gradient(900px 480px at 12% -8%,rgba(140,200,236,.16),transparent 58%),
+    linear-gradient(135deg,#0f2947 0%,#153252 55%,#1b3f66 100%)!important;
+}
+
+/* Reviews: the flattest section gets a real proof card. */
+body[data-page-type="index"] .besjaar-store-reviews{
+  background:linear-gradient(180deg,#fff 0%,#f7fafc 100%)!important;
+}
+body[data-page-type="index"] .besjaar-store-rating-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid #d8e6f1!important;
+  background:linear-gradient(160deg,#eef5fa 0%,#e2eef7 100%)!important;
+  box-shadow:var(--lux-shadow-sm)!important;
+}
+body[data-page-type="index"] .besjaar-store-rating-card::after{
+  content:"★";
+  position:absolute;
+  right:-18px;
+  bottom:-38px;
+  font-size:9rem;
+  line-height:1;
+  color:rgba(21,50,82,.06);
+  pointer-events:none;
+}
+body[data-page-type="index"] .besjaar-store-rating-card__stars{color:var(--lux-gold)!important;letter-spacing:.1em}
+
+/* Closing CTA: match the specs band and enrich the halo. */
+body[data-page-type="index"] .besjaar-store-cta{
+  background:
+    radial-gradient(820px 460px at 82% 110%,rgba(140,200,236,.15),transparent 58%),
+    linear-gradient(135deg,#0f2947 0%,#153252 58%,#1b3f66 100%)!important;
+}
+body[data-page-type="index"] .besjaar-store-cta__visual::before{
+  background:radial-gradient(closest-side,rgba(255,255,255,.10),rgba(255,255,255,.04) 55%,transparent 72%)!important;
+}
+
+/* Intra-section stagger: children of an already-revealed section arrive in
+   sequence. Only under the sanctioned motion gate, and only when the reveal
+   attribute exists (never set in design mode / reduced motion / no-JS). */
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal] .bp-model-card,
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal] .besjaar-store-card,
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal] .besjaar-store-specs__stats>div{
+  opacity:0;
+  transform:translateY(16px);
+}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible .bp-model-card,
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible .besjaar-store-card,
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible .besjaar-store-specs__stats>div{
+  opacity:1;
+  transform:none;
+  transition:opacity .6s var(--lux-ease),transform .6s var(--lux-ease);
+}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible :is(.bp-model-card,.besjaar-store-card,.besjaar-store-specs__stats>div):nth-child(2){transition-delay:.07s}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible :is(.bp-model-card,.besjaar-store-card,.besjaar-store-specs__stats>div):nth-child(3){transition-delay:.14s}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible :is(.bp-model-card,.besjaar-store-card,.besjaar-store-specs__stats>div):nth-child(4){transition-delay:.21s}
+.besjaar-ui-polish-v34.besjaar-ui-motion-enabled [data-besjaar-ui-polish-reveal].is-besjaar-ui-visible :is(.bp-model-card,.besjaar-store-card,.besjaar-store-specs__stats>div):nth-child(n+5){transition-delay:.28s}
+
+/* ---------------------------------------------------------------------------
+   8. PRODUCT PAGE — studio gallery, confident buybox
+--------------------------------------------------------------------------- */
+body[data-page-type="product"] .besjaar-store-premium-pd__stage{
+  background:linear-gradient(150deg,#f6f9fb 0%,#fdfdfd 52%,#edf3f8 100%)!important;
+  border-color:#e8eef3!important;
+  box-shadow:0 28px 70px rgba(15,41,71,.08)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__thumb[aria-current="true"]{
+  border-color:var(--lux-navy)!important;
+  box-shadow:0 0 0 1px var(--lux-navy) inset,0 6px 16px rgba(15,41,71,.10)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__sale{
+  background:var(--lux-grad-band)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__price{
+  color:#0f2440!important;
+  font-size:2.05rem!important;
+  letter-spacing:-.03em!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__add{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 26px rgba(15,41,71,.20)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__add:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 16px 34px rgba(15,41,71,.26)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__add:active{
+  transform:translateY(0) scale(.99)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__sticky-add{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+}
+/* Trust rows: from grey whisper to quiet assurance. */
+body[data-page-type="product"] .besjaar-store-premium-pd__trust>div{
+  background:#f5f9fc!important;
+  border-color:#e1eaf2!important;
+  color:#4b607a!important;
+  font-size:.64rem!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__trust svg{stroke:var(--lux-navy)!important}
+/* Restore the hover lift step4 removed from the info shortcuts. */
+body[data-page-type="product"] .besjaar-store-premium-pd__info-pills a:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 10px 22px rgba(15,41,71,.08)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__benefits>div::before{
+  background:linear-gradient(160deg,#eef5fa,#ddeaf5)!important;
+  color:var(--lux-navy)!important;
+}
+body[data-page-type="product"] .besjaar-store-premium-pd__details summary:hover{color:var(--lux-navy)!important}
+/* 360 viewer: earlier overrides targeted selectors that don't exist; these do. */
+body[data-page-type="product"] .besjaar-ui-360__viewer-wrap{
+  border:1px solid #e2eaf1!important;
+  background:#fff!important;
+  box-shadow:var(--lux-shadow-md)!important;
+}
+body[data-page-type="product"] .besjaar-ui-360__badge{
+  background:rgba(15,41,71,.9)!important;
+}
+/* Recommendation cards: coherent lift with the rest of the system. */
+@media (hover:hover) and (pointer:fine){
+  body[data-page-type="product"] .besjaar-ui-smart-recommendations .besjaar-ui-product-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--lux-shadow-sm)!important;
+  }
+}
+/* Mirror the earlier layers' mobile size corrections so the desktop bumps
+   above don't clobber them. */
+@media (max-width:780px){
+  body[data-page-type="product"] .besjaar-store-premium-pd__price{font-size:1.6rem!important}
+}
+@media (max-width:430px){
+  body[data-page-type="product"] .besjaar-store-premium-pd__trust>div{font-size:.57rem!important}
+}
+
+/* ---------------------------------------------------------------------------
+   9. COLLECTION — richer cards, finished edges
+   (.besjaar-collection-* stylesheets load in the body, so out-specify with the body prefix.)
+--------------------------------------------------------------------------- */
+@media (hover:hover) and (pointer:fine){
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card:hover .besjaar-collection-product-card__media{
+    box-shadow:0 24px 56px rgba(15,41,71,.12)!important;
+    border-color:#dfe9f1!important;
+  }
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-badge{background:rgba(21,50,82,.95)!important}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__quick:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-pagination a{
+  transition:transform .2s var(--lux-ease),box-shadow .2s var(--lux-ease),border-color .2s var(--lux-ease);
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-pagination a:hover{
+  transform:translateY(-1px);
+  border-color:var(--lux-navy)!important;
+  box-shadow:0 8px 18px rgba(15,41,71,.10);
+}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-pagination .is-current{background:var(--lux-grad-primary)!important}
+body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-empty{
+  border:1px dashed #cfdce8;
+  border-radius:24px;
+  background:#f8fbfd;
+}
+
+/* ---------------------------------------------------------------------------
+   10. CART PAGE — repair the layout, then dress it
+   The grid templates below already exist in besjaar-commerce-step5.css; the
+   display declarations were never written anywhere, so the page rendered as
+   stacked blocks. This activates the intended two-column layout.
+--------------------------------------------------------------------------- */
+body[data-page-type="cart"] .besjaar-cart{display:grid!important}
+body[data-page-type="cart"] .besjaar-cart-head{
+  display:flex!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .besjaar-cart-progress__copy{display:grid!important;gap:4px!important}
+body[data-page-type="cart"] .besjaar-cart-line{display:grid!important;align-items:start!important}
+body[data-page-type="cart"] .besjaar-cart-line__media{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+body[data-page-type="cart"] .besjaar-cart-line__media img{
+  width:100%;height:100%;object-fit:contain;
+}
+body[data-page-type="cart"] .besjaar-cart-line__info{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:12px!important;
+  min-width:0;
+}
+body[data-page-type="cart"] .besjaar-cart-line__top{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:flex-start!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .besjaar-cart-line__price{text-align:right}
+body[data-page-type="cart"] .besjaar-cart-line__bottom{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+}
+body[data-page-type="cart"] .besjaar-cart-qty{
+  display:inline-flex!important;
+  align-items:stretch!important;
+  background:#fff!important;
+}
+body[data-page-type="cart"] .besjaar-cart-qty button{
+  width:38px;
+  min-height:38px;
+  border:0!important;
+  font-size:1.02rem;
+  line-height:1;
+  cursor:pointer;
+}
+body[data-page-type="cart"] .besjaar-cart-qty button:hover{background:var(--lux-soft)!important}
+body[data-page-type="cart"] .besjaar-cart-qty input{
+  width:46px;
+  border:0!important;
+  text-align:center;
+  font-weight:650;
+  font-size:.88rem;
+  background:#fff;
+  -moz-appearance:textfield;
+  appearance:textfield;
+}
+body[data-page-type="cart"] .besjaar-cart-qty input::-webkit-outer-spin-button,
+body[data-page-type="cart"] .besjaar-cart-qty input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+body[data-page-type="cart"] .besjaar-cart__continue{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+}
+body[data-page-type="cart"] .besjaar-cart__continue button{
+  min-height:40px;
+  padding:0 18px;
+  border:1px solid #cfd8e0;
+  border-radius:999px;
+  background:#fff;
+  color:var(--lux-navy);
+  font-size:.72rem;
+  font-weight:650;
+  cursor:pointer;
+}
+body[data-page-type="cart"] .besjaar-cart__continue button:hover{
+  background:#f2f7fb;
+  border-color:#b7c9d9;
+}
+/* Free-shipping progress: gradient fill, green celebration when unlocked. */
+body[data-page-type="cart"] .besjaar-cart-progress__track{
+  height:6px!important;
+  border-radius:999px!important;
+  overflow:hidden!important;
+}
+body[data-page-type="cart"] .besjaar-cart-progress__track i{
+  display:block;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#1d4269,#153252)!important;
+  transition:width .5s var(--lux-ease);
+}
+body[data-page-type="cart"] .besjaar-cart-progress__track[aria-valuenow="100"] i{
+  background:linear-gradient(90deg,#2f7f5d,#35915f)!important;
+}
+body[data-page-type="cart"] .besjaar-cart-summary{
+  background:#fff!important;
+  box-shadow:var(--lux-shadow-sm)!important;
+}
+body[data-page-type="cart"] .besjaar-cart-summary__row,
+body[data-page-type="cart"] .besjaar-cart-summary__discount{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:baseline!important;
+  gap:12px!important;
+}
+body[data-page-type="cart"] .besjaar-cart-summary__checkout{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(15,41,71,.20)!important;
+  transition:box-shadow .22s var(--lux-ease),transform .22s var(--lux-ease)!important;
+}
+body[data-page-type="cart"] .besjaar-cart-summary__checkout:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 14px 32px rgba(15,41,71,.26)!important;
+}
+body[data-page-type="cart"] .besjaar-cart-summary__checkout:active{transform:translateY(0) scale(.99)!important}
+body[data-page-type="cart"] .besjaar-cart-empty{
+  padding:clamp(52px,9vw,96px) 24px;
+  border:1px solid var(--lux-line);
+  border-radius:26px;
+  background:linear-gradient(160deg,#fff 0%,#f4f9fc 100%);
+  text-align:center;
+}
+/* .besjaar-store-btn's display base lives in besjaar-store-home.css, which never loads on the
+   cart page — without this the empty-cart CTA collapses to a text-height strip. */
+body.besjaar-ui-polish-v34 .besjaar-cart-empty .besjaar-store-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:48px;
+  padding:0 24px;
+}
+
+/* ---------------------------------------------------------------------------
+   11. CART DRAWER + GLOBAL CHROME
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-ui-drawer-backdrop{
+  background:rgba(11,25,43,.44)!important;
+  backdrop-filter:blur(4px) saturate(120%);
+  -webkit-backdrop-filter:blur(4px) saturate(120%);
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-drawer{
+  transition:transform .34s var(--lux-ease),visibility .34s var(--lux-ease)!important;
+}
+/* The desktop drawer checkout was a flat old-navy (#143454); align it with the
+   gradient primary system. */
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button{
+  background:var(--lux-grad-primary)!important;
+  border-color:#122b47!important;
+  color:#fff!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 24px rgba(15,41,71,.20)!important;
+}
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:hover{
+  background:linear-gradient(180deg,#224a75 0%,#18395d 58%,#122b47 100%)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-free-shipping__track i{
+  background:linear-gradient(90deg,#1d4269,#153252)!important;
+}
+/* Toast: dark teal relic becomes navy glass. */
+body.besjaar-ui-polish-v34 .besjaar-ui-toast{
+  background:rgba(15,32,54,.94)!important;
+  border:1px solid rgba(140,200,236,.28)!important;
+  color:#fff!important;
+  box-shadow:var(--lux-shadow-lg)!important;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+/* Card lift: retire the sage-era border tint. */
+body.besjaar-ui-polish-v34.besjaar-ui-card-lift .besjaar-ui-card:hover,
+body.besjaar-ui-polish-v34.besjaar-ui-card-lift .besjaar-ui-product-card:hover,
+body.besjaar-ui-polish-v34.besjaar-ui-card-lift .besjaar-ui-promo-card:hover{
+  border-color:#d4e2ee!important;
+}
+/* Collection/search card tiles: the lavender-grey literal becomes cool blue. */
+body.besjaar-ui-polish-v34 .besjaar-ui-product-card__media{background:#f2f6f9!important}
+body.besjaar-ui-polish-v34 .besjaar-store-card__media{background:#eef3f7!important}
+
+/* ---------------------------------------------------------------------------
+   12. AUXILIARY PAGES — de-green FAQ/404, re-skin list-collections, search
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-page__accordion details{border-color:#e2e9f0!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-page__accordion details[open] summary i{
+  background:var(--lux-navy)!important;
+  border-color:var(--lux-navy)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-page__accordion summary b{
+  background:var(--lux-tint)!important;
+  color:#3a5677!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-search__control input:focus{
+  border-color:var(--lux-navy)!important;
+  box-shadow:var(--lux-ring)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-faq-page__hero-mark{
+  background:linear-gradient(180deg,#fff,#e9f2f9)!important;
+  color:var(--lux-navy)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-404__code{
+  color:rgba(21,50,82,.15)!important;
+  -webkit-text-stroke:0!important;
+  text-shadow:none!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-five-catalog{background:#fff!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-five-catalog__bar{
+  background:#f4f8fb!important;
+  border-color:#e3ebf2!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-five-catalog__grid .besjaar-ui-product-card__title{
+  font-family:var(--lux-font-text)!important;
+  color:#12253d!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-five-catalog .besjaar-ui-card-quick-add{
+  border-color:rgba(21,50,82,.25)!important;
+  color:var(--lux-navy)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-search-five-count{
+  background:#f2f7fb!important;
+  border-color:#d9e6f0!important;
+  color:#3d5f80!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-search-shortcuts a:hover{
+  border-color:var(--lux-navy)!important;
+  color:var(--lux-navy)!important;
+  background:#f2f7fb!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-search-zero{
+  background:linear-gradient(160deg,#fff,#f3f8fc)!important;
+  border-color:#e0eaf2!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-ui-contact-form-card,
+body.besjaar-ui-polish-v34 .besjaar-ui-support-panel{
+  border-color:#e3ebf2!important;
+  box-shadow:var(--lux-shadow-xs)!important;
+}
+
+/* ---------------------------------------------------------------------------
+   13. FOOTER — lit navy room, alive newsletter
+--------------------------------------------------------------------------- */
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium{
+  background:
+    radial-gradient(1000px 420px at 85% -10%,rgba(140,200,236,.09),transparent 60%),
+    #0f1722!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium .besjaar-store-foot__form{
+  transition:border-color .25s var(--lux-ease);
+}
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium .besjaar-store-foot__form:focus-within{
+  border-bottom-color:var(--lux-blue)!important;
+}
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium .besjaar-store-foot__form input{caret-color:var(--lux-blue)}
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium .besjaar-store-foot__assurance-item span,
+body.besjaar-ui-polish-v34 .besjaar-store-foot--premium .besjaar-store-foot__assurance-item svg{
+  color:#bcd9ee!important;
+}
+
+/* ---------------------------------------------------------------------------
+   14. MOBILE BOTTOM NAV — solid navy active pill
+--------------------------------------------------------------------------- */
+@media (max-width:700px){
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav{
+    border-color:rgba(21,50,82,.12)!important;
+    box-shadow:0 14px 34px rgba(15,41,71,.15)!important;
+  }
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav :is(a,button).is-active{
+    background:var(--lux-grad-primary)!important;
+    color:#fff!important;
+  }
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav :is(a,button).is-active .besjaar-ui-bottom-nav__count{
+    background:#fff!important;
+    color:var(--lux-navy)!important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   15. GUARDS — touch, reduced motion, theme editor
+--------------------------------------------------------------------------- */
+@media (hover:none),(pointer:coarse){
+  body[data-page-type="index"] .besjaar-store-card:hover,
+  body[data-page-type="index"] .besjaar-store-products .bp-model-card:hover .bp-model-card__media,
+  body[data-page-type="product"] .besjaar-store-premium-pd__info-pills a:hover,
+  body[data-page-type="product"] .besjaar-ui-smart-recommendations .besjaar-ui-product-card:hover{
+    transform:none!important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .besjaar-ui-polish-v34 [data-besjaar-ui-polish-reveal] .bp-model-card,
+  .besjaar-ui-polish-v34 [data-besjaar-ui-polish-reveal] .besjaar-store-card,
+  .besjaar-ui-polish-v34 [data-besjaar-ui-polish-reveal] .besjaar-store-specs__stats>div{
+    opacity:1!important;
+    transform:none!important;
+    transition:none!important;
+  }
+  body.besjaar-ui-polish-v34 [data-cart-count].lux-pulse{animation:none!important}
+}
+.besjaar-ui-editor-safe [data-besjaar-ui-polish-reveal] .bp-model-card,
+.besjaar-ui-editor-safe [data-besjaar-ui-polish-reveal] .besjaar-store-card,
+.besjaar-ui-editor-safe [data-besjaar-ui-polish-reveal] .besjaar-store-specs__stats>div{
+  opacity:1!important;
+  transform:none!important;
+}
+
+/* Last: the gradient buttons above declare box-shadow !important later in this
+   file than the focus rule, which would swallow the focus halo on keyboard
+   focus. Re-assert it here, combined with the buttons' own depth. */
+body.besjaar-ui-polish-v34 :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout):focus-visible,
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:focus-visible{
+  box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(21,50,82,.22),inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important;
+}

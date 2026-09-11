@@ -1,0 +1,98 @@
+{%- comment -%}Besjaar 11.6: this editor-addable section's styles were stranded in the legacy besjaar-premium-home.css homepage skin (never loaded by theme.liquid, and unsafe to load whole). The needed rules are extracted into besjaar-premium-sections.css, loaded section-scoped (Shopify dedupes repeated tags).{%- endcomment -%}
+{{ 'besjaar-premium-sections.css' | asset_url | stylesheet_tag }}
+{% liquid
+  assign bp_real_localized = section.settings.use_localized_copy
+  if bp_real_localized
+    assign bp_real_eyebrow = 'besjaar_ui.premium_home.real_product.eyebrow' | t
+    assign bp_real_heading = 'besjaar_ui.premium_home.real_product.heading' | t
+    assign bp_real_text = 'besjaar_ui.premium_home.real_product.text' | t
+    assign bp_real_cta = 'besjaar_ui.premium_home.real_product.cta' | t
+    assign bp_real_label_1 = 'besjaar_ui.premium_home.real_product.image_1_label' | t
+    assign bp_real_copy_1 = 'besjaar_ui.premium_home.real_product.image_1_copy' | t
+    assign bp_real_alt_1 = 'besjaar_ui.premium_home.real_product.image_1_alt' | t
+    assign bp_real_label_2 = 'besjaar_ui.premium_home.real_product.image_2_label' | t
+    assign bp_real_copy_2 = 'besjaar_ui.premium_home.real_product.image_2_copy' | t
+    assign bp_real_alt_2 = 'besjaar_ui.premium_home.real_product.image_2_alt' | t
+  else
+    assign bp_real_eyebrow = section.settings.eyebrow
+    assign bp_real_heading = section.settings.heading
+    assign bp_real_text = section.settings.text
+    assign bp_real_cta = section.settings.cta_label
+    assign bp_real_label_1 = section.settings.image_1_label
+    assign bp_real_copy_1 = section.settings.image_1_copy
+    assign bp_real_alt_1 = section.settings.image_1_label
+    assign bp_real_label_2 = section.settings.image_2_label
+    assign bp_real_copy_2 = section.settings.image_2_copy
+    assign bp_real_alt_2 = section.settings.image_2_label
+  endif
+
+  assign bp_real_product = all_products[section.settings.product_handle]
+  if bp_real_product != blank
+    assign bp_real_url = bp_real_product.url
+  elsif section.settings.cta_link != blank
+    assign bp_real_url = section.settings.cta_link
+  else
+    assign bp_real_url = routes.all_products_collection_url
+  endif
+%}
+
+<section class="bp-real-showcase" aria-labelledby="bp-real-showcase-heading-{{ section.id }}">
+  <div class="bp-shell">
+    <div class="bp-real-showcase__head">
+      <div class="bp-real-showcase__title">
+        <p class="bp-eyebrow">{{ bp_real_eyebrow | escape }}</p>
+        <h2 class="bp-h2" id="bp-real-showcase-heading-{{ section.id }}">{{ bp_real_heading | escape }}</h2>
+      </div>
+      <div class="bp-real-showcase__intro">
+        <div class="bp-richtext">{{ bp_real_text }}</div>
+        <a class="bp-text-link" href="{{ bp_real_url }}">{{ bp_real_cta | escape }} <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+
+    <div class="bp-real-showcase__grid">
+      <figure class="bp-real-showcase__card bp-real-showcase__card--front">
+        <div class="bp-real-showcase__media">
+          {% if section.settings.image_1 != blank %}
+            {{ section.settings.image_1 | image_url: width: 1400 | image_tag: widths: '500,800,1100,1400', sizes: '(min-width: 700px) 42vw, 50vw', loading: 'lazy', alt: bp_real_alt_1 }}
+          {% else %}
+            <img src="{{ 'besjaar-product-front-exact.webp' | asset_url }}" width="1254" height="1254" loading="lazy" decoding="async" alt="{{ bp_real_alt_1 | escape }}">
+          {% endif %}
+        </div>
+        <figcaption><strong>{{ bp_real_label_1 | escape }}</strong><span>{{ bp_real_copy_1 | escape }}</span></figcaption>
+      </figure>
+
+      <figure class="bp-real-showcase__card bp-real-showcase__card--back">
+        <div class="bp-real-showcase__media">
+          {% if section.settings.image_2 != blank %}
+            {{ section.settings.image_2 | image_url: width: 1400 | image_tag: widths: '500,800,1100,1400', sizes: '(min-width: 700px) 42vw, 50vw', loading: 'lazy', alt: bp_real_alt_2 }}
+          {% else %}
+            <img src="{{ 'besjaar-product-back-exact.webp' | asset_url }}" width="1254" height="1254" loading="lazy" decoding="async" alt="{{ bp_real_alt_2 | escape }}">
+          {% endif %}
+        </div>
+        <figcaption><strong>{{ bp_real_label_2 | escape }}</strong><span>{{ bp_real_copy_2 | escape }}</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Real product showcase",
+  "settings": [
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"text","id":"product_handle","label":"Product handle","default":"besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver"},
+    {"type":"url","id":"cta_link","label":"Fallback button link"},
+    {"type":"text","id":"eyebrow","label":"Eyebrow","default":"BESJAAR, UP CLOSE"},
+    {"type":"text","id":"heading","label":"Heading","default":"Front. Back. Every detail."},
+    {"type":"richtext","id":"text","label":"Text","default":"<p>See the Besjaar 10-mode showerhead clearly from both sides before choosing.</p>"},
+    {"type":"text","id":"cta_label","label":"Button label","default":"View the 10-mode model"},
+    {"type":"image_picker","id":"image_1","label":"Front image"},
+    {"type":"text","id":"image_1_label","label":"Front image heading","default":"Front view"},
+    {"type":"text","id":"image_1_copy","label":"Front image text","default":"The spray face, selector and handle shown clearly."},
+    {"type":"image_picker","id":"image_2","label":"Back image"},
+    {"type":"text","id":"image_2_label","label":"Back image heading","default":"Back view"},
+    {"type":"text","id":"image_2_copy","label":"Back image text","default":"The smooth chrome body and connection from behind."}
+  ],
+  "presets": [{"name":"Real product showcase"}]
+}
+{% endschema %}

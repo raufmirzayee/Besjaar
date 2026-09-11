@@ -1,0 +1,109 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_eyebrow = 'besjaar_store.hero.eyebrow' | t
+    assign v_heading = 'besjaar_store.hero.heading' | t
+    assign v_accent = 'besjaar_store.hero.heading_accent' | t
+    assign v_text = 'besjaar_store.hero.text' | t
+    assign v_primary = 'besjaar_store.hero.primary' | t
+    assign v_secondary = 'besjaar_store.hero.secondary' | t
+  else
+    assign v_eyebrow = section.settings.eyebrow
+    assign v_heading = section.settings.heading
+    assign v_accent = section.settings.heading_accent
+    assign v_text = section.settings.text
+    assign v_primary = section.settings.primary_label
+    assign v_secondary = section.settings.secondary_label
+  endif
+  assign customer_happy_value = 'besjaar_store.hero.customer_happy_value' | t
+  assign customer_happy_label = 'besjaar_store.hero.customer_happy_label' | t
+%}
+{% capture hero_primary_url %}{% render 'shower-store-url' %}{% endcapture %}
+{% assign hero_primary_url = hero_primary_url | strip %}
+<section class="besjaar-store besjaar-store-hero besjaar-store-hero--premium-exact">
+  <div class="besjaar-store-shell besjaar-store-hero__grid">
+    <div class="besjaar-store-hero__content">
+      <span class="besjaar-store-kicker besjaar-store-hero__kicker"><i aria-hidden="true"></i>{{ v_eyebrow | escape }}</span>
+      <h1 class="besjaar-store-hero__title"><span>{{ v_heading | escape }}</span><em>{{ v_accent | escape }}</em></h1>
+      <p class="besjaar-store-hero__copy">{{ v_text | escape }}</p>
+      <div class="besjaar-store-hero__actions">
+        <a class="besjaar-store-btn besjaar-store-btn--primary" href="{% if section.settings.primary_link != blank %}{% render 'localized-internal-url', url: section.settings.primary_link %}{% else %}{{ hero_primary_url }}{% endif %}">{{ v_primary | escape }}</a>
+        <a class="besjaar-store-btn besjaar-store-btn--secondary" href="#besjaar-store-details">{{ v_secondary | escape }}</a>
+      </div>
+      <div class="besjaar-store-hero__customer-proof" aria-label="{{ customer_happy_value | append: ' ' | append: customer_happy_label | escape }}">
+        <span class="besjaar-store-hero__customer-stars" aria-hidden="true">★★★★★</span>
+        <p class="besjaar-store-hero__customer-copy"><strong>{{ customer_happy_value }}</strong> <span>{{ customer_happy_label }}</span></p>
+      </div>
+    </div>
+
+    <figure class="besjaar-store-hero__visual">
+      <div class="besjaar-store-hero__image-card">
+        {%- comment -%}Besjaar 11.6.1: no srcset here — Shopify's CDN does not generate on-demand size variants for theme assets (only for product/file images), so sized asset URLs resolve to the "No image" placeholder.{%- endcomment -%}
+        <img src="{{ 'besjaar-hero-premium-spa.webp' | asset_url }}" width="1916" height="821" loading="eager" decoding="async" fetchpriority="high" alt="{{ v_heading | escape }}">
+      </div>
+      <figcaption class="besjaar-store-hero__image-pill">
+        <span aria-hidden="true">◌</span>
+        <strong>{{ 'besjaar_store.strip.i2' | t }}</strong>
+      </figcaption>
+    </figure>
+  </div>
+
+</section>
+{% schema %}
+{
+  "name": "Besjaar-style hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_localized_copy",
+      "label": "Use translated copy (NL/EN/DE/FR)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "PRESSURE · COMFORT · ROUTINE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A better shower."
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading second line",
+      "default": "Every day."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Premium showerheads for a strong, comfortable flow and flexible spray modes — a simple upgrade for every day."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button",
+      "default": "Shop showerheads"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button",
+      "default": "Why Besjaar"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Besjaar-style hero"
+    }
+  ]
+}
+{% endschema %}

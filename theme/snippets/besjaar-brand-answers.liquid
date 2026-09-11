@@ -1,0 +1,101 @@
+{%- comment -%}
+  Besjaar v8 SEO: visible, server-rendered About-page brand Q&A.
+  The text and matching FAQPage data are emitted together so structured data
+  always describes content users can actually see without JavaScript.
+{%- endcomment -%}
+{%- liquid
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_h = 'Besjaar, in short'
+      assign bj_q1 = 'Does Besjaar have an official website?'
+      assign bj_a1 = 'Yes. The official Besjaar website is besjaar.eu. It is run by Besjaar in Assen, the Netherlands, and sells the full range directly: showerheads, filtered showerheads, hoses and replacement filter cartridges.'
+      assign bj_q2 = 'What is Besjaar?'
+      assign bj_a2 = 'Besjaar is a Dutch consumer brand specialising in handheld showerheads and shower water filters. The range covers showerheads with multiple spray modes, models with a replaceable filter cartridge in the handle, and replacement cartridges.'
+      assign bj_q3 = 'Where can I buy Besjaar products?'
+      assign bj_a3 = 'Directly from the official website at besjaar.eu, and on Bol.com in the Netherlands and Belgium. Buying at besjaar.eu means buying from the brand itself.'
+      assign bj_q4 = 'Who is Besjaar?'
+      assign bj_a4 = 'Besjaar is the brand owner and seller. The business is based in Assen, the Netherlands, and serves customers in several European markets.'
+      assign bj_q5 = 'Do Besjaar showerheads fit standard fittings?'
+      assign bj_a5 = 'Besjaar handheld showerheads use the standard G1/2 connection commonly used by shower hoses in Europe. Always check the specifications on the individual product page before ordering.'
+      assign bj_q6 = 'What does a Besjaar shower filter do?'
+      assign bj_a6 = 'On compatible filtered models, a replaceable cartridge sits in the handle and filters the water before it reaches the spray plate. Check the individual product page for the filter type, included parts and replacement guidance.'
+    when 'de'
+      assign bj_h = 'Besjaar, kurz erklärt'
+      assign bj_q1 = 'Hat Besjaar eine offizielle Website?'
+      assign bj_a1 = 'Ja. Die offizielle Besjaar-Website ist besjaar.eu. Sie wird von Besjaar in Assen (Niederlande) betrieben und verkauft das Sortiment direkt: Duschköpfe, Modelle mit Filter, Schläuche und Ersatz-Filterkartuschen.'
+      assign bj_q2 = 'Was ist Besjaar?'
+      assign bj_a2 = 'Besjaar ist eine niederländische Verbrauchermarke für Handbrausen und Duschwasserfilter. Das Sortiment umfasst Duschköpfe mit mehreren Strahlarten, Modelle mit austauschbarer Filterkartusche im Griff sowie Ersatzkartuschen.'
+      assign bj_q3 = 'Wo kann ich Besjaar-Produkte kaufen?'
+      assign bj_a3 = 'Direkt auf der offiziellen Website besjaar.eu sowie auf Bol.com in den Niederlanden und Belgien. Auf besjaar.eu kauft man direkt bei der Marke.'
+      assign bj_q4 = 'Wer ist Besjaar?'
+      assign bj_a4 = 'Besjaar ist Markeninhaber und Verkäufer. Das Unternehmen sitzt in Assen (Niederlande) und bedient Kunden in mehreren europäischen Märkten.'
+      assign bj_q5 = 'Passen Besjaar-Duschköpfe auf Standardanschlüsse?'
+      assign bj_a5 = 'Besjaar-Handbrausen nutzen den in Europa üblichen G1/2-Anschluss. Prüfe vor der Bestellung immer die technischen Angaben auf der jeweiligen Produktseite.'
+      assign bj_q6 = 'Was bewirkt ein Besjaar-Duschfilter?'
+      assign bj_a6 = 'Bei kompatiblen Filtermodellen sitzt eine austauschbare Kartusche im Griff und filtert das Wasser, bevor es die Strahlplatte erreicht. Filtertyp, Lieferumfang und Wechselhinweise stehen auf der jeweiligen Produktseite.'
+    when 'fr'
+      assign bj_h = 'Besjaar, en bref'
+      assign bj_q1 = 'Besjaar a-t-il un site officiel ?'
+      assign bj_a1 = 'Oui. Le site officiel Besjaar est besjaar.eu. Il est exploité par Besjaar à Assen, aux Pays-Bas, et vend directement la gamme : pommeaux de douche, modèles filtrants, flexibles et cartouches filtrantes de rechange.'
+      assign bj_q2 = 'Qu’est-ce que Besjaar ?'
+      assign bj_a2 = 'Besjaar est une marque néerlandaise spécialisée dans les douchettes à main et les filtres à eau de douche. La gamme comprend des pommeaux à plusieurs jets, des modèles avec cartouche filtrante remplaçable dans le manche et des cartouches de rechange.'
+      assign bj_q3 = 'Où acheter les produits Besjaar ?'
+      assign bj_a3 = 'Directement sur le site officiel besjaar.eu, ainsi que sur Bol.com aux Pays-Bas et en Belgique. Sur besjaar.eu, vous achetez directement à la marque.'
+      assign bj_q4 = 'Qui est Besjaar ?'
+      assign bj_a4 = 'Besjaar est propriétaire de la marque et vendeur. L’entreprise est basée à Assen, aux Pays-Bas, et sert des clients dans plusieurs marchés européens.'
+      assign bj_q5 = 'Les pommeaux Besjaar sont-ils compatibles avec les raccords standard ?'
+      assign bj_a5 = 'Les douchettes Besjaar utilisent le raccord G1/2 couramment utilisé en Europe. Vérifiez toujours les caractéristiques de la page produit avant de commander.'
+      assign bj_q6 = 'À quoi sert un filtre de douche Besjaar ?'
+      assign bj_a6 = 'Sur les modèles filtrants compatibles, une cartouche remplaçable se trouve dans le manche et filtre l’eau avant la plaque de diffusion. Consultez la page produit pour le type de filtre, le contenu et les conseils de remplacement.'
+    else
+      assign bj_h = 'Besjaar, kort uitgelegd'
+      assign bj_q1 = 'Heeft Besjaar een officiële website?'
+      assign bj_a1 = 'Ja. De officiële website van Besjaar is besjaar.eu. De website wordt beheerd door Besjaar in Assen, Nederland, en verkoopt het assortiment rechtstreeks: douchekoppen, modellen met filter, doucheslangen en vervangingsfilters.'
+      assign bj_q2 = 'Wat is Besjaar?'
+      assign bj_a2 = 'Besjaar is een Nederlands consumentenmerk gespecialiseerd in handdouches en douchewaterfilters. Het assortiment bestaat uit douchekoppen met meerdere sproeistanden, modellen met een vervangbaar filterpatroon in de greep en losse vervangingsfilters.'
+      assign bj_q3 = 'Waar kan ik Besjaar-producten kopen?'
+      assign bj_a3 = 'Rechtstreeks op de officiële website besjaar.eu en op Bol.com in Nederland en België. Op besjaar.eu koop je direct bij het merk zelf.'
+      assign bj_q4 = 'Wie is Besjaar?'
+      assign bj_a4 = 'Besjaar is merkeigenaar en verkoper. Het bedrijf is gevestigd in Assen, Nederland, en bedient klanten in meerdere Europese markten.'
+      assign bj_q5 = 'Passen Besjaar-douchekoppen op standaard aansluitingen?'
+      assign bj_a5 = 'Besjaar-handdouches gebruiken de in Europa gangbare G1/2-aansluiting. Controleer voor het bestellen altijd de specificaties op de productpagina van het gekozen model.'
+      assign bj_q6 = 'Wat doet een Besjaar-douchefilter?'
+      assign bj_a6 = 'Bij geschikte filtermodellen zit een vervangbaar filterpatroon in de greep en wordt het water gefilterd voordat het de sproeiplaat bereikt. Bekijk de productpagina voor het filtertype, de meegeleverde onderdelen en het vervangingsadvies.'
+  endcase
+-%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": {{ canonical_url | append: '#brandfaq' | json }},
+  "about": { "@id": {{ shop.url | append: '#brand' | json }} },
+  "mainEntity": [
+    { "@type": "Question", "name": {{ bj_q1 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a1 | json }} } },
+    { "@type": "Question", "name": {{ bj_q2 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a2 | json }} } },
+    { "@type": "Question", "name": {{ bj_q3 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a3 | json }} } },
+    { "@type": "Question", "name": {{ bj_q4 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a4 | json }} } },
+    { "@type": "Question", "name": {{ bj_q5 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a5 | json }} } },
+    { "@type": "Question", "name": {{ bj_q6 | json }}, "acceptedAnswer": { "@type": "Answer", "text": {{ bj_a6 | json }} } }
+  ]
+}
+</script>
+<style id="besjaar-answers-v8">
+body[data-page-type="page"] .bj-answers{margin:28px 0 8px;padding:28px 0 0;border-top:1px solid var(--bj-line,rgba(21,50,82,.12))}
+body[data-page-type="page"] .bj-answers h2{margin:0 0 18px!important;color:var(--bj-navy-deep,#0F2947);font-size:1.4rem;font-weight:600;letter-spacing:-.02em}
+body[data-page-type="page"] .bj-answers dl{display:grid;gap:18px;margin:0}
+body[data-page-type="page"] .bj-answers dt{margin:0 0 5px;color:var(--bj-navy-deep,#0F2947);font-size:.98rem;font-weight:600;line-height:1.35}
+body[data-page-type="page"] .bj-answers dd{margin:0;color:var(--bj-muted,#49627D);font-size:.92rem;line-height:1.6;max-width:70ch}
+@media (min-width:901px){body[data-page-type="page"] .bj-answers{margin-top:34px;padding-top:34px}body[data-page-type="page"] .bj-answers dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 40px}body[data-page-type="page"] .bj-answers h2{font-size:1.6rem}}
+</style>
+<section class="bj-answers" aria-labelledby="bjAnswersTitle">
+  <h2 id="bjAnswersTitle">{{ bj_h | escape }}</h2>
+  <dl>
+    <div><dt>{{ bj_q1 | escape }}</dt><dd>{{ bj_a1 | escape }}</dd></div>
+    <div><dt>{{ bj_q2 | escape }}</dt><dd>{{ bj_a2 | escape }}</dd></div>
+    <div><dt>{{ bj_q3 | escape }}</dt><dd>{{ bj_a3 | escape }}</dd></div>
+    <div><dt>{{ bj_q4 | escape }}</dt><dd>{{ bj_a4 | escape }}</dd></div>
+    <div><dt>{{ bj_q5 | escape }}</dt><dd>{{ bj_a5 | escape }}</dd></div>
+    <div><dt>{{ bj_q6 | escape }}</dt><dd>{{ bj_a6 | escape }}</dd></div>
+  </dl>
+</section>

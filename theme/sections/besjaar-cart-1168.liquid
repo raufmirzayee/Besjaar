@@ -1,0 +1,74 @@
+{%- comment -%}
+  Besjaar 11.6.8 — cart drawer.
+
+  1. The payment-logo row is dropped so the line items and the checkout
+     button get the space. Everything else in the drawer is the theme's
+     original design.
+  2. Resilience for cart updates ("Winkelwagen kon niet worden bijgewerkt"):
+     - cart writes (/cart/change.js, /cart/update.js, /cart/add.js,
+       /cart/clear.js) run one at a time, so a burst of +/− taps can no
+       longer overlap;
+     - a quantity update or cart read that fails on the network or with a
+       5xx is retried once after 450 ms before the theme shows its error.
+       add.js is never retried (a lost response could otherwise add twice);
+       4xx answers (e.g. stock limits) are passed through untouched.
+     This wraps window.fetch after the runtime section's wrapper, so the
+     one-round-trip optimisation there keeps working.
+
+  Temporary carrier; fold into assets/besjaar-ui-core.js during consolidation.
+{%- endcomment -%}
+<style id="besjaar-cart-1168">
+body.besjaar-ui-polish-v34 .besjaar-ui-drawer--cart .besjaar-ui-cart-drawer__payments{display:none!important}
+</style>
+<script>
+(function () {
+  'use strict';
+  var previous = window.fetch;
+  if (typeof previous !== 'function' || window.__bjCartQueueInstalled) return;
+  window.__bjCartQueueInstalled = true;
+  var noop = function () {};
+  var queue = Promise.resolve();
+  var pathOf = function (input) {
+    try { return new URL(typeof input === 'string' ? input : ((input && input.url) || ''), window.location.href).pathname; } catch (e) { return ''; }
+  };
+  var wait = function (ms) { return new Promise(function (resolve) { window.setTimeout(resolve, ms); }); };
+  var attempt = function (args, retries) {
+    return previous.apply(window, args).then(function (response) {
+      if (response && response.status >= 500 && retries > 0) return wait(450).then(function () { return attempt(args, retries - 1); });
+      return response;
+    }, function (error) {
+      if (retries > 0) return wait(450).then(function () { return attempt(args, retries - 1); });
+      throw error;
+    });
+  };
+  window.fetch = function (input, init) {
+    var args = arguments;
+    var path = pathOf(input);
+    var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+    var retryable = typeof input === 'string';
+    if (method === 'POST' && /\/cart\/(change|update|add|clear)\.js$/.test(path)) {
+      var retries = retryable && /\/cart\/(change|update)\.js$/.test(path) ? 1 : 0;
+      var run = function () { return attempt(args, retries); };
+      var pending = queue.then(run, run);
+      queue = pending.then(noop, noop);
+      return pending;
+    }
+    if (method === 'GET' && /\/cart\.js$/.test(path)) return attempt(args, retryable ? 1 : 0);
+    return previous.apply(window, args);
+  };
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar cart polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8: hides the payment-logo row in the cart drawer, queues cart updates so quick taps cannot overlap, and retries a failed quantity update once before the theme shows its error. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

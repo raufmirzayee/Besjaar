@@ -1,0 +1,98 @@
+{% liquid
+  assign card_product = product
+  capture localized_title_capture
+    render 'localized-product-title', product: card_product
+  endcapture
+  assign display_title = localized_title_capture | strip
+
+  assign best_for = ''
+  if card_product.metafields.custom.best_for != blank
+    assign best_for = card_product.metafields.custom.best_for.value
+  endif
+
+  capture spray_modes_capture
+    render 'shower-spray-modes', product: card_product
+  endcapture
+  assign spray_modes = spray_modes_capture | strip
+
+  capture filter_capture
+    render 'shower-filter-state', product: card_product
+  endcapture
+  assign filter_included = filter_capture | strip
+
+  capture hose_capture
+    render 'shower-hose-state', product: card_product
+  endcapture
+  assign hose_included = hose_capture | strip
+
+  capture product_url_capture
+    render 'localized-internal-url', url: card_product.url
+  endcapture
+  assign product_url = product_url_capture | strip
+
+  assign selected_variant = card_product.selected_or_first_available_variant
+  assign sale_percent = 0
+  if selected_variant.compare_at_price > selected_variant.price and selected_variant.compare_at_price > 0
+    assign sale_difference = selected_variant.compare_at_price | minus: selected_variant.price
+    assign sale_percent = sale_difference | times: 100 | divided_by: selected_variant.compare_at_price
+  endif
+
+  assign image_alt = display_title
+  if card_product.featured_image != blank and card_product.featured_image.alt != blank
+    assign image_alt = card_product.featured_image.alt
+  endif
+%}
+<article class="besjaar-shop-card{% unless card_product.available %} is-sold-out{% endunless %}" data-reveal>
+  <div class="besjaar-shop-card__media">
+    <a href="{{ product_url }}" aria-label="{{ display_title | escape }}">
+      {% if card_product.featured_image != blank %}
+        {{ card_product.featured_image | image_url: width: 1100 | image_tag: loading: 'lazy', widths: '360,540,720,900,1100', sizes: '(max-width: 700px) 92vw, (max-width: 1080px) 48vw, 31vw', alt: image_alt }}
+      {% else %}
+        <span class="besjaar-shop-card__placeholder" aria-hidden="true"></span>
+      {% endif %}
+    </a>
+    <div class="besjaar-shop-card__badges">
+      {% if card_product.compare_at_price_max > card_product.price %}
+        <span class="besjaar-shop-card__badge besjaar-shop-card__badge--dark">{{ 'besjaar_ui.product_card.sale' | t }}{% if sale_percent > 0 %} · -{{ sale_percent }}%{% endif %}</span>
+      {% elsif card_product.available %}
+        <span class="besjaar-shop-card__badge">{{ 'besjaar_ui.product_card.in_stock' | t }}</span>
+      {% else %}
+        <span class="besjaar-shop-card__badge besjaar-shop-card__badge--muted">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="besjaar-shop-card__body">
+    <div class="besjaar-shop-card__brand-row">
+      <span translate="no">Besjaar</span>
+      {% if settings.show_card_review_ratings %}{% render 'review-stars', product: card_product, compact: true %}{% endif %}
+    </div>
+
+    <div class="besjaar-shop-card__heading">
+      <h2><a href="{{ product_url }}">{{ display_title }}</a></h2>
+      <div class="besjaar-shop-card__price">
+        <strong>{{ card_product.price | money }}</strong>
+        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+      </div>
+    </div>
+
+    {% if best_for != blank %}
+      <p class="besjaar-shop-card__best-for"><span>{{ 'besjaar_ui.product.best_for' | t }}</span>{{ best_for }}</p>
+    {% endif %}
+
+    {% if spray_modes != blank or filter_included == 'true' or hose_included == 'true' %}
+      <div class="besjaar-shop-card__facts" aria-label="{{ 'besjaar_ui.shower_collection.key_specs' | t | escape }}">
+        {% if spray_modes != blank %}<span>{{ 'besjaar_ui.product.shower_modes_chip' | t: count: spray_modes }}</span>{% endif %}
+        {% if filter_included == 'true' %}<span>{{ 'besjaar_ui.product.shower_filter_chip' | t }}</span>{% endif %}
+        {% if hose_included == 'true' %}<span>{{ 'besjaar_ui.product.shower_hose_chip' | t }}</span>{% endif %}
+      </div>
+    {% endif %}
+
+    <div class="besjaar-shop-card__actions">
+      <a class="besjaar-shop-card__view" href="{{ product_url }}">{{ 'besjaar_ui.product_card.view_product' | t }} <span aria-hidden="true">→</span></a>
+      {% if settings.show_card_quick_add and card_product.available and card_product.has_only_default_variant %}
+        <button class="besjaar-shop-card__quick-add" type="button" data-card-quick-add="{{ selected_variant.id }}" aria-label="{{ 'besjaar_ui.product_card.quick_add_label' | t: title: display_title | escape }}">{{ 'besjaar_ui.product_card.quick_add' | t }}</button>
+      {% endif %}
+    </div>
+  </div>
+</article>

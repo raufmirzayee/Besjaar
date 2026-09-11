@@ -1,0 +1,223 @@
+{%- liquid
+  assign besjaar_ui_product = product
+  assign besjaar_ui_locale = request.locale.iso_code | downcase
+  assign besjaar_ui_title = besjaar_ui_product.title
+
+  if besjaar_ui_locale == 'de'
+    if besjaar_ui_product.metafields.custom.title_de != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.title_de.value
+    elsif besjaar_ui_product.metafields.custom.short_title_de != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title_de.value
+    elsif besjaar_ui_product.metafields.custom.short_title != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title.value
+    endif
+  elsif besjaar_ui_locale == 'fr'
+    if besjaar_ui_product.metafields.custom.title_fr != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.title_fr.value
+    elsif besjaar_ui_product.metafields.custom.short_title_fr != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title_fr.value
+    elsif besjaar_ui_product.metafields.custom.short_title != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title.value
+    endif
+  elsif besjaar_ui_locale == 'en'
+    if besjaar_ui_product.metafields.custom.title_en != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.title_en.value
+    elsif besjaar_ui_product.metafields.custom.short_title_en != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title_en.value
+    elsif besjaar_ui_product.metafields.custom.short_title != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title.value
+    endif
+  elsif besjaar_ui_locale == 'nl'
+    if besjaar_ui_product.metafields.custom.title_nl != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.title_nl.value
+    elsif besjaar_ui_product.metafields.custom.short_title_nl != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title_nl.value
+    elsif besjaar_ui_product.metafields.custom.short_title != blank
+      assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title.value
+    endif
+  elsif besjaar_ui_product.metafields.custom.short_title != blank
+    assign besjaar_ui_title = besjaar_ui_product.metafields.custom.short_title.value
+  endif
+
+  assign besjaar_ui_title_lc = besjaar_ui_product.title | downcase
+  assign besjaar_ui_allow_legacy_title_fallback = false
+  if besjaar_ui_product.metafields.custom.product_family == blank
+    assign besjaar_ui_allow_legacy_title_fallback = true
+  endif
+  assign besjaar_ui_type_lc = besjaar_ui_product.type | downcase
+  assign besjaar_ui_shower_family = besjaar_ui_product.metafields.custom.shower_family.value | default: '' | downcase | strip
+  capture besjaar_ui_family_capture
+    render 'product-family', product: besjaar_ui_product
+  endcapture
+  assign besjaar_ui_family = besjaar_ui_family_capture | strip
+  assign besjaar_ui_is_shower = false
+  if besjaar_ui_family == 'shower'
+    assign besjaar_ui_is_shower = true
+  endif
+
+  if besjaar_ui_is_shower and besjaar_ui_product.metafields.custom.title_en == blank and besjaar_ui_product.metafields.custom.title_nl == blank and besjaar_ui_product.metafields.custom.title_de == blank and besjaar_ui_product.metafields.custom.title_fr == blank and besjaar_ui_product.metafields.custom.short_title_en == blank and besjaar_ui_product.metafields.custom.short_title_nl == blank and besjaar_ui_product.metafields.custom.short_title_de == blank and besjaar_ui_product.metafields.custom.short_title_fr == blank
+    assign besjaar_ui_spray_modes = ''
+    if besjaar_ui_product.metafields.custom.spray_modes != blank
+      assign besjaar_ui_spray_modes = besjaar_ui_product.metafields.custom.spray_modes.value
+    elsif besjaar_ui_title_lc contains '10 sproei' or besjaar_ui_title_lc contains '10 spray'
+      assign besjaar_ui_spray_modes = 10
+    elsif besjaar_ui_title_lc contains '3 sproei' or besjaar_ui_title_lc contains '3 spray'
+      assign besjaar_ui_spray_modes = 3
+    endif
+
+    assign besjaar_ui_has_filter = false
+    if besjaar_ui_product.metafields.custom.filter_included != blank
+      assign besjaar_ui_has_filter = besjaar_ui_product.metafields.custom.filter_included.value
+    endif
+    if besjaar_ui_product.metafields.custom.filter_included == blank
+      if besjaar_ui_title_lc contains 'met filter' or besjaar_ui_title_lc contains 'with filter' or besjaar_ui_title_lc contains 'filtered shower'
+        assign besjaar_ui_has_filter = true
+      endif
+    endif
+
+    assign besjaar_ui_has_hose = false
+    if besjaar_ui_product.metafields.custom.hose_included != blank
+      assign besjaar_ui_has_hose = besjaar_ui_product.metafields.custom.hose_included.value
+    endif
+    if besjaar_ui_product.metafields.custom.hose_included == blank
+      if besjaar_ui_title_lc contains 'met slang' or besjaar_ui_title_lc contains 'with hose'
+        assign besjaar_ui_has_hose = true
+      endif
+    endif
+
+    assign besjaar_ui_pack = besjaar_ui_product.metafields.custom.package_quantity.value | default: 0
+    if besjaar_ui_pack == 0 and besjaar_ui_allow_legacy_title_fallback
+      if besjaar_ui_title_lc contains '2 stuks' or besjaar_ui_title_lc contains '2-pack' or besjaar_ui_title_lc contains '2 pack' or besjaar_ui_title_lc contains '2 filters' or besjaar_ui_title_lc contains '2 vervangingsfilters'
+        assign besjaar_ui_pack = 2
+      endif
+    endif
+
+    assign besjaar_ui_is_filter_only = false
+    if besjaar_ui_shower_family == 'shower_filter'
+      assign besjaar_ui_is_filter_only = true
+    elsif besjaar_ui_allow_legacy_title_fallback
+      if besjaar_ui_title_lc contains 'douchefilter' or besjaar_ui_title_lc contains 'shower filter'
+        unless besjaar_ui_title_lc contains 'douchekop' or besjaar_ui_title_lc contains 'shower head'
+          assign besjaar_ui_is_filter_only = true
+        endunless
+      endif
+    endif
+
+    assign besjaar_ui_colour = ''
+    if besjaar_ui_product.metafields.custom.colour != blank
+      assign besjaar_ui_colour = besjaar_ui_product.metafields.custom.colour.value | downcase | strip
+    elsif besjaar_ui_title_lc contains 'zilver' or besjaar_ui_title_lc contains 'silver'
+      assign besjaar_ui_colour = 'silver'
+    elsif besjaar_ui_title_lc contains 'chroom' or besjaar_ui_title_lc contains 'chrome'
+      assign besjaar_ui_colour = 'chrome'
+    elsif besjaar_ui_title_lc contains 'zwart' or besjaar_ui_title_lc contains 'black'
+      assign besjaar_ui_colour = 'black'
+    elsif besjaar_ui_title_lc contains 'wit' or besjaar_ui_title_lc contains 'white'
+      assign besjaar_ui_colour = 'white'
+    endif
+
+    if besjaar_ui_is_filter_only
+      if besjaar_ui_pack == 2
+        assign besjaar_ui_title = 'besjaar_ui.product.retail_shower_filter_two_pack' | t
+      else
+        assign besjaar_ui_title = 'besjaar_ui.product.retail_shower_filter' | t
+      endif
+    else
+      assign besjaar_ui_title = 'besjaar_ui.product.retail_shower_head' | t
+      if besjaar_ui_has_filter and besjaar_ui_has_hose
+        assign besjaar_ui_suffix = 'besjaar_ui.product.retail_with_filter_hose' | t
+        assign besjaar_ui_title = besjaar_ui_title | append: ' ' | append: besjaar_ui_suffix
+      elsif besjaar_ui_has_filter
+        assign besjaar_ui_suffix = 'besjaar_ui.product.retail_with_filter' | t
+        assign besjaar_ui_title = besjaar_ui_title | append: ' ' | append: besjaar_ui_suffix
+      elsif besjaar_ui_has_hose
+        assign besjaar_ui_suffix = 'besjaar_ui.product.retail_with_hose' | t
+        assign besjaar_ui_title = besjaar_ui_title | append: ' ' | append: besjaar_ui_suffix
+      endif
+      if besjaar_ui_spray_modes != blank
+        assign besjaar_ui_modes = 'besjaar_ui.product.retail_spray_modes' | t: count: besjaar_ui_spray_modes
+        assign besjaar_ui_title = besjaar_ui_title | append: ' – ' | append: besjaar_ui_modes
+      endif
+      case besjaar_ui_colour
+        when 'zilver', 'silver'
+          assign besjaar_ui_colour_label = 'besjaar_ui.product.color_silver' | t
+        when 'chroom', 'chrome'
+          assign besjaar_ui_colour_label = 'besjaar_ui.product.color_chrome' | t
+        when 'zwart', 'black'
+          assign besjaar_ui_colour_label = 'besjaar_ui.product.color_black' | t
+        when 'wit', 'white'
+          assign besjaar_ui_colour_label = 'besjaar_ui.product.color_white' | t
+        else
+          assign besjaar_ui_colour_label = ''
+      endcase
+      if besjaar_ui_colour_label != blank
+        assign besjaar_ui_title = besjaar_ui_title | append: ' – ' | append: besjaar_ui_colour_label
+      endif
+    endif
+  elsif besjaar_ui_locale == 'en'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Waterbesparende', 'Water-Saving' | replace: 'waterbesparende', 'water-saving'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hoge Druk', 'High Pressure' | replace: 'hoge druk', 'high pressure'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Sproeistanden', 'Spray Modes' | replace: 'sproeistanden', 'spray modes'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Douchekop', 'Shower Head' | replace: 'douchekop', 'shower head'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Handdouche', 'Hand Shower' | replace: 'handdouche', 'hand shower'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Slang', 'With Hose' | replace: 'met slang', 'with hose'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Filter', 'With Filter' | replace: 'met filter', 'with filter'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zilver', 'Silver' | replace: 'zilver', 'silver'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Chroom', 'Chrome' | replace: 'chroom', 'chrome'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zwart', 'Black' | replace: 'zwart', 'black'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Wit', 'White' | replace: 'wit', 'white'
+  elsif besjaar_ui_locale == 'de'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Waterbesparende', 'Wassersparender' | replace: 'waterbesparende', 'wassersparender'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Water-Saving', 'Wassersparender' | replace: 'water-saving', 'wassersparender'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hoge Druk', 'Hochdruck' | replace: 'hoge druk', 'Hochdruck'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'High Pressure', 'Hochdruck' | replace: 'high pressure', 'Hochdruck'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Sproeistanden', 'Strahlarten' | replace: 'sproeistanden', 'Strahlarten'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Spray Modes', 'Strahlarten' | replace: 'spray modes', 'Strahlarten'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Douchekop', 'Duschkopf' | replace: 'douchekop', 'Duschkopf'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Shower Head', 'Duschkopf' | replace: 'shower head', 'Duschkopf'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Handdouche', 'Handbrause' | replace: 'handdouche', 'Handbrause'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hand Shower', 'Handbrause' | replace: 'hand shower', 'Handbrause'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Slang', 'Mit Schlauch' | replace: 'met slang', 'mit Schlauch'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Hose', 'Mit Schlauch' | replace: 'with hose', 'mit Schlauch'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Filter', 'Mit Filter' | replace: 'met filter', 'mit Filter'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Filter', 'Mit Filter' | replace: 'with filter', 'mit Filter'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zilver', 'Silber' | replace: 'zilver', 'Silber' | replace: 'Silver', 'Silber' | replace: 'silver', 'Silber'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Chroom', 'Chrom' | replace: 'chroom', 'Chrom' | replace: 'Chrome', 'Chrom' | replace: 'chrome', 'Chrom'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zwart', 'Schwarz' | replace: 'zwart', 'Schwarz' | replace: 'Black', 'Schwarz' | replace: 'black', 'Schwarz'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Wit', 'Weiß' | replace: 'wit', 'Weiß' | replace: 'White', 'Weiß' | replace: 'white', 'Weiß'
+  elsif besjaar_ui_locale == 'fr'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Waterbesparende', 'Économe en eau' | replace: 'waterbesparende', 'économe en eau'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Water-Saving', 'Économe en eau' | replace: 'water-saving', 'économe en eau'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hoge Druk', 'Haute pression' | replace: 'hoge druk', 'haute pression'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'High Pressure', 'Haute pression' | replace: 'high pressure', 'haute pression'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Sproeistanden', 'Types de jet' | replace: 'sproeistanden', 'types de jet'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Spray Modes', 'Types de jet' | replace: 'spray modes', 'types de jet'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Douchekop', 'Pommeau de douche' | replace: 'douchekop', 'pommeau de douche'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Shower Head', 'Pommeau de douche' | replace: 'shower head', 'pommeau de douche'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Handdouche', 'Douchette' | replace: 'handdouche', 'douchette'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hand Shower', 'Douchette' | replace: 'hand shower', 'douchette'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Slang', 'Avec flexible' | replace: 'met slang', 'avec flexible'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Hose', 'Avec flexible' | replace: 'with hose', 'avec flexible'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Met Filter', 'Avec filtre' | replace: 'met filter', 'avec filtre'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Filter', 'Avec filtre' | replace: 'with filter', 'avec filtre'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zilver', 'Argent' | replace: 'zilver', 'argent' | replace: 'Silver', 'Argent' | replace: 'silver', 'argent'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Chroom', 'Chrome' | replace: 'chroom', 'chrome'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Zwart', 'Noir' | replace: 'zwart', 'noir' | replace: 'Black', 'Noir' | replace: 'black', 'noir'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Wit', 'Blanc' | replace: 'wit', 'blanc' | replace: 'White', 'Blanc' | replace: 'white', 'blanc'
+  elsif besjaar_ui_locale == 'nl'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Water-Saving', 'Waterbesparende' | replace: 'water-saving', 'waterbesparende'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'High Pressure', 'Hoge Druk' | replace: 'high pressure', 'hoge druk'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Spray Modes', 'Sproeistanden' | replace: 'spray modes', 'sproeistanden'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Shower Head', 'Douchekop' | replace: 'shower head', 'douchekop'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Hand Shower', 'Handdouche' | replace: 'hand shower', 'handdouche'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Hose', 'Met Slang' | replace: 'with hose', 'met slang'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'With Filter', 'Met Filter' | replace: 'with filter', 'met filter'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Silver', 'Zilver' | replace: 'silver', 'zilver'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Chrome', 'Chroom' | replace: 'chrome', 'chroom'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'Black', 'Zwart' | replace: 'black', 'zwart'
+    assign besjaar_ui_title = besjaar_ui_title | replace: 'White', 'Wit' | replace: 'white', 'wit'
+
+  endif
+
+  echo besjaar_ui_title
+-%}

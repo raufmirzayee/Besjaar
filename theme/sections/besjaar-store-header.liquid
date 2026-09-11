@@ -1,0 +1,39 @@
+{%- liquid
+  assign shop_url = '/collections/all'
+  if settings.shower_collection != blank
+    assign shop_url = settings.shower_collection.url
+  endif
+-%}
+<header class="besjaar-store besjaar-store-head">
+  <div class="besjaar-store-shell besjaar-store-head__row">
+    <a class="besjaar-store-head__brand" href="{{ routes.root_url }}">
+      <span class="besjaar-store-head__mark">B</span>
+      <span class="besjaar-store-head__name">BESJAAR</span>
+      <span class="besjaar-store-head__reg">{{ section.settings.reg_label | escape }}</span>
+    </a>
+    <nav class="besjaar-store-head__nav" aria-label="{{ 'besjaar_ui.accessibility.main_navigation' | t | escape }}">
+      <a class="besjaar-store-head__link" href="{{ routes.root_url }}"{% if request.page_type == 'index' %} aria-current="page"{% endif %}>{{ section.settings.nav_home | escape }}</a>
+      <a class="besjaar-store-head__link" href="{{ shop_url }}"{% if request.page_type == 'collection' %} aria-current="page"{% endif %}>{{ section.settings.nav_shop | escape }}</a>
+      {%- if section.settings.nav_extra_label != blank -%}
+      <a class="besjaar-store-head__link" href="{{ section.settings.nav_extra_link | default: '/pages/faq' }}">{{ section.settings.nav_extra_label | escape }}</a>
+      {%- endif -%}
+      <a class="besjaar-store-head__cart" href="{{ routes.cart_url }}">
+        {{ section.settings.nav_cart | escape }}
+        <span class="besjaar-store-head__count" data-besjaar-store-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </nav>
+  </div>
+</header>
+{% schema %}
+{
+  "name": "Besjaar Store header",
+  "settings": [
+    { "type": "text", "id": "reg_label", "label": "Registratie-label", "default": "REG. NL-2026 — DOUCHEKOPPEN" },
+    { "type": "text", "id": "nav_home", "label": "Nav: home", "default": "Home" },
+    { "type": "text", "id": "nav_shop", "label": "Nav: collectie", "default": "Collectie" },
+    { "type": "text", "id": "nav_extra_label", "label": "Nav: extra link (leeg = verbergen)", "default": "Veelgestelde vragen" },
+    { "type": "url", "id": "nav_extra_link", "label": "Extra link URL" },
+    { "type": "text", "id": "nav_cart", "label": "Nav: winkelwagen", "default": "Winkelwagen" }
+  ]
+}
+{% endschema %}

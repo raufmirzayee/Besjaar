@@ -1,0 +1,42 @@
+<section class="besjaar-ui-section besjaar-ui-auth-page besjaar-ui-auth-v41">
+  <div class="besjaar-ui-shell besjaar-ui-auth-v41__shell">
+    <div class="besjaar-ui-auth-v41__intro">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.customer_space' | t }}</p>
+        <h1>{{ 'besjaar_ui.account.login_title_v41' | t }}</h1>
+        <p>{{ 'besjaar_ui.account.login_copy_v41' | t }}</p>
+      </div>
+      <div class="besjaar-ui-auth-v41__benefits">
+        <div><span aria-hidden="true">01</span><strong>{{ 'besjaar_ui.account.orders_tracking' | t }}</strong><p>{{ 'besjaar_ui.account.orders_tracking_copy' | t }}</p></div>
+        <div><span aria-hidden="true">02</span><strong>{{ 'besjaar_ui.account.delivery_details' | t }}</strong><p>{{ 'besjaar_ui.account.delivery_details_copy' | t }}</p></div>
+      </div>
+    </div>
+
+    <div class="besjaar-ui-auth-v41__card">
+      <div class="besjaar-ui-auth-v41__card-head"><span>{{ 'besjaar_ui.account.sign_in' | t }}</span><h2>{{ 'besjaar_ui.account.welcome_back' | t }}</h2><p>{{ 'besjaar_ui.account.login_copy' | t }}</p></div>
+      {% form 'customer_login' %}
+        <div class="besjaar-ui-auth-fields">
+          <div><label class="besjaar-ui-label" for="CustomerEmail">Email</label><input class="besjaar-ui-input" id="CustomerEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+          <div><label class="besjaar-ui-label" for="CustomerPassword">{{ 'besjaar_ui.account.password' | t }}</label><input class="besjaar-ui-input" id="CustomerPassword" type="password" name="customer[password]" autocomplete="current-password" required></div>
+          <button class="besjaar-ui-button besjaar-ui-button--primary besjaar-ui-auth-v41__submit" type="submit">{{ 'besjaar_ui.account.login' | t }}</button>
+        </div>
+        {% if form.errors %}<div class="besjaar-ui-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+      <div class="besjaar-ui-auth-v41__join"><span>{{ 'besjaar_ui.account.new_to_besjaar' | t }}</span><a href="{{ routes.account_register_url }}">{{ 'besjaar_ui.account.create' | t }} →</a></div>
+      <details class="besjaar-ui-recovery besjaar-ui-auth-v41__recovery">
+        <summary>{{ 'besjaar_ui.account.forgot_password' | t }}</summary>
+        {% form 'recover_customer_password' %}
+          <p>{{ 'besjaar_ui.account.recovery_copy' | t }}</p>
+          <label class="besjaar-ui-label" for="RecoverEmail">Email</label>
+          <input class="besjaar-ui-input" id="RecoverEmail" type="email" name="email" autocomplete="email" required>
+          <button class="besjaar-ui-button besjaar-ui-button--ghost" type="submit">{{ 'besjaar_ui.account.send_recovery' | t }}</button>
+          {% if form.posted_successfully? %}<div class="besjaar-ui-form-message besjaar-ui-form-message--success" role="status" aria-live="polite">{{ 'besjaar_ui.account.recovery_sent' | t }}</div>{% endif %}
+        {% endform %}
+      </details>
+      <p class="besjaar-ui-auth-v41__guest">{{ 'besjaar_ui.account.guest_checkout_note' | t }}</p>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Login","settings":[]}
+{% endschema %}

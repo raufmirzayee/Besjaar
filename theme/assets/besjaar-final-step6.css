@@ -1,0 +1,96 @@
+/* Besjaar 11.2.27 — Step 6: final responsive, accessibility and stability QA */
+:root{
+  --bs6-header-offset:106px;
+  --bs6-mobile-nav-height:76px;
+}
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  scroll-padding-top:var(--bs6-header-offset);
+}
+body.besjaar-ui-polish-v34{
+  min-width:320px;
+  overflow-x:clip;
+}
+body.besjaar-ui-polish-v34 #MainContent{min-height:55vh}
+body.besjaar-ui-polish-v34 :is(h1,h2,h3){text-wrap:balance}
+body.besjaar-ui-polish-v34 :is(p,li,.besjaar-ui-copy){text-wrap:pretty}
+body.besjaar-ui-polish-v34 :is(section,article,div)[id]{scroll-margin-top:var(--bs6-header-offset)}
+body.besjaar-ui-polish-v34 :is(img,video,svg){max-width:100%}
+body.besjaar-ui-polish-v34 :is(.besjaar-ui-button,.besjaar-store-btn,button,a){-webkit-tap-highlight-color:transparent}
+
+/* Long translated strings must never force horizontal overflow. */
+body.besjaar-ui-polish-v34 :is(.besjaar-ui-mobile-menu,.besjaar-ui-drawer,.besjaar-store-foot,.besjaar-collection-step3,.besjaar-store-premium-pd) :is(a,p,h1,h2,h3,strong,small,span){
+  overflow-wrap:anywhere;
+}
+
+/* Dialogs remain usable on short laptop/mobile viewports. */
+body.besjaar-ui-polish-v34 dialog{
+  max-width:min(92vw,720px);
+  max-height:min(88dvh,820px);
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+body.besjaar-ui-polish-v34 dialog::backdrop{background:rgba(8,22,36,.42);backdrop-filter:blur(3px)}
+
+/* Make the mobile-nav setting authoritative instead of reserving empty space. */
+@media (max-width:700px){
+  body.besjaar-ui-polish-v34:not(.besjaar-has-mobile-nav) .besjaar-ui-bottom-nav{display:none!important}
+  body.besjaar-ui-polish-v34:not(.besjaar-has-mobile-nav) .besjaar-ui-footer{padding-bottom:0!important}
+  body.besjaar-ui-polish-v34:not(.besjaar-has-mobile-nav)[data-page-type="product"] .besjaar-store-premium-pd__sticky{
+    bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  }
+  body.besjaar-ui-polish-v34.besjaar-has-mobile-nav[data-page-type="product"] .besjaar-store-premium-pd__sticky{
+    bottom:calc(var(--bs6-mobile-nav-height) + 8px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Prevent iOS form zoom and keep all commerce controls thumb-friendly. */
+  body.besjaar-ui-polish-v34 :is(input,select,textarea){font-size:16px!important}
+  body.besjaar-ui-polish-v34 :is(.besjaar-ui-button,.besjaar-store-btn,button:not(.besjaar-ui-drawer__close):not(.besjaar-ui-cart-drawer__remove)){
+    min-height:44px;
+  }
+
+  body.besjaar-ui-polish-v34 .besjaar-ui-search-panel,
+  body.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu{
+    overscroll-behavior:contain;
+  }
+  body.besjaar-ui-polish-v34 .besjaar-ui-drawer--cart{height:100dvh!important;max-height:100dvh!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-drawer--cart>.besjaar-ui-drawer__body{-webkit-overflow-scrolling:touch}
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav{max-width:520px;margin-inline:auto}
+}
+
+/* Tablet: keep rhythm intentional instead of looking like stretched mobile. */
+@media (min-width:701px) and (max-width:1100px){
+  :root{--bs6-header-offset:98px}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shell,
+  body.besjaar-ui-polish-v34 .besjaar-store-shell{width:calc(100% - 48px)!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu{padding-inline:24px}
+  body.besjaar-ui-polish-v34 .besjaar-ui-mobile-menu__products{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-grid{column-gap:18px!important;row-gap:42px!important}
+}
+
+/* Very small phones: avoid clipped brand/header and cramped two-column commerce cards. */
+@media (max-width:359px){
+  body.besjaar-ui-polish-v34 .besjaar-ui-brand{font-size:.86rem!important;letter-spacing:.09em!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-header__row{gap:4px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-header__actions{gap:0!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-icon-btn{width:34px!important;min-width:34px!important;height:34px!important;min-height:34px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav{left:5px!important;right:5px!important;padding:5px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-bottom-nav :is(a,button){font-size:.54rem!important}
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-grid{grid-template-columns:1fr!important}
+  body.besjaar-ui-polish-v34 .besjaar-collection-step3 .besjaar-collection-product-card__media{aspect-ratio:1/1!important}
+}
+
+/* Keyboard/accessibility hardening. */
+body.besjaar-ui-polish-v34 [aria-disabled="true"],body.besjaar-ui-polish-v34 :disabled{cursor:not-allowed}
+body.besjaar-ui-polish-v34 [hidden]{display:none!important}
+body.besjaar-ui-polish-v34 .besjaar-ui-cart-upsell__body[aria-hidden="true"]{visibility:hidden}
+
+/* Avoid hover-only movement on touch hardware. */
+@media (hover:none),(pointer:coarse){
+  body.besjaar-ui-polish-v34 :is(.besjaar-collection-product-card,.besjaar-store-product-card,.besjaar-ui-icon-btn,.besjaar-ui-account-trigger):hover{transform:none!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+}

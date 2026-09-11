@@ -1,0 +1,34 @@
+{%- liquid
+  assign besjaar_ui_item = product
+  assign besjaar_ui_modes = ''
+  if besjaar_ui_item != blank
+    if besjaar_ui_item.metafields.custom.spray_modes != blank
+      assign besjaar_ui_modes = besjaar_ui_item.metafields.custom.spray_modes.value
+    else
+      assign besjaar_ui_title = besjaar_ui_item.title | downcase
+      if besjaar_ui_title contains '12 sproei' or besjaar_ui_title contains '12 spray'
+        assign besjaar_ui_modes = 12
+      elsif besjaar_ui_title contains '11 sproei' or besjaar_ui_title contains '11 spray'
+        assign besjaar_ui_modes = 11
+      elsif besjaar_ui_title contains '10 sproei' or besjaar_ui_title contains '10 spray'
+        assign besjaar_ui_modes = 10
+      elsif besjaar_ui_title contains '9 sproei' or besjaar_ui_title contains '9 spray'
+        assign besjaar_ui_modes = 9
+      elsif besjaar_ui_title contains '8 sproei' or besjaar_ui_title contains '8 spray'
+        assign besjaar_ui_modes = 8
+      elsif besjaar_ui_title contains '7 sproei' or besjaar_ui_title contains '7 spray'
+        assign besjaar_ui_modes = 7
+      elsif besjaar_ui_title contains '6 sproei' or besjaar_ui_title contains '6 spray'
+        assign besjaar_ui_modes = 6
+      elsif besjaar_ui_title contains '5 sproei' or besjaar_ui_title contains '5 spray'
+        assign besjaar_ui_modes = 5
+      elsif besjaar_ui_title contains '4 sproei' or besjaar_ui_title contains '4 spray'
+        assign besjaar_ui_modes = 4
+      elsif besjaar_ui_title contains '3 sproei' or besjaar_ui_title contains '3 spray'
+        assign besjaar_ui_modes = 3
+      elsif besjaar_ui_title contains '2 sproei' or besjaar_ui_title contains '2 spray'
+        assign besjaar_ui_modes = 2
+      endif
+    endif
+  endif
+-%}{{- besjaar_ui_modes -}}

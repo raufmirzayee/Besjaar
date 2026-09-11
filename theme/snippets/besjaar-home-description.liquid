@@ -1,0 +1,26 @@
+{%- comment -%}
+  Besjaar v32 — brand-first home page meta description.
+
+  Bing's SEO report flagged the description as too long: the previous copy ran
+  ~180 characters, over Bing's 160 limit, and Google truncates at roughly the
+  same point — so the closing clause never appeared in results. All four
+  languages are now 142–155 characters, keeping the brand, the two product
+  categories and the shipping offer, and dropping the returns clause (which is
+  stated on the page itself and in the trust strip).
+
+  A description set under Online Store → Preferences still overrides this.
+{%- endcomment -%}
+{%- liquid
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_desc = 'Official Besjaar store for showerheads, shower filters and refills. Compare models and spray modes. Free NL shipping from €25.'
+    when 'de'
+      assign bj_desc = 'Offizieller Besjaar Shop für Duschköpfe, Duschfilter und Ersatzfilter. Modelle und Strahlarten vergleichen. Versand in NL ab 25 € gratis.'
+    when 'fr'
+      assign bj_desc = 'Boutique officielle Besjaar : pommeaux, filtres de douche et recharges. Comparez les modèles et les jets. Livraison NL offerte dès 25 €.'
+    else
+      assign bj_desc = 'Officiële Besjaar webshop voor douchekoppen, douchefilters en navulsets. Vergelijk modellen en sproeistanden. Gratis verzending in NL vanaf €25.'
+  endcase
+  echo bj_desc
+-%}

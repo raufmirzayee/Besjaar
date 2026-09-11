@@ -1,0 +1,623 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="color-scheme" content="light">
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="dns-prefetch" href="//cdn.shopify.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=Jost:wght@300..800&display=swap"></noscript>
+    <link rel="canonical" href="{{ canonical_url }}">
+    {% if settings.favicon != blank %}
+      <link rel="icon" type="image/png" sizes="96x96" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+      <link rel="icon" type="image/png" sizes="192x192" href="{{ settings.favicon | image_url: width: 192, height: 192 }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="shortcut icon" href="{{ settings.favicon | image_url: width: 96, height: 96 }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {% else %}
+      <link rel="icon" type="image/svg+xml" href="{{ 'besjaar-favicon.svg' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="128x128" href="{{ 'besjaar-favicon.png' | asset_url }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'besjaar-favicon-32.png' | asset_url }}">
+      <link rel="shortcut icon" type="image/png" href="{{ 'besjaar-favicon.png' | asset_url }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ 'besjaar-apple-touch-icon.png' | asset_url }}">
+    {% endif %}
+
+    {% capture besjaar_ui_localized_browser_title %}
+      {% case request.page_type %}
+        {% when 'product' %}{% render 'localized-product-title', product: product %}
+        {% when 'collection' %}{% render 'localized-collection-title', collection: collection %}
+        {% when 'page' %}{% render 'localized-page-title', page: page %}
+        {% else %}{{ page_title | default: 'Besjaar' }}
+      {% endcase %}
+    {% endcapture %}
+    {% liquid
+      comment
+        Respect Shopify's Search engine listing title when the merchant has set one.
+        The localized title is only a fallback. Keep the brand spelling protected.
+      endcomment
+      assign besjaar_ui_browser_title = page_title | default: besjaar_ui_localized_browser_title | strip | default: 'Besjaar'
+      if request.page_type == 'index'
+        assign besjaar_ui_browser_title = 'besjaar_ui.shower_store.meta.title' | t
+      endif
+      assign besjaar_ui_browser_title = besjaar_ui_browser_title | replace: 'Beshear', 'Besjaar' | replace: 'beshear', 'Besjaar' | replace: 'BESHEAR', 'BESJAAR'
+      assign besjaar_ui_browser_title_downcase = besjaar_ui_browser_title | downcase
+      assign besjaar_ui_is_brand_collection = false
+      if request.page_type == 'collection' and collection.handle == 'besjaar'
+        assign besjaar_ui_is_brand_collection = true
+        if page_title == blank or page_title == 'Besjaar'
+          assign besjaar_ui_browser_title = 'besjaar_ui.shower_store.catalog.collection_name' | t
+        endif
+      endif
+      assign besjaar_ui_browser_title_downcase = besjaar_ui_browser_title | downcase
+
+      assign besjaar_ui_meta_description = page_description | strip_html | strip
+      assign besjaar_ui_is_focus_collection = false
+      if request.page_type == 'collection'
+        if settings.shower_collection != blank and collection.id == settings.shower_collection.id
+          assign besjaar_ui_is_focus_collection = true
+        elsif collection.handle == 'badkamer-douche' or collection.handle == 'douchekoppen' or collection.handle == 'showerheads' or collection.handle == 'douche' or collection.handle == 'shower'
+          assign besjaar_ui_is_focus_collection = true
+        endif
+      endif
+      if request.page_type == 'index'
+        assign besjaar_ui_meta_description = 'besjaar_ui.shower_store.meta.description' | t
+      elsif besjaar_ui_meta_description == blank and besjaar_ui_is_focus_collection
+        assign besjaar_ui_meta_description = 'besjaar_ui.seo_keywords.collection_meta_description' | t
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'page' and page.handle == 'faq'
+        assign besjaar_ui_meta_description = 'besjaar_ui.seo_keywords.faq_meta_description' | t
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'page'
+        assign besjaar_ui_gem_lang = request.locale.iso_code | split: '-' | first | downcase
+        assign besjaar_ui_gem_page_handle = page.handle | downcase
+        if besjaar_ui_gem_page_handle == 'over-ons' or besjaar_ui_gem_page_handle == 'overons' or besjaar_ui_gem_page_handle == 'about-us' or besjaar_ui_gem_page_handle == 'about'
+          case besjaar_ui_gem_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Learn about Besjaar, our focused range of showerheads, shower filters and accessories, and how we support customers before and after purchase.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Erfahre mehr über Besjaar, unser fokussiertes Sortiment an Duschköpfen, Duschfiltern und Zubehör sowie unseren Kundenservice vor und nach dem Kauf.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Découvrez Besjaar, notre gamme ciblée de pommeaux, filtres de douche et accessoires, ainsi que notre accompagnement avant et après l’achat.'
+            else
+              assign besjaar_ui_meta_description = 'Ontdek Besjaar, ons gerichte assortiment douchekoppen, douchefilters en accessoires, en hoe we klanten vóór en na aankoop ondersteunen.'
+          endcase
+        elsif besjaar_ui_gem_page_handle == 'contact' or besjaar_ui_gem_page_handle == 'contact-us' or besjaar_ui_gem_page_handle == 'contacteer-ons' or besjaar_ui_gem_page_handle == 'klantenservice'
+          case besjaar_ui_gem_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Contact Besjaar for product advice, compatibility questions, orders, delivery, returns or support with your showerhead or shower filter.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Kontaktiere Besjaar bei Fragen zu Produkten, Kompatibilität, Bestellungen, Lieferung, Rückgabe oder Support zu Duschkopf und Duschfilter.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Contactez Besjaar pour des conseils produit, la compatibilité, les commandes, la livraison, les retours ou l’assistance.'
+            else
+              assign besjaar_ui_meta_description = 'Neem contact op met Besjaar voor productadvies, compatibiliteit, bestellingen, levering, retouren of support bij douchekoppen en douchefilters.'
+          endcase
+        elsif besjaar_ui_gem_page_handle == 'zakelijk' or besjaar_ui_gem_page_handle == 'business' or besjaar_ui_gem_page_handle == 'business-orders'
+          case besjaar_ui_gem_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Business orders from Besjaar: contact us about volume purchasing, professional use, product selection, delivery and account questions.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar für Geschäftskunden: Informationen zu größeren Bestellungen, professioneller Nutzung, Produktauswahl, Lieferung und Support.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Commandes professionnelles Besjaar : achats en volume, sélection de produits, livraison et accompagnement pour les entreprises.'
+            else
+              assign besjaar_ui_meta_description = 'Zakelijk bestellen bij Besjaar: neem contact op over grotere aantallen, professionele toepassingen, productkeuze, levering en support.'
+          endcase
+        endif
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'product' and product.description != blank
+        assign besjaar_ui_meta_description = product.description | strip_html | strip | truncate: 190
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'collection'
+        assign besjaar_ui_gem_collection_identity = collection.title | append: ' ' | append: collection.handle | downcase
+        if besjaar_ui_gem_collection_identity contains 'filter'
+          assign besjaar_ui_gem_lang = request.locale.iso_code | split: '-' | first | downcase
+          case besjaar_ui_gem_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Shop Besjaar replacement shower filters and compatible filter accessories. Check product fit, replacement guidance and availability before ordering.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar Ersatz-Duschfilter und kompatibles Filterzubehör kaufen. Passform, Wechselhinweise und Verfügbarkeit vor der Bestellung prüfen.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Achetez les filtres de remplacement Besjaar et accessoires compatibles. Vérifiez la compatibilité, le remplacement et la disponibilité.'
+            else
+              assign besjaar_ui_meta_description = 'Shop Besjaar vervangingsfilters en compatibele filteraccessoires. Controleer pasvorm, vervangingsadvies en beschikbaarheid vóór bestellen.'
+          endcase
+        elsif collection.handle == 'all'
+          assign besjaar_ui_gem_lang = request.locale.iso_code | split: '-' | first | downcase
+          case besjaar_ui_gem_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Shop Besjaar showerheads, shower filters and compatible bathroom accessories. Compare models, spray modes, filter options and availability online.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar Duschköpfe, Duschfilter und passendes Badzubehör entdecken. Modelle, Strahlarten, Filteroptionen und Verfügbarkeit online vergleichen.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Découvrez les pommeaux, filtres de douche et accessoires Besjaar. Comparez les modèles, jets, options de filtre et disponibilités en ligne.'
+            else
+              assign besjaar_ui_meta_description = 'Shop Besjaar douchekoppen, douchefilters en passende badkameraccessoires. Vergelijk modellen, straalstanden, filteropties en beschikbaarheid online.'
+          endcase
+        elsif collection.description != blank
+          assign besjaar_ui_meta_description = collection.description | strip_html | strip | truncate: 155
+        else
+          assign besjaar_ui_gem_lang = request.locale.iso_code | split: '-' | first | downcase
+          capture besjaar_ui_gem_collection_fallback
+            case besjaar_ui_gem_lang
+              when 'en'
+                echo 'Shop ' | append: collection.title | append: ' from Besjaar. Compare product features, compatibility, pricing and availability before ordering online.'
+              when 'de'
+                echo collection.title | append: ' von Besjaar entdecken. Produkteigenschaften, Kompatibilität, Preise und Verfügbarkeit vor der Bestellung vergleichen.'
+              when 'fr'
+                echo 'Découvrez ' | append: collection.title | append: ' chez Besjaar. Comparez les caractéristiques, la compatibilité, les prix et les disponibilités avant de commander.'
+              else
+                echo 'Shop ' | append: collection.title | append: ' van Besjaar. Vergelijk productkenmerken, compatibiliteit, prijzen en beschikbaarheid vóór je online bestelt.'
+            endcase
+          endcapture
+          assign besjaar_ui_meta_description = besjaar_ui_gem_collection_fallback | strip | truncate: 155
+        endif
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'page' and page.content != blank
+        assign besjaar_ui_meta_description = page.content | strip_html | strip | truncate: 190
+      elsif besjaar_ui_meta_description == blank and shop.description != blank
+        assign besjaar_ui_meta_description = shop.description | strip_html | strip | truncate: 190
+      endif
+    %}
+    {%- comment -%}
+      Besjaar 11.6.24: Bing flags very short utility/content page titles such as
+      "Over Besjaar" / "About Besjaar". Keep the short labels in navigation,
+      but use a richer SERP/browser title for key indexable pages. A merchant
+      custom Search engine listing title still wins.
+    {%- endcomment -%}
+    {% if request.page_type == 'page' %}
+      {% assign besjaar_ui_use_priority_page_seo_title = false %}
+      {% if page_title == blank or page_title == page.title %}
+        {% assign besjaar_ui_use_priority_page_seo_title = true %}
+      {% endif %}
+      {% if besjaar_ui_use_priority_page_seo_title %}
+        {% capture besjaar_ui_priority_page_seo_title %}{% render 'besjaar-priority-page-seo-title', page: page %}{% endcapture %}
+        {% assign besjaar_ui_priority_page_seo_title = besjaar_ui_priority_page_seo_title | strip %}
+        {% if besjaar_ui_priority_page_seo_title != blank %}
+          {% assign besjaar_ui_browser_title = besjaar_ui_priority_page_seo_title %}
+          {% assign besjaar_ui_browser_title_downcase = besjaar_ui_browser_title | downcase %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    <title translate="no">
+      {% if request.page_type == 'index' %}{{ 'besjaar_ui.shower_store.meta.title' | t }}{% else %}{{ besjaar_ui_browser_title }}{% if current_tags %} – {{ current_tags | join: ', ' }}{% endif %}{% if current_page != 1 %} – {{ 'besjaar_ui.page.page_number' | t: number: current_page }}{% endif %}{% unless besjaar_ui_browser_title_downcase contains 'besjaar' %} – Besjaar{% endunless %}{% endif %}
+    </title>
+    <meta name="application-name" content="Besjaar">
+
+    {% if besjaar_ui_meta_description != blank %}<meta name="description" content="{{ besjaar_ui_meta_description | escape }}">{% endif %}
+    {% render 'meta-tags', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: besjaar_ui_meta_description %}
+    {% render 'structured-data' %}
+    {{ content_for_header }}
+
+    <style>
+      :root {
+        --besjaar-ui-bg: {{ settings.bg }};
+        --besjaar-ui-surface: {{ settings.surface }};
+        --besjaar-ui-text: {{ settings.text }};
+        --besjaar-ui-muted: {{ settings.muted }};
+        --besjaar-ui-accent: {{ settings.accent }};
+        --besjaar-ui-accent-2: {{ settings.accent_2 }};
+        --besjaar-ui-accent-warm: {{ settings.accent_warm }};
+        --besjaar-ui-width: {{ settings.page_width }}px;
+        --besjaar-ui-radius: {{ settings.card_radius }}px;
+      }
+    </style>
+    <style id="besjaar-ui-critical-css">
+      html,body{margin:0;padding:0}body{background:var(--besjaar-ui-bg,#F7F6F1);color:var(--besjaar-ui-text,#18231C);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}img{max-width:100%;height:auto;display:block}*,*:before,*:after{box-sizing:border-box}.besjaar-ui-shell{width:min(calc(100% - 32px),var(--besjaar-ui-width,1360px));margin-inline:auto}.besjaar-ui-header{position:sticky;top:0;z-index:100}.besjaar-ui-hero__grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);align-items:center;gap:48px}.besjaar-ui-button{display:inline-flex;align-items:center;justify-content:center}.besjaar-ui-grid{display:grid;gap:18px}@media(max-width:900px){.besjaar-ui-hero__grid{grid-template-columns:1fr}}@media(max-width:700px){.besjaar-ui-shell{width:min(calc(100% - 24px),var(--besjaar-ui-width,1360px))}}
+    </style>
+    {{ 'besjaar-ui-core.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-ui-shell.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'index' or request.page_type == 'product' %}
+      {{ 'besjaar-store-home.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {%- comment -%}Cart drawer is global, so its styles must be global too.{%- endcomment -%}
+    {{ 'besjaar-ui-cart.css' | asset_url | stylesheet_tag }}
+    {% case request.page_type %}
+      {% when 'index' %}
+        {{ 'besjaar-ui-home.css' | asset_url | stylesheet_tag }}
+        {{ 'besjaar-premium-home.css' | asset_url | stylesheet_tag }}
+      {% when 'product' %}
+        {{ 'besjaar-ui-product-page.css' | asset_url | stylesheet_tag }}
+        {% if settings.enable_shower_bundle %}{{ 'besjaar-ui-bundle.css' | asset_url | stylesheet_tag }}{% endif %}
+        {% if settings.enable_smart_recommendations %}{{ 'besjaar-ui-recommendations.css' | asset_url | stylesheet_tag }}{% endif %}
+      {% when 'collection', 'search', 'list-collections' %}
+        {{ 'besjaar-ui-catalog.css' | asset_url | stylesheet_tag }}
+      {% when 'cart' %}
+        {% if settings.show_cart_addons %}{{ 'besjaar-ui-bundle.css' | asset_url | stylesheet_tag }}{% endif %}
+        {% if settings.enable_smart_recommendations %}{{ 'besjaar-ui-recommendations.css' | asset_url | stylesheet_tag }}{% endif %}
+      {% when 'page', 'blog', 'article', '404' %}
+        {{ 'besjaar-ui-pages.css' | asset_url | stylesheet_tag }}
+    {% endcase %}
+    {% if request.page_type contains 'customers' or template.name contains 'customers' %}
+      {{ 'besjaar-ui-account.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {% if request.path contains '/apps/parcelpanel' and request.page_type != 'page' and request.page_type != 'blog' and request.page_type != 'article' and request.page_type != '404' %}
+      {{ 'besjaar-ui-pages.css' | asset_url | stylesheet_tag }}
+    {% endif %}
+    {{ 'besjaar-ui-polish.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-ui-accessibility.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-editorial-base.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-polish-layer.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-foundation-v1.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'index' %}{{ 'besjaar-home-step2.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'index' %}{{ 'besjaar-mobile-feature-cards.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'product' %}{{ 'besjaar-ui-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endif %}
+    {% if request.page_type == 'product' %}{{ 'besjaar-product-step4.css' | asset_url | stylesheet_tag }}{% endif %}
+    {{ 'besjaar-commerce-step5.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-final-step6.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-mobile-corrections.css' | asset_url | stylesheet_tag }}
+    {% if request.page_type == 'product' %}{{ 'besjaar-mobile-detail-clarity.css' | asset_url | stylesheet_tag }}{% endif %}
+    {{ 'besjaar-cart-polish-1140.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-premium-lux.css' | asset_url | stylesheet_tag }}
+    {{ 'besjaar-1150.css' | asset_url | stylesheet_tag }}
+    {% unless request.visual_preview_mode %}
+    {% liquid
+      capture besjaar_ui_js_shop_url_capture
+        render 'shower-store-url'
+      endcapture
+      assign besjaar_ui_js_shop_url = besjaar_ui_js_shop_url_capture | strip
+
+      assign besjaar_ui_search_collection = settings.shower_collection
+      if besjaar_ui_search_collection == blank
+        assign besjaar_ui_search_collection = collections['badkamer-douche']
+      endif
+      if besjaar_ui_search_collection == blank
+        assign besjaar_ui_search_collection = collections['douchekoppen']
+      endif
+      if besjaar_ui_search_collection == blank
+        assign besjaar_ui_search_collection = collections['showerheads']
+      endif
+      if besjaar_ui_search_collection == blank
+        assign besjaar_ui_search_collection = collections['douche']
+      endif
+      if besjaar_ui_search_collection == blank
+        assign besjaar_ui_search_collection = collections['shower']
+      endif
+
+      comment
+        Featured shower model selectors are presentation controls only. They must
+        never become a hard catalogue whitelist, so future shower products remain
+        purchasable and discoverable without a theme update.
+      endcomment
+      assign besjaar_ui_focus_locked = false
+
+      capture besjaar_ui_focus_product_ids
+        echo '['
+        assign besjaar_ui_focus_first = true
+        if settings.shower_model_1 != blank
+          echo settings.shower_model_1.id | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_2 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_2.id | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_3 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_3.id | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_4 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_4.id | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_5 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_5.id | json
+        endif
+        echo ']'
+      endcapture
+
+      capture besjaar_ui_search_product_ids
+        echo '['
+        assign besjaar_ui_search_first = true
+        if besjaar_ui_search_collection != blank
+          for besjaar_ui_search_product in besjaar_ui_search_collection.products limit: 50
+            unless besjaar_ui_search_first
+              echo ','
+            endunless
+            echo besjaar_ui_search_product.id | json
+            assign besjaar_ui_search_first = false
+          endfor
+        endif
+        if settings.bundle_accessory_1 != blank
+          unless besjaar_ui_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_1.id | json
+          assign besjaar_ui_search_first = false
+        endif
+        if settings.bundle_accessory_2 != blank
+          unless besjaar_ui_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_2.id | json
+          assign besjaar_ui_search_first = false
+        endif
+        if settings.bundle_accessory_3 != blank
+          unless besjaar_ui_search_first
+            echo ','
+          endunless
+          echo settings.bundle_accessory_3.id | json
+          assign besjaar_ui_search_first = false
+        endif
+        echo ']'
+      endcapture
+
+      capture besjaar_ui_focus_handles
+        echo '['
+        assign besjaar_ui_focus_first = true
+        if settings.shower_model_1 != blank
+          echo settings.shower_model_1.handle | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_2 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_2.handle | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_3 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_3.handle | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_4 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_4.handle | json
+          assign besjaar_ui_focus_first = false
+        endif
+        if settings.shower_model_5 != blank
+          unless besjaar_ui_focus_first
+            echo ','
+          endunless
+          echo settings.shower_model_5.handle | json
+        endif
+        echo ']'
+      endcapture
+
+      assign besjaar_ui_runtime_contact_page = settings.contact_page
+      if besjaar_ui_runtime_contact_page == blank
+        assign besjaar_ui_runtime_contact_page = pages['contact']
+      endif
+      capture besjaar_ui_runtime_contact_url
+        if besjaar_ui_runtime_contact_page != blank
+          render 'localized-internal-url', url: besjaar_ui_runtime_contact_page.url
+        else
+          render 'localized-internal-url', url: '/pages/contact'
+        endif
+      endcapture
+      assign besjaar_ui_runtime_contact_url = besjaar_ui_runtime_contact_url | strip
+
+      assign besjaar_ui_runtime_faq_page = settings.faq_page
+      if besjaar_ui_runtime_faq_page == blank
+        assign besjaar_ui_runtime_faq_page = pages['veelgestelde-vragen']
+      endif
+      if besjaar_ui_runtime_faq_page == blank
+        assign besjaar_ui_runtime_faq_page = pages['faq']
+      endif
+      capture besjaar_ui_runtime_faq_url
+        if besjaar_ui_runtime_faq_page != blank
+          render 'localized-internal-url', url: besjaar_ui_runtime_faq_page.url
+        else
+          render 'localized-internal-url', url: '/pages/faq'
+        endif
+      endcapture
+      assign besjaar_ui_runtime_faq_url = besjaar_ui_runtime_faq_url | strip
+
+      assign besjaar_ui_runtime_tracking_page = settings.tracking_page
+      capture besjaar_ui_runtime_tracking_url
+        if besjaar_ui_runtime_tracking_page != blank
+          render 'localized-internal-url', url: besjaar_ui_runtime_tracking_page.url
+        else
+          render 'localized-internal-url', url: '/apps/parcelpanel'
+        endif
+      endcapture
+      assign besjaar_ui_runtime_tracking_url = besjaar_ui_runtime_tracking_url | strip
+    %}
+    <script>
+      window.BesjaarUIConfig = {
+        routes: {
+          root: {{ routes.root_url | json }},
+          search: {{ routes.search_url | json }},
+          predictiveSearch: {{ routes.predictive_search_url | json }},
+          cart: {{ routes.cart_url | json }},
+          cartJson: {{ routes.cart_url | append: '.js' | json }},
+          cartAdd: {{ routes.cart_add_url | append: '.js' | json }},
+          cartChange: {{ routes.cart_change_url | append: '.js' | json }},
+          allProducts: {{ besjaar_ui_js_shop_url | json }},
+          contact: {{ besjaar_ui_runtime_contact_url | json }},
+          faq: {{ besjaar_ui_runtime_faq_url | json }},
+          tracking: {{ besjaar_ui_runtime_tracking_url | json }}
+        },
+        trackingCopy: {
+          kicker: {{ 'besjaar_ui.tracking_app.kicker' | t | json }},
+          title: {{ 'besjaar_ui.tracking_app.title' | t | json }},
+          body: {{ 'besjaar_ui.tracking_app.body' | t | json }},
+          order: {{ 'besjaar_ui.tracking_app.order' | t | json }},
+          tracking: {{ 'besjaar_ui.tracking_app.tracking' | t | json }},
+          support: {{ 'besjaar_ui.tracking_app.support' | t | json }},
+          supportBody: {{ 'besjaar_ui.tracking_app.support_body' | t | json }},
+          supportCta: {{ 'besjaar_ui.tracking_app.support_cta' | t | json }},
+          chip1: {{ 'besjaar_ui.tracking_app.chip1' | t | json }},
+          chip2: {{ 'besjaar_ui.tracking_app.chip2' | t | json }},
+          chip3: {{ 'besjaar_ui.tracking_app.chip3' | t | json }}
+        },
+        currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+        catalog: {
+          focusLocked: {{ besjaar_ui_focus_locked | json }},
+          focusProductIds: {{ besjaar_ui_focus_product_ids | strip }},
+          searchProductIds: {{ besjaar_ui_search_product_ids | strip }},
+          focusHandles: {{ besjaar_ui_focus_handles | strip }}
+        },
+        commerce: {
+          showFreeShippingBar: {{ settings.show_free_shipping_bar | json }},
+          freeShippingThresholdCents: {{ settings.free_shipping_threshold | times: 100 | json }},
+          showCartAddons: {{ settings.show_cart_addons | json }}
+        },
+        delivery: {
+          enabled: {{ settings.show_delivery_estimates | json }},
+          region: {% if settings.enable_markets_localization and localization.country != blank %}{{ localization.country.name | json }}{% else %}{{ settings.delivery_region_label | json }}{% endif %},
+          cutoffHour: {{ settings.order_cutoff_hour | json }},
+          processingDays: {{ settings.processing_business_days | json }},
+          transitMinDays: {{ settings.transit_min_business_days | json }},
+          transitMaxDays: {{ settings.transit_max_business_days | json }},
+          skipWeekends: {{ settings.skip_delivery_weekends | json }}
+        },
+        searchDiscovery: {
+          showRecent: {{ settings.show_recent_searches | json }},
+          recentLimit: {{ settings.recent_search_limit | json }},
+          showBrands: {{ settings.show_search_brands | json }},
+          showPopular: {{ settings.show_search_popular | json }},
+          popularTerms: {{ 'besjaar_ui.search.popular_terms' | t | json }}
+        },
+        mobile: {
+          fullscreenSearch: {{ settings.mobile_fullscreen_search | json }},
+          swipeGallery: {{ settings.mobile_swipe_gallery | json }},
+          filterSheet: {{ settings.mobile_filter_sheet | json }},
+          compactHeader: {{ settings.mobile_compact_header | json }}
+        },
+        markets: {
+          enabled: {{ settings.enable_markets_localization | json }},
+          country: {{ localization.country.iso_code | json }},
+          countryName: {{ localization.country.name | json }},
+          currency: {{ localization.country.currency.iso_code | json }},
+          language: {{ localization.language.iso_code | json }}
+        },
+        editor: {
+          designMode: {{ request.design_mode | json }}
+        },
+        design: {
+          polishedMotion: {{ settings.enable_polished_motion | json }},
+          sectionReveal: {{ settings.enable_section_reveal | json }},
+          cardLift: {{ settings.enable_card_lift | json }},
+          stickyDesktopBuybox: {{ settings.sticky_desktop_buybox | json }}
+        },
+        analytics: {
+          enabled: {{ settings.enable_measurement_layer | json }},
+          attribution: {{ settings.enable_campaign_attribution | json }},
+          debug: {{ settings.analytics_debug_mode | json }},
+          context: {
+            pageType: {{ request.page_type | json }},
+            locale: {{ request.locale.iso_code | json }},
+            currency: {{ cart.currency.iso_code | default: shop.currency | json }},
+            productId: {% if product %}{{ product.id | json }}{% else %}null{% endif %},
+            productHandle: {% if product %}{{ product.handle | json }}{% else %}null{% endif %},
+            productTitle: {% if product %}{{ product.title | json }}{% else %}null{% endif %},
+            variantId: {% if product %}{{ product.selected_or_first_available_variant.id | json }}{% else %}null{% endif %},
+            collectionHandle: {% if collection %}{{ collection.handle | json }}{% else %}null{% endif %},
+            searchTerms: {% if search %}{{ search.terms | json }}{% else %}null{% endif %},
+            cartItemCount: {{ cart.item_count | default: 0 | json }}
+          },
+          i18n: {
+            yes: {{ 'besjaar_ui.analytics.yes' | t | json }},
+            no: {{ 'besjaar_ui.analytics.no' | t | json }},
+            unknown: {{ 'besjaar_ui.analytics.unknown' | t | json }},
+            noCampaign: {{ 'besjaar_ui.analytics.no_campaign' | t | json }},
+            waiting: {{ 'besjaar_ui.analytics.debug_waiting' | t | json }},
+            save: {{ 'besjaar_ui.analytics.save' | t | json }},
+            saving: {{ 'besjaar_ui.analytics.saving' | t | json }},
+            saved: {{ 'besjaar_ui.analytics.saved' | t | json }},
+            unavailable: {{ 'besjaar_ui.analytics.unavailable' | t | json }},
+            ready: {{ 'besjaar_ui.analytics.ready' | t | json }},
+            unavailableShort: {{ 'besjaar_ui.analytics.unavailable_short' | t | json }}
+          }
+        },
+        i18n: {
+          cartLoading: {{ 'besjaar_ui.js.cart_loading' | t | json }},
+          cartEmpty: {{ 'besjaar_ui.js.cart_empty' | t | json }},
+          shopProducts: {{ 'besjaar_ui.js.shop_products' | t | json }},
+          remove: {{ 'besjaar_ui.js.remove' | t | json }},
+          regularPrice: {{ 'besjaar_ui.product.regular_price' | t | json }},
+          salePrice: {{ 'besjaar_ui.product.sale_price' | t | json }},
+          cartError: {{ 'besjaar_ui.js.cart_error' | t | json }},
+          cartUpdateError: {{ 'besjaar_ui.js.cart_update_error' | t | json }},
+          openCart: {{ 'besjaar_ui.js.open_cart' | t | json }},
+          adding: {{ 'besjaar_ui.js.adding' | t | json }},
+          added: {{ 'besjaar_ui.js.added' | t | json }},
+          wishlistRemoved: {{ 'besjaar_ui.js.wishlist_removed' | t | json }},
+          wishlistSaved: {{ 'besjaar_ui.js.wishlist_saved' | t | json }},
+          wishlistEmpty: {{ 'besjaar_ui.js.wishlist_empty' | t | json }},
+          discoverProducts: {{ 'besjaar_ui.js.discover_products' | t | json }},
+          decrease: {{ 'besjaar_ui.js.decrease' | t | json }},
+          increase: {{ 'besjaar_ui.js.increase' | t | json }},
+          freeShippingRemaining: {{ 'besjaar_ui.js.free_shipping_remaining' | t | json }},
+          freeShippingUnlocked: {{ 'besjaar_ui.js.free_shipping_unlocked' | t | json }},
+          cartSavings: {{ 'besjaar_ui.js.cart_savings' | t | json }},
+          completeOrder: {{ 'besjaar_ui.js.complete_order' | t | json }},
+          quickAdd: {{ 'besjaar_ui.js.quick_add' | t | json }},
+          cartRecommendationHeading: {{ 'besjaar_ui.intelligence.related_heading' | t | json }},
+          cartRecommendationCopy: {{ 'besjaar_ui.intelligence.related_copy' | t | json }},
+          cartAddonHeading: {{ 'besjaar_ui.cart.drawer_addon_heading' | t | json }},
+          cartAddonCopy: {{ 'besjaar_ui.cart.drawer_addon_copy' | t | json }},
+          moveToCart: {{ 'besjaar_ui.js.move_to_cart' | t | json }},
+          searchProducts: {{ 'besjaar_ui.js.search_products' | t | json }},
+          searchCollections: {{ 'besjaar_ui.js.search_collections' | t | json }},
+          searchSuggestions: {{ 'besjaar_ui.js.search_suggestions' | t | json }},
+          searchPages: {{ 'besjaar_ui.js.search_pages' | t | json }},
+          searchAll: {{ 'besjaar_ui.js.search_all' | t | json }},
+          searchNoResults: {{ 'besjaar_ui.js.search_no_results' | t | json }},
+          searchRecent: {{ 'besjaar_ui.js.search_recent' | t | json }},
+          searchPopular: {{ 'besjaar_ui.js.search_popular' | t | json }},
+          searchBrands: {{ 'besjaar_ui.js.search_brands' | t | json }},
+          searchSpecs: {{ 'besjaar_ui.js.search_specs' | t | json }},
+          searchClearRecent: {{ 'besjaar_ui.js.search_clear_recent' | t | json }},
+          searchAvailable: {{ 'besjaar_ui.js.search_available' | t | json }},
+          searchView: {{ 'besjaar_ui.js.search_view' | t | json }},
+          deliveryEstimateRange: {{ 'besjaar_ui.delivery.estimate_range' | t | json }},
+          shippingChecking: {{ 'besjaar_ui.delivery.checking_rates' | t | json }},
+          shippingError: {{ 'besjaar_ui.delivery.rates_error' | t | json }},
+          shippingEmpty: {{ 'besjaar_ui.delivery.rates_empty' | t | json }},
+          shippingRatesHeading: {{ 'besjaar_ui.delivery.rates_heading' | t | json }},
+          shippingRateDelivery: {{ 'besjaar_ui.delivery.rate_delivery' | t | json }},
+          campaignCopied: {{ 'besjaar_ui.campaign.copied' | t | json }},
+          campaignDays: {{ 'besjaar_ui.campaign.days' | t | json }},
+          campaignHours: {{ 'besjaar_ui.campaign.hours' | t | json }},
+          campaignMinutes: {{ 'besjaar_ui.campaign.minutes' | t | json }},
+          campaignExpired: {{ 'besjaar_ui.campaign.expired' | t | json }}
+        }
+      };
+    </script>
+      <script src="{{ 'besjaar-ui-core.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'besjaar-ui-accessibility.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'besjaar-premium-lux.js' | asset_url }}" defer="defer"></script>
+      <script src="{{ 'besjaar-1150.js' | asset_url }}" defer="defer"></script>
+      {% if request.page_type == 'product' %}<script src="{{ 'besjaar-ui-product.js' | asset_url }}" defer="defer"></script><script src="{{ 'besjaar-ui-gallery-fix.js' | asset_url }}" defer="defer"></script><script src="{{ 'besjaar-ui-360.js' | asset_url }}" defer="defer"></script>{% if settings.enable_shower_bundle %}<script src="{{ 'besjaar-ui-bundle.js' | asset_url }}" defer="defer"></script>{% endif %}{% elsif request.page_type == 'index' %}<script src="{{ 'besjaar-ui-360.js' | asset_url }}" defer="defer"></script><script src="{{ 'besjaar-premium-home.js' | asset_url }}" defer="defer"></script>{% elsif request.page_type == 'cart' %}{% if settings.show_cart_addons %}<script src="{{ 'besjaar-ui-bundle.js' | asset_url }}" defer="defer"></script>{% endif %}{% endif %}
+      {% if settings.enable_smart_recommendations %}{% if request.page_type == 'product' or request.page_type == 'cart' %}<script src="{{ 'besjaar-ui-recommendations.js' | asset_url }}" defer="defer"></script>{% endif %}{% endif %}
+      {% if request.page_type contains 'customers' or template.name contains 'customers' %}<script src="{{ 'besjaar-ui-account.js' | asset_url }}" defer="defer"></script>{% endif %}
+      {% if request.path contains '/apps/parcelpanel' %}<script src="{{ 'besjaar-ui-tracking.js' | asset_url }}" defer="defer"></script>{% endif %}
+      {% if settings.enable_measurement_layer %}{% unless request.design_mode %}<script src="{{ 'besjaar-ui-analytics.js' | asset_url }}" defer="defer"></script>{% endunless %}{% endif %}
+    {% endunless %}
+  </head>
+  <body class="besjaar-ui-polish-v34 besjaar-ui-spatial-v4 besjaar-ui-launch-v7{% if settings.show_mobile_bottom_nav %} besjaar-has-mobile-nav{% endif %}{% if request.design_mode or request.visual_preview_mode %} besjaar-ui-editor-safe{% endif %}" data-page-type="{{ request.page_type | escape }}">
+    <a class="besjaar-ui-skip" href="#MainContent">{{ 'besjaar_ui.accessibility.skip_to_content' | t }}</a>
+    <div style="display:none"> {% sections 'header-group' %} </div>
+    <main id="MainContent" role="main" tabindex="-1">
+      {{ content_for_layout }}
+      {% if request.page_type == 'index' %}{% render 'besjaar-official-line' %}{% endif %}
+    </main>
+    {% sections 'footer-group' %}
+    {% unless request.design_mode or request.visual_preview_mode %}
+      {% render 'besjaar-ui-privacy-center' %}
+      {% render 'besjaar-ui-measurement-debug' %}
+    {% endunless %}
+  {% if request.design_mode %}<script src="{{ 'besjaar-editor-preview.js' | asset_url }}" defer="defer"></script>{% endif %}
+    {% render 'besjaar-welcome-offer' %}
+  </body>
+</html>

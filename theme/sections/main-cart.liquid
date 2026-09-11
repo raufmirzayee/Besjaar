@@ -1,0 +1,67 @@
+{% liquid
+  assign threshold_cents = settings.free_shipping_threshold | times: 100
+  assign shipping_remaining = threshold_cents | minus: cart.total_price
+  if shipping_remaining < 0
+    assign shipping_remaining = 0
+  endif
+  assign shipping_percent = 100
+  assign shipping_remaining_money = shipping_remaining | money
+  assign threshold_money = threshold_cents | money_without_trailing_zeros
+  if threshold_cents > 0 and cart.total_price < threshold_cents
+    assign shipping_percent = cart.total_price | times: 100 | divided_by: threshold_cents
+  endif
+%}
+{% capture besjaar_ui_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+
+<section class="besjaar-ui-section besjaar-ui-cart-page">
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-page-head"><p class="besjaar-ui-kicker">{{ 'besjaar_ui.cart.items_kicker' | t: count: cart.item_count }}</p><h1 class="besjaar-ui-title">{{ 'besjaar_ui.cart.title' | t }}</h1></header>
+    {% if cart.item_count == 0 %}
+      <div class="besjaar-ui-empty"><p>{{ 'besjaar_ui.cart.empty' | t }}</p><a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.cart.shop_products' | t }}</a></div>
+    {% else %}
+      <form action="{{ routes.cart_url }}" method="post" class="besjaar-ui-cart" data-cart-page-form>
+        <div class="besjaar-ui-cart__items">
+          {% for item in cart.items %}
+            <div class="besjaar-ui-cart-item" data-cart-page-line data-cart-line-key="{{ item.key | escape }}">
+              {% if item.image %}<a class="besjaar-ui-cart-item__media" href="{% render 'localized-internal-url', url: item.url %}">{{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.product.title }}</a>{% endif %}
+              <div class="besjaar-ui-cart-item__info">
+                <h3><a href="{% render 'localized-internal-url', url: item.url %}">{% render 'localized-product-title', product: item.product %}</a></h3>
+                {% unless item.variant.title == 'Default Title' %}<p class="besjaar-ui-copy">{{ item.variant.title }}</p>{% endunless %}
+                {% if item.selling_plan_allocation %}<p class="besjaar-ui-selling-plan-line">{{ item.selling_plan_allocation.selling_plan.name | escape }}</p>{% endif %}
+                {% for property in item.properties %}
+                  {% assign property_first = property.first | slice: 0 %}
+                  {% unless property.last == blank or property_first == '_' %}
+                    <p class="besjaar-ui-line-property"><span>{{ property.first | escape }}:</span> {% if property.last contains '/uploads/' %}<a href="{{ property.last | escape }}" target="_blank" rel="noopener">{{ property.last | split: '/' | last | escape }}<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>{% else %}{{ property.last | escape }}{% endif %}</p>
+                  {% endunless %}
+                {% endfor %}
+                <a class="besjaar-ui-mini-link" href="{% render 'localized-internal-url', url: item.url_to_remove %}" data-cart-page-remove>{{ 'besjaar_ui.cart.remove' | t }}</a>
+              </div>
+              <div class="besjaar-ui-cart-item__commerce"><div class="besjaar-ui-line-quantity"><button type="button" data-cart-page-minus aria-label="{{ 'besjaar_ui.js.decrease' | t | escape }}">−</button><input class="besjaar-ui-input" type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" enterkeyhint="done" aria-label="{{ 'besjaar_ui.product.quantity' | t | escape }}" data-cart-page-quantity><button type="button" data-cart-page-plus aria-label="{{ 'besjaar_ui.js.increase' | t | escape }}">+</button></div><div><div class="besjaar-ui-price" data-cart-page-line-price>{{ item.final_line_price | money }}</div>{% if item.unit_price_measurement %}<small class="besjaar-ui-unit-price">{{ item.unit_price | money | unit_price_with_measurement: item.unit_price_measurement }}</small>{% endif %}</div></div>
+            </div>
+          {% endfor %}
+          <button class="besjaar-ui-button besjaar-ui-button--ghost besjaar-ui-cart__update-fallback" type="submit" name="update">{{ 'besjaar_ui.cart.update' | t }}</button><p class="besjaar-ui-cart-page__status" data-cart-page-status role="status" aria-live="polite" aria-atomic="true"></p>
+        </div>
+        <aside class="besjaar-ui-cart__summary">
+          <p class="besjaar-ui-kicker">{{ 'besjaar_ui.cart.summary' | t }}</p>
+          {% if settings.show_free_shipping_bar and threshold_cents > 0 %}<div class="besjaar-ui-free-shipping besjaar-ui-free-shipping--page" data-cart-page-free-shipping aria-label="{{ 'besjaar_ui.cart.free_shipping_progress' | t | escape }}"><div class="besjaar-ui-free-shipping__row"><span data-cart-page-free-shipping-text>{% if shipping_remaining > 0 %}{{ 'besjaar_ui.cart.free_shipping_remaining' | t: amount: shipping_remaining_money }}{% else %}{{ 'besjaar_ui.cart.free_shipping_unlocked' | t }}{% endif %}</span><strong>{{ threshold_money }}</strong></div><div class="besjaar-ui-free-shipping__track" data-cart-page-free-shipping-track role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ shipping_percent }}"><i data-cart-page-free-shipping-progress style="width:{{ shipping_percent }}%"></i></div><small class="besjaar-ui-free-shipping__checkout-note">{{ 'besjaar_ui.cart.shipping_checkout_note' | t }}</small></div>{% endif %}
+          <div class="besjaar-ui-cart-savings" data-cart-page-savings{% unless cart.total_discount > 0 %} hidden{% endunless %}><span>{{ 'besjaar_ui.cart.savings' | t }}</span><strong data-cart-page-savings-amount>{% if cart.total_discount > 0 %}−{{ cart.total_discount | money }}{% endif %}</strong></div>
+          <div class="besjaar-ui-cart__total"><span>{{ 'besjaar_ui.cart.total' | t }}</span><span data-cart-page-total>{{ cart.total_price | money }}</span></div><p class="besjaar-ui-copy">{{ 'besjaar_ui.cart.taxes_shipping' | t }}</p>
+          {% render 'delivery-promise', context: 'cart' %}
+          {% if settings.show_account_cart_prompt and shop.customer_accounts_enabled %}
+            <div class="besjaar-ui-cart-account besjaar-ui-cart-account--page">
+              {% if customer %}
+                <div><span class="besjaar-ui-cart-account__icon">✓</span><p><strong>{{ 'besjaar_ui.account.cart_signed_in' | t }}</strong><small>{{ customer.email | escape }}</small></p></div>
+                <a href="{{ routes.account_url }}">{{ 'besjaar_ui.header.my_account' | t }} →</a>
+              {% else %}
+                <div><span class="besjaar-ui-cart-account__icon">○</span><p><strong>{{ 'besjaar_ui.account.cart_account_title' | t }}</strong><small>{{ 'besjaar_ui.account.cart_account_copy' | t }}</small></p></div>
+                <a href="{{ routes.account_login_url }}" rel="nofollow">{{ 'besjaar_ui.header.sign_in' | t }} →</a>
+              {% endif %}
+            </div>
+          {% endif %}
+          <button class="besjaar-ui-button besjaar-ui-button--primary" style="width:100%" type="submit" name="checkout" value="Checkout" data-cart-page-checkout>{{ 'besjaar_ui.cart.checkout' | t }}</button>
+        </aside>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% schema %}{"name":"Main cart","settings":[]}{% endschema %}
