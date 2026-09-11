@@ -17,6 +17,7 @@
  *   EMAIL_REPLY_TO   optional, defaults to the store's customer service address
  */
 
+import { safeExternalUrl } from "./safe-url";
 import { storeConfig } from "./store-config";
 
 export type EmailTemplate =
@@ -182,11 +183,14 @@ export function renderEmail(
       };
 
     case "order_shipped": {
+      // `esc` deals with the quotes that would break out of the attribute, but
+      // `javascript:` survives it intact and stays clickable.
+      const trackingUrl = safeExternalUrl(data.trackingUrl);
       const tracking = data.trackingCode
         ? `<p style="margin:0 0 16px;padding:12px;background:#EDF6FA;border-radius:8px;font-size:14px;">
              ${data.carrier ? `${esc(data.carrier)} · ` : ""}Track &amp; trace:
              <strong>${esc(data.trackingCode)}</strong>
-             ${data.trackingUrl ? `<br><a href="${esc(data.trackingUrl)}" style="color:#24547C;">Volg je pakket</a>` : ""}
+             ${trackingUrl ? `<br><a href="${esc(trackingUrl)}" style="color:#24547C;">Volg je pakket</a>` : ""}
            </p>`
         : "";
       return {

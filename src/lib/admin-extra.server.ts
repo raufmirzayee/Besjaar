@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { likePattern, quoteFilterValue } from "./postgrest-filter";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
@@ -106,6 +107,8 @@ export async function archiveCategory(supabase: Client, id: string) {
   const { count, error: countError } = await supabase
     .from("products")
     .select("id", { count: "exact", head: true })
+    // Safe as written only because `id` is a validated uuid and cannot carry a
+    // comma; anything user-typed here needs quoteFilterValue.
     .or(`category_id.eq.${id},subcategory_id.eq.${id}`)
     .neq("status", "archived");
   if (countError) throw new Error(countError.message);
@@ -483,7 +486,11 @@ export async function fetchCustomerDetail(
     supabase
       .from("orders")
       .select("id, order_number, status, payment_status, total, created_at")
-      .or(`user_id.eq.${customerId}${customer.email ? `,email.eq.${customer.email}` : ""}`)
+      // customerId is a validated uuid; the address is not this shop's text.
+      .or(
+        `user_id.eq.${customerId}` +
+          (customer.email ? `,email.eq.${quoteFilterValue(customer.email)}` : ""),
+      )
       .order("created_at", { ascending: false }),
     supabase
       .from("returns")
@@ -540,7 +547,7 @@ export async function fetchAuditLogs(
 
   if (filters.module && filters.module !== "alle") query = query.eq("module", filters.module);
   if (filters.search?.trim()) {
-    const like = `%${filters.search.trim()}%`;
+    const like = likePattern(filters.search);
     query = query.or(`user_email.ilike.${like},action.ilike.${like},entity_id.ilike.${like}`);
   }
 

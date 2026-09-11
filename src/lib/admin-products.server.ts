@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { ImportRow, ImportRowError } from "./product-import";
+import { likePattern } from "./postgrest-filter";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
@@ -102,7 +103,7 @@ export async function fetchProductsAdmin(
 
   const term = filters.search?.trim();
   if (term) {
-    const like = `%${term}%`;
+    const like = likePattern(term);
     query = query.or(
       `name.ilike.${like},internal_sku.ilike.${like},ean.ilike.${like},slug.ilike.${like}`,
     );

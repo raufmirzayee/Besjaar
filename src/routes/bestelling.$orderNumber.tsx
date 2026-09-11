@@ -10,6 +10,7 @@ import { CARRIER_LABELS } from "@/lib/fulfilment";
 import { getOrderByNumber } from "@/lib/checkout.functions";
 import { formatPrice } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
+import { safeExternalUrl } from "@/lib/safe-url";
 import type { TranslationKey } from "@/lib/translations";
 
 export const Route = createFileRoute("/bestelling/$orderNumber")({
@@ -65,6 +66,9 @@ function OrderPage() {
   }
 
   const address = data.shipping_address;
+  // Filled by a warehouse colleague or by a channel import, so it is checked
+  // before it becomes a link the customer is invited to click.
+  const trackingUrl = safeExternalUrl(data.tracking_url);
 
   return (
     <div className="container-page py-10">
@@ -95,9 +99,9 @@ function OrderPage() {
                   {data.carrier ? `${carrierLabel(data.carrier)} · ` : ""}
                   <span className="font-medium text-foreground">{data.tracking_code}</span>
                 </p>
-                {data.tracking_url ? (
+                {trackingUrl ? (
                   <a
-                    href={data.tracking_url}
+                    href={trackingUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-2 inline-block text-sm text-primary underline underline-offset-4 hover:text-primary-hover"

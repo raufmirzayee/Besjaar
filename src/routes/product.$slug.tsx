@@ -25,6 +25,7 @@ import { localize } from "@/lib/content-i18n";
 import { useI18n } from "@/lib/i18n";
 import { discountOf, effectivePriceOf, isOnSale } from "@/lib/product-filters";
 import { useRecentlyViewed } from "@/lib/recently-viewed";
+import { safeExternalUrl } from "@/lib/safe-url";
 import { absoluteUrl, breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
 import { storeConfig } from "@/lib/store-config";
 import { cn } from "@/lib/utils";
@@ -148,6 +149,10 @@ function ProductPage() {
   }, [product, record]);
 
   if (!product) return null;
+
+  // The supplier feed fills source_url, so it is somebody else's text in an
+  // href. React escapes the text it renders but not the addresses it links to.
+  const sourceUrl = safeExternalUrl(product.source_url);
 
   const name = localize(product, "name", locale);
   const brand = localize(
@@ -484,9 +489,9 @@ function ProductPage() {
                     {product.full_description}
                   </p>
                   <p className="mt-2 text-xs text-muted-foreground">{t("pdp.fullTitleNote")}</p>
-                  {product.source_url ? (
+                  {sourceUrl ? (
                     <a
-                      href={product.source_url}
+                      href={sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
                       className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"

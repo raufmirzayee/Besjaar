@@ -4,6 +4,7 @@ import { assertStaffMfa, type AuthContext } from "./admin.server";
 import { can } from "./admin-access";
 import type { AdminAccess, AdminAction, AdminModule, PermissionKey } from "./admin-access";
 import type { AppRole } from "./admin.server";
+import { likePattern } from "./postgrest-filter";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
@@ -268,7 +269,10 @@ export async function globalSearch(
 ): Promise<GlobalSearchResult[]> {
   const q = term.trim();
   if (q.length < 2) return [];
-  const like = `%${q}%`;
+  // Quoted, not interpolated: `.or()` takes PostgREST's filter grammar, where a
+  // comma in the search term would otherwise add a condition of the caller's
+  // choosing. See postgrest-filter.ts.
+  const like = likePattern(q);
 
   const may = (module: AdminModule) => can(access, module, "view");
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { safeImageUrl } from "@/lib/safe-url";
 import { cn } from "@/lib/utils";
 
 /**
@@ -30,7 +31,15 @@ export function ProductImage({
 }) {
   const [failed, setFailed] = useState(false);
 
-  if (!src || failed) {
+  // Image addresses arrive with the catalogue, from a supplier feed or a
+  // channel import. An `<img>` will not run `javascript:`, but anything that is
+  // not a plain http(s) or same-site address did not come from where it was
+  // meant to, and the placeholder is a better answer than loading it. Every
+  // image on the storefront and in the admin renders through this component,
+  // so this is the one place the rule has to live.
+  const source = safeImageUrl(src);
+
+  if (!source || failed) {
     return (
       <div
         className={cn(
@@ -56,7 +65,7 @@ export function ProductImage({
 
   return (
     <img
-      src={src}
+      src={source}
       alt={alt}
       width={width}
       height={height}
