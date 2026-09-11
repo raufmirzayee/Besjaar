@@ -186,6 +186,19 @@ SELECT pg_temp.must_not('customer_a', 'call check_rate_limit',
 SELECT pg_temp.must_not('customer_a', 'call apply_translations',
   $$SELECT public.apply_translations('product', (SELECT id FROM public.products LIMIT 1), '{}'::jsonb, '{}'::jsonb)$$);
 
+-- A customer cannot rename themselves into somebody else. `profiles.email` is
+-- a copy of the address auth actually verified, and the admin's customer page
+-- finds a customer's guest orders by matching on it — so a writable copy meant
+-- a colleague opening this customer's page saw the other customer's orders.
+SELECT pg_temp.must_not('customer_a', 'change their own e-mail address',
+  $$UPDATE public.profiles SET email='customer_b@test.invalid'
+    WHERE id = (SELECT id FROM who WHERE name='customer_a')$$);
+SELECT pg_temp.must_not('customer_a', 'flip their own is_active flag',
+  -- Useless as a control the shop applies *to* an account if the account can
+  -- set it back.
+  $$UPDATE public.profiles SET is_active=true
+    WHERE id = (SELECT id FROM who WHERE name='customer_a')$$);
+
 -- What they legitimately can do, so this file cannot pass by breaking the shop.
 SELECT pg_temp.must('customer_a', 'edit their own profile',
   $$UPDATE public.profiles SET first_name='Ana'

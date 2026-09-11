@@ -77,9 +77,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         if (error) throw new Error(error.message);
         if (data.session?.user) {
+          // `email` is deliberately absent. The database trigger already wrote
+          // it from the address Supabase verified, and the column is no longer
+          // writable from a browser — a profile address that its owner can
+          // change is one the rest of the shop cannot trust. The name fields
+          // are the customer's own to set.
           await supabase.from("profiles").upsert({
             id: data.session.user.id,
-            email,
             first_name: firstName,
             last_name: lastName,
           });
