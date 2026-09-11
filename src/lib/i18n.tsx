@@ -42,6 +42,40 @@ function storedLocale(): Locale | null {
   }
 }
 
+/**
+ * A translator for code that runs outside the provider.
+ *
+ * The root error boundary is the case this exists for: it replaces the
+ * component that renders `I18nProvider`, so `useI18n()` there would throw on
+ * top of the error it is trying to report. It reads the language off the
+ * document — the same value the server put in `<html lang>` — and falls back to
+ * Dutch when there is no document, which is the SSR path.
+ */
+export function translateOutsideProvider(key: TranslationKey, locale?: Locale): string {
+  let resolved: Locale = locale ?? SOURCE_LOCALE;
+  if (!locale && typeof document !== "undefined") {
+    // The same value the server put in <html lang>.
+    const lang = document.documentElement.lang;
+    if (isLocale(lang)) resolved = lang;
+  }
+  return translations[resolved][key] ?? translations[SOURCE_LOCALE][key] ?? key;
+}
+
+/**
+ * The locale the router was given, for code that has a router but no provider.
+ *
+ * During server rendering there is no `document` to read the language off, so
+ * `translateOutsideProvider` alone would answer in Dutch for everyone. The
+ * router context carries the locale the server detected — the same value the
+ * root route's `head()` uses — so an error page renders in the visitor's
+ * language on the first response rather than after hydration.
+ */
+export function localeFromRouterState(state: unknown): Locale | undefined {
+  const matches = (state as { matches?: { context?: { locale?: unknown } }[] })?.matches;
+  const locale = matches?.[0]?.context?.locale;
+  return isLocale(locale) ? locale : undefined;
+}
+
 type Vars = Record<string, string | number>;
 
 type I18nValue = {

@@ -54,22 +54,18 @@ function AboutPage() {
 
         <div className="mt-12 grid gap-10 lg:grid-cols-2">
           <section>
-            <h2 className="font-display text-2xl font-bold">Wat wij verkopen</h2>
+            <h2 className="font-display text-2xl font-bold">{t("about.sellTitle")}</h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">{t("about.sellBody")}</p>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              Besjaar richt zich op praktische producten die je dagelijks gebruikt: verlichting voor
-              onderweg en in de tuin, douchecomfort in de badkamer, en handige hulpjes voor keuken,
-              werkplek, auto en fiets. Wij kiezen liever een klein aantal doordachte producten dan
-              een eindeloos assortiment.
-            </p>
-            <p className="mt-3 leading-relaxed text-muted-foreground">
-              Het assortiment is verdeeld over {categories.length} categorieën en {brands.length}{" "}
-              merken. Elk product heeft een eigen productpagina met de specificaties zoals de
-              fabrikant die aanlevert.
+              {t("about.sellBody2", {
+                categories: categories.length,
+                brands: brands.length,
+              })}
             </p>
           </section>
 
           <section>
-            <h2 className="font-display text-2xl font-bold">Onze merken</h2>
+            <h2 className="font-display text-2xl font-bold">{t("about.brandsTitle")}</h2>
             <ul className="mt-3 space-y-4">
               {brands.map((brand) => (
                 <li key={brand.slug} className="rounded-xl border border-border bg-card p-5">
@@ -90,10 +86,9 @@ function AboutPage() {
         </div>
 
         <section className="mt-12 rounded-xl border border-border bg-surface p-6 md:p-8">
-          <h2 className="font-display text-2xl font-bold">Bedrijfsgegevens</h2>
+          <h2 className="font-display text-2xl font-bold">{t("about.companyTitle")}</h2>
           <p className="mt-3 max-w-2xl leading-relaxed text-muted-foreground">
-            Besjaar is een handelsnaam van {storeConfig.legalEntity}. Vragen over een bestelling,
-            een retour of een product? Neem gerust contact op — wij reageren op werkdagen.
+            {t("about.companyBody", { entity: storeConfig.legalEntity })}
           </p>
           {/* KvK, VAT and the registered address are deliberately absent: they
               must come from the business, not be invented here. See README. */}

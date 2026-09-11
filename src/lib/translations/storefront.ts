@@ -228,6 +228,62 @@ const nl = {
   "about.title": "Over Besjaar",
   "about.intro":
     "Besjaar is een Nederlandse webwinkel met een compact, zorgvuldig samengesteld assortiment praktische producten.",
+  "about.sellTitle": "Wat wij verkopen",
+  "about.sellBody":
+    "Besjaar richt zich op praktische producten die je dagelijks gebruikt: verlichting voor onderweg en in de tuin, douchecomfort in de badkamer, en handige hulpjes voor keuken, werkplek, auto en fiets. Wij kiezen liever een klein aantal doordachte producten dan een eindeloos assortiment.",
+  "about.sellBody2":
+    "Het assortiment is verdeeld over {categories} categorieën en {brands} merken. Elk product heeft een eigen productpagina met de specificaties zoals de fabrikant die aanlevert.",
+  "about.brandsTitle": "Onze merken",
+  "about.companyTitle": "Bedrijfsgegevens",
+  "about.companyBody":
+    "Besjaar is een handelsnaam van {entity}. Vragen over een bestelling, een retour of een product? Neem gerust contact op — wij reageren op werkdagen.",
+  "cookie.alwaysOn": "Altijd actief",
+  "cookie.adjustChoice": "Je keuze aanpassen",
+  "company.ownBrands": "Eigen merken: Besjaar, RYNEX en LYNEX",
+  "company.missingSuffix": "Vraag deze gegevens op via",
+  "withdrawal.eyebrow": "Herroepingsrecht",
+  "withdrawal.title": "Modelformulier voor herroeping",
+  "withdrawal.intro":
+    "Je hebt {days} dagen bedenktijd vanaf de dag waarop je de bestelling ontvangt. Je mag je aankoop in die periode zonder opgave van redenen herroepen. Dit formulier hoef je alleen te gebruiken als je dat wilt — een duidelijke mededeling per e-mail volstaat ook.",
+  "withdrawal.howTitle": "Hoe het werkt",
+  "withdrawal.step1":
+    "Laat ons binnen {days} dagen na ontvangst weten dat je herroept. Vul het formulier hieronder in, of mail ons in je eigen woorden.",
+  "withdrawal.step2":
+    "Stuur de producten daarna binnen 14 dagen terug. We laten je per e-mail weten naar welk adres, en wie de retourkosten draagt.",
+  "withdrawal.step3":
+    "We betalen binnen 14 dagen na je melding terug, met dezelfde betaalmethode. We mogen wachten tot we de producten terug hebben, of tot je hebt aangetoond dat je ze hebt verzonden.",
+  "withdrawal.portalPrefix": "Wil je liever een retour aanmelden in je account? Dat kan via",
+  "withdrawal.formTitle": "Het formulier",
+  "withdrawal.printPrefix": "Print deze pagina, of neem de tekst over in een e-mail aan",
+  "withdrawal.mailSubject": "Herroeping van mijn bestelling",
+  "withdrawal.onlyIf": "Alleen invullen en terugsturen als je de overeenkomst wilt herroepen",
+  "withdrawal.to": "Aan:",
+  "withdrawal.lineNotice":
+    "Ik/Wij (*) deel/delen (*) u hierbij mede dat ik/wij (*) onze overeenkomst betreffende de verkoop van de volgende goederen herroep/herroepen (*)",
+  "withdrawal.lineOrdered": "Besteld op (*) / Ontvangen op (*)",
+  "withdrawal.lineOrderNumber": "Bestelnummer",
+  "withdrawal.lineName": "Naam consument(en)",
+  "withdrawal.lineAddress": "Adres consument(en)",
+  "withdrawal.lineSignature":
+    "Handtekening consument(en) (alleen wanneer dit formulier op papier wordt ingediend)",
+  "withdrawal.lineDate": "Datum",
+  "withdrawal.deleteAsAppropriate": "(*) Doorhalen wat niet van toepassing is.",
+  "withdrawal.exceptionsTitle": "Uitzonderingen",
+  "withdrawal.exceptions1":
+    "Het herroepingsrecht geldt niet voor producten die om redenen van hygiëne of gezondheidsbescherming verzegeld zijn geleverd en waarvan de verzegeling na levering is verbroken. Denk aan neusstrips, pleisters en vergelijkbare persoonlijke verzorgingsproducten. Zolang de verzegeling intact is, kun je gewoon herroepen.",
+  "withdrawal.exceptions2":
+    "Je mag het product uitpakken en beoordelen zoals je in een winkel zou doen. Gebruik je het verder dan dat, dan kunnen we de waardevermindering in rekening brengen.",
+  "withdrawal.seeAlsoPrefix": "Zie ook onze",
+  "withdrawal.seeAlsoTerms": "algemene voorwaarden",
+  "withdrawal.seeAlsoShipping": "verzending & retour",
+  "withdrawal.and": "en",
+  "company.kvk": "KvK-nummer:",
+  "company.vat": "Btw-nummer:",
+  "company.email": "E-mail:",
+  "company.phone": "Telefoon:",
+  "company.incompletePrefix":
+    "Deze webshop is nog niet volledig geregistreerd op de site. Nog in te vullen:",
+  "pdp.metaFallback": "{name} van {brand}.",
 } as const;
 
 type Key = keyof typeof nl;
@@ -437,6 +493,62 @@ const en: Record<Key, string> = {
   "about.title": "About Besjaar",
   "about.intro":
     "Besjaar is a Dutch online shop with a compact, carefully curated range of practical products.",
+  "about.sellTitle": "What we sell",
+  "about.sellBody":
+    "Besjaar focuses on practical things you use every day: lighting for the road and the garden, shower comfort in the bathroom, and useful helpers for the kitchen, the workbench, the car and the bike. We would rather carry a small number of well-chosen products than an endless range.",
+  "about.sellBody2":
+    "The range is spread across {categories} categories and {brands} brands. Every product has its own page with the specifications exactly as the manufacturer supplies them.",
+  "about.brandsTitle": "Our brands",
+  "about.companyTitle": "Company details",
+  "about.companyBody":
+    "Besjaar is a trading name of {entity}. Questions about an order, a return or a product? Get in touch — we reply on working days.",
+  "cookie.alwaysOn": "Always on",
+  "cookie.adjustChoice": "Change your choice",
+  "company.ownBrands": "Own brands: Besjaar, RYNEX and LYNEX",
+  "company.missingSuffix": "Request these details from",
+  "withdrawal.eyebrow": "Right of withdrawal",
+  "withdrawal.title": "Model withdrawal form",
+  "withdrawal.intro":
+    "You have {days} days to change your mind, counting from the day you receive the order. Within that period you may withdraw from your purchase without giving a reason. Using this form is optional — a clear statement by email is equally valid.",
+  "withdrawal.howTitle": "How it works",
+  "withdrawal.step1":
+    "Tell us within {days} days of receiving the order that you are withdrawing. Fill in the form below, or email us in your own words.",
+  "withdrawal.step2":
+    "Then send the products back within 14 days. We will email you the address, and who pays the return costs.",
+  "withdrawal.step3":
+    "We refund within 14 days of your notice, using the same payment method. We may wait until we have the products back, or until you have shown that you sent them.",
+  "withdrawal.portalPrefix": "Would you rather register a return in your account? You can, through",
+  "withdrawal.formTitle": "The form",
+  "withdrawal.printPrefix": "Print this page, or copy the text into an email to",
+  "withdrawal.mailSubject": "Withdrawal from my order",
+  "withdrawal.onlyIf":
+    "Complete and return this form only if you wish to withdraw from the contract",
+  "withdrawal.to": "To:",
+  "withdrawal.lineNotice":
+    "I/We (*) hereby give notice that I/We (*) withdraw from my/our (*) contract of sale of the following goods (*)",
+  "withdrawal.lineOrdered": "Ordered on (*) / received on (*)",
+  "withdrawal.lineOrderNumber": "Order number",
+  "withdrawal.lineName": "Name of consumer(s)",
+  "withdrawal.lineAddress": "Address of consumer(s)",
+  "withdrawal.lineSignature": "Signature of consumer(s) (only if this form is notified on paper)",
+  "withdrawal.lineDate": "Date",
+  "withdrawal.deleteAsAppropriate": "(*) Delete as appropriate.",
+  "withdrawal.exceptionsTitle": "Exceptions",
+  "withdrawal.exceptions1":
+    "The right of withdrawal does not apply to goods delivered sealed for reasons of hygiene or health protection where the seal has been broken after delivery — nasal strips, plasters and comparable personal care products. While the seal is intact you can withdraw as normal.",
+  "withdrawal.exceptions2":
+    "You may unpack the product and handle it as you would in a shop. Use it beyond that and we may charge for the resulting loss in value.",
+  "withdrawal.seeAlsoPrefix": "See also our",
+  "withdrawal.seeAlsoTerms": "terms and conditions",
+  "withdrawal.seeAlsoShipping": "shipping & returns",
+  "withdrawal.and": "and",
+  "company.kvk": "Chamber of Commerce number:",
+  "company.vat": "VAT number:",
+  "company.email": "Email:",
+  "company.phone": "Phone:",
+  "company.incompletePrefix":
+    "This shop's registration details are not complete on the site yet. Still to fill in:",
+  "pdp.metaFallback": "{name} by {brand}.",
 };
 
 const de: Record<Key, string> = {
@@ -646,6 +758,63 @@ const de: Record<Key, string> = {
   "about.title": "Über Besjaar",
   "about.intro":
     "Besjaar ist ein niederländischer Onlineshop mit einem kompakten, sorgfältig zusammengestellten Sortiment praktischer Produkte.",
+  "about.sellTitle": "Was wir verkaufen",
+  "about.sellBody":
+    "Besjaar konzentriert sich auf praktische Dinge für den täglichen Gebrauch: Beleuchtung für unterwegs und im Garten, Duschkomfort im Bad und nützliche Helfer für Küche, Werkbank, Auto und Fahrrad. Lieber wenige durchdachte Produkte als ein endloses Sortiment.",
+  "about.sellBody2":
+    "Das Sortiment verteilt sich auf {categories} Kategorien und {brands} Marken. Jedes Produkt hat eine eigene Seite mit den Spezifikationen, wie der Hersteller sie liefert.",
+  "about.brandsTitle": "Unsere Marken",
+  "about.companyTitle": "Unternehmensangaben",
+  "about.companyBody":
+    "Besjaar ist ein Handelsname von {entity}. Fragen zu einer Bestellung, einer Rücksendung oder einem Produkt? Melden Sie sich — wir antworten an Werktagen.",
+  "cookie.alwaysOn": "Immer aktiv",
+  "cookie.adjustChoice": "Auswahl ändern",
+  "company.ownBrands": "Eigenmarken: Besjaar, RYNEX und LYNEX",
+  "company.missingSuffix": "Diese Angaben erhalten Sie über",
+  "withdrawal.eyebrow": "Widerrufsrecht",
+  "withdrawal.title": "Muster-Widerrufsformular",
+  "withdrawal.intro":
+    "Sie haben ab dem Tag des Erhalts der Bestellung {days} Tage Bedenkzeit. In diesem Zeitraum können Sie Ihren Kauf ohne Angabe von Gründen widerrufen. Dieses Formular zu verwenden ist freiwillig — eine eindeutige Erklärung per E-Mail genügt ebenso.",
+  "withdrawal.howTitle": "So funktioniert es",
+  "withdrawal.step1":
+    "Teilen Sie uns innerhalb von {days} Tagen nach Erhalt mit, dass Sie widerrufen. Füllen Sie das Formular unten aus oder schreiben Sie uns in eigenen Worten.",
+  "withdrawal.step2":
+    "Senden Sie die Produkte danach innerhalb von 14 Tagen zurück. Wir teilen Ihnen per E-Mail mit, an welche Adresse und wer die Rücksendekosten trägt.",
+  "withdrawal.step3":
+    "Wir erstatten innerhalb von 14 Tagen nach Ihrer Mitteilung über dasselbe Zahlungsmittel. Wir dürfen warten, bis wir die Produkte zurückhaben oder Sie den Versand nachgewiesen haben.",
+  "withdrawal.portalPrefix": "Möchten Sie eine Rücksendung lieber im Konto anmelden? Das geht über",
+  "withdrawal.formTitle": "Das Formular",
+  "withdrawal.printPrefix":
+    "Drucken Sie diese Seite aus oder übernehmen Sie den Text in eine E-Mail an",
+  "withdrawal.mailSubject": "Widerruf meiner Bestellung",
+  "withdrawal.onlyIf":
+    "Füllen Sie dieses Formular nur aus und senden Sie es zurück, wenn Sie den Vertrag widerrufen wollen",
+  "withdrawal.to": "An:",
+  "withdrawal.lineNotice":
+    "Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)",
+  "withdrawal.lineOrdered": "Bestellt am (*) / erhalten am (*)",
+  "withdrawal.lineOrderNumber": "Bestellnummer",
+  "withdrawal.lineName": "Name des/der Verbraucher(s)",
+  "withdrawal.lineAddress": "Anschrift des/der Verbraucher(s)",
+  "withdrawal.lineSignature": "Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)",
+  "withdrawal.lineDate": "Datum",
+  "withdrawal.deleteAsAppropriate": "(*) Unzutreffendes streichen.",
+  "withdrawal.exceptionsTitle": "Ausnahmen",
+  "withdrawal.exceptions1":
+    "Das Widerrufsrecht gilt nicht für Waren, die aus Gründen des Gesundheitsschutzes oder der Hygiene versiegelt geliefert wurden und deren Versiegelung nach der Lieferung entfernt wurde — etwa Nasenstrips, Pflaster und vergleichbare Körperpflegeprodukte. Solange die Versiegelung intakt ist, können Sie normal widerrufen.",
+  "withdrawal.exceptions2":
+    "Sie dürfen das Produkt auspacken und so prüfen, wie Sie es im Laden tun würden. Gehen Sie darüber hinaus, können wir den Wertverlust in Rechnung stellen.",
+  "withdrawal.seeAlsoPrefix": "Siehe auch unsere",
+  "withdrawal.seeAlsoTerms": "Allgemeinen Geschäftsbedingungen",
+  "withdrawal.seeAlsoShipping": "Versand & Rücksendung",
+  "withdrawal.and": "und",
+  "company.kvk": "Handelsregisternummer:",
+  "company.vat": "USt-IdNr.:",
+  "company.email": "E-Mail:",
+  "company.phone": "Telefon:",
+  "company.incompletePrefix":
+    "Die Registrierungsangaben dieses Shops sind auf der Website noch nicht vollständig. Es fehlen noch:",
+  "pdp.metaFallback": "{name} von {brand}.",
 };
 
 const fr: Record<Key, string> = {
@@ -853,6 +1022,64 @@ const fr: Record<Key, string> = {
   "about.title": "À propos de Besjaar",
   "about.intro":
     "Besjaar est une boutique en ligne néerlandaise proposant une gamme compacte et soigneusement sélectionnée de produits pratiques.",
+  "about.sellTitle": "Ce que nous vendons",
+  "about.sellBody":
+    "Besjaar se concentre sur les produits pratiques du quotidien : éclairage pour la route et le jardin, confort de douche dans la salle de bains, et accessoires utiles pour la cuisine, l'établi, la voiture et le vélo. Nous préférons un petit nombre de produits bien choisis à une gamme sans fin.",
+  "about.sellBody2":
+    "La gamme se répartit sur {categories} catégories et {brands} marques. Chaque produit a sa propre page avec les spécifications telles que le fabricant les fournit.",
+  "about.brandsTitle": "Nos marques",
+  "about.companyTitle": "Informations sur l'entreprise",
+  "about.companyBody":
+    "Besjaar est un nom commercial de {entity}. Une question sur une commande, un retour ou un produit ? Contactez-nous — nous répondons les jours ouvrés.",
+  "cookie.alwaysOn": "Toujours actif",
+  "cookie.adjustChoice": "Modifier votre choix",
+  "company.ownBrands": "Marques propres : Besjaar, RYNEX et LYNEX",
+  "company.missingSuffix": "Demandez ces informations à",
+  "withdrawal.eyebrow": "Droit de rétractation",
+  "withdrawal.title": "Formulaire type de rétractation",
+  "withdrawal.intro":
+    "Vous disposez de {days} jours de réflexion à compter du jour de réception de la commande. Pendant cette période, vous pouvez vous rétracter sans avoir à motiver votre décision. L'usage de ce formulaire est facultatif — une déclaration claire par e-mail suffit également.",
+  "withdrawal.howTitle": "Comment ça marche",
+  "withdrawal.step1":
+    "Informez-nous de votre rétractation dans les {days} jours suivant la réception. Remplissez le formulaire ci-dessous ou écrivez-nous avec vos propres mots.",
+  "withdrawal.step2":
+    "Renvoyez ensuite les produits dans un délai de 14 jours. Nous vous indiquerons par e-mail l'adresse et qui prend en charge les frais de retour.",
+  "withdrawal.step3":
+    "Nous remboursons dans les 14 jours suivant votre notification, par le même moyen de paiement. Nous pouvons attendre d'avoir reçu les produits ou la preuve de leur expédition.",
+  "withdrawal.portalPrefix":
+    "Vous préférez déclarer un retour depuis votre compte ? C'est possible via",
+  "withdrawal.formTitle": "Le formulaire",
+  "withdrawal.printPrefix": "Imprimez cette page ou recopiez le texte dans un e-mail à",
+  "withdrawal.mailSubject": "Rétractation de ma commande",
+  "withdrawal.onlyIf":
+    "Veuillez compléter et renvoyer le présent formulaire uniquement si vous souhaitez vous rétracter du contrat",
+  "withdrawal.to": "À l'attention de :",
+  "withdrawal.lineNotice":
+    "Je vous notifie/Nous vous notifions (*) par la présente ma/notre (*) rétractation du contrat portant sur la vente du bien ci-dessous (*)",
+  "withdrawal.lineOrdered": "Commandé le (*) / reçu le (*)",
+  "withdrawal.lineOrderNumber": "Numéro de commande",
+  "withdrawal.lineName": "Nom du (des) consommateur(s)",
+  "withdrawal.lineAddress": "Adresse du (des) consommateur(s)",
+  "withdrawal.lineSignature":
+    "Signature du (des) consommateur(s) (uniquement en cas de notification du présent formulaire sur papier)",
+  "withdrawal.lineDate": "Date",
+  "withdrawal.deleteAsAppropriate": "(*) Rayez la mention inutile.",
+  "withdrawal.exceptionsTitle": "Exceptions",
+  "withdrawal.exceptions1":
+    "Le droit de rétractation ne s'applique pas aux biens scellés pour des raisons d'hygiène ou de protection de la santé dont le scellé a été rompu après la livraison — bandelettes nasales, pansements et produits d'hygiène personnelle comparables. Tant que le scellé est intact, vous pouvez vous rétracter normalement.",
+  "withdrawal.exceptions2":
+    "Vous pouvez déballer le produit et l'examiner comme vous le feriez en magasin. Au-delà, nous pouvons facturer la dépréciation qui en résulte.",
+  "withdrawal.seeAlsoPrefix": "Voir aussi nos",
+  "withdrawal.seeAlsoTerms": "conditions générales",
+  "withdrawal.seeAlsoShipping": "expédition & retours",
+  "withdrawal.and": "et",
+  "company.kvk": "Numéro de chambre de commerce :",
+  "company.vat": "Numéro de TVA :",
+  "company.email": "E-mail :",
+  "company.phone": "Téléphone :",
+  "company.incompletePrefix":
+    "Les informations d'immatriculation de cette boutique ne sont pas encore complètes sur le site. Il reste à renseigner :",
+  "pdp.metaFallback": "{name} de {brand}.",
 };
 
 export const storefrontMessages: Record<Locale, Record<Key, string>> = { nl, en, de, fr };

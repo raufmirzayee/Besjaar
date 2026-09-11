@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
+import { useI18n } from "@/lib/i18n";
+
 import {
   companyAddressLines,
   hasCompanyIdentity,
@@ -18,13 +20,14 @@ import {
  * so in plain language.
  */
 export function CompanyDetails({ className = "" }: { className?: string }) {
+  const { t } = useI18n();
   const complete = hasCompanyIdentity();
   const missing = missingCompanyIdentity();
   const address = companyAddressLines();
 
   return (
     <div className={className}>
-      <p className="font-semibold text-foreground">Bedrijfsgegevens</p>
+      <p className="font-semibold text-foreground">{t("about.companyTitle")}</p>
 
       {address.length > 0 ? (
         <address className="mt-2 not-italic">
@@ -39,18 +42,18 @@ export function CompanyDetails({ className = "" }: { className?: string }) {
       <dl className="mt-2 space-y-1">
         {storeConfig.company.kvk ? (
           <div className="flex gap-2">
-            <dt>KvK-nummer:</dt>
+            <dt>{t("company.kvk")}</dt>
             <dd className="text-foreground">{storeConfig.company.kvk}</dd>
           </div>
         ) : null}
         {storeConfig.company.vat ? (
           <div className="flex gap-2">
-            <dt>Btw-nummer:</dt>
+            <dt>{t("company.vat")}</dt>
             <dd className="text-foreground">{storeConfig.company.vat}</dd>
           </div>
         ) : null}
         <div className="flex gap-2">
-          <dt>E-mail:</dt>
+          <dt>{t("company.email")}</dt>
           <dd>
             <a
               href={`mailto:${storeConfig.email}`}
@@ -62,18 +65,18 @@ export function CompanyDetails({ className = "" }: { className?: string }) {
         </div>
         {storeConfig.phone ? (
           <div className="flex gap-2">
-            <dt>Telefoon:</dt>
+            <dt>{t("company.phone")}</dt>
             <dd className="text-foreground">{storeConfig.phone}</dd>
           </div>
         ) : null}
       </dl>
 
-      <p className="mt-2">Eigen merken: Besjaar, RYNEX en LYNEX</p>
+      <p className="mt-2">{t("company.ownBrands")}</p>
 
       {!complete ? (
         <p className="mt-3 rounded-lg border border-sale/30 bg-sale/5 p-3 text-xs text-foreground">
-          Deze webshop is nog niet volledig geregistreerd op de site. Nog in te vullen:{" "}
-          {missing.map((field) => field.label).join(", ")}. Vraag deze gegevens op via{" "}
+          {t("company.incompletePrefix")} {missing.map((field) => field.label).join(", ")}.{" "}
+          {t("company.missingSuffix")}{" "}
           <a href={`mailto:${storeConfig.email}`} className="underline underline-offset-4">
             {storeConfig.email}
           </a>

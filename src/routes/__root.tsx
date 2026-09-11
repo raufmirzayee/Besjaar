@@ -29,11 +29,26 @@ import { getCategories } from "@/lib/catalog.functions";
 import { getInitialLocale } from "@/lib/i18n.functions";
 import { localeFromHead } from "@/lib/seo";
 import { pageSeo } from "@/lib/page-seo";
-import { I18nProvider } from "@/lib/i18n";
+import { I18nProvider, localeFromRouterState, translateOutsideProvider } from "@/lib/i18n";
 
+/**
+ * The root error boundary.
+ *
+ * Copy comes from `translateOutsideProvider`, not `useI18n`: this component
+ * replaces the one that renders `I18nProvider`, so the hook would throw on top
+ * of the error it is here to report. A French visitor reading a Dutch error
+ * page is a small failure next to that, but it is still a failure, and this
+ * costs nothing to get right.
+ */
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  // The router context carries the locale the server detected. Reading it here
+  // rather than off the document means the error page is already in the right
+  // language in the first response, not after hydration.
+  const locale = localeFromRouterState(router.state);
+  const tr = (key: Parameters<typeof translateOutsideProvider>[0]) =>
+    translateOutsideProvider(key, locale);
   useEffect(() => {
     reportClientError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
@@ -42,11 +57,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-[60vh] items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Deze pagina kon niet geladen worden
+          {tr("error.title")}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Er ging iets mis. Probeer het opnieuw of ga terug naar de homepage.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{tr("error.text")}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -55,13 +68,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Opnieuw proberen
+            {tr("error.retry")}
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Naar home
+            {tr("error.home")}
           </a>
         </div>
       </div>
@@ -175,7 +188,7 @@ function RootComponent() {
             <RecentlyViewedProvider>
               <CartProvider>
                 <a href="#hoofdinhoud" className="skip-link">
-                  Naar de inhoud
+                  {translateOutsideProvider("common.skipToContent", locale)}
                 </a>
                 {isAdminArea ? (
                   // The backoffice brings its own shell, and the staff sign-in

@@ -12,20 +12,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { sendContactMessage } from "@/lib/contact.functions";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/contact")({
   head: (ctx) => localisedSeo("contact", { path: "/contact", locale: localeFromHead(ctx) }),
   component: ContactPage,
 });
 
-const details = [
-  { icon: Mail, label: "E-mail", value: "klantenservice@besjaar.nl" },
-  { icon: Phone, label: "Telefoon", value: "+31 (0)85 000 0000" },
-  { icon: Clock, label: "Openingstijden", value: "Ma t/m vr 09:00 – 17:00" },
-  { icon: MapPin, label: "Magazijn", value: "Besjaar B.V., Nederland" },
-];
-
 function ContactPage() {
+  const { t } = useI18n();
+  // Built inside the component rather than at module scope: the labels, and
+  // the opening hours, read differently in each language.
+  const details = [
+    { icon: Mail, label: t("contact.labelEmail"), value: "klantenservice@besjaar.nl" },
+    { icon: Phone, label: t("contact.labelPhone"), value: "+31 (0)85 000 0000" },
+    { icon: Clock, label: t("contact.labelHours"), value: t("contact.valueHours") },
+    { icon: MapPin, label: t("contact.labelWarehouse"), value: t("contact.valueWarehouse") },
+  ];
   const send = useServerFn(sendContactMessage);
   const mountedAt = useRef(Date.now());
   const [form, setForm] = useState({
@@ -43,7 +46,7 @@ function ContactPage() {
     mutationFn: () => send({ data: { ...form, elapsedMs: Date.now() - mountedAt.current } }),
     onSuccess: () => {
       setSent(true);
-      toast.success("Bedankt! We reageren binnen 1 werkdag.");
+      toast.success(t("contact.success"));
       setForm({
         name: "",
         email: "",
@@ -63,16 +66,17 @@ function ContactPage() {
   return (
     <div className="container-page py-12">
       <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-primary">Contact</p>
-        <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">We helpen je graag</h1>
+        <p className="text-sm font-semibold uppercase tracking-wide text-primary">
+          {t("contact.eyebrow")}
+        </p>
+        <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">{t("contact.title")}</h1>
         <p className="mt-3 text-muted-foreground">
-          Houd je ordernummer bij de hand, dan kunnen we je het snelst helpen. Voor retouren gebruik
-          je het{" "}
+          {t("contact.introPrefix")}{" "}
           <Link
             to="/retouren"
             className="text-primary underline underline-offset-4 hover:text-primary-hover"
           >
-            retourportaal
+            {t("contact.introLink")}
           </Link>
           .
         </p>
@@ -90,10 +94,10 @@ function ContactPage() {
         </div>
 
         <section className="mt-10 rounded-xl border bg-card p-6">
-          <h2 className="font-display text-xl font-semibold">Stuur ons een bericht</h2>
+          <h2 className="font-display text-xl font-semibold">{t("contact.formTitle")}</h2>
           {sent ? (
             <p className="mt-3 rounded-lg bg-success/10 p-3 text-sm text-foreground">
-              Je bericht is ontvangen. Je krijgt antwoord op het opgegeven e-mailadres.
+              {t("contact.sentNotice")}
             </p>
           ) : null}
           <form
@@ -104,7 +108,7 @@ function ContactPage() {
             }}
           >
             <div className="grid gap-1.5">
-              <Label htmlFor="name">Naam *</Label>
+              <Label htmlFor="name">{t("contact.name")}</Label>
               <Input
                 id="name"
                 required
@@ -114,7 +118,7 @@ function ContactPage() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="email">E-mailadres *</Label>
+              <Label htmlFor="email">{t("contact.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -125,7 +129,7 @@ function ContactPage() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="phone">Telefoonnummer</Label>
+              <Label htmlFor="phone">{t("contact.phone")}</Label>
               <Input
                 id="phone"
                 maxLength={40}
@@ -134,7 +138,7 @@ function ContactPage() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label htmlFor="orderNumber">Ordernummer</Label>
+              <Label htmlFor="orderNumber">{t("contact.orderNumber")}</Label>
               <Input
                 id="orderNumber"
                 maxLength={40}
@@ -143,7 +147,7 @@ function ContactPage() {
               />
             </div>
             <div className="grid gap-1.5 sm:col-span-2">
-              <Label htmlFor="subject">Onderwerp *</Label>
+              <Label htmlFor="subject">{t("contact.subject")}</Label>
               <Input
                 id="subject"
                 required
@@ -153,7 +157,7 @@ function ContactPage() {
               />
             </div>
             <div className="grid gap-1.5 sm:col-span-2">
-              <Label htmlFor="message">Bericht *</Label>
+              <Label htmlFor="message">{t("contact.message")}</Label>
               <Textarea
                 id="message"
                 required
@@ -179,12 +183,12 @@ function ContactPage() {
 
             <div className="sm:col-span-2">
               <Button type="submit" size="lg" disabled={mutation.isPending}>
-                {mutation.isPending ? "Versturen…" : "Verstuur bericht"}
+                {mutation.isPending ? t("contact.sending") : t("contact.submit")}
               </Button>
               <p className="mt-2 text-xs text-muted-foreground">
-                We gebruiken je gegevens alleen om je vraag te beantwoorden. Zie onze{" "}
+                {t("contact.privacyPrefix")}
                 <Link to="/privacy" className="underline underline-offset-4">
-                  privacyverklaring
+                  {t("contact.privacyLink")}
                 </Link>
                 .
               </p>

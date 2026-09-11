@@ -5,19 +5,25 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ProductListing } from "@/components/product-listing";
 import { SiteSearch } from "@/components/site-search";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
-import { seo } from "@/lib/seo";
+import { localeFromHead, seo } from "@/lib/seo";
+import { pageSeo } from "@/lib/page-seo";
 import { useI18n } from "@/lib/i18n";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/zoeken")({
   validateSearch: (search: Record<string, unknown>): ListingSearch => parseListingSearch(search),
   loader: ({ context }) => context.queryClient.ensureQueryData(allProductsQuery),
-  head: ({ match }) => {
-    const query = (match.search as ListingSearch).q;
+  head: (ctx) => {
+    const locale = localeFromHead(ctx);
+    const query = (ctx.match.search as ListingSearch).q;
+    const copy = pageSeo("search", locale);
     return seo({
-      title: query ? `Zoekresultaten voor “${query}”` : "Zoeken",
-      description: "Zoek in het Besjaar assortiment op product, merk, categorie of artikelnummer.",
+      // The query itself is the visitor's own words; only the frame around it
+      // needs translating.
+      title: query ? `${copy.title}: “${query}”` : copy.title,
+      description: copy.description,
       path: "/zoeken",
+      locale,
       // Search result pages should not compete with the category pages.
       noindex: true,
     });

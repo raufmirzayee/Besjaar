@@ -25,8 +25,16 @@ import { localize } from "@/lib/content-i18n";
 import { useI18n } from "@/lib/i18n";
 import { discountOf, effectivePriceOf, isOnSale } from "@/lib/product-filters";
 import { useRecentlyViewed } from "@/lib/recently-viewed";
+import { translations } from "@/lib/translations";
 import { safeExternalUrl } from "@/lib/safe-url";
-import { absoluteUrl, breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
+import {
+  absoluteUrl,
+  breadcrumbSchema,
+  jsonLd,
+  localeFromHead,
+  localisedSeo,
+  seo,
+} from "@/lib/seo";
 import { storeConfig } from "@/lib/store-config";
 import { cn } from "@/lib/utils";
 import { allProductsQuery } from "@/routes/winkel";
@@ -59,18 +67,25 @@ export const Route = createFileRoute("/product/$slug")({
       inStock: product.stock_quantity > 0,
     };
   },
-  head: ({ loaderData }) => {
+  head: (ctx) => {
+    const { loaderData } = ctx;
     if (!loaderData) {
-      return seo({
-        title: "Product niet gevonden",
-        description: "Dit product bestaat niet of is niet meer leverbaar.",
+      return localisedSeo("notFound", {
         path: "/winkel",
+        locale: localeFromHead(ctx),
         noindex: true,
       });
     }
 
+    // head() runs outside React, so the dictionary is read directly rather
+    // than through the hook. A product with no description of its own would
+    // otherwise get a Dutch meta description in every language.
+    const locale = localeFromHead(ctx) ?? "nl";
     const description =
-      loaderData.description ?? `${loaderData.name} van ${loaderData.brand ?? "Besjaar"}.`;
+      loaderData.description ??
+      translations[locale]["pdp.metaFallback"]
+        .replace("{name}", loaderData.name)
+        .replace("{brand}", loaderData.brand ?? "Besjaar");
 
     /**
      * Product schema. AggregateRating is deliberately absent: the catalogue

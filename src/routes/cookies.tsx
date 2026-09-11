@@ -63,7 +63,7 @@ function CookiePolicyPage() {
                 <h2 className="font-display text-lg font-bold">{t(category.titleKey)}</h2>
                 {category.always ? (
                   <span className="rounded-md bg-secondary px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-secondary-foreground">
-                    Altijd actief
+                    {t("cookie.alwaysOn")}
                   </span>
                 ) : null}
               </div>
@@ -75,7 +75,7 @@ function CookiePolicyPage() {
         </div>
 
         <section className="mt-8 rounded-xl border border-border bg-surface p-5">
-          <h2 className="font-display text-lg font-bold">Je keuze aanpassen</h2>
+          <h2 className="font-display text-lg font-bold">{t("cookie.adjustChoice")}</h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             Wis je huidige keuze om de cookiemelding opnieuw te tonen. Analytische en
             marketingcookies worden pas geladen nadat je daar toestemming voor geeft.

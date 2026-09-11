@@ -39,7 +39,8 @@ export type PageSeoKey =
   | "checkout"
   | "login"
   | "passwordReset"
-  | "orderConfirmed";
+  | "orderConfirmed"
+  | "notFound";
 
 type Copy = { title: string; description: string };
 
@@ -72,6 +73,10 @@ const nl: Record<PageSeoKey, Copy> = {
   search: {
     title: "Zoeken",
     description: "Zoek in het Besjaar assortiment op product, merk, categorie of artikelnummer.",
+  },
+  notFound: {
+    title: "Niet gevonden",
+    description: "Deze pagina bestaat niet (meer). Bekijk het assortiment in de winkel.",
   },
   contact: {
     title: "Contact & klantenservice",
@@ -179,6 +184,10 @@ const en: Record<PageSeoKey, Copy> = {
     title: "Search",
     description: "Search the Besjaar range by product, brand, category or item number.",
   },
+  notFound: {
+    title: "Not found",
+    description: "This page no longer exists. Browse the range in the shop.",
+  },
   contact: {
     title: "Contact & customer service",
     description:
@@ -281,6 +290,10 @@ const de: Record<PageSeoKey, Copy> = {
     title: "Suchen",
     description:
       "Durchsuchen Sie das Besjaar-Sortiment nach Produkt, Marke, Kategorie oder Artikelnummer.",
+  },
+  notFound: {
+    title: "Nicht gefunden",
+    description: "Diese Seite gibt es nicht mehr. Sehen Sie sich das Sortiment im Shop an.",
   },
   contact: {
     title: "Kontakt & Kundenservice",
@@ -388,6 +401,10 @@ const fr: Record<PageSeoKey, Copy> = {
     title: "Rechercher",
     description:
       "Recherchez dans la gamme Besjaar par produit, marque, catégorie ou référence article.",
+  },
+  notFound: {
+    title: "Introuvable",
+    description: "Cette page n'existe plus. Découvrez la gamme dans la boutique.",
   },
   contact: {
     title: "Contact et service client",

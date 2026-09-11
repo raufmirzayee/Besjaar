@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ProductListing } from "@/components/product-listing";
 import { getCategoryBySlug } from "@/data/catalogue";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
-import { breadcrumbSchema, jsonLd, seo } from "@/lib/seo";
+import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo, seo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
 import { allProductsQuery } from "@/routes/winkel";
 
@@ -17,14 +17,11 @@ export const Route = createFileRoute("/categorie/$slug")({
     await context.queryClient.ensureQueryData(allProductsQuery);
     return { name: category.name, description: category.description, slug: category.slug };
   },
-  head: ({ loaderData }) => {
+  head: (ctx) => {
+    const { loaderData } = ctx;
+    const locale = localeFromHead(ctx);
     if (!loaderData) {
-      return seo({
-        title: "Categorie niet gevonden",
-        description: "Deze categorie bestaat niet.",
-        path: "/winkel",
-        noindex: true,
-      });
+      return localisedSeo("notFound", { path: "/winkel", locale, noindex: true });
     }
     return seo({
       title: loaderData.name,
