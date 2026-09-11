@@ -8,6 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import type { ErrorComponentProps } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -40,7 +41,7 @@ import { I18nProvider, localeFromRouterState, translateOutsideProvider } from "@
  * page is a small failure next to that, but it is still a failure, and this
  * costs nothing to get right.
  */
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   // The router context carries the locale the server detected. Reading it here
