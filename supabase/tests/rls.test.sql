@@ -284,6 +284,23 @@ BEGIN
 END;
 $$;
 
+-- The storage buckets, which are settings rather than policies and so can be
+-- changed in the dashboard long after this migration ran.
+DO $$
+DECLARE
+  v_problems text;
+BEGIN
+  SELECT string_agg(bucket || ' (' || problem || ')', ', ')
+  INTO v_problems
+  FROM public.audit_storage_buckets();
+
+  IF v_problems IS NOT NULL THEN
+    RAISE EXCEPTION 'FAIL: storage bucket(s) misconfigured: %', v_problems;
+  END IF;
+  RAISE NOTICE 'ok   %  %  none', rpad('storage buckets', 18), rpad('misconfigured', 22);
+END;
+$$;
+
 -- And the specific one, by name, as an ordinary customer.
 SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claims',

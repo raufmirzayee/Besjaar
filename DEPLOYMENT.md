@@ -88,7 +88,41 @@ rather than pretending.
    customer — `/beheer` and every page under it returns the site's ordinary
    404, so the backoffice is not discoverable by browsing.
 
-5. **Two-factor authentication is mandatory for staff.** On first sign-in each
+5. Check the storage buckets.
+
+   `20260912170000_storage_buckets.sql` creates `product-images`,
+   `review-images` and `return-images` with the settings their row-level
+   policies were written to assume. It runs with the other migrations, so
+   there is nothing to click — but the settings live in a table the
+   application never writes to, and a later change in the dashboard would not
+   be noticed. This reports the state:
+
+   ```sql
+   select * from public.audit_storage_buckets();   -- no rows = correct
+   ```
+
+   What it is checking, and why each one matters:
+
+   | Bucket           | Public | Limit | Types           |
+   | ---------------- | ------ | ----- | --------------- |
+   | `product-images` | yes    | 10 MB | images, no SVG  |
+   | `review-images`  | **no** | 5 MB  | images, no SVG  |
+   | `return-images`  | **no** | 5 MB  | images, no SVG  |
+
+   A public bucket is served over a CDN path that does not consult the
+   row-level policies at all, so the `public` flag — not the policy — is what
+   decides who can read the files. Product photography is meant to be public.
+   The other two hold photographs customers took in their own homes, and a URL
+   is not an authorisation, so those stay private. SVG is excluded everywhere:
+   it is a document format that can carry script, served from a domain
+   belonging to this shop's project.
+
+   Nothing in the application uploads files yet — the admin sets image URLs
+   rather than transferring files — so these are groundwork. Getting the
+   limits right before the first upload is cheaper than after.
+
+
+6. **Two-factor authentication is mandatory for staff.** On first sign-in each
    staff member scans a QR code with an authenticator app (Google
    Authenticator, 1Password, Bitwarden — any TOTP app). Until they do, they can
    reach the enrolment screen and nothing else.
@@ -106,7 +140,7 @@ rather than pretending.
    deliberately no self-service reset — whoever holds the password could
    otherwise remove the second factor themselves.
 
-6. In **Authentication → URL configuration**, set the site URL to your domain so
+7. In **Authentication → URL configuration**, set the site URL to your domain so
    confirmation and password-reset links point at the right place.
 
 Authorisation is enforced by RLS in the database and re-checked server-side in
@@ -204,6 +238,45 @@ not the state to run in.
 
 Signed-in callers are keyed on their account regardless of this setting, so
 checkout, review and bootstrap limits hold even when it is misconfigured.
+
+### Security headers
+
+Set on every response by `src/server.ts`, so they apply on all three hosts —
+a `_headers` file would only be read by Cloudflare Pages and Netlify, and a
+security header present on one deployment target out of three is worse than
+none because it reads as covered.
+
+`Content-Security-Policy`, `Strict-Transport-Security` (TLS only, two years,
+not preloaded), `X-Content-Type-Options`, `Referrer-Policy`,
+`X-Frame-Options`, `Permissions-Policy`, `Cross-Origin-Opener-Policy` and
+`Cross-Origin-Resource-Policy`. Verified in Chromium against the built app:
+twelve pages, hydration working, no violation reported.
+
+The CSP names your Supabase project in `connect-src`, taken from
+`VITE_SUPABASE_URL`, so a script that does manage to run cannot post what it
+reads anywhere else. It allows `'unsafe-inline'` for scripts and this is
+deliberate rather than overlooked: the page carries two inline scripts that
+cannot be hashed or moved — the theme and language bootstrap, which must run
+before first paint or the page flashes the wrong language, and TanStack's
+streaming barrier, whose contents differ on every render. A nonce is the
+right answer and the framework has plumbing for one, but React emits the
+bootstrap script itself and a nonce that does not reach it produces a blank
+page, so it waits until that path is verified in a browser rather than
+assumed.
+
+`'unsafe-eval'` is absent and stays absent. So does any third-party script
+origin. If you add analytics or a chat widget, add its origin to `script-src`
+and `connect-src` in `src/lib/security-headers.ts` — deliberately, in code,
+where a reviewer sees it.
+
+One gap to know about: files served straight off disk — `/assets/*.js`,
+`/robots.txt`, the favicons — are answered by Nitro's asset handler *before*
+the SSR entry runs, so they never reach that code. `public/_headers` covers
+them with `nosniff` and friends on Cloudflare and Netlify, which read that
+file. On Node they are served by Nitro directly, so set the same headers on
+the reverse proxy you put in front of it. This is a small gap either way: all
+of those are static files with correct content types, none are uploaded by
+anyone, and the CSP on the document already decides what the page may load.
 
 ---
 

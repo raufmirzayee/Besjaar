@@ -45,10 +45,14 @@ CREATE OR REPLACE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$
   )
 $$;
 
+-- Supabase's real storage.buckets carries the upload limits as columns, so the
+-- harness has to as well or the migration that sets them cannot be tested.
 CREATE TABLE IF NOT EXISTS storage.buckets (
   id text PRIMARY KEY,
   name text,
-  public boolean DEFAULT false
+  public boolean DEFAULT false,
+  file_size_limit bigint,
+  allowed_mime_types text[]
 );
 
 CREATE TABLE IF NOT EXISTS storage.objects (

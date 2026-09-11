@@ -2,6 +2,7 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { securityHeaders } from "./lib/security-headers";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -44,18 +45,62 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+/**
+ * Attaches the security headers to whatever the app produced.
+ *
+ * Here rather than in a `_headers` file because that file only means something
+ * on Cloudflare Pages and Netlify — a Node deployment and a Workers deployment
+ * both ignore it, and this shop supports all three. A response that already
+ * carries a header keeps it, so a route that deliberately sets its own is not
+ * overruled.
+ */
+function withSecurityHeaders(request: Request, response: Response): Response {
+  const url = new URL(request.url);
+  const secure = url.protocol === "https:" || request.headers.get("x-forwarded-proto") === "https";
+  const html = (response.headers.get("content-type") ?? "").includes("text/html");
+
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(
+    securityHeaders({
+      html,
+      secure,
+      supabaseUrl: process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL,
+    }),
+  )) {
+    if (!headers.has(name)) headers.set(name, value);
+  }
+
+  // A 101 or a 204 has no body to rewrap, and constructing one with a body
+  // throws.
+  if (response.status === 101 || response.status === 204 || response.status === 304) {
+    return new Response(null, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return withSecurityHeaders(request, await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
-        status: 500,
-        headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      return withSecurityHeaders(
+        request,
+        new Response(renderErrorPage(), {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        }),
+      );
     }
   },
 };

@@ -13,6 +13,8 @@
  *   VITE_SITE_URL    used to build the customer redirect URL
  */
 
+import { safeExternalUrl } from "./safe-url";
+
 const MOLLIE_API = "https://api.mollie.com/v2";
 
 /** Mollie payment method ids for the methods the storefront offers. */
@@ -110,9 +112,13 @@ export async function createPayment(input: {
     _links?: { checkout?: { href?: string } };
   };
 
-  const checkoutUrl = payment._links?.checkout?.href;
+  // The customer's browser is sent straight to this address, so it is checked
+  // rather than trusted. Nothing suggests Mollie would return anything else;
+  // the point is that a payment redirect is the last place to discover an
+  // upstream response was not what it claimed to be.
+  const checkoutUrl = safeExternalUrl(payment._links?.checkout?.href);
   if (!checkoutUrl) {
-    throw new Error("De betaalprovider gaf geen betaallink terug.");
+    throw new Error("De betaalprovider gaf geen bruikbare betaallink terug.");
   }
 
   return {
