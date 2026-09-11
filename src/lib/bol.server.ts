@@ -56,21 +56,9 @@ export type SyncLog = {
   created_at: string;
 };
 
-export const JOB_TYPE_LABELS: Record<string, string> = {
-  orders: "Bestellingen importeren",
-  stock: "Voorraad synchroniseren",
-  offers: "Aanbiedingen ophalen",
-  shipments: "Verzendingen doorgeven",
-  returns: "Retouren ophalen",
-};
-
-export const JOB_STATUS_LABELS: Record<string, string> = {
-  pending: "In wachtrij",
-  running: "Bezig",
-  success: "Geslaagd",
-  partial: "Deels geslaagd",
-  failed: "Mislukt",
-};
+// The labels live in `bol.ts` so a route file never has to import this module
+// to get at them. Re-exported here for callers that are already server-side.
+export { JOB_STATUS_LABELS, JOB_TYPE_LABELS } from "./bol";
 
 function credentials() {
   const clientId = process.env.BOL_CLIENT_ID;

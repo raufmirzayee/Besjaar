@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { statusLabel } from "@/lib/fulfilment";
 import { getAdminOrders } from "@/lib/admin.functions";
-import { type AdminOrder } from "@/lib/admin.server";
+import type { AdminOrder } from "@/lib/admin.server";
 import { formatPrice } from "@/lib/format";
 
 export const Route = createFileRoute("/beheer/rapporten")({

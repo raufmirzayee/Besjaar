@@ -17,7 +17,8 @@ import {
 import { useCan } from "@/components/admin/admin-shell";
 import { useI18n } from "@/lib/i18n";
 import { getMovements } from "@/lib/admin-extra.functions";
-import { MOVEMENT_REASON_LABELS, type MovementRow } from "@/lib/admin-extra.server";
+import { MOVEMENT_REASON_LABELS } from "@/lib/admin-labels";
+import type { MovementRow } from "@/lib/admin-extra.server";
 import { toCsv, downloadCsv } from "@/lib/csv";
 
 export const Route = createFileRoute("/beheer/mutaties")({

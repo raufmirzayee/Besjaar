@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/format";
-import { JOB_STATUS_LABELS, JOB_TYPE_LABELS } from "@/lib/bol.server";
+import { JOB_STATUS_LABELS, JOB_TYPE_LABELS } from "@/lib/bol";
 import {
   getBolOverview,
   removeBolListing,

@@ -3,34 +3,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
 
-export const RETURN_STATUSES = [
-  "requested",
-  "approved",
-  "rejected",
-  "received",
-  "refunded",
-  "cancelled",
-] as const;
-
-export type ReturnStatus = (typeof RETURN_STATUSES)[number];
-
-export const RETURN_STATUS_LABELS: Record<ReturnStatus, string> = {
-  requested: "Aangevraagd",
-  approved: "Goedgekeurd",
-  rejected: "Afgewezen",
-  received: "Ontvangen",
-  refunded: "Terugbetaald",
-  cancelled: "Geannuleerd",
-};
-
-export const RETURN_REASONS = [
-  "Niet tevreden / bedenktijd",
-  "Verkeerd product ontvangen",
-  "Product beschadigd",
-  "Product defect",
-  "Te laat bezorgd",
-  "Anders",
-] as const;
+export {
+  RETURN_REASONS,
+  RETURN_STATUSES,
+  RETURN_STATUS_LABELS,
+  type ReturnStatus,
+} from "./admin-labels";
+import type { ReturnStatus } from "./admin-labels";
 
 export type ReturnItemRow = {
   id: string;

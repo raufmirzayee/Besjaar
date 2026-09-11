@@ -27,7 +27,7 @@ import {
   requestReturn,
   cancelMyReturn,
 } from "@/lib/returns.functions";
-import { RETURN_REASONS, type ReturnStatus } from "@/lib/returns.server";
+import { RETURN_REASONS, type ReturnStatus } from "@/lib/admin-labels";
 
 export const Route = createFileRoute("/retouren")({
   head: (ctx) =>

@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { getAdminUsers, setUserRole } from "@/lib/admin.functions";
-import { ROLE_LABELS, STAFF_ROLES, type AdminUserRow, type AppRole } from "@/lib/admin.server";
+import { ROLE_LABELS, STAFF_ROLES, type AppRole } from "@/lib/staff";
+import type { AdminUserRow } from "@/lib/admin.server";
 
 export const Route = createFileRoute("/beheer/gebruikers")({
   component: UsersPage,

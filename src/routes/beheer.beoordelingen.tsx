@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import type { TranslationKey } from "@/lib/translations";
 import { useI18n } from "@/lib/i18n";
 import { deleteReview, getAdminReviews, setReviewStatus } from "@/lib/reviews.functions";
-import { REVIEW_STATUS_LABELS, type AdminReview, type ReviewStatus } from "@/lib/reviews.server";
+import { REVIEW_STATUS_LABELS, type ReviewStatus } from "@/lib/admin-labels";
+import type { AdminReview } from "@/lib/reviews.server";
 
 export const Route = createFileRoute("/beheer/beoordelingen")({
   component: ReviewsAdminPage,

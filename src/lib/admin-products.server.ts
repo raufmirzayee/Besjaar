@@ -6,21 +6,8 @@ import { likePattern } from "./postgrest-filter";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
 
-export const PRODUCT_STATUSES = [
-  "draft",
-  "active",
-  "out_of_stock",
-  "archived",
-  "discontinued",
-] as const;
-
-export const PRODUCT_STATUS_LABELS: Record<string, string> = {
-  draft: "Concept",
-  active: "Actief",
-  out_of_stock: "Uitverkocht",
-  archived: "Gearchiveerd",
-  discontinued: "Uit assortiment",
-};
+export { PRODUCT_STATUSES, PRODUCT_STATUS_LABELS } from "./admin-labels";
+import { PRODUCT_STATUSES, PRODUCT_STATUS_LABELS } from "./admin-labels";
 
 export function slugify(value: string) {
   return value

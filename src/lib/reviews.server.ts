@@ -3,13 +3,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Client = SupabaseClient<any, any, any>;
 
-export type ReviewStatus = "pending" | "approved" | "rejected";
-
-export const REVIEW_STATUS_LABELS: Record<ReviewStatus, string> = {
-  pending: "In afwachting",
-  approved: "Goedgekeurd",
-  rejected: "Afgewezen",
-};
+// Defined in `admin-labels.ts` so an admin screen can have them without
+// importing this module. Re-exported for callers already on the server.
+export { REVIEW_STATUS_LABELS, type ReviewStatus } from "./admin-labels";
+import type { ReviewStatus } from "./admin-labels";
 
 export type PublicReview = {
   id: string;

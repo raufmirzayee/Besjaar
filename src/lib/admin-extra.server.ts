@@ -202,23 +202,7 @@ export async function saveBrand(supabase: Client, input: BrandInput) {
 
 /* ---------------------------- stock movements ----------------------------- */
 
-export const MOVEMENT_REASON_LABELS: Record<string, string> = {
-  website_sale: "Webshop verkoop",
-  bol_sale: "bol.com verkoop",
-  manual_order: "Handmatige order",
-  customer_return: "Klantretour",
-  supplier_receipt: "Leveranciersontvangst",
-  damaged: "Beschadigd",
-  lost: "Vermist",
-  manual: "Handmatige correctie",
-  manual_correction: "Handmatige correctie",
-  order_cancelled: "Orderannulering",
-  reservation: "Voorraadreservering",
-  reservation_release: "Reservering vrijgegeven",
-  transfer: "Overboeking",
-  order: "Bestelling",
-  return: "Retour",
-};
+export { MOVEMENT_REASON_LABELS } from "./admin-labels";
 
 export type MovementFilters = {
   productId?: string | null;

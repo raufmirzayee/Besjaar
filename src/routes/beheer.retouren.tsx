@@ -19,7 +19,7 @@ import {
 import { useI18n } from "@/lib/i18n";
 import { formatPrice } from "@/lib/format";
 import { getAdminReturns, updateReturn } from "@/lib/returns.functions";
-import { RETURN_STATUSES, RETURN_STATUS_LABELS, type ReturnStatus } from "@/lib/returns.server";
+import { RETURN_STATUSES, RETURN_STATUS_LABELS, type ReturnStatus } from "@/lib/admin-labels";
 
 export const Route = createFileRoute("/beheer/retouren")({
   head: () => ({

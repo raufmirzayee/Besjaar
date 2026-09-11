@@ -79,7 +79,7 @@ import type {
   ProductRow,
   ProductSort,
 } from "@/lib/admin-products.server";
-import { PRODUCT_STATUSES, PRODUCT_STATUS_LABELS } from "@/lib/admin-products.server";
+import { PRODUCT_STATUSES, PRODUCT_STATUS_LABELS } from "@/lib/admin-labels";
 import { formatPrice } from "@/lib/format";
 import { IMPORT_TEMPLATE_HEADER, type ImportRowError } from "@/lib/product-import";
 

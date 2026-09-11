@@ -20,7 +20,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n";
 import { getAdminOrders } from "@/lib/admin.functions";
-import { ORDER_STATUSES, type AdminOrder } from "@/lib/admin.server";
+import { FULFILMENT_STATUSES as ORDER_STATUSES } from "@/lib/fulfilment";
+import type { AdminOrder } from "@/lib/admin.server";
 import {
   getEmailStatus,
   getOrderDetail,
