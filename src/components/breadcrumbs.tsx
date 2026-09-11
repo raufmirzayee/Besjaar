@@ -48,7 +48,10 @@ export function Breadcrumbs({
                   to={crumb.to}
                   params={crumb.params}
                   className={cn(
-                    "rounded transition-colors hover:underline",
+                    // -my-1 py-1 lifts the tap target to 24px without moving
+                    // the text: a breadcrumb row is a line of adjacent links
+                    // and 20px is awkward on a phone.
+                    "-my-1 rounded py-1 transition-colors hover:underline",
                     onDark ? "hover:text-white" : "hover:text-primary",
                   )}
                 >

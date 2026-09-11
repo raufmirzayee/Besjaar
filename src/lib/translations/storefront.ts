@@ -284,6 +284,7 @@ const nl = {
   "company.incompletePrefix":
     "Deze webshop is nog niet volledig geregistreerd op de site. Nog in te vullen:",
   "pdp.metaFallback": "{name} van {brand}.",
+  "list.resultsHeading": "Producten",
 } as const;
 
 type Key = keyof typeof nl;
@@ -549,6 +550,7 @@ const en: Record<Key, string> = {
   "company.incompletePrefix":
     "This shop's registration details are not complete on the site yet. Still to fill in:",
   "pdp.metaFallback": "{name} by {brand}.",
+  "list.resultsHeading": "Products",
 };
 
 const de: Record<Key, string> = {
@@ -815,6 +817,7 @@ const de: Record<Key, string> = {
   "company.incompletePrefix":
     "Die Registrierungsangaben dieses Shops sind auf der Website noch nicht vollständig. Es fehlen noch:",
   "pdp.metaFallback": "{name} von {brand}.",
+  "list.resultsHeading": "Produkte",
 };
 
 const fr: Record<Key, string> = {
@@ -1080,6 +1083,7 @@ const fr: Record<Key, string> = {
   "company.incompletePrefix":
     "Les informations d'immatriculation de cette boutique ne sont pas encore complètes sur le site. Il reste à renseigner :",
   "pdp.metaFallback": "{name} de {brand}.",
+  "list.resultsHeading": "Produits",
 };
 
 export const storefrontMessages: Record<Locale, Record<Key, string>> = { nl, en, de, fr };

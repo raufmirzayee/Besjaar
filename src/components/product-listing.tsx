@@ -181,6 +181,16 @@ export function ProductListing({
           />
         ) : null}
 
+        {/*
+          The results need a heading of their own, and not only for tidiness:
+          the "Filters" h2 belongs to a sidebar that is display:none below lg,
+          so on a phone the document went h1 straight to the h3 of the first
+          product card. A screen reader navigating by heading then found no
+          level for the results at all. Visually hidden, because the page
+          already says what it is showing.
+        */}
+        <h2 className="sr-only">{t("list.resultsHeading")}</h2>
+
         {isLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (

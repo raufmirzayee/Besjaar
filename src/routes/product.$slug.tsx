@@ -478,7 +478,7 @@ function ProductPage() {
           <Accordion type="multiple" defaultValue={["specs", "description"]}>
             {specs.length > 0 ? (
               <AccordionItem value="specs">
-                <AccordionTrigger className="text-base font-bold">
+                <AccordionTrigger headingLevel={2} className="text-base font-bold">
                   {t("pdp.specifications")}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -496,7 +496,7 @@ function ProductPage() {
 
             {product.full_description ? (
               <AccordionItem value="description">
-                <AccordionTrigger className="text-base font-bold">
+                <AccordionTrigger headingLevel={2} className="text-base font-bold">
                   {t("pdp.fullTitle")}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -520,7 +520,7 @@ function ProductPage() {
             ) : null}
 
             <AccordionItem value="shipping">
-              <AccordionTrigger className="text-base font-bold">
+              <AccordionTrigger headingLevel={2} className="text-base font-bold">
                 {t("pdp.shipping")} &amp; {t("pdp.returns")}
               </AccordionTrigger>
               <AccordionContent>

@@ -41,7 +41,9 @@ function FaqPage() {
         <Accordion type="single" collapsible className="mt-8">
           {FAQ_KEYS.map((key, index) => (
             <AccordionItem key={key} value={`item-${index}`}>
-              <AccordionTrigger className="text-left">{t(`faq.q${key}`)}</AccordionTrigger>
+              <AccordionTrigger headingLevel={2} className="text-left">
+                {t(`faq.q${key}`)}
+              </AccordionTrigger>
               <AccordionContent className="text-muted-foreground">
                 {t(`faq.a${key}`)}
               </AccordionContent>

@@ -402,7 +402,7 @@ function SectionHeader({
       </div>
       <Link
         to={to}
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-md text-sm font-semibold text-primary hover:underline"
+        className="-my-1 inline-flex shrink-0 items-center gap-1.5 rounded-md py-1 text-sm font-semibold text-primary hover:underline"
       >
         {t("home.viewAll")}
         <ArrowRight className="size-4" aria-hidden="true" />
