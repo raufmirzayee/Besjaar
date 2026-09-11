@@ -7,6 +7,9 @@ import { getBrandBySlug } from "@/data/catalogue";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
 import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo, seo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
+import { withBrandTranslations } from "@/data/catalogue-translations";
+import { localize } from "@/lib/content-i18n";
+import { translations } from "@/lib/translations";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/merken/$slug")({
@@ -15,7 +18,8 @@ export const Route = createFileRoute("/merken/$slug")({
     const brand = getBrandBySlug(params.slug);
     if (!brand) throw notFound();
     await context.queryClient.ensureQueryData(allProductsQuery);
-    return brand;
+    // Carried through so `head()` and the page localise from the same source.
+    return withBrandTranslations(brand);
   },
   head: (ctx) => {
     const { loaderData } = ctx;
@@ -26,18 +30,24 @@ export const Route = createFileRoute("/merken/$slug")({
         noindex: true,
       });
     }
+    const locale = localeFromHead(ctx);
+    // head() runs outside React, so the dictionary is read directly.
+    const name = localize(loaderData, "name", locale ?? "nl");
     return seo({
-      title: `${loaderData.name} producten`,
-      description: loaderData.description,
+      title: translations[locale ?? "nl"]["brand.productsTitle"].replace("{brand}", name),
+      description: localize(loaderData, "description", locale ?? "nl"),
       path: `/merken/${loaderData.slug}`,
+      locale,
     });
   },
   component: BrandPage,
 });
 
 function BrandPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const brand = Route.useLoaderData();
+  const brandName = localize(brand, "name", locale);
+  const brandDescription = localize(brand, "description", locale);
   const { data: allProducts } = useSuspenseQuery(allProductsQuery);
   // The route fixes the brand, so that facet is not offered again.
   const search = { ...Route.useSearch(), merk: undefined };
@@ -55,7 +65,7 @@ function BrandPage() {
             breadcrumbSchema([
               { name: "Home", path: "/" },
               { name: t("brand.title"), path: "/merken" },
-              { name: brand.name, path: `/merken/${brand.slug}` },
+              { name: brandName, path: `/merken/${brand.slug}` },
             ]),
           ),
         }}
@@ -67,7 +77,7 @@ function BrandPage() {
             trail={[
               { name: "Home", to: "/" },
               { name: t("brand.title"), to: "/merken" },
-              { name: brand.name },
+              { name: brandName },
             ]}
             tone="dark"
           />
@@ -76,9 +86,9 @@ function BrandPage() {
               {t("brand.title")}
             </p>
             <h1 className="mt-2 font-display text-4xl font-extrabold text-white sm:text-5xl">
-              {brand.name}
+              {brandName}
             </h1>
-            <p className="mt-3 text-base leading-relaxed text-white/80">{brand.description}</p>
+            <p className="mt-3 text-base leading-relaxed text-white/80">{brandDescription}</p>
             <p className="mt-4 text-sm font-semibold text-white/70">
               {t("brand.productCount", { count: products.length })}
             </p>

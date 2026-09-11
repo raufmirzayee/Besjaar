@@ -57,6 +57,12 @@ export type ProductListItem = {
   image_url: string | null;
   availability: string | null;
   source_url: string | null;
+  /**
+   * The barcode, when the product has one. On the list type rather than only
+   * on the detail type because the Google Shopping feed is built from the list
+   * query, and a feed that cannot see a real GTIN has to declare there is none.
+   */
+  ean: string | null;
   highlights: string[];
   translations: Translations;
   brand_translations: Translations;
@@ -123,7 +129,7 @@ async function withCatalogueFallback<T>(
 const PRODUCT_SELECT = `
   id, name, slug, short_description, full_description, regular_price, sale_price, stock_quantity,
   featured, bestseller, rating_average, rating_count, translations, bol_product_id, search_keywords,
-  selling_points,
+  selling_points, ean,
   brands ( name, translations ),
   categories!products_category_id_fkey ( name, slug, translations ),
   product_images ( image_url, is_main, sort_order )
@@ -155,6 +161,7 @@ function mapProduct(row: any): ProductListItem {
     image_url: sorted[0]?.image_url ?? null,
     availability: (row.stock_quantity ?? 0) > 0 ? "Op voorraad" : "Tijdelijk niet beschikbaar",
     source_url: null,
+    ean: row.ean ?? null,
     highlights: Array.isArray(row.selling_points) ? row.selling_points : [],
     translations: row.translations ?? null,
     brand_translations: row.brands?.translations ?? null,

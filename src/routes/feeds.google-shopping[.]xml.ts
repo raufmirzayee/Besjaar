@@ -9,9 +9,12 @@ import { createFileRoute } from "@tanstack/react-router";
  *
  * Two deliberate omissions:
  *
- * - No `g:gtin` or `g:mpn`. The source catalogue carries no barcodes, so the
- *   feed declares `g:identifier_exists` as "no" rather than inventing one. A
- *   wrong GTIN gets the whole account suspended.
+ * - `g:gtin` is sent only for a product that actually has a barcode. The
+ *   bundled catalogue carries none, so those items declare
+ *   `g:identifier_exists` as "no" instead — a wrong GTIN gets the whole
+ *   Merchant Center account suspended, and a missing one only costs the item
+ *   some matching. The two are mutually exclusive: declaring "no" alongside a
+ *   real GTIN is itself a feed error.
  * - No `g:shipping`. Shipping here has a free-delivery threshold, which the
  *   feed format cannot express per item; configure the rates in Merchant
  *   Center instead, where thresholds are supported.
@@ -57,6 +60,11 @@ export const Route = createFileRoute("/feeds/google-shopping.xml")({
               product.sale_price !== null && product.sale_price < price ? product.sale_price : null;
             const inStock = product.stock_quantity > 0;
             const description = product.short_description ?? product.full_title ?? product.name;
+            // Google accepts GTIN-8, -12, -13 and -14. Anything else in the
+            // column is a supplier code that happens to live there, and
+            // sending it as a barcode is worse than sending nothing.
+            const ean = (product.ean ?? "").replace(/\D/g, "");
+            const gtin = [8, 12, 13, 14].includes(ean.length) ? ean : null;
 
             const fields = [
               `<g:id>${escapeXml(product.product_id ?? product.slug)}</g:id>`,
@@ -71,7 +79,13 @@ export const Route = createFileRoute("/feeds/google-shopping.xml")({
               `<g:price>${feedPrice(price)}</g:price>`,
               sale !== null ? `<g:sale_price>${feedPrice(sale)}</g:sale_price>` : "",
               product.brand ? `<g:brand>${escapeXml(product.brand)}</g:brand>` : "",
-              `<g:identifier_exists>no</g:identifier_exists>`,
+              // A GTIN when the product has one, and the honest declaration
+              // when it does not. This used to be hardcoded to "no", which was
+              // right for the bundled catalogue and would have quietly stayed
+              // wrong once real barcodes were imported.
+              gtin
+                ? `<g:gtin>${escapeXml(gtin)}</g:gtin>`
+                : `<g:identifier_exists>no</g:identifier_exists>`,
               product.category
                 ? `<g:product_type>${escapeXml(product.category)}</g:product_type>`
                 : "",

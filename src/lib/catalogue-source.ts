@@ -57,6 +57,9 @@ function toListItem(product: CatalogueProduct): ProductListItem {
     image_url: product.imageUrl,
     availability: product.availability,
     source_url: product.sourceUrl,
+    // The workbook carries no barcodes. Null rather than an empty string, so
+    // the feed declares "no identifier" instead of sending a blank one.
+    ean: null,
     highlights: product.highlights,
     // These used to be null, so switching to English, German or French left
     // every product name and category in Dutch while the interface around them

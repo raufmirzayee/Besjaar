@@ -52,6 +52,10 @@ export const Route = createFileRoute("/product/$slug")({
     if (!product) throw notFound();
     await context.queryClient.ensureQueryData(allProductsQuery);
     return {
+      // Carried so head() localises from the same source the page does. The
+      // title used to be the Dutch name while the heading under it was
+      // English, which is the version a search engine indexes.
+      translations: product.translations ?? null,
       name: product.name,
       description: product.short_description,
       slug: product.slug,
@@ -81,10 +85,11 @@ export const Route = createFileRoute("/product/$slug")({
     // than through the hook. A product with no description of its own would
     // otherwise get a Dutch meta description in every language.
     const locale = localeFromHead(ctx) ?? "nl";
+    const name = localize(loaderData, "name", locale, loaderData.name);
     const description =
-      loaderData.description ??
+      localize(loaderData, "short_description", locale, loaderData.description) ||
       translations[locale]["pdp.metaFallback"]
-        .replace("{name}", loaderData.name)
+        .replace("{name}", name)
         .replace("{brand}", loaderData.brand ?? "Besjaar");
 
     /**
@@ -95,7 +100,7 @@ export const Route = createFileRoute("/product/$slug")({
     const productSchema = {
       "@context": "https://schema.org",
       "@type": "Product",
-      name: loaderData.name,
+      name,
       description,
       sku: loaderData.productId ?? undefined,
       brand: { "@type": "Brand", name: loaderData.brand ?? "Besjaar" },
@@ -115,7 +120,7 @@ export const Route = createFileRoute("/product/$slug")({
     };
 
     const meta = seo({
-      title: loaderData.name,
+      title: name,
       description,
       path: `/product/${loaderData.slug}`,
       image: loaderData.image,

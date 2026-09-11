@@ -7,6 +7,8 @@ import { getCategoryBySlug } from "@/data/catalogue";
 import { parseListingSearch, type ListingSearch } from "@/lib/listing-search";
 import { breadcrumbSchema, jsonLd, localeFromHead, localisedSeo, seo } from "@/lib/seo";
 import { useI18n } from "@/lib/i18n";
+import { withCategoryTranslations } from "@/data/catalogue-translations";
+import { localize } from "@/lib/content-i18n";
 import { allProductsQuery } from "@/routes/winkel";
 
 export const Route = createFileRoute("/categorie/$slug")({
@@ -15,7 +17,14 @@ export const Route = createFileRoute("/categorie/$slug")({
     const category = getCategoryBySlug(params.slug);
     if (!category) throw notFound();
     await context.queryClient.ensureQueryData(allProductsQuery);
-    return { name: category.name, description: category.description, slug: category.slug };
+    // The translations travel with the loader data so `head()` and the page
+    // can localise the same way. Without them the browser tab said "Badkamer"
+    // while the heading below it said "Bathroom".
+    return withCategoryTranslations({
+      name: category.name,
+      description: category.description,
+      slug: category.slug,
+    });
   },
   head: (ctx) => {
     const { loaderData } = ctx;
@@ -24,18 +33,21 @@ export const Route = createFileRoute("/categorie/$slug")({
       return localisedSeo("notFound", { path: "/winkel", locale, noindex: true });
     }
     return seo({
-      title: loaderData.name,
-      description: loaderData.description,
+      title: localize(loaderData, "name", locale ?? "nl"),
+      description: localize(loaderData, "description", locale ?? "nl"),
       path: `/categorie/${loaderData.slug}`,
+      locale,
     });
   },
   component: CategoryPage,
 });
 
 function CategoryPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { slug } = Route.useParams();
-  const { name, description } = Route.useLoaderData();
+  const category = Route.useLoaderData();
+  const name = localize(category, "name", locale);
+  const description = localize(category, "description", locale);
   const { data: allProducts } = useSuspenseQuery(allProductsQuery);
   // The route already scopes to one category, so any category filter in the
   // URL is ignored rather than intersected with it.
