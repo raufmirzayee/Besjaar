@@ -158,6 +158,21 @@ export const setUserRole = createServerFn({ method: "POST" })
 export const claimFirstAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // The one endpoint in the shop that hands out super admin. It refuses
+    // once any staff member exists, but until then it is a guess at one
+    // configured address, and an unlimited number of guesses is the whole
+    // attack. Fails closed: if the counter cannot be reached, no claim is
+    // granted, because "the database is unreachable" must not read as
+    // "unlimited attempts".
+    const { enforceRateLimit } = await import("./rate-limit.server");
+    await enforceRateLimit("admin_bootstrap", {
+      limit: 5,
+      windowSeconds: 3600,
+      blockSeconds: 3600,
+      identity: context.userId,
+      failClosed: true,
+    });
+
     const { decideFirstAdminClaim } = await import("./admin-bootstrap");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 

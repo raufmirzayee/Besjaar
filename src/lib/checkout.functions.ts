@@ -79,14 +79,19 @@ export const placeOrder = createServerFn({ method: "POST" })
     //
     // Set well above what any real shopper does: someone correcting a failed
     // payment might genuinely try three or four times.
-    const { enforceRateLimit, callerKey } = await import("./rate-limit.server");
-    await enforceRateLimit(`checkout:${callerKey()}`, {
+    //
+    // Keyed on the account when there is one, so a signed-in flood cannot be
+    // spread over a fresh address per request.
+    const userId = await verifiedUserId();
+    const { enforceRateLimit } = await import("./rate-limit.server");
+    await enforceRateLimit("checkout", {
       limit: 8,
       windowSeconds: 600,
       blockSeconds: 1800,
+      identity: userId,
     });
 
-    return createOrder(data, await verifiedUserId());
+    return createOrder(data, userId);
   });
 
 export const getOrderByNumber = createServerFn({ method: "POST" })
@@ -113,9 +118,12 @@ export const getOrderByNumber = createServerFn({ method: "POST" })
     // a number can guess at addresses. This is what makes either expensive.
     // Keyed on the caller and the order, so hammering one order does not lock
     // a legitimate customer out of a different one from the same office.
-    const { enforceRateLimit, clearRateLimit, callerKey } = await import("./rate-limit.server");
-    const bucket = `order_lookup:${callerKey()}`;
-    await enforceRateLimit(bucket, { limit: 10, windowSeconds: 300, blockSeconds: 900 });
+    const { enforceRateLimit, clearRateLimit } = await import("./rate-limit.server");
+    const { bucket } = await enforceRateLimit("order_lookup", {
+      limit: 10,
+      windowSeconds: 300,
+      blockSeconds: 900,
+    });
 
     const order = await fetchOrderByNumber(data.orderNumber, {
       email: data.email,

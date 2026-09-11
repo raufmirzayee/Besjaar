@@ -83,7 +83,13 @@ export async function fetchProductReviews(productSlug: string): Promise<PublicRe
 export async function insertReview(
   supabase: Client,
   userId: string,
-  input: { productSlug: string; rating: number; title?: string; body: string; authorName: string },
+  input: {
+    productSlug: string;
+    rating: number;
+    title?: string | null;
+    body: string;
+    authorName: string;
+  },
 ): Promise<{ ok: true }> {
   const rating = Math.round(input.rating);
   if (rating < 1 || rating > 5) throw new Error("Geef een score tussen 1 en 5 sterren.");

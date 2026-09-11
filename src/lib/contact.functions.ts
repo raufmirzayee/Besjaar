@@ -13,8 +13,8 @@ export const sendContactMessage = createServerFn({ method: "POST" })
     // createContactMessage already caps messages per e-mail address per hour.
     // That does nothing about one sender working through a list of addresses,
     // which is what a spam run looks like.
-    const { enforceRateLimit, callerKey } = await import("./rate-limit.server");
-    await enforceRateLimit(`contact:${callerKey()}`, {
+    const { enforceRateLimit } = await import("./rate-limit.server");
+    await enforceRateLimit("contact", {
       limit: 5,
       windowSeconds: 3600,
       blockSeconds: 3600,

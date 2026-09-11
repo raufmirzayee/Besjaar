@@ -178,6 +178,33 @@ process manager of choice.
 Set `NITRO_PRESET=vercel` or `NITRO_PRESET=netlify` and run `bun run build`.
 The build command is `bun run build` and the output directory is `.output`.
 
+### Tell the app what is in front of it
+
+Whichever host you pick, set `TRUSTED_PROXY` to match it:
+
+| Host                        | `TRUSTED_PROXY`            | Header read                 |
+| --------------------------- | -------------------------- | --------------------------- |
+| Cloudflare Workers          | `cloudflare` (the default) | `cf-connecting-ip`          |
+| Vercel                      | `vercel`                   | `x-vercel-forwarded-for`    |
+| Netlify                     | `netlify`                  | `x-nf-client-connection-ip` |
+| Node behind your own proxy  | the number of proxies, e.g. `1` | `x-forwarded-for`, counted from the right |
+| Node reachable directly     | `none`                     | none                        |
+
+Rate limiting is the only thing that reads this, and it is the reason the
+setting is not optional in practice. `x-forwarded-for` is a list each hop
+*appends* to, so its leftmost entry is whatever the caller typed; a limiter
+that reads it gives an attacker a fresh counter on every request. Naming the
+host means only the header that host overwrites is read, and a forged copy of
+it never survives the edge.
+
+Set it wrong and nothing is trusted: every anonymous caller shares one
+(widened) bucket and the server logs a line naming the variable. That
+over-limits rather than under-limits, so the shop stays protected, but it is
+not the state to run in.
+
+Signed-in callers are keyed on their account regardless of this setting, so
+checkout, review and bootstrap limits hold even when it is misconfigured.
+
 ---
 
 ## 5. Payments

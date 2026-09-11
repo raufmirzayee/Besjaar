@@ -1,6 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+/**
+ * Compares two secrets without leaking their length or first difference
+ * through how long it takes. The lengths are mixed into the result rather
+ * than short-circuited on, so an unequal length costs the same as an unequal
+ * byte.
+ */
+function timingSafeEqual(provided: string, expected: string): boolean {
+  let diff = provided.length ^ expected.length;
+  const length = Math.max(provided.length, expected.length);
+  for (let index = 0; index < length; index += 1) {
+    diff |= (provided.charCodeAt(index) || 0) ^ (expected.charCodeAt(index) || 0);
+  }
+  return diff === 0;
+}
+
 const bodySchema = z.object({
   jobs: z
     .array(z.enum(["orders", "stock", "offers", "shipments"]))
@@ -19,9 +34,36 @@ export const Route = createFileRoute("/api/public/bol-sync")({
         const provided = header.toLowerCase().startsWith("bearer ")
           ? header.slice(7).trim()
           : (request.headers.get("x-sync-secret") ?? "");
-        if (!syncSecret || provided.length !== syncSecret.length || provided !== syncSecret) {
+
+        // A shared secret on a public URL is guessable given enough tries, so
+        // cap the tries. Fails closed: an unreachable counter must not turn
+        // into an unlimited guess budget on a credential.
+        const { enforceRateLimit, RateLimitError, clearRateLimit } =
+          await import("@/lib/rate-limit.server");
+        let bucket: string;
+        try {
+          ({ bucket } = await enforceRateLimit("bol_sync_auth", {
+            limit: 10,
+            windowSeconds: 900,
+            blockSeconds: 3600,
+            failClosed: true,
+          }));
+        } catch (error) {
+          if (error instanceof RateLimitError) {
+            return new Response("Too Many Requests", {
+              status: 429,
+              headers: { "retry-after": String(error.retryAfterSeconds) },
+            });
+          }
+          throw error;
+        }
+
+        if (!syncSecret || !timingSafeEqual(provided, syncSecret)) {
           return new Response("Unauthorized", { status: 401 });
         }
+        // The caller proved they hold the secret; the cron runs on a schedule
+        // this limit is not meant to interrupt.
+        await clearRateLimit(bucket);
 
         let payload: unknown = {};
         try {

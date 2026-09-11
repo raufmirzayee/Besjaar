@@ -50,6 +50,31 @@ export const Route = createFileRoute("/api/public/mollie-webhook")({
           return new Response("Bad request", { status: 400 });
         }
 
+        // Every id here costs a call to the Mollie API, so anyone can spend
+        // the shop's provider quota by posting well-formed ids. Keyed on the
+        // payment rather than on the caller: Mollie sends every notification
+        // in the shop from its own addresses, so a caller limit would throttle
+        // real payments on a busy day while leaving a replay of one id cheap.
+        // Allows through on a counter failure — Mollie stops retrying, and a
+        // dropped notification means an order that was paid for stays unpaid.
+        const { enforceRateLimit, RateLimitError } = await import("@/lib/rate-limit.server");
+        try {
+          await enforceRateLimit("mollie_webhook", {
+            limit: 20,
+            windowSeconds: 600,
+            blockSeconds: 600,
+            subject: paymentId,
+          });
+        } catch (error) {
+          if (error instanceof RateLimitError) {
+            return new Response("Too Many Requests", {
+              status: 429,
+              headers: { "retry-after": String(error.retryAfterSeconds) },
+            });
+          }
+          throw error;
+        }
+
         const { fetchPayment, mapPaymentStatus } = await import("@/lib/payments.server");
         const payment = await fetchPayment(paymentId);
         if (!payment) return new Response("Unknown payment", { status: 404 });

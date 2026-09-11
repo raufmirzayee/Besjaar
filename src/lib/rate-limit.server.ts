@@ -5,16 +5,27 @@
  * workers: an in-memory counter is empty on every cold start and is not shared
  * between instances, so it would read like a control while barely being one.
  *
- * A limit that fails closed would let a database blip take the shop offline,
- * and one that fails open silently would be worse than none. The middle course
- * here: a failure to *check* the limit is logged and allowed through, because
- * the endpoints behind it have their own authorisation and the limiter is a
- * second layer, not the only one.
+ * Who a request belongs to is decided in `caller-identity.ts`, which refuses to
+ * read a client-controlled header. That module is the reason this file is worth
+ * anything: a limiter keyed on `x-forwarded-for` counts to one forever.
+ *
+ * On a failure to *reach* the counter there are two honest answers and this
+ * offers both. Endpoints that carry their own authorisation and would be taken
+ * offline by a database blip allow through and log loudly; the ones where an
+ * unlimited retry is itself the attack — the admin bootstrap, the sync secret —
+ * pass `failClosed` and refuse.
  */
 
 import { getRequest } from "@tanstack/react-start/server";
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import {
+  callerIdentity,
+  describeProxyTrust,
+  resolveProxyTrust,
+  type CallerIdentity,
+  type ProxyTrust,
+} from "./caller-identity";
 
 export type RateLimitResult = {
   allowed: boolean;
@@ -22,31 +33,87 @@ export type RateLimitResult = {
   retryAfterSeconds: number;
 };
 
+export type RateLimitOptions = {
+  limit: number;
+  windowSeconds: number;
+  blockSeconds?: number;
+  /**
+   * Identify the caller by account instead of address. Pass this on anything
+   * behind a session: it survives an address change, and it stops one office
+   * behind one address from spending each other's budget.
+   */
+  identity?: string | null;
+  /**
+   * Key the bucket on a thing rather than on a caller.
+   *
+   * Some limits are about a resource, not a visitor: a payment provider posts
+   * every notification in the shop from its own addresses, so limiting it by
+   * caller throttles the shop's own payments while a replay of one
+   * notification stays cheap. Keying on the payment instead has it the right
+   * way round. Takes precedence over `identity`.
+   */
+  subject?: string | null;
+  /** Refuse when the counter itself cannot be reached. Default: allow through. */
+  failClosed?: boolean;
+};
+
+let warnedAboutTrust = false;
+
+function currentTrust(): ProxyTrust {
+  return resolveProxyTrust(process.env.TRUSTED_PROXY);
+}
+
 /**
- * Best-effort caller identity.
+ * Says once, loudly, that requests are landing in the shared bucket.
  *
- * Behind a proxy the socket address is the proxy's, so the forwarded headers
- * are what identify the caller. They are also caller-controlled, which is why
- * this is only ever a rate-limit key and never an authorisation input: the
- * worst a forged header achieves is spending someone else's budget, and the
- * fallback below means a caller who strips every header shares one bucket
- * with every other such caller rather than escaping the limit.
+ * In production this always means `TRUSTED_PROXY` does not match what is
+ * actually in front of the shop, and every anonymous caller is now sharing one
+ * counter. Silence here would look exactly like a working limiter.
  */
-export function callerKey(): string {
+function warnUnidentified(trust: ProxyTrust): void {
+  if (warnedAboutTrust || process.env.NODE_ENV !== "production") return;
+  warnedAboutTrust = true;
+  console.error(
+    `[rate-limit] no trustworthy client address; TRUSTED_PROXY is set to "${describeProxyTrust(
+      trust,
+    )}" but the header that setting relies on is not present. Every anonymous ` +
+      `caller now shares one bucket. Set TRUSTED_PROXY to the host in front of ` +
+      `this deployment (cloudflare, vercel, netlify, or a hop count).`,
+  );
+}
+
+/**
+ * How much slack the shared bucket gets.
+ *
+ * Unidentified callers are all one counter, so a per-caller limit applied to it
+ * would let one flood lock out every legitimate visitor. Widened, it stops a
+ * flood without being a weapon.
+ */
+const SHARED_BUCKET_FACTOR = 25;
+
+function identify(options: Pick<RateLimitOptions, "identity" | "subject">): CallerIdentity {
+  // A resource-keyed bucket identifies itself; no header is involved.
+  if (options.subject) return { key: `on:${options.subject}`, trusted: true };
+
+  const trust = currentTrust();
+  let headers: { get(name: string): string | null };
   try {
-    const request = getRequest();
-    const headers = request.headers;
-    const forwarded = headers.get("x-forwarded-for");
-    const candidate =
-      headers.get("cf-connecting-ip") ??
-      headers.get("x-real-ip") ??
-      (forwarded ? forwarded.split(",")[0] : null);
-    const ip = candidate?.trim();
-    if (ip && ip.length <= 45) return ip;
+    headers = getRequest().headers;
   } catch {
-    // No request in scope (a test, a script). Fall through.
+    // No request in scope (a script, a test). Nothing to identify.
+    headers = { get: () => null };
   }
-  return "unknown";
+  const caller = callerIdentity(headers, trust, options.identity);
+  if (!caller.trusted) warnUnidentified(trust);
+  return caller;
+}
+
+/** The bucket a request will spend from. Exported so a success can clear it. */
+export function rateLimitBucket(
+  name: string,
+  options: Pick<RateLimitOptions, "identity" | "subject"> = {},
+): string {
+  return `${name}:${identify(options).key}`.slice(0, 200);
 }
 
 /**
@@ -57,32 +124,37 @@ export function callerKey(): string {
  * that hitting the limit is not just a matter of waiting for it to roll.
  */
 export async function checkRateLimit(
-  bucket: string,
-  {
-    limit,
-    windowSeconds,
-    blockSeconds,
-  }: { limit: number; windowSeconds: number; blockSeconds?: number },
-): Promise<RateLimitResult> {
+  name: string,
+  options: RateLimitOptions,
+): Promise<RateLimitResult & { bucket: string }> {
+  const caller = identify(options);
+  const bucket = `${name}:${caller.key}`.slice(0, 200);
+  const limit = caller.trusted ? options.limit : options.limit * SHARED_BUCKET_FACTOR;
+
   try {
     const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
-      p_bucket: bucket.slice(0, 200),
+      p_bucket: bucket,
       p_limit: limit,
-      p_window_seconds: windowSeconds,
-      p_block_seconds: blockSeconds ?? null,
+      p_window_seconds: options.windowSeconds,
+      p_block_seconds: options.blockSeconds ?? null,
     });
     if (error) throw new Error(error.message);
 
     const row = Array.isArray(data) ? data[0] : data;
-    if (!row) return { allowed: true, attempts: 0, retryAfterSeconds: 0 };
+    if (!row) return { allowed: true, attempts: 0, retryAfterSeconds: 0, bucket };
     return {
       allowed: Boolean(row.allowed),
       attempts: Number(row.attempts ?? 0),
       retryAfterSeconds: Number(row.retry_after_seconds ?? 0),
+      bucket,
     };
   } catch (error) {
-    console.error("[rate-limit] check failed, allowing through:", error);
-    return { allowed: true, attempts: 0, retryAfterSeconds: 0 };
+    if (options.failClosed) {
+      console.error(`[rate-limit] check failed for "${name}", refusing:`, error);
+      return { allowed: false, attempts: limit, retryAfterSeconds: 60, bucket };
+    }
+    console.error(`[rate-limit] check failed for "${name}", allowing through:`, error);
+    return { allowed: true, attempts: 0, retryAfterSeconds: 0, bucket };
   }
 }
 
@@ -108,9 +180,10 @@ export class RateLimitError extends Error {
 
 /** Counts an attempt and throws when the budget is spent. */
 export async function enforceRateLimit(
-  bucket: string,
-  options: { limit: number; windowSeconds: number; blockSeconds?: number },
-): Promise<void> {
-  const result = await checkRateLimit(bucket, options);
+  name: string,
+  options: RateLimitOptions,
+): Promise<{ bucket: string }> {
+  const result = await checkRateLimit(name, options);
   if (!result.allowed) throw new RateLimitError(result.retryAfterSeconds);
+  return { bucket: result.bucket };
 }
