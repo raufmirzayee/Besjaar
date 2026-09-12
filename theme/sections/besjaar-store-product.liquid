@@ -311,7 +311,8 @@
         {% endif %}
 
         <div class="besjaar-store-premium-pd__details" id="besjaar-product-details">
-          <details open>
+          {%- comment -%}Besjaar 2026-09-12: every product detail panel starts collapsed so the buy box stays close to the top of the page. Panel content is still server-rendered in the initial HTML, so search engines read it whether or not a visitor opens the panel.{%- endcomment -%}
+          <details>
             <summary>{{ ui_desc }}</summary>
             <div>{{ product.description }}</div>
           </details>
