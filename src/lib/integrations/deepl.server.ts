@@ -12,6 +12,9 @@ import { settingValue } from "../settings.server";
 import {
   describeFailure,
   fetchWithTimeout,
+  msg,
+  raw,
+  setOrNot,
   type IntegrationStatus,
   type StatusDetail,
   type TestResult,
@@ -41,25 +44,29 @@ export async function status(): Promise<IntegrationStatus> {
 
   const details: StatusDetail[] = [
     {
-      label: "API-sleutel",
-      value: secret.configured ? "Ingesteld" : "Niet ingesteld",
+      label: msg("admin.conn.label.apiKey"),
+      value: setOrNot(secret.configured),
       level: secret.configured ? "ok" : "neutral",
     },
-    { label: "Abonnement", value: endpoint === "pro" ? "Pro" : "Gratis", level: "neutral" },
-    { label: "Talen", value: "NL → EN · DE · FR", level: "neutral" },
     {
-      label: "Nieuwe producten",
-      value: onCreate ? "Automatisch vertalen" : "Handmatig",
+      label: msg("admin.conn.label.plan"),
+      value: msg(endpoint === "pro" ? "admin.conn.deepl.pro" : "admin.conn.deepl.free"),
+      level: "neutral",
+    },
+    { label: msg("admin.conn.label.languages"), value: raw("NL → EN · DE · FR"), level: "neutral" },
+    {
+      label: msg("admin.conn.label.newProducts"),
+      value: msg(onCreate ? "admin.conn.deepl.auto" : "admin.conn.deepl.manual"),
       level: "neutral",
     },
     {
-      label: "Gewijzigde teksten",
-      value: onUpdate ? "Automatisch bijwerken" : "Handmatig",
+      label: msg("admin.conn.label.changedText"),
+      value: msg(onUpdate ? "admin.conn.deepl.autoUpdate" : "admin.conn.deepl.manual"),
       level: "neutral",
     },
     {
-      label: "Handmatige vertalingen",
-      value: keepManual ? "Blijven behouden" : "Worden overschreven",
+      label: msg("admin.conn.label.manualTranslations"),
+      value: msg(keepManual ? "admin.conn.deepl.kept" : "admin.conn.deepl.overwritten"),
       level: keepManual ? "ok" : "attention",
     },
   ];
@@ -83,7 +90,7 @@ export async function testTranslation(
 ): Promise<TestResult> {
   const started = Date.now();
   const key = await readSecret("DEEPL_API_KEY");
-  if (!key) return { ok: false, message: "Er is nog geen DeepL API-sleutel ingesteld." };
+  if (!key) return { ok: false, message: msg("admin.conn.deepl.noKey") };
 
   const configured = await settingValue<"free" | "pro">("translations.endpoint");
   const host = endpointFor(key, configured);
@@ -108,8 +115,7 @@ export async function testTranslation(
         // returns for it reads like an invalid key.
         return {
           ok: false,
-          message:
-            "DeepL weigerde de sleutel. Controleer of het abonnement (gratis of pro) overeenkomt met de sleutel.",
+          message: msg("admin.conn.deepl.planMismatch"),
           durationMs: Date.now() - started,
         };
       }
@@ -126,17 +132,18 @@ export async function testTranslation(
     if (!translated) {
       return {
         ok: false,
-        message: "DeepL gaf geen vertaling terug.",
+        message: msg("admin.conn.deepl.noTranslation"),
         durationMs: Date.now() - started,
       };
     }
 
     return {
       ok: true,
-      message: translated,
+      // The translation itself. Showing it is the entire point of the test.
+      message: raw(translated),
       details: [
-        { label: "Van", value: text.slice(0, 120), level: "neutral" },
-        { label: "Naar", value: target, level: "neutral" },
+        { label: msg("admin.conn.label.from"), value: raw(text.slice(0, 120)), level: "neutral" },
+        { label: msg("admin.conn.label.to"), value: raw(target), level: "neutral" },
       ],
       durationMs: Date.now() - started,
     };
@@ -152,7 +159,7 @@ export async function testTranslation(
 /** Characters used against the plan's allowance, when DeepL reports it. */
 export async function usage(): Promise<TestResult> {
   const key = await readSecret("DEEPL_API_KEY");
-  if (!key) return { ok: false, message: "Er is nog geen DeepL API-sleutel ingesteld." };
+  if (!key) return { ok: false, message: msg("admin.conn.deepl.noKey") };
 
   const configured = await settingValue<"free" | "pro">("translations.endpoint");
 
@@ -179,12 +186,12 @@ export async function usage(): Promise<TestResult> {
       ok: true,
       message:
         limit > 0
-          ? `${used.toLocaleString("nl-NL")} van ${limit.toLocaleString("nl-NL")} tekens gebruikt (${percent}%).`
-          : `${used.toLocaleString("nl-NL")} tekens gebruikt.`,
+          ? msg("admin.conn.deepl.usageOf", { used, limit, percent })
+          : msg("admin.conn.deepl.usage", { used }),
       details: [
         {
-          label: "Verbruik",
-          value: `${percent}%`,
+          label: msg("admin.conn.label.usage"),
+          value: raw(`${percent}%`),
           level: percent > 90 ? "critical" : percent > 75 ? "attention" : "ok",
         },
       ],

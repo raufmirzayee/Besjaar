@@ -41,6 +41,7 @@ import { Route as BeheerCatalogusImportRouteImport } from './routes/beheer.catal
 import { Route as BeheerCategorieenRouteImport } from './routes/beheer.categorieen'
 import { Route as BeheerGebruikersRouteImport } from './routes/beheer.gebruikers'
 import { Route as BeheerImportRouteImport } from './routes/beheer.import'
+import { Route as BeheerInstellingenRouteImport } from './routes/beheer.instellingen'
 import { Route as BeheerKlantenRouteImport } from './routes/beheer.klanten'
 import { Route as BeheerLageVoorraadRouteImport } from './routes/beheer.lage-voorraad'
 import { Route as BeheerMedewerkersRouteImport } from './routes/beheer.medewerkers'
@@ -59,6 +60,19 @@ import { Route as MerkenSlugRouteImport } from './routes/merken.$slug'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as ApiPublicBolSyncRouteImport } from './routes/api/public/bol-sync'
 import { Route as ApiPublicMollieWebhookRouteImport } from './routes/api/public/mollie-webhook'
+import { Route as BeheerInstellingenIndexRouteImport } from './routes/beheer.instellingen.index'
+import { Route as BeheerInstellingenAlgemeenRouteImport } from './routes/beheer.instellingen.algemeen'
+import { Route as BeheerInstellingenBetalingenRouteImport } from './routes/beheer.instellingen.betalingen'
+import { Route as BeheerInstellingenBeveiligingRouteImport } from './routes/beheer.instellingen.beveiliging'
+import { Route as BeheerInstellingenBolRouteImport } from './routes/beheer.instellingen.bol'
+import { Route as BeheerInstellingenEmailRouteImport } from './routes/beheer.instellingen.email'
+import { Route as BeheerInstellingenIntegratiesRouteImport } from './routes/beheer.instellingen.integraties'
+import { Route as BeheerInstellingenSeoRouteImport } from './routes/beheer.instellingen.seo'
+import { Route as BeheerInstellingenSupabaseRouteImport } from './routes/beheer.instellingen.supabase'
+import { Route as BeheerInstellingenSysteemRouteImport } from './routes/beheer.instellingen.systeem'
+import { Route as BeheerInstellingenVertalingenRouteImport } from './routes/beheer.instellingen.vertalingen'
+import { Route as BeheerInstellingenVerzendingRouteImport } from './routes/beheer.instellingen.verzending'
+import { Route as BeheerInstellingenWinkelRouteImport } from './routes/beheer.instellingen.winkel'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -220,6 +234,11 @@ const BeheerImportRoute = BeheerImportRouteImport.update({
   path: '/import',
   getParentRoute: () => BeheerRoute,
 } as any)
+const BeheerInstellingenRoute = BeheerInstellingenRouteImport.update({
+  id: '/instellingen',
+  path: '/instellingen',
+  getParentRoute: () => BeheerRoute,
+} as any)
 const BeheerKlantenRoute = BeheerKlantenRouteImport.update({
   id: '/klanten',
   path: '/klanten',
@@ -311,6 +330,80 @@ const ApiPublicMollieWebhookRoute = ApiPublicMollieWebhookRouteImport.update({
   path: '/api/public/mollie-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BeheerInstellingenIndexRoute = BeheerInstellingenIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BeheerInstellingenRoute,
+} as any)
+const BeheerInstellingenAlgemeenRoute =
+  BeheerInstellingenAlgemeenRouteImport.update({
+    id: '/algemeen',
+    path: '/algemeen',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenBetalingenRoute =
+  BeheerInstellingenBetalingenRouteImport.update({
+    id: '/betalingen',
+    path: '/betalingen',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenBeveiligingRoute =
+  BeheerInstellingenBeveiligingRouteImport.update({
+    id: '/beveiliging',
+    path: '/beveiliging',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenBolRoute = BeheerInstellingenBolRouteImport.update({
+  id: '/bol',
+  path: '/bol',
+  getParentRoute: () => BeheerInstellingenRoute,
+} as any)
+const BeheerInstellingenEmailRoute = BeheerInstellingenEmailRouteImport.update({
+  id: '/email',
+  path: '/email',
+  getParentRoute: () => BeheerInstellingenRoute,
+} as any)
+const BeheerInstellingenIntegratiesRoute =
+  BeheerInstellingenIntegratiesRouteImport.update({
+    id: '/integraties',
+    path: '/integraties',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenSeoRoute = BeheerInstellingenSeoRouteImport.update({
+  id: '/seo',
+  path: '/seo',
+  getParentRoute: () => BeheerInstellingenRoute,
+} as any)
+const BeheerInstellingenSupabaseRoute =
+  BeheerInstellingenSupabaseRouteImport.update({
+    id: '/supabase',
+    path: '/supabase',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenSysteemRoute =
+  BeheerInstellingenSysteemRouteImport.update({
+    id: '/systeem',
+    path: '/systeem',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenVertalingenRoute =
+  BeheerInstellingenVertalingenRouteImport.update({
+    id: '/vertalingen',
+    path: '/vertalingen',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenVerzendingRoute =
+  BeheerInstellingenVerzendingRouteImport.update({
+    id: '/verzending',
+    path: '/verzending',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
+const BeheerInstellingenWinkelRoute =
+  BeheerInstellingenWinkelRouteImport.update({
+    id: '/winkel',
+    path: '/winkel',
+    getParentRoute: () => BeheerInstellingenRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -344,6 +437,7 @@ export interface FileRoutesByFullPath {
   '/beheer/categorieen': typeof BeheerCategorieenRoute
   '/beheer/gebruikers': typeof BeheerGebruikersRoute
   '/beheer/import': typeof BeheerImportRoute
+  '/beheer/instellingen': typeof BeheerInstellingenRouteWithChildren
   '/beheer/klanten': typeof BeheerKlantenRoute
   '/beheer/lage-voorraad': typeof BeheerLageVoorraadRoute
   '/beheer/medewerkers': typeof BeheerMedewerkersRoute
@@ -363,6 +457,19 @@ export interface FileRoutesByFullPath {
   '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
   '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
+  '/beheer/instellingen/algemeen': typeof BeheerInstellingenAlgemeenRoute
+  '/beheer/instellingen/betalingen': typeof BeheerInstellingenBetalingenRoute
+  '/beheer/instellingen/beveiliging': typeof BeheerInstellingenBeveiligingRoute
+  '/beheer/instellingen/bol': typeof BeheerInstellingenBolRoute
+  '/beheer/instellingen/email': typeof BeheerInstellingenEmailRoute
+  '/beheer/instellingen/integraties': typeof BeheerInstellingenIntegratiesRoute
+  '/beheer/instellingen/seo': typeof BeheerInstellingenSeoRoute
+  '/beheer/instellingen/supabase': typeof BeheerInstellingenSupabaseRoute
+  '/beheer/instellingen/systeem': typeof BeheerInstellingenSysteemRoute
+  '/beheer/instellingen/vertalingen': typeof BeheerInstellingenVertalingenRoute
+  '/beheer/instellingen/verzending': typeof BeheerInstellingenVerzendingRoute
+  '/beheer/instellingen/winkel': typeof BeheerInstellingenWinkelRoute
+  '/beheer/instellingen/': typeof BeheerInstellingenIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -414,6 +521,19 @@ export interface FileRoutesByTo {
   '/merken': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
   '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
+  '/beheer/instellingen/algemeen': typeof BeheerInstellingenAlgemeenRoute
+  '/beheer/instellingen/betalingen': typeof BeheerInstellingenBetalingenRoute
+  '/beheer/instellingen/beveiliging': typeof BeheerInstellingenBeveiligingRoute
+  '/beheer/instellingen/bol': typeof BeheerInstellingenBolRoute
+  '/beheer/instellingen/email': typeof BeheerInstellingenEmailRoute
+  '/beheer/instellingen/integraties': typeof BeheerInstellingenIntegratiesRoute
+  '/beheer/instellingen/seo': typeof BeheerInstellingenSeoRoute
+  '/beheer/instellingen/supabase': typeof BeheerInstellingenSupabaseRoute
+  '/beheer/instellingen/systeem': typeof BeheerInstellingenSysteemRoute
+  '/beheer/instellingen/vertalingen': typeof BeheerInstellingenVertalingenRoute
+  '/beheer/instellingen/verzending': typeof BeheerInstellingenVerzendingRoute
+  '/beheer/instellingen/winkel': typeof BeheerInstellingenWinkelRoute
+  '/beheer/instellingen': typeof BeheerInstellingenIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -448,6 +568,7 @@ export interface FileRoutesById {
   '/beheer/categorieen': typeof BeheerCategorieenRoute
   '/beheer/gebruikers': typeof BeheerGebruikersRoute
   '/beheer/import': typeof BeheerImportRoute
+  '/beheer/instellingen': typeof BeheerInstellingenRouteWithChildren
   '/beheer/klanten': typeof BeheerKlantenRoute
   '/beheer/lage-voorraad': typeof BeheerLageVoorraadRoute
   '/beheer/medewerkers': typeof BeheerMedewerkersRoute
@@ -467,6 +588,19 @@ export interface FileRoutesById {
   '/merken/': typeof MerkenIndexRoute
   '/api/public/bol-sync': typeof ApiPublicBolSyncRoute
   '/api/public/mollie-webhook': typeof ApiPublicMollieWebhookRoute
+  '/beheer/instellingen/algemeen': typeof BeheerInstellingenAlgemeenRoute
+  '/beheer/instellingen/betalingen': typeof BeheerInstellingenBetalingenRoute
+  '/beheer/instellingen/beveiliging': typeof BeheerInstellingenBeveiligingRoute
+  '/beheer/instellingen/bol': typeof BeheerInstellingenBolRoute
+  '/beheer/instellingen/email': typeof BeheerInstellingenEmailRoute
+  '/beheer/instellingen/integraties': typeof BeheerInstellingenIntegratiesRoute
+  '/beheer/instellingen/seo': typeof BeheerInstellingenSeoRoute
+  '/beheer/instellingen/supabase': typeof BeheerInstellingenSupabaseRoute
+  '/beheer/instellingen/systeem': typeof BeheerInstellingenSysteemRoute
+  '/beheer/instellingen/vertalingen': typeof BeheerInstellingenVertalingenRoute
+  '/beheer/instellingen/verzending': typeof BeheerInstellingenVerzendingRoute
+  '/beheer/instellingen/winkel': typeof BeheerInstellingenWinkelRoute
+  '/beheer/instellingen/': typeof BeheerInstellingenIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -502,6 +636,7 @@ export interface FileRouteTypes {
     | '/beheer/categorieen'
     | '/beheer/gebruikers'
     | '/beheer/import'
+    | '/beheer/instellingen'
     | '/beheer/klanten'
     | '/beheer/lage-voorraad'
     | '/beheer/medewerkers'
@@ -521,6 +656,19 @@ export interface FileRouteTypes {
     | '/merken/'
     | '/api/public/bol-sync'
     | '/api/public/mollie-webhook'
+    | '/beheer/instellingen/algemeen'
+    | '/beheer/instellingen/betalingen'
+    | '/beheer/instellingen/beveiliging'
+    | '/beheer/instellingen/bol'
+    | '/beheer/instellingen/email'
+    | '/beheer/instellingen/integraties'
+    | '/beheer/instellingen/seo'
+    | '/beheer/instellingen/supabase'
+    | '/beheer/instellingen/systeem'
+    | '/beheer/instellingen/vertalingen'
+    | '/beheer/instellingen/verzending'
+    | '/beheer/instellingen/winkel'
+    | '/beheer/instellingen/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -572,6 +720,19 @@ export interface FileRouteTypes {
     | '/merken'
     | '/api/public/bol-sync'
     | '/api/public/mollie-webhook'
+    | '/beheer/instellingen/algemeen'
+    | '/beheer/instellingen/betalingen'
+    | '/beheer/instellingen/beveiliging'
+    | '/beheer/instellingen/bol'
+    | '/beheer/instellingen/email'
+    | '/beheer/instellingen/integraties'
+    | '/beheer/instellingen/seo'
+    | '/beheer/instellingen/supabase'
+    | '/beheer/instellingen/systeem'
+    | '/beheer/instellingen/vertalingen'
+    | '/beheer/instellingen/verzending'
+    | '/beheer/instellingen/winkel'
+    | '/beheer/instellingen'
   id:
     | '__root__'
     | '/'
@@ -605,6 +766,7 @@ export interface FileRouteTypes {
     | '/beheer/categorieen'
     | '/beheer/gebruikers'
     | '/beheer/import'
+    | '/beheer/instellingen'
     | '/beheer/klanten'
     | '/beheer/lage-voorraad'
     | '/beheer/medewerkers'
@@ -624,6 +786,19 @@ export interface FileRouteTypes {
     | '/merken/'
     | '/api/public/bol-sync'
     | '/api/public/mollie-webhook'
+    | '/beheer/instellingen/algemeen'
+    | '/beheer/instellingen/betalingen'
+    | '/beheer/instellingen/beveiliging'
+    | '/beheer/instellingen/bol'
+    | '/beheer/instellingen/email'
+    | '/beheer/instellingen/integraties'
+    | '/beheer/instellingen/seo'
+    | '/beheer/instellingen/supabase'
+    | '/beheer/instellingen/systeem'
+    | '/beheer/instellingen/vertalingen'
+    | '/beheer/instellingen/verzending'
+    | '/beheer/instellingen/winkel'
+    | '/beheer/instellingen/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -885,6 +1060,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BeheerImportRouteImport
       parentRoute: typeof BeheerRoute
     }
+    '/beheer/instellingen': {
+      id: '/beheer/instellingen'
+      path: '/instellingen'
+      fullPath: '/beheer/instellingen'
+      preLoaderRoute: typeof BeheerInstellingenRouteImport
+      parentRoute: typeof BeheerRoute
+    }
     '/beheer/klanten': {
       id: '/beheer/klanten'
       path: '/klanten'
@@ -1011,8 +1193,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMollieWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/beheer/instellingen/': {
+      id: '/beheer/instellingen/'
+      path: '/'
+      fullPath: '/beheer/instellingen/'
+      preLoaderRoute: typeof BeheerInstellingenIndexRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/algemeen': {
+      id: '/beheer/instellingen/algemeen'
+      path: '/algemeen'
+      fullPath: '/beheer/instellingen/algemeen'
+      preLoaderRoute: typeof BeheerInstellingenAlgemeenRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/betalingen': {
+      id: '/beheer/instellingen/betalingen'
+      path: '/betalingen'
+      fullPath: '/beheer/instellingen/betalingen'
+      preLoaderRoute: typeof BeheerInstellingenBetalingenRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/beveiliging': {
+      id: '/beheer/instellingen/beveiliging'
+      path: '/beveiliging'
+      fullPath: '/beheer/instellingen/beveiliging'
+      preLoaderRoute: typeof BeheerInstellingenBeveiligingRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/bol': {
+      id: '/beheer/instellingen/bol'
+      path: '/bol'
+      fullPath: '/beheer/instellingen/bol'
+      preLoaderRoute: typeof BeheerInstellingenBolRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/email': {
+      id: '/beheer/instellingen/email'
+      path: '/email'
+      fullPath: '/beheer/instellingen/email'
+      preLoaderRoute: typeof BeheerInstellingenEmailRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/integraties': {
+      id: '/beheer/instellingen/integraties'
+      path: '/integraties'
+      fullPath: '/beheer/instellingen/integraties'
+      preLoaderRoute: typeof BeheerInstellingenIntegratiesRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/seo': {
+      id: '/beheer/instellingen/seo'
+      path: '/seo'
+      fullPath: '/beheer/instellingen/seo'
+      preLoaderRoute: typeof BeheerInstellingenSeoRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/supabase': {
+      id: '/beheer/instellingen/supabase'
+      path: '/supabase'
+      fullPath: '/beheer/instellingen/supabase'
+      preLoaderRoute: typeof BeheerInstellingenSupabaseRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/systeem': {
+      id: '/beheer/instellingen/systeem'
+      path: '/systeem'
+      fullPath: '/beheer/instellingen/systeem'
+      preLoaderRoute: typeof BeheerInstellingenSysteemRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/vertalingen': {
+      id: '/beheer/instellingen/vertalingen'
+      path: '/vertalingen'
+      fullPath: '/beheer/instellingen/vertalingen'
+      preLoaderRoute: typeof BeheerInstellingenVertalingenRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/verzending': {
+      id: '/beheer/instellingen/verzending'
+      path: '/verzending'
+      fullPath: '/beheer/instellingen/verzending'
+      preLoaderRoute: typeof BeheerInstellingenVerzendingRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
+    '/beheer/instellingen/winkel': {
+      id: '/beheer/instellingen/winkel'
+      path: '/winkel'
+      fullPath: '/beheer/instellingen/winkel'
+      preLoaderRoute: typeof BeheerInstellingenWinkelRouteImport
+      parentRoute: typeof BeheerInstellingenRoute
+    }
   }
 }
+
+interface BeheerInstellingenRouteChildren {
+  BeheerInstellingenAlgemeenRoute: typeof BeheerInstellingenAlgemeenRoute
+  BeheerInstellingenBetalingenRoute: typeof BeheerInstellingenBetalingenRoute
+  BeheerInstellingenBeveiligingRoute: typeof BeheerInstellingenBeveiligingRoute
+  BeheerInstellingenBolRoute: typeof BeheerInstellingenBolRoute
+  BeheerInstellingenEmailRoute: typeof BeheerInstellingenEmailRoute
+  BeheerInstellingenIntegratiesRoute: typeof BeheerInstellingenIntegratiesRoute
+  BeheerInstellingenSeoRoute: typeof BeheerInstellingenSeoRoute
+  BeheerInstellingenSupabaseRoute: typeof BeheerInstellingenSupabaseRoute
+  BeheerInstellingenSysteemRoute: typeof BeheerInstellingenSysteemRoute
+  BeheerInstellingenVertalingenRoute: typeof BeheerInstellingenVertalingenRoute
+  BeheerInstellingenVerzendingRoute: typeof BeheerInstellingenVerzendingRoute
+  BeheerInstellingenWinkelRoute: typeof BeheerInstellingenWinkelRoute
+  BeheerInstellingenIndexRoute: typeof BeheerInstellingenIndexRoute
+}
+
+const BeheerInstellingenRouteChildren: BeheerInstellingenRouteChildren = {
+  BeheerInstellingenAlgemeenRoute: BeheerInstellingenAlgemeenRoute,
+  BeheerInstellingenBetalingenRoute: BeheerInstellingenBetalingenRoute,
+  BeheerInstellingenBeveiligingRoute: BeheerInstellingenBeveiligingRoute,
+  BeheerInstellingenBolRoute: BeheerInstellingenBolRoute,
+  BeheerInstellingenEmailRoute: BeheerInstellingenEmailRoute,
+  BeheerInstellingenIntegratiesRoute: BeheerInstellingenIntegratiesRoute,
+  BeheerInstellingenSeoRoute: BeheerInstellingenSeoRoute,
+  BeheerInstellingenSupabaseRoute: BeheerInstellingenSupabaseRoute,
+  BeheerInstellingenSysteemRoute: BeheerInstellingenSysteemRoute,
+  BeheerInstellingenVertalingenRoute: BeheerInstellingenVertalingenRoute,
+  BeheerInstellingenVerzendingRoute: BeheerInstellingenVerzendingRoute,
+  BeheerInstellingenWinkelRoute: BeheerInstellingenWinkelRoute,
+  BeheerInstellingenIndexRoute: BeheerInstellingenIndexRoute,
+}
+
+const BeheerInstellingenRouteWithChildren =
+  BeheerInstellingenRoute._addFileChildren(BeheerInstellingenRouteChildren)
 
 interface BeheerRouteChildren {
   BeheerAuditRoute: typeof BeheerAuditRoute
@@ -1024,6 +1332,7 @@ interface BeheerRouteChildren {
   BeheerCategorieenRoute: typeof BeheerCategorieenRoute
   BeheerGebruikersRoute: typeof BeheerGebruikersRoute
   BeheerImportRoute: typeof BeheerImportRoute
+  BeheerInstellingenRoute: typeof BeheerInstellingenRouteWithChildren
   BeheerKlantenRoute: typeof BeheerKlantenRoute
   BeheerLageVoorraadRoute: typeof BeheerLageVoorraadRoute
   BeheerMedewerkersRoute: typeof BeheerMedewerkersRoute
@@ -1047,6 +1356,7 @@ const BeheerRouteChildren: BeheerRouteChildren = {
   BeheerCategorieenRoute: BeheerCategorieenRoute,
   BeheerGebruikersRoute: BeheerGebruikersRoute,
   BeheerImportRoute: BeheerImportRoute,
+  BeheerInstellingenRoute: BeheerInstellingenRouteWithChildren,
   BeheerKlantenRoute: BeheerKlantenRoute,
   BeheerLageVoorraadRoute: BeheerLageVoorraadRoute,
   BeheerMedewerkersRoute: BeheerMedewerkersRoute,

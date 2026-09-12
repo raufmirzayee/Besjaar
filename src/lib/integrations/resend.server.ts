@@ -12,6 +12,9 @@ import { settingValue } from "../settings.server";
 import {
   describeFailure,
   fetchWithTimeout,
+  msg,
+  raw,
+  setOrNot,
   type IntegrationStatus,
   type StatusDetail,
   type TestResult,
@@ -43,23 +46,23 @@ export async function status(): Promise<IntegrationStatus> {
 
   const details: StatusDetail[] = [
     {
-      label: "Provider",
-      value: provider === "none" ? "Uitgeschakeld" : "Resend",
+      label: msg("admin.conn.label.provider"),
+      value: provider === "none" ? msg("admin.conn.value.disabled") : raw("Resend"),
       level: provider === "none" ? "neutral" : "ok",
     },
     {
-      label: "API-sleutel",
-      value: secret.configured ? "Ingesteld" : "Niet ingesteld",
+      label: msg("admin.conn.label.apiKey"),
+      value: setOrNot(secret.configured),
       level: secret.configured ? "ok" : "attention",
     },
     {
-      label: "Afzender",
-      value: from || "Nog niet ingesteld",
+      label: msg("admin.conn.label.sender"),
+      value: from ? raw(from) : msg("admin.conn.value.notSetYet"),
       level: from ? "ok" : "attention",
     },
     {
-      label: "Antwoordadres",
-      value: replyTo || "Valt terug op de klantenservice",
+      label: msg("admin.conn.label.replyTo"),
+      value: replyTo ? raw(replyTo) : msg("admin.conn.resend.replyFallback"),
       level: "neutral",
     },
   ];
@@ -68,8 +71,8 @@ export async function status(): Promise<IntegrationStatus> {
     // Whether the domain is verified is something only a test call can answer,
     // so the card says what it knows rather than guessing.
     details.push({
-      label: "Verzenddomein",
-      value: `${domain} — verificatie te controleren via de test`,
+      label: msg("admin.conn.label.sendingDomain"),
+      value: msg("admin.conn.resend.domainUnverified", { domain }),
       level: "neutral",
     });
   }
@@ -99,7 +102,7 @@ export async function status(): Promise<IntegrationStatus> {
 export async function testConnection(): Promise<TestResult> {
   const started = Date.now();
   const key = await readSecret("RESEND_API_KEY");
-  if (!key) return { ok: false, message: "Er is nog geen Resend API-sleutel ingesteld." };
+  if (!key) return { ok: false, message: msg("admin.conn.resend.noKey") };
 
   const from = await settingValue<string>("email.from");
   const wanted = senderDomain(from);
@@ -124,15 +127,15 @@ export async function testConnection(): Promise<TestResult> {
     const match = wanted ? domains.find((d) => d.name.toLowerCase() === wanted) : undefined;
 
     const details: StatusDetail[] = domains.slice(0, 8).map((domain) => ({
-      label: domain.name,
-      value: domain.status === "verified" ? "Geverifieerd" : domain.status,
+      label: raw(domain.name),
+      value: domain.status === "verified" ? msg("admin.conn.resend.verified") : raw(domain.status),
       level: domain.status === "verified" ? ("ok" as const) : ("attention" as const),
     }));
 
     if (wanted && !match) {
       return {
         ok: true,
-        message: `Verbonden met Resend, maar ${wanted} staat niet in dit account. E-mail vanaf dat adres wordt geweigerd.`,
+        message: msg("admin.conn.resend.domainMissing", { domain: wanted }),
         details,
         durationMs: Date.now() - started,
       };
@@ -140,7 +143,7 @@ export async function testConnection(): Promise<TestResult> {
     if (match && match.status !== "verified") {
       return {
         ok: true,
-        message: `Verbonden met Resend. ${wanted} is nog niet geverifieerd, dus verzenden lukt nog niet.`,
+        message: msg("admin.conn.resend.domainNotVerified", { domain: wanted! }),
         details,
         durationMs: Date.now() - started,
       };
@@ -149,8 +152,8 @@ export async function testConnection(): Promise<TestResult> {
     return {
       ok: true,
       message: wanted
-        ? `Verbonden met Resend. ${wanted} is geverifieerd.`
-        : "Verbonden met Resend. Stel nog een afzenderadres in.",
+        ? msg("admin.conn.resend.okVerified", { domain: wanted })
+        : msg("admin.conn.resend.okNoSender"),
       details,
       durationMs: Date.now() - started,
     };
@@ -178,8 +181,8 @@ export async function sendTestEmail(to: string): Promise<TestResult> {
     settingValue<string>("email.reply_to"),
   ]);
 
-  if (!key) return { ok: false, message: "Er is nog geen Resend API-sleutel ingesteld." };
-  if (!from) return { ok: false, message: "Stel eerst een afzenderadres in." };
+  if (!key) return { ok: false, message: msg("admin.conn.resend.noKey") };
+  if (!from) return { ok: false, message: msg("admin.conn.resend.noSender") };
 
   try {
     const response = await fetchWithTimeout(`${RESEND_API}/emails`, {
@@ -189,11 +192,14 @@ export async function sendTestEmail(to: string): Promise<TestResult> {
         from,
         to: [to],
         reply_to: replyTo || undefined,
-        subject: "Besjaar — testbericht",
+        subject: "Besjaar — testbericht / test message",
         html:
-          "<p>Dit is een testbericht uit het Besjaar-beheer.</p>" +
-          "<p>Als je dit leest, werkt de e-mailinstelling: de sleutel is geldig, " +
-          "het afzenderadres is geaccepteerd en de bezorging is gelukt.</p>",
+          "<p>Dit is een testbericht uit het Besjaar-beheer. " +
+          "Als je dit leest, werkt de e-mailinstelling: de sleutel is geldig, " +
+          "het afzenderadres is geaccepteerd en de bezorging is gelukt.</p>" +
+          "<p>This is a test message from the Besjaar admin. If you are reading it, " +
+          "e-mail is working: the key is valid, the sender address was accepted and " +
+          "delivery succeeded.</p>",
       }),
     });
 
@@ -207,7 +213,7 @@ export async function sendTestEmail(to: string): Promise<TestResult> {
 
     return {
       ok: true,
-      message: `Testbericht verstuurd naar ${to}. Controleer de inbox — en de spammap.`,
+      message: msg("admin.conn.resend.sent", { address: to }),
       durationMs: Date.now() - started,
     };
   } catch (error) {

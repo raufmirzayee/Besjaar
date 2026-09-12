@@ -12,6 +12,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { secretStoreCapability } from "../secret-store.server";
 import {
   describeFailure,
+  msg,
+  raw,
   type IntegrationStatus,
   type StatusDetail,
   type TestResult,
@@ -31,7 +33,7 @@ export async function testDatabase(): Promise<TestResult> {
     if (error) throw new Error(error.message);
     return {
       ok: true,
-      message: "De database antwoordt.",
+      message: msg("admin.conn.sb.databaseOk"),
       durationMs: Date.now() - started,
     };
   } catch (error) {
@@ -49,7 +51,7 @@ export async function testAuth(): Promise<TestResult> {
   try {
     const { error } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 });
     if (error) throw new Error(error.message);
-    return { ok: true, message: "Authenticatie werkt.", durationMs: Date.now() - started };
+    return { ok: true, message: msg("admin.conn.sb.authOk"), durationMs: Date.now() - started };
   } catch (error) {
     return {
       ok: false,
@@ -70,17 +72,18 @@ export async function testStorage(): Promise<TestResult> {
     if (problems.length === 0) {
       return {
         ok: true,
-        message: "Alle opslagbuckets bestaan en staan goed ingesteld.",
+        message: msg("admin.conn.sb.storageOk"),
         durationMs: Date.now() - started,
       };
     }
 
     return {
       ok: false,
-      message: `${problems.length} bucket${problems.length === 1 ? "" : "s"} heeft aandacht nodig.`,
+      message: msg("admin.conn.sb.storageProblems", { count: problems.length }),
       details: problems.map((problem) => ({
-        label: problem.bucket,
-        value: problem.problem,
+        label: raw(problem.bucket),
+        // The audit function's own wording, which names the setting at fault.
+        value: raw(problem.problem),
         level: "attention" as const,
       })),
       durationMs: Date.now() - started,
@@ -108,18 +111,14 @@ export async function testRls(): Promise<TestResult> {
 
     const exposed = (data ?? []) as { view_name: string; problem: string }[];
     if (exposed.length === 0) {
-      return {
-        ok: true,
-        message: "Geen interne weergaven bereikbaar vanuit de browser.",
-        durationMs: Date.now() - started,
-      };
+      return { ok: true, message: msg("admin.conn.sb.rlsOk"), durationMs: Date.now() - started };
     }
     return {
       ok: false,
-      message: `${exposed.length} interne weergave${exposed.length === 1 ? "" : "n"} is bereikbaar vanuit de browser.`,
+      message: msg("admin.conn.sb.rlsExposed", { count: exposed.length }),
       details: exposed.map((row) => ({
-        label: row.view_name,
-        value: row.problem,
+        label: raw(row.view_name),
+        value: raw(row.problem),
         level: "critical" as const,
       })),
       durationMs: Date.now() - started,
@@ -147,14 +146,13 @@ export async function testAdminAccounts(): Promise<TestResult> {
     if (count === 0) {
       return {
         ok: false,
-        message:
-          "Er is nog geen super admin. Gebruik de eerste-beheerder-stap of de SQL in DEPLOYMENT.md.",
+        message: msg("admin.conn.sb.noSuperAdmin"),
         durationMs: Date.now() - started,
       };
     }
     return {
       ok: true,
-      message: `${count} super admin${count === 1 ? "" : "s"} ingesteld.`,
+      message: msg("admin.conn.sb.superAdmins", { count }),
       durationMs: Date.now() - started,
     };
   } catch (error) {
@@ -176,26 +174,24 @@ export async function status(): Promise<IntegrationStatus> {
 
   const details: StatusDetail[] = [
     {
-      label: "Project",
-      value: url ? new URL(url).hostname : "Geen project ingesteld",
+      label: msg("admin.conn.label.project"),
+      value: url ? raw(new URL(url).hostname) : msg("admin.conn.sb.noProject"),
       level: url ? "ok" : "critical",
     },
     {
-      label: "Database",
-      value: database.ok ? "Verbonden" : database.message,
+      label: msg("admin.conn.label.database"),
+      value: database.ok ? msg("admin.conn.value.connected") : database.message,
       level: database.ok ? "ok" : "critical",
     },
     {
       // Never the value, never a hint. Whether it is set, and where it lives.
-      label: "Service role",
-      value: serviceRole ? "Alleen op de server" : "Niet ingesteld",
+      label: msg("admin.conn.label.serviceRole"),
+      value: msg(serviceRole ? "admin.conn.sb.serverOnly" : "admin.conn.value.notSet"),
       level: serviceRole ? "ok" : "critical",
     },
     {
-      label: "Beveiligde opslag",
-      value: capability.writable
-        ? "Supabase Vault beschikbaar"
-        : "Niet beschikbaar — credentials blijven in de deploy-omgeving",
+      label: msg("admin.conn.label.secureStorage"),
+      value: msg(capability.writable ? "admin.conn.store.vault" : "admin.conn.store.environment"),
       level: capability.writable ? "ok" : "neutral",
     },
   ];

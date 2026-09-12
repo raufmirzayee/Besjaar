@@ -251,6 +251,13 @@ export const ADMIN_NAV: AdminNavItem[] = [
     group: "admin.group.system",
   },
   {
+    to: "/beheer/instellingen",
+    label: "admin.nav.settings",
+    module: "settings",
+    icon: "SlidersHorizontal",
+    group: "admin.group.system",
+  },
+  {
     to: "/beheer/audit",
     label: "admin.nav.audit",
     module: "audit",
@@ -304,5 +311,11 @@ export const QUICK_ACTIONS: QuickAction[] = [
     to: "/beheer/bestellingen",
     module: "orders",
     action: "edit",
+  },
+  {
+    label: "admin.quick.openSettings",
+    to: "/beheer/instellingen",
+    module: "settings",
+    action: "view",
   },
 ];

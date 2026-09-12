@@ -14,7 +14,11 @@ import { settingValue } from "../settings.server";
 import {
   describeFailure,
   fetchWithTimeout,
+  msg,
+  onOrOff,
+  setOrNot,
   type IntegrationStatus,
+  type Message,
   type StatusDetail,
   type TestResult,
 } from "./types";
@@ -50,16 +54,23 @@ async function latestJobs(): Promise<Map<string, JobRow>> {
   return latest;
 }
 
-function jobDetail(label: string, row: JobRow | undefined): StatusDetail {
-  if (!row) return { label, value: "Nog niet uitgevoerd", level: "neutral" };
+function jobDetail(label: Message, row: JobRow | undefined): StatusDetail {
+  if (!row) return { label, value: msg("admin.conn.bol.neverRun"), level: "neutral" };
 
   const when = (row.finished_at ?? row.created_at).slice(0, 16).replace("T", " ");
-  if (row.status === "success") return { label, value: `Geslaagd — ${when}`, level: "ok" };
-  if (row.status === "partial")
-    return { label, value: `Deels geslaagd — ${when}`, level: "attention" };
-  if (row.status === "running") return { label, value: "Bezig", level: "neutral" };
-  if (row.status === "pending") return { label, value: "In wachtrij", level: "neutral" };
-  return { label, value: `Mislukt — ${when}`, level: "critical" };
+  if (row.status === "success") {
+    return { label, value: msg("admin.conn.bol.succeeded", { when }), level: "ok" };
+  }
+  if (row.status === "partial") {
+    return { label, value: msg("admin.conn.bol.partial", { when }), level: "attention" };
+  }
+  if (row.status === "running") {
+    return { label, value: msg("admin.conn.bol.running"), level: "neutral" };
+  }
+  if (row.status === "pending") {
+    return { label, value: msg("admin.conn.bol.queued"), level: "neutral" };
+  }
+  return { label, value: msg("admin.conn.bol.failed", { when }), level: "critical" };
 }
 
 export async function status(): Promise<IntegrationStatus> {
@@ -74,21 +85,21 @@ export async function status(): Promise<IntegrationStatus> {
 
   const details: StatusDetail[] = [
     {
-      label: "Client ID",
-      value: id.configured ? "Ingesteld" : "Niet ingesteld",
+      label: msg("admin.conn.label.clientId"),
+      value: setOrNot(id.configured),
       level: id.configured ? "ok" : "neutral",
     },
     {
-      label: "Client secret",
-      value: secret.configured ? "Ingesteld" : "Niet ingesteld",
+      label: msg("admin.conn.label.clientSecret"),
+      value: setOrNot(secret.configured),
       level: secret.configured ? "ok" : "neutral",
     },
-    jobDetail("Bestellingen", jobs.get("orders")),
-    jobDetail("Voorraad", jobs.get("stock")),
-    jobDetail("Verzendingen", jobs.get("shipments")),
+    jobDetail(msg("admin.conn.label.orders"), jobs.get("orders")),
+    jobDetail(msg("admin.conn.label.stock"), jobs.get("stock")),
+    jobDetail(msg("admin.conn.label.shipments"), jobs.get("shipments")),
     {
-      label: "Automatisch synchroniseren",
-      value: autoSync ? "Aan" : "Uit",
+      label: msg("admin.conn.label.autoSync"),
+      value: onOrOff(autoSync),
       level: "neutral",
     },
   ];
@@ -121,7 +132,7 @@ export async function testConnection(): Promise<TestResult> {
   ]);
 
   if (!clientId || !clientSecret) {
-    return { ok: false, message: "Vul eerst zowel de client ID als het client secret in." };
+    return { ok: false, message: msg("admin.conn.bol.needBoth") };
   }
 
   try {
@@ -136,7 +147,7 @@ export async function testConnection(): Promise<TestResult> {
       if (response.status === 401) {
         return {
           ok: false,
-          message: "bol.com weigerde de combinatie van client ID en secret.",
+          message: msg("admin.conn.bol.refused"),
           durationMs: Date.now() - started,
         };
       }
@@ -151,19 +162,21 @@ export async function testConnection(): Promise<TestResult> {
     if (!payload.access_token) {
       return {
         ok: false,
-        message: "bol.com gaf geen token terug.",
+        message: msg("admin.conn.bol.noToken"),
         durationMs: Date.now() - started,
       };
     }
 
     return {
       ok: true,
-      message: "Verbonden met bol.com. De inloggegevens zijn geldig.",
+      message: msg("admin.conn.bol.ok"),
       details: payload.expires_in
         ? [
             {
-              label: "Token geldig",
-              value: `${Math.round(payload.expires_in / 60)} minuten`,
+              label: msg("admin.conn.label.tokenValid"),
+              value: msg("admin.conn.bol.minutes", {
+                minutes: Math.round(payload.expires_in / 60),
+              }),
               level: "neutral",
             },
           ]

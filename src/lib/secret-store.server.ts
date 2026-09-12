@@ -22,57 +22,20 @@
  */
 
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import {
+  MANAGED_SECRETS,
+  type ManagedSecret,
+  type SecretStatus,
+  type SecretStoreCapability,
+} from "./secrets";
 
-/** The credentials the admin may replace. Anything else is deployment-level. */
-export const MANAGED_SECRETS = [
-  "MOLLIE_API_KEY",
-  "RESEND_API_KEY",
-  "DEEPL_API_KEY",
-  "BOL_CLIENT_ID",
-  "BOL_CLIENT_SECRET",
-  "SYNC_TRIGGER_SECRET",
-] as const;
-
-export type ManagedSecret = (typeof MANAGED_SECRETS)[number];
-
-export function isManagedSecret(name: string): name is ManagedSecret {
-  return (MANAGED_SECRETS as readonly string[]).includes(name);
-}
-
-/**
- * What a caller outside this module is allowed to know about a credential.
- *
- * There is no `value` field, and adding one would be the bug. Everything the
- * admin renders comes from here.
- */
-export type SecretStatus = {
-  name: ManagedSecret;
-  configured: boolean;
-  /** Which backend holds it. `none` when nothing does. */
-  source: "vault" | "environment" | "none";
-  /**
-   * A few characters to recognise it by, or null. Only produced for credentials
-   * whose shape makes a hint meaningless on its own — never more than a prefix
-   * and the last four characters.
-   */
-  maskedHint: string | null;
-  /** When it was last replaced through the admin. Null for an env value. */
-  updatedAt: string | null;
-  /**
-   * Whether the running deployment is already using this value. A vault write
-   * is live immediately; an environment value that was just changed is not,
-   * until the platform restarts the worker.
-   */
-  liveNow: boolean;
-};
-
-/** Whether the admin can save credentials at all on this deployment. */
-export type SecretStoreCapability = {
-  writable: boolean;
-  backend: "vault" | "environment-only";
-  /** Shown to the admin when `writable` is false. */
-  reason: string | null;
-};
+export {
+  MANAGED_SECRETS,
+  isManagedSecret,
+  type ManagedSecret,
+  type SecretStatus,
+  type SecretStoreCapability,
+} from "./secrets";
 
 let capabilityCache: SecretStoreCapability | null = null;
 

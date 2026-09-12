@@ -9,8 +9,8 @@
  *   verified    the webhook URL is an https address Mollie could reach
  *   tested      a payment has actually been created and come back
  *
- * The key itself never leaves this file. `testConnection` returns a sentence
- * and a few labelled rows; the raw Mollie response goes to the server log.
+ * The key itself never leaves this file. `testConnection` returns a message
+ * name and a few labelled rows; the raw Mollie response goes to the server log.
  */
 
 import { readSecret, secretStatus, secretStoreCapability } from "../secret-store.server";
@@ -19,7 +19,10 @@ import type { CheckoutMode } from "../settings-schema";
 import {
   describeFailure,
   fetchWithTimeout,
+  msg,
+  raw,
   type IntegrationStatus,
+  type Message,
   type StatusDetail,
   type TestResult,
 } from "./types";
@@ -45,19 +48,24 @@ export function classifyKey(key: string | undefined): "live" | "test" | "unknown
 export function keyMatchesMode(
   keyKind: ReturnType<typeof classifyKey>,
   mode: CheckoutMode,
-): { ok: boolean; reason: string | null } {
+): { ok: boolean; reason: Message | null } {
   if (mode === "disabled") return { ok: true, reason: null };
-  if (keyKind === "absent") return { ok: false, reason: "Er is geen Mollie-sleutel ingesteld." };
-  if (keyKind === "unknown") {
-    return { ok: false, reason: "De sleutel begint niet met test_ of live_." };
-  }
+  if (keyKind === "absent") return { ok: false, reason: msg("admin.conn.mollie.noKey") };
+  if (keyKind === "unknown") return { ok: false, reason: msg("admin.conn.mollie.oddPrefix") };
   if (mode === "live" && keyKind === "test") {
-    return { ok: false, reason: "Live modus met een testsleutel: klanten betalen niet echt." };
+    return { ok: false, reason: msg("admin.conn.mollie.testKeyLiveMode") };
   }
   if (mode === "test" && keyKind === "live") {
-    return { ok: false, reason: "Testmodus met een live sleutel: er wordt echt geld geïnd." };
+    return { ok: false, reason: msg("admin.conn.mollie.liveKeyTestMode") };
   }
   return { ok: true, reason: null };
+}
+
+function keyKindLabel(kind: ReturnType<typeof classifyKey>): Message {
+  if (kind === "live") return msg("admin.conn.mollie.setLive");
+  if (kind === "test") return msg("admin.conn.mollie.setTest");
+  if (kind === "unknown") return msg("admin.conn.mollie.setUnknown");
+  return msg("admin.conn.value.notSet");
 }
 
 export async function status(): Promise<IntegrationStatus> {
@@ -74,26 +82,34 @@ export async function status(): Promise<IntegrationStatus> {
 
   const details: StatusDetail[] = [
     {
-      label: "Modus",
-      value: mode === "live" ? "Live" : mode === "test" ? "Test" : "Uitgeschakeld",
+      label: msg("admin.conn.label.mode"),
+      value: msg(
+        mode === "live"
+          ? "admin.conn.mode.live"
+          : mode === "test"
+            ? "admin.conn.mode.test"
+            : "admin.conn.mode.off",
+      ),
       level: mode === "live" ? "ok" : mode === "test" ? "attention" : "neutral",
     },
     {
-      label: "API-sleutel",
-      value: secret.configured
-        ? `Ingesteld (${kind === "live" ? "live" : kind === "test" ? "test" : "onbekend type"})`
-        : "Niet ingesteld",
+      label: msg("admin.conn.label.apiKey"),
+      value: keyKindLabel(kind),
       level: secret.configured ? (kind === "unknown" ? "attention" : "ok") : "critical",
     },
     {
-      label: "Webhook",
-      value: webhook ? "Adres ingesteld" : "Nog geen adres",
+      label: msg("admin.conn.label.webhook"),
+      value: msg(webhook ? "admin.conn.value.addressSet" : "admin.conn.value.noAddress"),
       level: webhook ? "ok" : "attention",
     },
   ];
 
   if (!match.ok && match.reason) {
-    details.push({ label: "Let op", value: match.reason, level: "critical" });
+    details.push({
+      label: msg("admin.conn.label.warning"),
+      value: match.reason,
+      level: "critical",
+    });
   }
 
   const state = !secret.configured
@@ -132,15 +148,11 @@ export async function testConnection(): Promise<TestResult> {
   const started = Date.now();
   const key = await readSecret("MOLLIE_API_KEY");
 
-  if (!key) {
-    return { ok: false, message: "Er is nog geen Mollie API-sleutel ingesteld." };
-  }
+  if (!key) return { ok: false, message: msg("admin.conn.mollie.noKey") };
 
   const mode = await settingValue<CheckoutMode>("payments.mode");
   const match = keyMatchesMode(classifyKey(key), mode);
-  if (!match.ok && match.reason) {
-    return { ok: false, message: match.reason };
-  }
+  if (!match.ok && match.reason) return { ok: false, message: match.reason };
 
   try {
     const response = await fetchWithTimeout(`${MOLLIE_API}/methods`, {
@@ -165,11 +177,12 @@ export async function testConnection(): Promise<TestResult> {
       ok: true,
       message:
         methods.length > 0
-          ? `Verbonden met Mollie. ${methods.length} betaalmethode${methods.length === 1 ? "" : "n"} actief.`
-          : "Verbonden met Mollie, maar er zijn nog geen betaalmethoden geactiveerd in je Mollie-account.",
+          ? msg("admin.conn.mollie.okMethods", { count: methods.length })
+          : msg("admin.conn.mollie.okNoMethods"),
       details: methods.slice(0, 8).map((method) => ({
-        label: method.description,
-        value: "Actief",
+        // The method's own name, as Mollie spells it. Nothing to translate.
+        label: raw(method.description),
+        value: msg("admin.conn.value.active"),
         level: "ok" as const,
       })),
       durationMs: Date.now() - started,
@@ -202,31 +215,34 @@ export async function liveReadiness(): Promise<StatusDetail[]> {
   const key = secret.configured ? await readSecret("MOLLIE_API_KEY") : undefined;
   const isLiveKey = classifyKey(key) === "live";
   const httpsSite = siteUrl.startsWith("https://");
+  const httpsHook = webhook.startsWith("https://");
 
   return [
     {
-      label: "Live API-sleutel",
-      value: isLiveKey ? "Ingesteld" : "Nog een testsleutel",
+      label: msg("admin.conn.ready.liveKey"),
+      value: msg(isLiveKey ? "admin.conn.value.set" : "admin.conn.ready.stillTestKey"),
       level: isLiveKey ? "ok" : "critical",
     },
     {
-      label: "Winkeladres",
-      value: httpsSite ? siteUrl : "Geen https-adres ingesteld",
+      label: msg("admin.conn.ready.siteUrl"),
+      value: httpsSite ? raw(siteUrl) : msg("admin.conn.ready.noHttpsSite"),
       level: httpsSite ? "ok" : "critical",
     },
     {
-      label: "Webhook",
-      value: webhook.startsWith("https://") ? "Ingesteld" : "Nog geen https-adres",
-      level: webhook.startsWith("https://") ? "ok" : "critical",
+      label: msg("admin.conn.label.webhook"),
+      value: msg(httpsHook ? "admin.conn.value.set" : "admin.conn.ready.noHttpsHook"),
+      level: httpsHook ? "ok" : "critical",
     },
     {
-      label: "Opslag credentials",
-      value: capability.writable ? "Beveiligde opslag actief" : "Deploy-omgeving",
+      label: msg("admin.conn.ready.credentialStorage"),
+      value: msg(capability.writable ? "admin.conn.store.vault" : "admin.conn.store.environment"),
       level: "neutral",
     },
     {
-      label: "Goedkeuring",
-      value: approvedAt ? `Goedgekeurd op ${approvedAt.slice(0, 10)}` : "Nog niet goedgekeurd",
+      label: msg("admin.conn.ready.approval"),
+      value: approvedAt
+        ? msg("admin.conn.ready.approvedOn", { date: approvedAt.slice(0, 10) })
+        : msg("admin.conn.ready.notApproved"),
       level: approvedAt ? "ok" : "attention",
     },
   ];

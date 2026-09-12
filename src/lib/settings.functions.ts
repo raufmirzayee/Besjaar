@@ -295,3 +295,45 @@ export const exportSettings = createServerFn({ method: "GET" })
       ),
     };
   });
+
+/**
+ * Records that somebody has reviewed a setup step whose subject is a decision.
+ *
+ * Only the two steps the wizard marks `acknowledged` can be recorded this way.
+ * Everything else measures a real value, and letting a button mark those
+ * complete would turn the checklist into decoration.
+ */
+export const acknowledgeSetupStep = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(v.validator(z.object({ step: z.string().max(40), done: z.boolean() }).strict()))
+  .handler(async ({ context, data }) => {
+    await requirePermission(context, "settings", "edit");
+
+    const { SETUP_STEPS } = await import("./setup-wizard");
+    const step = SETUP_STEPS.find((candidate) => candidate.id === data.step);
+    if (!step?.acknowledged) {
+      throw new Error("Deze stap wordt afgeleid uit de instellingen, niet afgevinkt.");
+    }
+
+    const { saveSettings, settingValue } = await import("./settings.server");
+    const current = await settingValue<string[]>("system.setup_completed_steps");
+    const list = Array.isArray(current) ? current : [];
+
+    const next = data.done
+      ? [...new Set([...list, data.step])]
+      : list.filter((entry) => entry !== data.step);
+
+    await saveSettings({ "system.setup_completed_steps": next }, context.userId);
+    return { steps: next };
+  });
+
+/** Hides the setup assistant on the overview once the shop is running. */
+export const dismissSetup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(v.validator(z.object({ dismissed: z.boolean() }).strict()))
+  .handler(async ({ context, data }) => {
+    await requirePermission(context, "settings", "edit");
+    const { saveSettings } = await import("./settings.server");
+    await saveSettings({ "system.setup_dismissed": data.dismissed }, context.userId);
+    return { dismissed: data.dismissed };
+  });

@@ -21,21 +21,14 @@ import {
   SETTINGS,
   SETTING_KEYS,
   validateSetting,
+  type ResolvedSetting,
+  type SaveResult,
   type SettingCategory,
   type SettingValue,
+  type SettingValues,
 } from "./settings-schema";
 
-export type SettingValues = Record<string, SettingValue>;
-
-/** Where a resolved value came from. The admin shows this beside each field. */
-export type SettingSource = "database" | "environment" | "default";
-
-export type ResolvedSetting = {
-  key: string;
-  value: SettingValue;
-  source: SettingSource;
-  updatedAt: string | null;
-};
+export type { ResolvedSetting, SaveResult, SettingSource, SettingValues } from "./settings-schema";
 
 type Row = { key: string; value: SettingValue; updated_at: string };
 
@@ -175,9 +168,6 @@ export async function publicSettings(): Promise<SettingValues> {
   }
   return values;
 }
-
-export type SaveResult =
-  { ok: true; saved: string[] } | { ok: false; errors: Record<string, string> };
 
 /**
  * Writes settings.

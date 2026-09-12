@@ -147,10 +147,9 @@ export function NoAccessState({ module }: { module: string }) {
   const { t } = useI18n();
   return (
     <div className="rounded-xl border border-border bg-card p-10 text-center">
-      <p className="font-medium">Geen toegang tot {module}</p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Je rol geeft geen rechten voor deze pagina. Vraag een super admin om toegang.
-      </p>
+      {/* The module name arrives as a translation key where the caller has one. */}
+      <p className="font-medium">{t("admin.common.noAccessTo", { module })}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("admin.common.noAccessBody")}</p>
       <Button className="mt-4" variant="outline" asChild>
         <Link to="/beheer">{t("admin.common.backToDashboard")}</Link>
       </Button>

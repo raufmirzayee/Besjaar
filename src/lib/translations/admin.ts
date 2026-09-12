@@ -1,5 +1,7 @@
 import type { Locale } from "@/lib/i18n";
 
+import { settingsEn, settingsNl } from "./settings";
+
 /**
  * Backoffice copy.
  *
@@ -9,6 +11,8 @@ import type { Locale } from "@/lib/i18n";
  * below — nothing else changes.
  */
 const nl = {
+  ...settingsNl,
+
   // Shell and navigation
   "admin.shell.title": "Beheer",
   "admin.shell.search": "Zoek producten, bestellingen, klanten…",
@@ -669,6 +673,8 @@ const nl = {
 type Key = keyof typeof nl;
 
 const en: Record<Key, string> = {
+  ...settingsEn,
+
   "admin.shell.title": "Admin",
   "admin.shell.search": "Search products, orders, customers…",
   "admin.shell.searching": "Searching…",

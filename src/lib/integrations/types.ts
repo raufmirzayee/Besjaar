@@ -5,16 +5,38 @@
  * straight from these types, so anything that would be unsafe in a browser must
  * not be expressible here.
  *
- * The four states below are deliberately separate, because collapsing them is
- * the lie that integration dashboards usually tell. "Connected" because an API
- * key is present is not connected — it is an environment variable with a
- * plausible shape. The distinction matters most at exactly the moment it is
- * most tempting to blur: a shop owner about to take real money wants to know
- * that a payment actually went through, not that a string exists.
+ * The states below are deliberately separate, because collapsing them is the
+ * lie that integration dashboards usually tell. "Connected" because an API key
+ * is present is not connected — it is an environment variable with a plausible
+ * shape. The distinction matters most at exactly the moment it is most tempting
+ * to blur: a shop owner about to take real money wants to know that a payment
+ * actually went through, not that a string exists.
  */
 
-/** Present and plausibly shaped. Says nothing about whether it works. */
-export type ConfiguredState = boolean;
+import type { TranslationKey } from "@/lib/translations";
+
+/**
+ * Something to show a person, decided on the server and worded in the browser.
+ *
+ * The adapters run server-side, where there is no locale — the admin is Dutch
+ * and English, and a status card that says "Verbonden" to an English user is a
+ * half-finished translation. So the server names the message and the screen
+ * renders it. `text` is the exception, for content that *is* the answer: a
+ * domain name, a translated sentence, a hostname. Those are not copy and have
+ * nothing to translate.
+ */
+export type Message =
+  | { key: TranslationKey; params?: Record<string, string | number> }
+  | {
+      text: string;
+    };
+
+export const msg = (key: TranslationKey, params?: Record<string, string | number>): Message => ({
+  key,
+  params,
+});
+
+export const raw = (text: string): Message => ({ text });
 
 export type ConnectionState =
   /** Nothing configured. Not an error — most shops do not use every service. */
@@ -33,9 +55,8 @@ export type HealthLevel = "ok" | "attention" | "critical" | "neutral";
 
 /** One line in a status card. */
 export type StatusDetail = {
-  label: string;
-  /** Short, human, already translated by the caller. Never a raw API message. */
-  value: string;
+  label: Message;
+  value: Message;
   level: HealthLevel;
 };
 
@@ -67,7 +88,7 @@ export type IntegrationId = "supabase" | "mollie" | "resend" | "deepl" | "bol";
  */
 export type TestResult = {
   ok: boolean;
-  message: string;
+  message: Message;
   /** Extra rows to show under the result. Sanitised, like everything else. */
   details?: StatusDetail[];
   /** Milliseconds the call took, when that is interesting. */
@@ -86,18 +107,6 @@ export type IntegrationCapabilities = {
   canManageSecret: boolean;
 };
 
-export type IntegrationSummary = IntegrationStatus & {
-  capabilities: IntegrationCapabilities;
-  /** Credential status per secret this integration needs. Never a value. */
-  secrets: {
-    name: string;
-    configured: boolean;
-    source: "vault" | "environment" | "none";
-    maskedHint: string | null;
-    updatedAt: string | null;
-  }[];
-};
-
 /**
  * Turns a thrown error into something a shop owner can act on.
  *
@@ -105,35 +114,31 @@ export type IntegrationSummary = IntegrationStatus & {
  * a category. Every integration adapter funnels its failures through this, so
  * there is one place to be careful rather than five.
  */
-export function describeFailure(error: unknown, context: string): string {
-  const raw = error instanceof Error ? error.message : String(error);
-  console.error(`[integrations] ${context}:`, raw);
+export function describeFailure(error: unknown, context: string): Message {
+  const detail = error instanceof Error ? error.message : String(error);
+  console.error(`[integrations] ${context}:`, detail);
 
-  const lowered = raw.toLowerCase();
+  const lowered = detail.toLowerCase();
 
   if (
     lowered.includes("401") ||
     lowered.includes("unauthorized") ||
     lowered.includes("invalid api key")
   ) {
-    return "Authenticatie mislukt. Controleer de API-sleutel.";
+    return msg("admin.conn.err.auth");
   }
-  if (lowered.includes("403") || lowered.includes("forbidden")) {
-    return "Toegang geweigerd. De sleutel bestaat, maar mag deze actie niet uitvoeren.";
-  }
-  if (lowered.includes("404")) {
-    return "De dienst gaf 'niet gevonden' terug. Controleer de instellingen.";
-  }
+  if (lowered.includes("403") || lowered.includes("forbidden")) return msg("admin.conn.err.denied");
+  if (lowered.includes("404")) return msg("admin.conn.err.notFound");
   if (lowered.includes("429") || lowered.includes("quota") || lowered.includes("rate limit")) {
-    return "Limiet bereikt bij de dienst. Probeer het later opnieuw.";
+    return msg("admin.conn.err.limited");
   }
   if (lowered.includes("timeout") || lowered.includes("aborted")) {
-    return "Geen antwoord binnen de tijdslimiet. De dienst is traag of onbereikbaar.";
+    return msg("admin.conn.err.timeout");
   }
   if (lowered.includes("fetch") || lowered.includes("network") || lowered.includes("enotfound")) {
-    return "De dienst is niet bereikbaar vanaf deze server.";
+    return msg("admin.conn.err.unreachable");
   }
-  return "De verbinding kon niet worden getest. Bekijk de serverlogboeken voor details.";
+  return msg("admin.conn.err.unknown");
 }
 
 /** A fetch with a deadline, so a hanging service cannot hang the admin. */
@@ -144,3 +149,10 @@ export async function fetchWithTimeout(
 ): Promise<Response> {
   return fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
 }
+
+/** `Ingesteld` / `Niet ingesteld`, the commonest row on every card. */
+export const setOrNot = (configured: boolean): StatusDetail["value"] =>
+  msg(configured ? "admin.conn.value.set" : "admin.conn.value.notSet");
+
+export const onOrOff = (enabled: boolean): StatusDetail["value"] =>
+  msg(enabled ? "admin.conn.value.on" : "admin.conn.value.off");

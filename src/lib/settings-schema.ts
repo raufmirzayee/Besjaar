@@ -23,6 +23,24 @@ import { z } from "zod";
  */
 export type SettingValue = string | number | boolean | null | string[];
 
+/**
+ * Where a resolved value came from. The admin shows this beside each field, so
+ * a shop owner can tell a value they chose from one the deployment supplied.
+ */
+export type SettingSource = "database" | "environment" | "default";
+
+export type ResolvedSetting = {
+  key: string;
+  value: SettingValue;
+  source: SettingSource;
+  updatedAt: string | null;
+};
+
+export type SettingValues = Record<string, SettingValue>;
+
+export type SaveResult =
+  { ok: true; saved: string[] } | { ok: false; errors: Record<string, string> };
+
 export const SETTING_CATEGORIES = [
   "general",
   "company",
@@ -125,7 +143,15 @@ export type SettingDefinition = {
   envKey?: string;
   /** The last resort, when neither a row nor an environment variable exists. */
   fallback: SettingValue;
-  /** Changing this needs a confirmation dialog. */
+  /**
+   * Changing this needs `settings:manage_settings` rather than `settings:edit`.
+   *
+   * A write-side flag, not a read-side one: it is independent of `isPublic`,
+   * and two settings are deliberately both. Whether checkout is live and
+   * whether the shop may be indexed are facts any visitor can observe from the
+   * storefront — there is nothing to hide — but changing either is a decision
+   * with consequences, so the write is what gets protected.
+   */
   sensitive?: boolean;
 };
 
@@ -526,4 +552,48 @@ export function validateSetting(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Ongeldige waarde" };
   }
   return { ok: true, value: parsed.data as SettingValue };
+}
+
+/**
+ * Settings the application maintains for itself.
+ *
+ * They live in the same table because they are configuration, but no form
+ * renders them: `payments.live_approved_at` is written by the approval step and
+ * an editable copy of it would be a way to forge an approval.
+ */
+export const INTERNAL_SETTING_KEYS = [
+  "payments.live_approved_at",
+  "payments.live_approved_by",
+  "system.setup_completed_steps",
+  "system.setup_dismissed",
+];
+
+/** The settings a person edits, in the order the form shows them. */
+export function editableSettings(category: SettingCategory): SettingDefinition[] {
+  return settingsInCategory(category).filter(
+    (definition) => !INTERNAL_SETTING_KEYS.includes(definition.key),
+  );
+}
+
+/** Which control a field gets. Derived, so a new setting needs no extra entry. */
+export type SettingControl =
+  | { kind: "switch" }
+  | { kind: "number" }
+  | { kind: "select"; options: string[] }
+  | { kind: "textarea" }
+  | { kind: "text" };
+
+const MULTILINE_KEYS = ["seo.default_description", "shipping.dispatch_note"];
+
+export function controlFor(definition: SettingDefinition): SettingControl {
+  // An enum is the one case worth asking the schema about: it carries the
+  // options, so a select stays in step with what validation will accept.
+  const options = (definition.schema as { options?: unknown }).options;
+  if (Array.isArray(options) && options.every((option) => typeof option === "string")) {
+    return { kind: "select", options: options as string[] };
+  }
+  if (typeof definition.fallback === "boolean") return { kind: "switch" };
+  if (typeof definition.fallback === "number") return { kind: "number" };
+  if (MULTILINE_KEYS.includes(definition.key)) return { kind: "textarea" };
+  return { kind: "text" };
 }
