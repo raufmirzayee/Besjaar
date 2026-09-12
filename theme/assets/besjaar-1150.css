@@ -443,3 +443,31 @@ body[data-page-type="product"] .besjaar-ui-shower-model-card__footer a{color:var
   .bp-real-showcase,.bp-real-showcase *{background:#fff!important;color:#000!important}
   a{text-decoration:underline}
 }
+
+/* =============================================================
+   Besjaar 2026-09-12 - compact the Shop mega menu.
+   The open panel was taking roughly 400px of viewport height, hiding
+   most of the page behind it. This block trims the padding, thumbnail
+   size, type scale and featured-card height so the panel reads as a
+   menu rather than a page. Desktop only: the mega menu is display:none
+   below 981px, where the mobile drawer takes over. Appended last in the
+   last-loaded stylesheet so it overrides the earlier tiers without
+   editing them.
+   ============================================================= */
+@media (min-width:981px){
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega{max-height:min(330px,calc(100dvh - 116px))!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__inner{gap:18px!important;padding-top:14px!important;padding-bottom:16px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__inner.has-featured{grid-template-columns:minmax(0,1fr) 210px!important;gap:16px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__eyebrow{margin:0 0 8px!important;font-size:.62rem!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;gap:7px 12px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__item{grid-template-columns:44px minmax(0,1fr)!important;gap:10px!important;min-height:58px!important;padding:6px 8px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__thumb{width:44px!important;height:44px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__thumb img{padding:4px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__item-copy{gap:3px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__item-copy strong{font-size:.8rem!important;line-height:1.2!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__item-copy small{font-size:.64rem!important;line-height:1.18!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__featured{min-height:138px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__featured-copy{gap:4px!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__featured-copy strong{font-size:.98rem!important;line-height:1.1!important}
+  body.besjaar-ui-polish-v34 .besjaar-ui-shop-mega__featured-copy span{margin-top:2px!important;font-size:.72rem!important}
+}
