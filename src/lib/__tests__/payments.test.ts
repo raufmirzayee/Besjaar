@@ -18,13 +18,16 @@ afterEach(() => {
 });
 
 describe("payment provider configuration", () => {
-  it("reports unconfigured when no API key is present", () => {
-    expect(isPaymentProviderConfigured()).toBe(false);
+  // Resolved through the secret store now. With no vault in a unit test that
+  // falls through to the environment, which is also the path a deployment
+  // without Supabase Vault takes in production.
+  it("reports unconfigured when no API key is present", async () => {
+    expect(await isPaymentProviderConfigured()).toBe(false);
   });
 
-  it("reports configured once a key is set", () => {
+  it("reports configured once a key is set", async () => {
     process.env.MOLLIE_API_KEY = "test_dummy";
-    expect(isPaymentProviderConfigured()).toBe(true);
+    expect(await isPaymentProviderConfigured()).toBe(true);
   });
 });
 

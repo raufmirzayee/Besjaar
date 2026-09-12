@@ -111,7 +111,9 @@ export function HelpNote({ body, title }: { body: TranslationKey; title?: Transl
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground underline-offset-4 hover:underline"
+        // Padded to a 24px-tall target: the text alone is 16px, which is
+        // awkward to hit with a thumb on the phone this admin gets used on.
+        className="-mx-1 inline-flex min-h-6 items-center gap-1.5 px-1 py-1 text-xs font-medium text-muted-foreground underline-offset-4 hover:underline"
         aria-expanded={open}
       >
         <HelpCircle className="size-3.5" aria-hidden />
@@ -336,7 +338,14 @@ function SettingRow({
             onValueChange={(next) => onChange(next)}
           >
             <SelectTrigger id={id} className="max-w-sm">
-              <SelectValue />
+              {/*
+                Radix only learns an option's label when its items mount, so a
+                bare SelectValue renders an empty box on the server and until
+                hydration — the field reads as "not set" when it is set. Naming
+                the label explicitly renders it immediately, and it still
+                tracks the selection because `value` is this component's state.
+              */}
+              <SelectValue>{t(optionKey(settingKey, String(value ?? "")))}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {control.options.map((option) => (

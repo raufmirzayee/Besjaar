@@ -22,7 +22,7 @@ export const getShippingMethods = createServerFn({ method: "GET" }).handler(asyn
  */
 export const getPaymentAvailability = createServerFn({ method: "GET" }).handler(async () => {
   const { isPaymentProviderConfigured } = await import("./payments.server");
-  return { configured: isPaymentProviderConfigured() };
+  return { configured: await isPaymentProviderConfigured() };
 });
 
 /** Resolve the caller's user id from the bearer token, if any. Guest checkout stays allowed. */

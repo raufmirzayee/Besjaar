@@ -77,5 +77,5 @@ export const getEmailStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await requirePermission(context, "orders", "view");
     const { isEmailConfigured } = await import("./email.server");
-    return { configured: isEmailConfigured() };
+    return { configured: await isEmailConfigured() };
   });

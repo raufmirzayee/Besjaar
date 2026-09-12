@@ -121,40 +121,50 @@ describe("renderEmail", () => {
 
 describe("isEmailConfigured", () => {
   const snapshot = { ...process.env };
-  const reset = () => {
+
+  /**
+   * The environment is now the second link in the settings chain rather than
+   * the only source, so these cases still set environment variables — that is
+   * exactly the path an installation which predates the settings table takes,
+   * and it is worth holding onto. The cache has to be dropped between cases
+   * because it is keyed on nothing but time.
+   */
+  const reset = async () => {
     process.env = { ...snapshot };
+    const { invalidateSettingsCache } = await import("@/lib/settings.server");
+    invalidateSettingsCache();
   };
 
-  it("is off when no API key is set", () => {
-    reset();
+  it("is off when no API key is set", async () => {
+    await reset();
     delete process.env.RESEND_API_KEY;
     delete process.env.EMAIL_FROM;
-    expect(isEmailConfigured()).toBe(false);
+    expect(await isEmailConfigured()).toBe(false);
   });
 
-  it("is off when the key is set but no sender is", () => {
-    reset();
+  it("is off when the key is set but no sender is", async () => {
+    await reset();
     process.env.RESEND_API_KEY = "re_test";
     delete process.env.EMAIL_FROM;
-    expect(isEmailConfigured()).toBe(false);
-    reset();
+    expect(await isEmailConfigured()).toBe(false);
+    await reset();
   });
 
-  it("is on once both key and sender are set", () => {
-    reset();
+  it("is on once both key and sender are set", async () => {
+    await reset();
     process.env.RESEND_API_KEY = "re_test";
     process.env.EMAIL_FROM = "Besjaar <bestellingen@besjaar.nl>";
     process.env.EMAIL_PROVIDER = "resend";
-    expect(isEmailConfigured()).toBe(true);
-    reset();
+    expect(await isEmailConfigured()).toBe(true);
+    await reset();
   });
 
-  it("stays off when the provider is explicitly disabled", () => {
-    reset();
+  it("stays off when the provider is explicitly disabled", async () => {
+    await reset();
     process.env.RESEND_API_KEY = "re_test";
     process.env.EMAIL_FROM = "Besjaar <bestellingen@besjaar.nl>";
     process.env.EMAIL_PROVIDER = "none";
-    expect(isEmailConfigured()).toBe(false);
-    reset();
+    expect(await isEmailConfigured()).toBe(false);
+    await reset();
   });
 });

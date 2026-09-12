@@ -112,7 +112,7 @@ export async function translateEntity(
   const fields = sourceFields(row, entity, sourceLocale);
   const targets = LOCALES.filter((locale) => locale !== sourceLocale);
 
-  const provider = resolveTranslationProvider();
+  const provider = await resolveTranslationProvider();
   const now = new Date().toISOString();
 
   // No provider: record the state honestly and change nothing else. Creating
@@ -282,7 +282,7 @@ export async function markTranslationPending(
   id: string,
   sourceLocale: Locale,
 ): Promise<void> {
-  const provider = resolveTranslationProvider();
+  const provider = await resolveTranslationProvider();
   await writeMeta(entity, id, {
     source_locale: sourceLocale,
     status: provider ? "pending" : "no_provider",

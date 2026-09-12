@@ -136,11 +136,16 @@ export async function createOrder(
   // deployed before its payment account was ready would sell out of
   // everything and never take a euro.
   const { checkoutGate } = await import("./checkout-mode");
-  const gate = checkoutGate({
-    mode: process.env.CHECKOUT_MODE,
-    mollieApiKey: process.env.MOLLIE_API_KEY,
-    nodeEnv: process.env.NODE_ENV,
-  });
+  const { settingValue } = await import("./settings.server");
+  const { readSecret } = await import("./secret-store.server");
+  // Both come from the admin now, through database -> environment -> default.
+  // Reading CHECKOUT_MODE here directly would have made the payments screen
+  // decorative: it would save a mode that checkout never consulted.
+  const [mode, mollieApiKey] = await Promise.all([
+    settingValue<string>("payments.mode"),
+    readSecret("MOLLIE_API_KEY"),
+  ]);
+  const gate = checkoutGate({ mode, mollieApiKey, nodeEnv: process.env.NODE_ENV });
   if (!gate.allowed) {
     // The operator detail names the variable to fix and never reaches the
     // browser; the customer gets a plain "not right now".
@@ -171,7 +176,7 @@ export async function createOrder(
     return {
       order_number: (existing.data as { order_number: string }).order_number,
       checkoutUrl: null,
-      paymentConfigured: isPaymentProviderConfigured(),
+      paymentConfigured: await isPaymentProviderConfigured(),
     };
   }
 
@@ -314,7 +319,9 @@ export async function createOrder(
    * Without a provider key this stays inert: the order is stored as awaiting
    * payment and no reference is invented.
    */
-  const origin = (process.env.VITE_SITE_URL ?? "").replace(/\/$/, "");
+  // Through the settings chain: the shop address is editable on the general
+  // settings screen, and it is what Mollie sends the customer back to.
+  const origin = (await settingValue<string>("general.site_url")).replace(/\/$/, "");
   let payment;
   try {
     payment = await createPayment({

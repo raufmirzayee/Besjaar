@@ -22,13 +22,14 @@ import { createFileRoute } from "@tanstack/react-router";
  * A non-2xx makes Mollie retry, so it is reserved for cases where retrying
  * might actually help.
  *
- * Configure the public URL of this endpoint as MOLLIE_WEBHOOK_URL.
+ * Configure the public URL of this endpoint on the payments settings screen.
  */
 export const Route = createFileRoute("/api/public/mollie-webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        if (!process.env.MOLLIE_API_KEY) {
+        const { readSecret } = await import("@/lib/secret-store.server");
+        if (!(await readSecret("MOLLIE_API_KEY"))) {
           // No provider configured: nothing can legitimately arrive here.
           return new Response("Payment provider not configured", { status: 503 });
         }

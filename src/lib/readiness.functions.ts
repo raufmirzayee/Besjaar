@@ -33,6 +33,17 @@ export const getReadiness = createServerFn({ method: "GET" })
     const { missingCompanyIdentity, storeConfig } = await import("./store-config");
 
     const missingIdentity = missingCompanyIdentity();
+    // Resolved through the settings chain now, so this reports what the shop
+    // is actually configured to do rather than what its .env once said.
+    const emailReady = await isEmailConfigured();
+    const paymentsReady = await isPaymentProviderConfigured();
+    const { readSecret } = await import("./secret-store.server");
+    const { settingValue } = await import("./settings.server");
+    const [bolId, bolSecret, siteUrl] = await Promise.all([
+      readSecret("BOL_CLIENT_ID"),
+      readSecret("BOL_CLIENT_SECRET"),
+      settingValue<string>("general.site_url"),
+    ]);
 
     const checks: ReadinessCheck[] = [
       {
@@ -47,7 +58,7 @@ export const getReadiness = createServerFn({ method: "GET" })
       {
         id: "payments",
         label: "Betalingen",
-        ok: isPaymentProviderConfigured(),
+        ok: paymentsReady,
         detail:
           "Klanten kunnen bestellen, maar er wordt niets afgerekend: de bestelling blijft op 'wacht op betaling' staan en dat staat er ook bij.",
         variables: ["MOLLIE_API_KEY", "MOLLIE_WEBHOOK_URL"],
@@ -56,7 +67,7 @@ export const getReadiness = createServerFn({ method: "GET" })
       {
         id: "email",
         label: "Transactionele e-mail",
-        ok: isEmailConfigured(),
+        ok: emailReady,
         detail:
           "Er gaat geen bestelbevestiging of verzendmail uit. Een bevestiging op een duurzame gegevensdrager is wettelijk verplicht.",
         variables: ["RESEND_API_KEY", "EMAIL_FROM"],
@@ -82,7 +93,7 @@ export const getReadiness = createServerFn({ method: "GET" })
       {
         id: "origin",
         label: "Eigen domein",
-        ok: Boolean(process.env.VITE_SITE_URL && !process.env.VITE_SITE_URL.includes("localhost")),
+        ok: Boolean(siteUrl && !siteUrl.includes("localhost")),
         detail:
           "Canonieke URL's, sitemap en de betaal-webhook wijzen pas naar de juiste plek als het domein is ingesteld.",
         variables: ["VITE_SITE_URL"],
@@ -100,7 +111,7 @@ export const getReadiness = createServerFn({ method: "GET" })
       {
         id: "bol",
         label: "bol.com-koppeling",
-        ok: Boolean(process.env.BOL_CLIENT_ID && process.env.BOL_CLIENT_SECRET),
+        ok: Boolean(bolId && bolSecret),
         detail:
           "Optioneel. Zonder sleutels blijft de koppeling uit staan; de eigen winkel werkt volledig zonder.",
         variables: ["BOL_CLIENT_ID", "BOL_CLIENT_SECRET"],

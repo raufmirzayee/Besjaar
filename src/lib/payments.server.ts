@@ -45,8 +45,12 @@ export type PaymentInitResult =
       status: "pending";
     };
 
-export function isPaymentProviderConfigured(): boolean {
-  return Boolean(process.env.MOLLIE_API_KEY);
+export async function isPaymentProviderConfigured(): Promise<boolean> {
+  // The secret store, not the environment: a Mollie key saved in the admin has
+  // to be the key that takes the money, or the connection test passes and
+  // every checkout still falls through to "no provider configured".
+  const { readSecret } = await import("./secret-store.server");
+  return Boolean(await readSecret("MOLLIE_API_KEY"));
 }
 
 /**
@@ -64,7 +68,8 @@ export async function createPayment(input: {
   description: string;
   redirectUrl: string;
 }): Promise<PaymentInitResult> {
-  const apiKey = process.env.MOLLIE_API_KEY;
+  const { readSecret } = await import("./secret-store.server");
+  const apiKey = await readSecret("MOLLIE_API_KEY");
   if (!apiKey) {
     return {
       configured: false,
@@ -88,7 +93,12 @@ export async function createPayment(input: {
 
   const method = METHOD_MAP[input.method.toLowerCase()];
   if (method) body.method = method;
-  if (process.env.MOLLIE_WEBHOOK_URL) body.webhookUrl = process.env.MOLLIE_WEBHOOK_URL;
+  // Resolved through the settings chain, so the address saved on the payments
+  // screen is the one Mollie is actually told to call back. Reading the
+  // environment here would have made that field decorative.
+  const { settingValue } = await import("./settings.server");
+  const webhookUrl = await settingValue<string>("payments.webhook_url");
+  if (webhookUrl) body.webhookUrl = webhookUrl;
 
   const response = await fetch(`${MOLLIE_API}/payments`, {
     method: "POST",
@@ -205,7 +215,8 @@ export type FetchedPayment = {
 
 /** Reads a payment back from the provider — used by the webhook handler. */
 export async function fetchPayment(paymentId: string): Promise<FetchedPayment | null> {
-  const apiKey = process.env.MOLLIE_API_KEY;
+  const { readSecret } = await import("./secret-store.server");
+  const apiKey = await readSecret("MOLLIE_API_KEY");
   if (!apiKey) return null;
 
   const response = await fetch(`${MOLLIE_API}/payments/${encodeURIComponent(paymentId)}`, {

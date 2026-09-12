@@ -28,8 +28,11 @@ export const Route = createFileRoute("/api/public/bol-sync")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        // Dedicated server-only cron secret; the public Supabase key is NOT a credential.
-        const syncSecret = process.env.SYNC_TRIGGER_SECRET ?? "";
+        // Dedicated server-only cron secret; the public Supabase key is NOT a
+        // credential. Read through the secret store so rotating it in the admin
+        // takes effect without a redeploy.
+        const { readSecret } = await import("@/lib/secret-store.server");
+        const syncSecret = (await readSecret("SYNC_TRIGGER_SECRET")) ?? "";
         const header = request.headers.get("authorization") ?? "";
         const provided = header.toLowerCase().startsWith("bearer ")
           ? header.slice(7).trim()

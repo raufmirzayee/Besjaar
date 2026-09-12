@@ -144,6 +144,30 @@ describe("public and private settings stay apart", () => {
   });
 });
 
+describe("the public settings endpoint", () => {
+  const source = readFileSync("src/lib/settings.functions.ts", "utf8");
+  const handler = source.slice(source.indexOf("export const getPublicSettings"));
+
+  it("returns the filtered set, never the whole table", () => {
+    // The one endpoint here with no authentication, so what it calls is the
+    // whole of its safety. resolveAllSettings would hand an anonymous visitor
+    // the webhook address and the sender e-mail.
+    expect(handler).toContain("publicSettings");
+    expect(handler).not.toContain("resolveAllSettings");
+    expect(handler).not.toContain("allSecretStatuses");
+    expect(handler).not.toContain("readSecret");
+  });
+
+  it("is the only handler in the file without an auth middleware", () => {
+    const unauthenticated = [
+      ...source.matchAll(/export const (\w+) = createServerFn\([^)]*\)\s*(\.middleware)?/g),
+    ]
+      .filter((match) => match[2] === undefined)
+      .map((match) => match[1]);
+    expect(unauthenticated).toEqual(["getPublicSettings"]);
+  });
+});
+
 describe("validation refuses what the shop cannot use", () => {
   it("insists on https for addresses customers and Mollie follow", () => {
     expect(validateSetting("general.site_url", "http://besjaar.nl").ok).toBe(false);

@@ -337,3 +337,21 @@ export const dismissSetup = createServerFn({ method: "POST" })
     await saveSettings({ "system.setup_dismissed": data.dismissed }, context.userId);
     return { dismissed: data.dismissed };
   });
+
+/**
+ * The settings an anonymous visitor may have.
+ *
+ * No auth middleware, deliberately: the storefront needs the shop name, the
+ * free-shipping threshold and the company details before anybody signs in, and
+ * they are already on the page. What keeps this safe is not who is asking but
+ * what it returns — `publicSettings()` filters against the schema's own public
+ * list rather than the database column, so a row wrongly flagged public in SQL
+ * still cannot be read here.
+ *
+ * There is no credential in this table at all, so there is nothing for this
+ * endpoint to leak even if the filter were wrong.
+ */
+export const getPublicSettings = createServerFn({ method: "GET" }).handler(async () => {
+  const { publicSettings } = await import("./settings.server");
+  return publicSettings();
+});

@@ -33,6 +33,21 @@ export function endpointFor(key: string | undefined, configured: "free" | "pro")
 
 export const TARGET_LANGUAGES = ["EN-GB", "DE", "FR"] as const;
 
+/**
+ * The plan to route by.
+ *
+ * The stored default is "free", so honouring it blindly would send a Pro
+ * account to the free host the moment this setting existed. An unchosen plan
+ * is therefore inferred from the key, the way the code did before the setting
+ * did — a `:fx` suffix means free, anything else means pro.
+ */
+async function effectivePlan(key: string | undefined): Promise<"free" | "pro"> {
+  const { resolveSetting } = await import("../settings.server");
+  const setting = await resolveSetting("translations.endpoint");
+  if (setting.source !== "default") return setting.value as "free" | "pro";
+  return key?.trim().endsWith(":fx") ? "free" : "pro";
+}
+
 export async function status(): Promise<IntegrationStatus> {
   const [secret, endpoint, onCreate, onUpdate, keepManual] = await Promise.all([
     secretStatus("DEEPL_API_KEY"),
@@ -92,8 +107,7 @@ export async function testTranslation(
   const key = await readSecret("DEEPL_API_KEY");
   if (!key) return { ok: false, message: msg("admin.conn.deepl.noKey") };
 
-  const configured = await settingValue<"free" | "pro">("translations.endpoint");
-  const host = endpointFor(key, configured);
+  const host = endpointFor(key, await effectivePlan(key));
 
   try {
     const response = await fetchWithTimeout(`${host}/v2/translate`, {
@@ -161,10 +175,10 @@ export async function usage(): Promise<TestResult> {
   const key = await readSecret("DEEPL_API_KEY");
   if (!key) return { ok: false, message: msg("admin.conn.deepl.noKey") };
 
-  const configured = await settingValue<"free" | "pro">("translations.endpoint");
+  const host = endpointFor(key, await effectivePlan(key));
 
   try {
-    const response = await fetchWithTimeout(`${endpointFor(key, configured)}/v2/usage`, {
+    const response = await fetchWithTimeout(`${host}/v2/usage`, {
       headers: { Authorization: `DeepL-Auth-Key ${key}` },
     });
     if (!response.ok) {

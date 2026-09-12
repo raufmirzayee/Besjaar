@@ -45,12 +45,12 @@ admin can change is a setting an attacker who reaches the admin can change.
 
 | Variable | Purpose | Runtime-writable | Admin location | Validation |
 | --- | --- | --- | --- | --- |
-| `MOLLIE_API_KEY` | Payment provider credential | Vault: yes · env: no | Payments → Mollie | `test_` or `live_` prefix, must match the selected mode |
+| `MOLLIE_API_KEY` | Payment provider credential | Vault: yes · env: no | Betalingen | `test_` or `live_` prefix, must match the selected mode |
 | `RESEND_API_KEY` | Transactional e-mail credential | Vault: yes · env: no | E-mail | `re_` prefix |
-| `DEEPL_API_KEY` | Translation credential | Vault: yes · env: no | Translations | Non-empty; `:fx` suffix selects the free endpoint |
+| `DEEPL_API_KEY` | Translation credential | Vault: yes · env: no | Vertalingen | Non-empty; `:fx` suffix selects the free endpoint |
 | `BOL_CLIENT_ID` | Marketplace client id. Paired with the secret, so treated as one | Vault: yes · env: no | bol.com | Non-empty |
 | `BOL_CLIENT_SECRET` | Marketplace credential | Vault: yes · env: no | bol.com | Non-empty |
-| `SYNC_TRIGGER_SECRET` | Shared secret on the public cron endpoint | Vault: yes · env: no | Integrations | At least 24 characters |
+| `SYNC_TRIGGER_SECRET` | Shared secret on the public cron endpoint | Vault: yes · env: no | bol.com | At least 24 characters |
 
 "Runtime-writable" is the honest distinction the admin UI has to make. When the
 project has Supabase Vault, saving a credential takes effect on the next
@@ -62,34 +62,80 @@ the platform instead of pretending to have saved something.
 
 | Variable | Becomes | Category | Admin location |
 | --- | --- | --- | --- |
-| `CHECKOUT_MODE` | `payments.mode` | commerce | Payments |
-| `MOLLIE_WEBHOOK_URL` | `payments.webhook_url` | commerce | Payments |
-| `VITE_PAYMENTS_ENABLED` | *removed* — superseded by `payments.mode` | — | Payments |
+| `CHECKOUT_MODE` | `payments.mode` | payments | Betalingen |
+| `MOLLIE_WEBHOOK_URL` | `payments.webhook_url` | payments | Betalingen |
+| `VITE_PAYMENTS_ENABLED` | *removed* — superseded by `payments.mode` | — | Betalingen |
 | `EMAIL_PROVIDER` | `email.provider` | email | E-mail |
 | `EMAIL_FROM` | `email.from` | email | E-mail |
 | `EMAIL_REPLY_TO` | `email.reply_to` | email | E-mail |
-| `DEEPL_API_URL` | `translations.endpoint` | localization | Translations |
-| `VITE_SITE_URL` | `general.site_url` | general | General |
-| `VITE_STORE_LEGAL_ENTITY` | `company.legal_entity` | company | Company |
-| `VITE_STORE_EMAIL` | `company.support_email` | company | Company |
-| `VITE_STORE_PHONE` | `company.support_phone` | company | Company |
-| `VITE_COMPANY_LEGAL_NAME` | `company.legal_name` | company | Company |
-| `VITE_COMPANY_KVK` | `company.kvk` | company | Company |
-| `VITE_COMPANY_VAT` | `company.vat` | company | Company |
-| `VITE_COMPANY_STREET` | `company.street` | company | Company |
-| `VITE_COMPANY_POSTAL_CODE` | `company.postal_code` | company | Company |
-| `VITE_COMPANY_CITY` | `company.city` | company | Company |
-| `VITE_COMPANY_COUNTRY` | `company.country` | company | Company |
-| `VITE_FREE_SHIPPING_THRESHOLD` | `shipping.free_threshold` | shipping | Shipping |
-| `VITE_SHIPPING_RATE` | `shipping.default_rate` | shipping | Shipping |
-| `VITE_DISPATCH_NOTE` | `shipping.dispatch_note` | shipping | Shipping |
-| `VITE_RETURN_DAYS` | `commerce.return_days` | commerce | Store |
-| `VITE_WARRANTY_MONTHS` | `commerce.warranty_months` | commerce | Store |
-| `VITE_GA_MEASUREMENT_ID` | `integrations.ga_measurement_id` | integrations | Integrations |
-| `VITE_META_PIXEL_ID` | `integrations.meta_pixel_id` | integrations | Integrations |
+| `DEEPL_API_URL` | `translations.endpoint` (see note) | translations | Vertalingen |
+| `VITE_SITE_URL` | `general.site_url` | general | Algemeen |
+| `VITE_STORE_LEGAL_ENTITY` | `company.legal_entity` | company | Algemeen |
+| `VITE_STORE_EMAIL` | `company.support_email` | company | Algemeen |
+| `VITE_STORE_PHONE` | `company.support_phone` | company | Algemeen |
+| `VITE_COMPANY_LEGAL_NAME` | `company.legal_name` | company | Algemeen |
+| `VITE_COMPANY_KVK` | `company.kvk` | company | Algemeen |
+| `VITE_COMPANY_VAT` | `company.vat` | company | Algemeen |
+| `VITE_COMPANY_STREET` | `company.street` | company | Algemeen |
+| `VITE_COMPANY_POSTAL_CODE` | `company.postal_code` | company | Algemeen |
+| `VITE_COMPANY_CITY` | `company.city` | company | Algemeen |
+| `VITE_COMPANY_COUNTRY` | `company.country` | company | Algemeen |
+| `VITE_FREE_SHIPPING_THRESHOLD` | `shipping.free_threshold` | shipping | Verzending |
+| `VITE_SHIPPING_RATE` | `shipping.default_rate` | shipping | Verzending |
+| `VITE_DISPATCH_NOTE` | `shipping.dispatch_note` | shipping | Verzending |
+| `VITE_RETURN_DAYS` | `commerce.return_days` | commerce | Winkel |
+| `VITE_WARRANTY_MONTHS` | `commerce.warranty_months` | commerce | Winkel |
+| `VITE_GA_MEASUREMENT_ID` | `integrations.ga_measurement_id` | integrations | Koppelingen |
+| `VITE_META_PIXEL_ID` | `integrations.meta_pixel_id` | integrations | Koppelingen |
 
 The two analytics ids are public identifiers — they appear in the page source
 by design — so they are ordinary public settings rather than secrets.
+
+### `DEEPL_API_URL` is not a straight rename
+
+The old variable held a full endpoint URL; the setting holds a plan, `free` or
+`pro`. There is no automatic fallback between the two shapes, so the plan is
+inferred instead: a key ending in `:fx` is a free-tier key and routes to
+api-free whatever the setting says, and when nobody has chosen a plan the key's
+shape decides. Honouring the stored default of `free` would have moved a Pro
+account onto the free host the moment this setting existed — a regression
+dressed as a default.
+
+## Where the settings are edited
+
+| Route | Holds |
+| --- | --- |
+| `/beheer/instellingen` | Setup checklist and connection overview |
+| `/beheer/instellingen/algemeen` | `general.*` and `company.*` |
+| `/beheer/instellingen/winkel` | `commerce.*` |
+| `/beheer/instellingen/betalingen` | `payments.*`, the Mollie credential, the live-payments approval |
+| `/beheer/instellingen/verzending` | `shipping.*` |
+| `/beheer/instellingen/email` | `email.*`, the Resend credential, the test message |
+| `/beheer/instellingen/vertalingen` | `translations.*`, the DeepL credential, the translation test |
+| `/beheer/instellingen/seo` | `seo.*` |
+| `/beheer/instellingen/bol` | `integrations.bol_auto_sync`, the bol.com credentials |
+| `/beheer/instellingen/integraties` | Every connection card, the analytics ids |
+| `/beheer/instellingen/supabase` | Database, auth, storage, RLS and admin checks |
+| `/beheer/instellingen/beveiliging` | Security posture and credential locations |
+| `/beheer/instellingen/systeem` | System health, configuration export |
+
+## Settings with no environment predecessor
+
+Eighteen of the forty-five keys are new rather than migrated: the SEO defaults,
+the commerce toggles, the timezone, the checkout-mode approval record and the
+setup-checklist state. They have no `envKey`, so they resolve straight from the
+application default until somebody saves one.
+
+## Reading a setting is not the same as having one
+
+A setting nothing reads is worse than no setting: it reports a change that
+never happened. Every migrated variable below is therefore read in exactly one
+place — `fromEnvironment` inside `settings.server.ts` — and every consumer goes
+through `settingValue()`. The same holds for credentials and `readSecret()`.
+`settings-wiring.test.ts` fails the build if a second reader appears, which is
+the check that caught payments, e-mail, translations, bol.com, the sitemap and
+the product feed still reading the environment directly after the settings
+model was already in place.
 
 ## Public settings
 

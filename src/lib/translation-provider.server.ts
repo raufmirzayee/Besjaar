@@ -171,22 +171,34 @@ class DeepLProvider implements TranslationProvider {
  * Null is a supported state, not an error: the shop runs without a translation
  * service, and everything downstream treats that as "awaiting translation".
  */
-export function resolveTranslationProvider(): TranslationProvider | null {
-  const apiKey = process.env.DEEPL_API_KEY?.trim();
+export async function resolveTranslationProvider(): Promise<TranslationProvider | null> {
+  const { readSecret } = await import("./secret-store.server");
+  const { resolveSetting } = await import("./settings.server");
+
+  // The secret store, not the environment: a key saved in the admin has to be
+  // the key that actually translates, or the test passes and nothing works.
+  const apiKey = (await readSecret("DEEPL_API_KEY"))?.trim();
   if (!apiKey) return null;
 
-  // A free-tier key ends in ":fx" and must go to a different host. Getting
-  // this wrong returns 403 with no explanation of why.
-  const endpoint =
-    process.env.DEEPL_API_URL?.trim() ||
-    (apiKey.endsWith(":fx")
-      ? "https://api-free.deepl.com/v2/translate"
-      : "https://api.deepl.com/v2/translate");
+  // A free-tier key ends in ":fx" and must go to a different host. Getting this
+  // wrong returns 403 with no explanation of why, so the key's own suffix wins
+  // outright — it is evidence, where the setting is only an assertion.
+  //
+  // With no suffix the plan decides, but only when somebody actually chose it.
+  // The stored default is "free", and honouring that blindly would move a Pro
+  // account onto the free host on upgrade, which is a regression dressed as a
+  // default. So an unchosen plan is inferred from the key instead, which is
+  // what this code did before there was a setting at all.
+  const plan = await resolveSetting("translations.endpoint");
+  const free = apiKey.endsWith(":fx") || (plan.source !== "default" && plan.value === "free");
+  const endpoint = free
+    ? "https://api-free.deepl.com/v2/translate"
+    : "https://api.deepl.com/v2/translate";
 
   return new DeepLProvider(apiKey, endpoint);
 }
 
 /** Whether a provider is configured, for the admin to report. */
-export function translationProviderName(): string | null {
-  return resolveTranslationProvider()?.name ?? null;
+export async function translationProviderName(): Promise<string | null> {
+  return (await resolveTranslationProvider())?.name ?? null;
 }

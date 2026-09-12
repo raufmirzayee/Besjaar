@@ -37,10 +37,12 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const origin = (process.env.VITE_SITE_URL ?? new URL(request.url).origin).replace(
-          /\/$/,
-          "",
-        );
+        // The configured shop address, falling back to whatever host served
+        // this request. Absolute URLs in a sitemap have to match the canonical
+        // domain or search engines discard them.
+        const { settingValue } = await import("@/lib/settings.server");
+        const configured = await settingValue<string>("general.site_url");
+        const origin = (configured || new URL(request.url).origin).replace(/\/$/, "");
         const { fetchCategories, fetchProducts } = await import("@/lib/catalog.server");
         const { brands } = await import("@/data/catalogue");
 

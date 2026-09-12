@@ -24,7 +24,9 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    // .tsx too: the settings screens are checked by rendering them and
+    // running axe over the markup, which needs JSX in the test file.
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     env: {
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL ?? fileEnv.VITE_SUPABASE_URL ?? "",
       VITE_SUPABASE_PUBLISHABLE_KEY:

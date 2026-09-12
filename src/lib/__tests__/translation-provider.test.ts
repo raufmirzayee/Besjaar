@@ -35,13 +35,13 @@ afterEach(() => {
 });
 
 describe("provider credentials", () => {
-  it("returns no provider when no key is configured", () => {
-    expect(resolveTranslationProvider()).toBeNull();
+  it("returns no provider when no key is configured", async () => {
+    expect(await resolveTranslationProvider()).toBeNull();
   });
 
-  it("returns a provider when a key is configured", () => {
+  it("returns a provider when a key is configured", async () => {
     process.env.DEEPL_API_KEY = "test-key";
-    expect(resolveTranslationProvider()?.name).toBe("deepl");
+    expect((await resolveTranslationProvider())?.name).toBe("deepl");
   });
 
   it("sends a free-tier key to the free-tier host", async () => {
@@ -53,7 +53,7 @@ describe("provider credentials", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await resolveTranslationProvider()!.translate({
+    await (await resolveTranslationProvider())!.translate({
       fields: { name: "Zaklamp" },
       from: "nl",
       to: "en",
@@ -69,7 +69,7 @@ describe("provider credentials", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    await resolveTranslationProvider()!.translate({
+    await (await resolveTranslationProvider())!.translate({
       fields: { name: "Zaklamp" },
       from: "nl",
       to: "en",
@@ -109,9 +109,9 @@ describe("provider credentials", () => {
     ).toEqual([]);
   });
 
-  it("keeps the key out of the module's own exported surface", () => {
+  it("keeps the key out of the module's own exported surface", async () => {
     process.env.DEEPL_API_KEY = "super-secret-key";
-    const provider = resolveTranslationProvider()!;
+    const provider = (await resolveTranslationProvider())!;
     // The key is a private constructor field; serialising the provider must
     // not spill it into a log line or an error report.
     expect(JSON.stringify(provider) ?? "").not.toContain("super-secret-key");
@@ -154,7 +154,7 @@ describe("provider behaviour", () => {
     process.env.DEEPL_API_KEY = "abc";
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    const result = await resolveTranslationProvider()!.translate({
+    const result = await (await resolveTranslationProvider())!.translate({
       fields: {},
       from: "nl",
       to: "de",
@@ -173,7 +173,7 @@ describe("provider behaviour", () => {
           { status: 200 },
         ),
     );
-    const result = await resolveTranslationProvider()!.translate({
+    const result = await (await resolveTranslationProvider())!.translate({
       fields: { name: "Zaklamp", short_description: "Een felle zaklamp" },
       from: "nl",
       to: "en",
@@ -190,7 +190,7 @@ describe("provider behaviour", () => {
           status: 200,
         }),
     );
-    const result = await resolveTranslationProvider()!.translate({
+    const result = await (await resolveTranslationProvider())!.translate({
       fields: { name: "Zaklamp", short_description: "Een felle zaklamp" },
       from: "nl",
       to: "en",
@@ -203,7 +203,7 @@ describe("provider behaviour", () => {
     process.env.DEEPL_API_KEY = "abc";
     vi.stubGlobal("fetch", async () => new Response("quota exceeded", { status: 456 }));
     await expect(
-      resolveTranslationProvider()!.translate({
+      (await resolveTranslationProvider())!.translate({
         fields: { name: "Zaklamp" },
         from: "nl",
         to: "en",
@@ -218,7 +218,7 @@ describe("provider behaviour", () => {
         new Response(JSON.stringify({ translations: [{ text: "Torch" }] }), { status: 200 }),
     );
     vi.stubGlobal("fetch", fetchMock);
-    await resolveTranslationProvider()!.translate({
+    await (await resolveTranslationProvider())!.translate({
       fields: { name: "Zaklamp" },
       from: "nl",
       to: "en",

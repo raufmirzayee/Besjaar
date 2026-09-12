@@ -186,7 +186,7 @@ export const getTranslationProviderStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await requirePermission(context, "products", "view");
     const { translationProviderName } = await import("./translation-provider.server");
-    const provider = translationProviderName();
+    const provider = await translationProviderName();
     return { configured: provider !== null, provider };
   });
 

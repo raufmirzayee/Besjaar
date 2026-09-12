@@ -10,11 +10,18 @@
  * email_log as "skipped", and the caller carries on. An order is never lost
  * because email is down.
  *
- * Required environment variables (see .env.example):
- *   EMAIL_PROVIDER   "resend" (default) or "none" to disable explicitly
- *   RESEND_API_KEY   from resend.com
- *   EMAIL_FROM       verified sender, e.g. "Besjaar <bestellingen@besjaar.nl>"
- *   EMAIL_REPLY_TO   optional, defaults to the store's customer service address
+ * Configuration comes from the settings chain — database, then environment,
+ * then default — so the addresses and the on/off switch are what the admin
+ * screen shows, and a deployment that has always set EMAIL_FROM in its
+ * environment keeps working with nothing to migrate. The API key comes from
+ * the secret store for the same reason: a key saved in the admin has to be the
+ * key that actually sends, or the connection test passes while order
+ * confirmations silently fail.
+ *
+ *   email.provider   "resend" (default) or "none" to disable explicitly
+ *   email.from       verified sender, e.g. "Besjaar <bestellingen@besjaar.nl>"
+ *   email.reply_to   optional, defaults to the store's customer service address
+ *   RESEND_API_KEY   credential, from the secret store
  */
 
 import { safeExternalUrl } from "./safe-url";
@@ -31,13 +38,34 @@ export type SendResult = {
   error: string | null;
 };
 
-function providerName(): string {
-  return (process.env.EMAIL_PROVIDER ?? "resend").toLowerCase();
+async function providerName(): Promise<string> {
+  const { settingValue } = await import("./settings.server");
+  return (await settingValue<string>("email.provider")).toLowerCase();
 }
 
-export function isEmailConfigured(): boolean {
-  if (providerName() === "none") return false;
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+/** The three things sending needs, resolved the same way the admin shows them. */
+async function emailConfig(): Promise<{
+  provider: string;
+  from: string;
+  replyTo: string;
+  apiKey: string | undefined;
+}> {
+  const { settingValue } = await import("./settings.server");
+  const { readSecret } = await import("./secret-store.server");
+
+  const [provider, from, replyTo, apiKey] = await Promise.all([
+    providerName(),
+    settingValue<string>("email.from"),
+    settingValue<string>("email.reply_to"),
+    readSecret("RESEND_API_KEY"),
+  ]);
+  return { provider, from, replyTo, apiKey };
+}
+
+export async function isEmailConfigured(): Promise<boolean> {
+  const { provider, from, apiKey } = await emailConfig();
+  if (provider === "none") return false;
+  return Boolean(apiKey && from);
 }
 
 /** Escapes text before it goes into an HTML email body. */
@@ -235,7 +263,7 @@ export async function sendTransactionalEmail(input: {
   orderId?: string | null;
 }): Promise<SendResult> {
   const { subject, html } = renderEmail(input.template, input.data);
-  const provider = providerName();
+  const { provider, from, replyTo, apiKey } = await emailConfig();
   const recipient = input.data.email;
 
   const record = async (result: SendResult) => {
@@ -257,7 +285,7 @@ export async function sendTransactionalEmail(input: {
     return result;
   };
 
-  if (!isEmailConfigured()) {
+  if (provider === "none" || !apiKey || !from) {
     // The order id, not the address. A customer's e-mail address is personal
     // data, and a log stream is read by more people and kept for longer than
     // the database is — email_log already records who a message was for.
@@ -277,13 +305,13 @@ export async function sendTransactionalEmail(input: {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: process.env.EMAIL_FROM,
+        from,
         to: [recipient],
-        reply_to: process.env.EMAIL_REPLY_TO ?? storeConfig.email,
+        reply_to: replyTo || storeConfig.email,
         subject,
         html,
       }),

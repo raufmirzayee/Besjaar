@@ -69,7 +69,11 @@ describe("no Dutch left in the backoffice", () => {
     ...readdirSync("src/routes")
       .filter((f) => f.startsWith("beheer") && f.endsWith(".tsx"))
       .map((f) => `src/routes/${f}`),
-    ...readdirSync("src/components/admin").map((f) => `src/components/admin/${f}`),
+    // withFileTypes, because this directory has a __tests__ subdirectory in it
+    // and readFileSync on a directory throws EISDIR.
+    ...readdirSync("src/components/admin", { withFileTypes: true })
+      .filter((entry) => entry.isFile())
+      .map((entry) => `src/components/admin/${entry.name}`),
   ];
 
   it("has no untranslated screen copy", () => {

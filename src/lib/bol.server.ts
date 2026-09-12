@@ -60,14 +60,19 @@ export type SyncLog = {
 // to get at them. Re-exported here for callers that are already server-side.
 export { JOB_STATUS_LABELS, JOB_TYPE_LABELS } from "./bol";
 
-function credentials() {
-  const clientId = process.env.BOL_CLIENT_ID;
-  const clientSecret = process.env.BOL_CLIENT_SECRET;
+async function credentials() {
+  // Through the secret store, so credentials replaced in the admin take effect
+  // on the next sync rather than at the next deploy.
+  const { readSecret } = await import("./secret-store.server");
+  const [clientId, clientSecret] = await Promise.all([
+    readSecret("BOL_CLIENT_ID"),
+    readSecret("BOL_CLIENT_SECRET"),
+  ]);
   return { clientId, clientSecret, configured: Boolean(clientId && clientSecret) };
 }
 
 async function getAccessToken(): Promise<string> {
-  const { clientId, clientSecret, configured } = credentials();
+  const { clientId, clientSecret, configured } = await credentials();
   if (!configured) throw new Error("bol.com-inloggegevens ontbreken");
   const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
   const res = await fetch(BOL_TOKEN_URL, {
@@ -105,7 +110,7 @@ async function bolRequest<T>(
 }
 
 export async function fetchConnectionStatus(supabase: Client): Promise<BolConnectionStatus> {
-  const { configured } = credentials();
+  const { configured } = await credentials();
   const { data } = await supabase
     .from("sync_jobs")
     .select("finished_at")
@@ -282,7 +287,7 @@ export async function runSyncJob(
   let errorMessage: string | undefined;
 
   try {
-    const { configured } = credentials();
+    const { configured } = await credentials();
     if (!configured)
       throw new Error("bol.com-inloggegevens ontbreken — koppeling nog niet geactiveerd");
     const token = await getAccessToken();
