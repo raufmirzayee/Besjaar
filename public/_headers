@@ -1,0 +1,17 @@
+# Static assets only.
+#
+# The headers that matter for a document — CSP, HSTS, frame-ancestors — are set
+# on every response by src/server.ts, because that is the only place that works
+# on all three supported hosts. This file covers what never reaches that code:
+# files served straight off disk by Nitro's asset handler, which answers before
+# the SSR entry runs.
+#
+# Read by Cloudflare and Netlify. A Node deployment sits behind a reverse proxy
+# that has its own header configuration; see DEPLOYMENT.md.
+#
+# Nitro appends its own /assets/* cache rule after this block.
+/*
+  x-content-type-options: nosniff
+  referrer-policy: strict-origin-when-cross-origin
+  x-frame-options: DENY
+  cross-origin-resource-policy: same-origin

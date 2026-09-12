@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Private and transactional areas. These also carry a noindex meta tag; the
+# rules here stop crawlers spending budget on them in the first place.
+Disallow: /beheer
+Disallow: /winkelwagen
+Disallow: /afrekenen
+Disallow: /account
+Disallow: /verlanglijst
+Disallow: /inloggen
+Disallow: /wachtwoord-herstellen
+Disallow: /bestelling
+Disallow: /retouren
+Disallow: /api/
+
+# Search result pages duplicate the category pages.
+Disallow: /zoeken
+
+# The product feed is fetched directly by Merchant Center; it is not a page.
+Disallow: /feeds/
+
+Sitemap: https://www.besjaar.nl/sitemap.xml
