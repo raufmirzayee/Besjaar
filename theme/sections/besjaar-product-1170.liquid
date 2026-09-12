@@ -10,6 +10,18 @@
 <style id="besjaar-product-1170">
 body[data-page-type="product"] .besjaar-store-premium-pd__stage{position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;aspect-ratio:1/1!important;height:auto!important;min-height:0!important;max-height:none!important;padding:12px!important;background:#FFFFFF!important;overflow:hidden!important}
 body[data-page-type="product"] .besjaar-store-premium-pd__stage img{display:block!important;width:100%!important;height:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center center!important}
+/* Besjaar 2026-09-12 — gallery sizing + scroll behaviour.
+   1) assets/besjaar-product-step4.css still puts padding:clamp(38px,4.8vw,72px)
+      on the stage image. The rule above only overrides width/height/object-fit,
+      so that padding survived and ate up to 72px on each side of a 640px stage,
+      leaving the photo filling roughly three quarters of its frame. The stage's
+      own 12px padding is the inset we want, so zero the image's.
+   2) The gallery column was position:sticky with a 118px offset, which pinned
+      the photo in place while the page scrolled and left a large gap above it.
+      Let it scroll with the rest of the page. To bring the sticky behaviour
+      back, change position to sticky and set a top offset here. */
+body[data-page-type="product"] .besjaar-store-premium-pd__stage>img{padding:0!important}
+body[data-page-type="product"] .besjaar-store-premium-pd__gallery{position:static!important;top:auto!important}
 body[data-page-type="product"] .besjaar-store-premium-pd__thumb{background:#FFFFFF!important;overflow:hidden!important}
 body[data-page-type="product"] .besjaar-store-premium-pd__thumb img{width:100%!important;height:100%!important;object-fit:contain!important;padding:4px!important;box-sizing:border-box!important;background:#FFFFFF!important}
 </style>
