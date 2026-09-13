@@ -1,0 +1,101 @@
+{%- comment -%}
+  Besjaar v9 (2026-09-13) — guide hub strip.
+
+  Why this exists: the "Gids" blog is not reachable from the header or the
+  footer. Neither of those reads Shopify's Main Menu on this theme, so a menu
+  entry surfaces nothing, and the guide articles had no internal link anywhere
+  on the storefront. A crawler could only reach them through the XML sitemap,
+  which gives them no internal link signal and no topical connection to the
+  product and collection pages they support.
+
+  This strip renders nothing at all while the blog has no published posts, so
+  it is invisible today and becomes a site-wide link block the moment the
+  guides go live. It sits above the footer so it reads as the last content
+  band of the page rather than an appendix under it.
+{%- endcomment -%}
+{%- liquid
+  assign guide_blog = blogs[section.settings.blog_handle]
+  if guide_blog == blank
+    assign guide_blog = blogs['gids']
+  endif
+  if guide_blog == blank
+    assign guide_blog = blogs['news']
+  endif
+
+  assign guide_count = 0
+  if guide_blog != blank
+    assign guide_count = guide_blog.articles.size
+  endif
+
+  assign guide_lang = request.locale.iso_code | split: '-' | first | downcase
+  case guide_lang
+    when 'en'
+      assign guide_label = 'Shower guides'
+      assign guide_intro = 'Practical answers on limescale, filters, water saving and fitting.'
+      assign guide_all = 'All guides'
+    when 'de'
+      assign guide_label = 'Dusch-Ratgeber'
+      assign guide_intro = 'Praktische Antworten zu Kalk, Filtern, Wassersparen und Montage.'
+      assign guide_all = 'Alle Ratgeber'
+    when 'fr'
+      assign guide_label = 'Guides de douche'
+      assign guide_intro = 'Réponses pratiques sur le calcaire, les filtres, l’économie d’eau et le montage.'
+      assign guide_all = 'Tous les guides'
+    else
+      assign guide_label = 'Douchegidsen'
+      assign guide_intro = 'Praktische antwoorden over kalkaanslag, filters, waterbesparing en montage.'
+      assign guide_all = 'Alle gidsen'
+  endcase
+
+  capture guide_blog_url
+    if guide_blog != blank
+      render 'localized-internal-url', url: guide_blog.url
+    endif
+  endcapture
+  assign guide_blog_url = guide_blog_url | strip
+-%}
+{% if guide_count > 0 %}
+  <style id="besjaar-seo-guides-{{ section.id }}">
+    .besjaar-seo-guides{background:var(--besjaar-ui-accent-warm,#EEF6FB);padding:34px 0 38px}
+    .besjaar-seo-guides__inner{width:min(calc(100% - 32px),var(--besjaar-ui-width,1280px));margin-inline:auto}
+    .besjaar-seo-guides__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;margin:0 0 18px}
+    .besjaar-seo-guides__head h2{margin:0;font-size:1.05rem;font-weight:650;letter-spacing:-.01em;color:var(--besjaar-ui-accent,#173B5E)}
+    .besjaar-seo-guides__head p{margin:0;font-size:.85rem;color:var(--besjaar-ui-muted,#61798E)}
+    .besjaar-seo-guides__head a{font-size:.82rem;font-weight:600;color:var(--besjaar-ui-accent,#173B5E);text-decoration:underline;text-underline-offset:3px}
+    .besjaar-seo-guides__list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px 22px;margin:0;padding:0;list-style:none}
+    .besjaar-seo-guides__list li{margin:0;min-width:0}
+    .besjaar-seo-guides__list a{display:block;font-size:.9rem;line-height:1.4;color:var(--besjaar-ui-text,#132A3E);border-top:1px solid rgba(23,59,94,.14);padding:10px 0 0}
+    .besjaar-seo-guides__list a:hover{color:var(--besjaar-ui-accent,#173B5E);text-decoration:underline;text-underline-offset:3px}
+    @media (max-width:700px){.besjaar-seo-guides{padding:26px 0 28px}.besjaar-seo-guides__inner{width:min(calc(100% - 24px),var(--besjaar-ui-width,1280px))}}
+  </style>
+  <aside class="besjaar-seo-guides" aria-labelledby="BesjaarSeoGuides-{{ section.id }}">
+    <div class="besjaar-seo-guides__inner">
+      <div class="besjaar-seo-guides__head">
+        <div>
+          <h2 id="BesjaarSeoGuides-{{ section.id }}">{{ guide_label }}</h2>
+          <p>{{ guide_intro }}</p>
+        </div>
+        {% if guide_blog_url != blank %}<a href="{{ guide_blog_url }}">{{ guide_all }} →</a>{% endif %}
+      </div>
+      <ul class="besjaar-seo-guides__list">
+        {% for guide_article in guide_blog.articles limit: section.settings.link_limit %}
+          <li><a href="{% render 'localized-internal-url', url: guide_article.url %}">{{ guide_article.title | escape }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+{% endif %}
+{% schema %}
+{
+  "name": "Besjaar guide links",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Links the guide blog from every page so the articles are internally linked and crawlable. Renders nothing while the blog has no published posts."
+    },
+    {"type": "text", "id": "blog_handle", "label": "Blog handle", "default": "gids"},
+    {"type": "range", "id": "link_limit", "label": "Guides to link", "min": 3, "max": 12, "step": 1, "default": 6}
+  ],
+  "enabled_on": {"groups": ["footer"]}
+}
+{% endschema %}

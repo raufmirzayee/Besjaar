@@ -1,0 +1,712 @@
+{%- comment -%}
+  Besjaar v9 structured data.
+
+  What changed in v9 (SEO + metadata pass, 2026-09-13):
+  - Organization / Brand / WebSite used to be emitted on the home page only, so
+    every other URL on the site carried Product, Article and Breadcrumb nodes
+    that referenced "#organization" and "#brand" @ids which were never defined
+    on that document. Search engines had to re-derive the publisher entity from
+    scratch on each page. The entity graph is now emitted on every page, and
+    only the home-specific nodes (WebPage + SiteNavigationElement) stay behind
+    the index guard, so no per-page cost is added for the navigation lookups.
+  - Collection pages now emit a CollectionPage whose mainEntity is the product
+    ItemList, and each list entry is a real Product with image, price and
+    availability instead of a bare name/url pair.
+  - Article pages emit a full BlogPosting (author, publisher, dates, section,
+    keywords, word count, language) instead of Shopify's generic
+    {{ article | structured_data }}, which omits the publisher and cannot fall
+    back to a share image when an article has no featured image of its own.
+  - Blog index pages emit a Blog node listing their posts.
+  - Content pages are typed (AboutPage / ContactPage / WebPage). The FAQ page is
+    deliberately skipped here because sections/main-faq-page.liquid already owns
+    the FAQPage node for that URL.
+  - Product offers gained priceValidUntil (Google warns when it is missing),
+    mpn and category.
+
+  Unchanged by design:
+  - Product + Offer markup is emitted for every public product, not only a
+    theme-specific showerhead family.
+  - Breadcrumb and collection URLs preserve the active Shopify locale.
+  - Judge.me rating/count can be used as a fallback without Judge.me owning
+    duplicate schema.
+{%- endcomment -%}
+
+{%- liquid
+  assign sd_org_id = shop.url | append: '#organization'
+  assign sd_brand_id = shop.url | append: '#brand'
+  assign sd_website_id = shop.url | append: '#website'
+  assign sd_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  assign sd_product_hidden = false
+  if request.page_type == 'product' and product != blank
+    assign sd_hidden_value = product.metafields.seo.hidden.value
+    if sd_hidden_value == 1 or sd_hidden_value == '1' or sd_hidden_value == true
+      assign sd_product_hidden = true
+    endif
+  endif
+
+  comment
+    A single share image is reused by every node that needs a picture but has
+    no resource image of its own (articles without a featured image, the
+    Organization node when no brand logo is set).
+  endcomment
+  assign sd_fallback_image_url = blank
+  if settings.social_share_image != blank
+    assign sd_fallback_image_url = settings.social_share_image | image_url: width: 1200 | prepend: 'https:'
+  else
+    assign sd_fallback_image_url = 'besjaar-social-share.png' | asset_url | prepend: 'https:'
+  endif
+  assign sd_fallback_image_url = sd_fallback_image_url | replace: 'https:https:', 'https:'
+-%}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  1. Publisher entity graph — emitted on every page.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{%- liquid
+  assign sd_support_email = settings.support_email | default: 'info@univexbv.com'
+  assign sd_org_logo = shop.brand.logo
+  assign sd_org_description = 'besjaar_ui.shower_store.schema.organization_description' | t
+
+  capture sd_org_same_as
+    echo 'https://www.bol.com/nl/nl/b/besjaar/603580876/' | json
+    echo ','
+    echo 'https://www.bol.com/be/nl/b/besjaar/604080876/' | json
+    echo ','
+    echo 'https://www.bol.com/nl/nl/l/besjaar-douchekoppen/13337/4299078524/' | json
+    echo ','
+    echo 'https://www.youtube.com/@BESJAAR' | json
+    if settings.social_instagram != blank
+      echo ','
+      echo settings.social_instagram | json
+    endif
+    if settings.social_facebook != blank
+      echo ','
+      echo settings.social_facebook | json
+    endif
+    if settings.social_tiktok != blank
+      echo ','
+      echo settings.social_tiktok | json
+    endif
+    if settings.social_youtube != blank and settings.social_youtube != 'https://www.youtube.com/@BESJAAR'
+      echo ','
+      echo settings.social_youtube | json
+    endif
+  endcapture
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": {{ sd_org_id | json }},
+        "name": "Besjaar",
+        "alternateName": "Besjaar Douchekoppen",
+        "url": {{ shop.url | json }},
+        "description": {{ sd_org_description | json }},
+        "brand": {"@id": {{ sd_brand_id | json }}},
+        "address": {"@type": "PostalAddress", "addressLocality": "Assen", "addressCountry": "NL"},
+        "areaServed": ["NL", "BE", "DE", "FR"],
+        "knowsAbout": [
+          {{ 'besjaar_ui.shower_store.schema.topic_showerheads' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_filtered' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_hoses' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_spray_modes' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_fit' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_care' | t | json }}
+        ],
+        "sameAs": [{{ sd_org_same_as | strip }}],
+        {% if sd_org_logo != blank %}"logo": {"@type": "ImageObject", "@id": {{ shop.url | append: '#logo' | json }}, "url": {{ sd_org_logo | image_url: width: 600 | prepend: 'https:' | json }}, "contentUrl": {{ sd_org_logo | image_url: width: 600 | prepend: 'https:' | json }}, "caption": "Besjaar"},{% endif %}
+        "image": {{ sd_fallback_image_url | json }}{% if sd_support_email != blank or settings.support_phone != blank %},
+        "contactPoint": {"@type": "ContactPoint", "contactType": "customer service"{% if sd_support_email != blank %}, "email": {{ sd_support_email | json }}{% endif %}{% if settings.support_phone != blank %}, "telephone": {{ settings.support_phone | json }}{% endif %}, "availableLanguage": ["nl", "en", "de", "fr"]}{% endif %}
+      },
+      {
+        "@type": "Brand",
+        "@id": {{ sd_brand_id | json }},
+        "name": "Besjaar",
+        "url": {{ shop.url | json }},
+        "sameAs": [{{ sd_org_same_as | strip }}]{% if sd_org_logo != blank %},
+        "logo": {{ sd_org_logo | image_url: width: 600 | prepend: 'https:' | json }}{% endif %}
+      },
+      {
+        "@type": "WebSite",
+        "@id": {{ sd_website_id | json }},
+        "name": "Besjaar",
+        "alternateName": ["Besjaar Douchekoppen", "Besjaar Official Store", "besjaar.eu"],
+        "url": {{ shop.url | json }},
+        "description": {{ 'besjaar_ui.shower_store.meta.description' | t | json }},
+        "publisher": {"@id": {{ sd_org_id | json }}},
+        "inLanguage": [{% for sd_language in localization.available_languages %}{{ sd_language.iso_code | json }}{% unless forloop.last %},{% endunless %}{% endfor %}]
+      }
+    ]
+  }
+</script>
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  2. Product.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'product' and product != blank and sd_product_hidden == false %}
+  {%- liquid
+    assign sd_variant = product.selected_or_first_available_variant | default: product.variants.first
+    assign sd_currency = cart.currency.iso_code | default: shop.currency
+    assign sd_country = localization.country.iso_code | default: 'NL'
+    assign sd_return_days = settings.return_window_days | default: 30
+
+    comment
+      Google Search Console reports "Missing field priceValidUntil" for offers
+      without one. A rolling one-year horizon keeps the offer valid without
+      anyone having to maintain a date by hand.
+    endcomment
+    assign sd_price_valid_until = 'now' | date: '%s' | plus: 31536000 | date: '%Y-%m-%d'
+
+    assign sd_rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value
+    assign sd_rating_max = product.metafields.reviews.rating.value.scale_max | default: 5
+    assign sd_rating_count = product.metafields.reviews.rating_count.value
+
+    comment
+      Judge.me can expose its rating/count in the preview-badge metafield even
+      when Shopify's standard reviews.rating metafields are not populated.
+      Parse those values as a fallback so this theme remains the single owner
+      of Product JSON-LD when Judge.me SEO snippets are disabled in the app.
+    endcomment
+    if (sd_rating == blank or sd_rating_count == blank or sd_rating_count == 0) and product.metafields.judgeme.badge != blank
+      assign sd_jdgm_badge = product.metafields.judgeme.badge | append: ''
+      assign sd_jdgm_rating = sd_jdgm_badge | split: "data-average-rating='" | last | split: "'" | first | plus: 0
+      assign sd_jdgm_count = sd_jdgm_badge | split: "data-number-of-reviews='" | last | split: "'" | first | plus: 0
+      if sd_jdgm_rating > 0 and sd_jdgm_count > 0
+        assign sd_rating = sd_jdgm_rating
+        assign sd_rating_count = sd_jdgm_count
+        assign sd_rating_max = 5
+      endif
+    endif
+
+    assign sd_native_reviews = blank
+    if sd_rating == blank or sd_rating_count == blank or sd_rating_count == 0
+      assign sd_native_source = product.metafields.custom.reviews.value
+      assign sd_native_total = 0
+      assign sd_native_sum = 0
+      if sd_native_source != blank
+        for sd_entry in sd_native_source
+          assign sd_entry_rating = sd_entry.rating | default: 0
+          if sd_entry_rating > 0
+            assign sd_native_total = sd_native_total | plus: 1
+            assign sd_native_sum = sd_native_sum | plus: sd_entry_rating
+          endif
+        endfor
+      endif
+      if sd_native_total > 0
+        assign sd_native_reviews = sd_native_source
+        assign sd_rating = sd_native_sum | times: 1.0 | divided_by: sd_native_total | round: 2
+        assign sd_rating_count = sd_native_total
+        assign sd_rating_max = 5
+      endif
+    endif
+
+    assign sd_barcode = sd_variant.barcode | strip
+    assign sd_free_ship_cents = settings.free_shipping_threshold | times: 100
+    assign sd_standard_ship_rate = settings.standard_shipping_rate | default: 0
+    assign sd_review_anonymous_label = 'besjaar_ui.reviews.anonymous' | t
+    assign sd_brand_name = product.vendor | default: 'Besjaar'
+  -%}
+  {% capture sd_product_name %}{% render 'localized-product-title', product: product %}{% endcapture %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "@id": {{ canonical_url | append: '#product' | json }},
+      "name": {{ sd_product_name | strip | default: product.title | json }},
+      "url": {{ canonical_url | json }},
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "mainEntityOfPage": {{ canonical_url | json }},
+      {% if product.description != blank %}"description": {{ product.description | strip_html | strip | truncate: 500 | json }},{% endif %}
+      {% if product.type != blank %}"category": {{ product.type | json }},{% endif %}
+      "sku": {{ sd_variant.sku | default: sd_variant.id | json }},
+      {% if sd_barcode != blank %}"mpn": {{ sd_barcode | json }},{% elsif sd_variant.sku != blank %}"mpn": {{ sd_variant.sku | json }},{% endif %}
+      {% case sd_barcode.size %}{% when 8 %}"gtin8": {{ sd_barcode | json }},{% when 12 %}"gtin12": {{ sd_barcode | json }},{% when 13 %}"gtin13": {{ sd_barcode | json }},{% when 14 %}"gtin14": {{ sd_barcode | json }},{% endcase %}
+      "brand": {"@type": "Brand", "name": {{ sd_brand_name | json }}{% if sd_brand_name == 'Besjaar' %}, "@id": {{ sd_brand_id | json }}, "url": {{ shop.url | json }}{% endif %}},
+      {% if product.media.size > 0 %}"image": [{% for media in product.media limit: 6 %}{{ media.preview_image | image_url: width: 1400 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],{% endif %}
+      {% if sd_rating != blank and sd_rating_count != blank and sd_rating_count > 0 %}"aggregateRating": {"@type": "AggregateRating", "ratingValue": {{ sd_rating | json }}, "reviewCount": {{ sd_rating_count | json }}, "bestRating": {{ sd_rating_max | default: 5 | json }}},{% endif %}
+      {% if sd_native_reviews != blank %}"review": [{% assign sd_review_emitted = 0 %}{% for sd_entry in sd_native_reviews %}{% assign sd_entry_rating = sd_entry.rating | default: 0 %}{% if sd_entry_rating > 0 and sd_review_emitted < 8 %}{% if sd_review_emitted > 0 %},{% endif %}{"@type": "Review", "reviewRating": {"@type": "Rating", "ratingValue": {{ sd_entry_rating | json }}, "bestRating": 5}, "author": {"@type": "Person", "name": {{ sd_entry.author | default: sd_review_anonymous_label | json }}}{% if sd_entry.date != blank %}, "datePublished": {{ sd_entry.date | json }}{% endif %}{% if sd_entry.body != blank %}, "reviewBody": {{ sd_entry.body | strip | truncate: 500 | json }}{% endif %}}{% assign sd_review_emitted = sd_review_emitted | plus: 1 %}{% endif %}{% endfor %}],{% endif %}
+      "offers": [{% assign sd_canonical_base = canonical_url | split: '?' | first %}{% for sd_offer_variant in product.variants limit: 20 %}{%- liquid
+        assign sd_offer_barcode = sd_offer_variant.barcode | strip
+        capture sd_offer_url
+          echo sd_canonical_base
+          if product.variants.size > 1
+            echo '?variant=' | append: sd_offer_variant.id
+          endif
+        endcapture
+      -%}{
+        "@type": "Offer",
+        "url": {{ sd_offer_url | json }},
+        "sku": {{ sd_offer_variant.sku | default: sd_offer_variant.id | json }},
+        {% if sd_offer_barcode != blank %}"mpn": {{ sd_offer_barcode | json }},{% elsif sd_offer_variant.sku != blank %}"mpn": {{ sd_offer_variant.sku | json }},{% endif %}
+        {% case sd_offer_barcode.size %}{% when 8 %}"gtin8": {{ sd_offer_barcode | json }},{% when 12 %}"gtin12": {{ sd_offer_barcode | json }},{% when 13 %}"gtin13": {{ sd_offer_barcode | json }},{% when 14 %}"gtin14": {{ sd_offer_barcode | json }},{% endcase %}
+        "priceCurrency": {{ sd_currency | json }},
+        "price": {{ sd_offer_variant.price | divided_by: 100.0 | json }},
+        "priceValidUntil": {{ sd_price_valid_until | json }},
+        "availability": {% if sd_offer_variant.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %},
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {"@type": "Organization", "@id": {{ sd_org_id | json }}, "name": "Besjaar", "url": {{ shop.url | json }}},
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": {{ sd_country | json }},
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": {{ sd_return_days | json }},
+          "returnMethod": "https://schema.org/ReturnByMail"
+        },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          {% if sd_offer_variant.price >= sd_free_ship_cents %}"shippingRate": {"@type": "MonetaryAmount", "value": 0, "currency": {{ sd_currency | json }}},{% elsif sd_standard_ship_rate > 0 %}"shippingRate": {"@type": "MonetaryAmount", "value": {{ sd_standard_ship_rate | json }}, "currency": {{ sd_currency | json }}},{% endif %}
+          "shippingDestination": {"@type": "DefinedRegion", "addressCountry": {{ sd_country | json }}},
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {"@type": "QuantitativeValue", "minValue": 0, "maxValue": {{ settings.processing_business_days | default: 1 | json }}, "unitCode": "DAY"},
+            "transitTime": {"@type": "QuantitativeValue", "minValue": {{ settings.transit_min_business_days | default: 1 | json }}, "maxValue": {{ settings.transit_max_business_days | default: 3 | json }}, "unitCode": "DAY"}
+          }
+        }
+      }{% unless forloop.last %},{% endunless %}{% endfor %}]
+    }
+  </script>
+{% endif %}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  3. Article (BlogPosting) and blog index.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'article' and article != blank %}
+  {%- liquid
+    assign sd_article_image = sd_fallback_image_url
+    if article.image != blank
+      assign sd_article_image = article.image | image_url: width: 1600 | prepend: 'https:'
+    endif
+    assign sd_article_description = article.excerpt_or_content | strip_html | strip | truncate: 300
+    assign sd_article_words = article.content | strip_html | number_of_words
+    assign sd_article_author = article.author | strip
+  -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": {{ canonical_url | append: '#article' | json }},
+      "headline": {{ article.title | strip | truncate: 110 | json }},
+      "name": {{ article.title | strip | json }},
+      "url": {{ canonical_url | json }},
+      "mainEntityOfPage": {"@type": "WebPage", "@id": {{ canonical_url | json }}},
+      {% if sd_article_description != blank %}"description": {{ sd_article_description | json }},{% endif %}
+      "image": [{{ sd_article_image | json }}],
+      "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+      "dateModified": {{ article.updated_at | default: article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+      "author": {% if sd_article_author != blank and sd_article_author != 'Besjaar' %}{"@type": "Person", "name": {{ sd_article_author | json }}}{% else %}{"@id": {{ sd_org_id | json }}}{% endif %},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "isPartOf": {"@type": "Blog", "@id": {{ shop.url | append: blog.url | append: '#blog' | json }}, "name": {{ blog.title | json }}},
+      {% if blog.title != blank %}"articleSection": {{ blog.title | json }},{% endif %}
+      {% if article.tags.size > 0 %}"keywords": [{% for sd_tag in article.tags %}{{ sd_tag | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],{% endif %}
+      {% if sd_article_words > 0 %}"wordCount": {{ sd_article_words | json }},{% endif %}
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "about": {"@id": {{ sd_org_id | json }}}
+    }
+  </script>
+{% elsif request.page_type == 'blog' and blog != blank %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "@id": {{ shop.url | append: blog.url | append: '#blog' | json }},
+      "name": {{ blog.title | json }},
+      "url": {{ canonical_url | json }},
+      "description": {{ besjaar_ui_meta_description | strip | json }},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }}{% if blog.articles.size > 0 %},
+      "blogPost": [{% for sd_post in blog.articles limit: 20 %}{% capture sd_post_path %}{% render 'localized-internal-url', url: sd_post.url %}{% endcapture %}{
+        "@type": "BlogPosting",
+        "headline": {{ sd_post.title | strip | truncate: 110 | json }},
+        "url": {{ shop.url | append: sd_post_path | strip | json }},
+        "datePublished": {{ sd_post.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }}{% if sd_post.excerpt_or_content != blank %},
+        "description": {{ sd_post.excerpt_or_content | strip_html | strip | truncate: 200 | json }}{% endif %}
+      }{% unless forloop.last %},{% endunless %}{% endfor %}]{% endif %}
+    }
+  </script>
+{% endif %}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  4. Home page: WebPage + primary navigation.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'index' %}
+  {% liquid
+    comment
+      layout/theme.liquid passes the computed <title> and meta description in,
+      so the WebPage node cannot disagree with the rest of the document or
+      discard a merchant Search engine listing title. The translation keys
+      remain only as a fallback.
+    endcomment
+    assign sd_webpage_name = besjaar_ui_browser_title | strip
+    if sd_webpage_name == blank
+      assign sd_webpage_name = 'besjaar_ui.shower_store.meta.title' | t
+    endif
+    assign sd_webpage_description = besjaar_ui_meta_description | strip
+    if sd_webpage_description == blank
+      assign sd_webpage_description = 'besjaar_ui.shower_store.meta.description' | t
+    endif
+
+    capture sd_shop_url
+      render 'shower-store-url'
+    endcapture
+    assign sd_shop_url = sd_shop_url | strip
+
+    assign sd_filter_collection = blank
+    for sd_collection in collections
+      assign sd_collection_identity = sd_collection.title | append: ' ' | append: sd_collection.handle | downcase
+      if sd_collection.products_count > 0 and sd_collection_identity contains 'filter'
+        assign sd_filter_collection = sd_collection
+        break
+      endif
+    endfor
+    capture sd_filter_url
+      if sd_filter_collection != blank
+        render 'localized-internal-url', url: sd_filter_collection.url
+      else
+        echo sd_shop_url
+      endif
+    endcapture
+    assign sd_filter_url = sd_filter_url | strip
+
+    assign sd_about_page = pages['over-ons']
+    if sd_about_page == blank
+      assign sd_about_page = pages['overons']
+    endif
+    if sd_about_page == blank
+      assign sd_about_page = pages['about-us']
+    endif
+    if sd_about_page == blank
+      assign sd_about_page = pages['about']
+    endif
+    capture sd_about_url
+      if sd_about_page != blank
+        render 'localized-internal-url', url: sd_about_page.url
+      else
+        render 'localized-internal-url', url: '/pages/about-us'
+      endif
+    endcapture
+    assign sd_about_url = sd_about_url | strip
+
+    assign sd_faq_page = settings.faq_page
+    if sd_faq_page == blank
+      assign sd_faq_page = pages['veelgestelde-vragen']
+    endif
+    if sd_faq_page == blank
+      assign sd_faq_page = pages['faqs']
+    endif
+    if sd_faq_page == blank
+      assign sd_faq_page = pages['faq']
+    endif
+    if sd_faq_page == blank
+      assign sd_faq_page = pages['frequently-asked-questions']
+    endif
+    capture sd_faq_url
+      if sd_faq_page != blank
+        render 'localized-internal-url', url: sd_faq_page.url
+      else
+        render 'localized-internal-url', url: '/pages/faq'
+      endif
+    endcapture
+    assign sd_faq_url = sd_faq_url | strip
+
+    assign sd_contact_page = settings.contact_page
+    if sd_contact_page == blank
+      assign sd_contact_page = pages['contact']
+    endif
+    if sd_contact_page == blank
+      assign sd_contact_page = pages['contact-us']
+    endif
+    if sd_contact_page == blank
+      assign sd_contact_page = pages['contacteer-ons']
+    endif
+    capture sd_contact_url
+      if sd_contact_page != blank
+        render 'localized-internal-url', url: sd_contact_page.url
+      else
+        render 'localized-internal-url', url: '/pages/contact'
+      endif
+    endcapture
+    assign sd_contact_url = sd_contact_url | strip
+
+    assign sd_business_page = pages['zakelijk']
+    capture sd_business_url
+      if sd_business_page != blank
+        render 'localized-internal-url', url: sd_business_page.url
+      else
+        render 'localized-internal-url', url: '/pages/zakelijk'
+      endif
+    endcapture
+    assign sd_business_url = sd_business_url | strip
+    capture sd_business_label
+      render 'localized-page-title', page: sd_business_page, handle: 'zakelijk'
+    endcapture
+
+    capture sd_about_label
+      render 'localized-page-title', page: sd_about_page, handle: 'about-us'
+    endcapture
+
+    comment
+      Besjaar v9: when the guide blog has published posts, list it in the
+      primary navigation entity as well, so the editorial hub is part of the
+      declared site structure and not only a footer link.
+    endcomment
+    assign sd_guide_blog = blogs['gids']
+    if sd_guide_blog == blank or sd_guide_blog.articles_count == 0
+      assign sd_guide_blog = blank
+    endif
+    capture sd_guide_url
+      if sd_guide_blog != blank
+        render 'localized-internal-url', url: sd_guide_blog.url
+      endif
+    endcapture
+    assign sd_guide_url = sd_guide_url | strip
+  %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": {{ canonical_url | append: '#webpage' | json }},
+          "url": {{ canonical_url | json }},
+          "name": {{ sd_webpage_name | json }},
+          "description": {{ sd_webpage_description | json }},
+          "isPartOf": {"@id": {{ sd_website_id | json }}},
+          "about": {"@id": {{ sd_org_id | json }}},
+          "publisher": {"@id": {{ sd_org_id | json }}},
+          "mainEntity": {"@id": {{ sd_org_id | json }}},
+          "primaryImageOfPage": {{ sd_fallback_image_url | json }},
+          "inLanguage": {{ request.locale.iso_code | json }}
+        },
+        {
+          "@type": "ItemList",
+          "@id": {{ shop.url | append: '#primary-navigation' | json }},
+          "name": "Besjaar primary navigation",
+          "itemListOrder": "https://schema.org/ItemListOrderAscending",
+          "itemListElement": [
+            {"@type":"SiteNavigationElement","position":1,"name":{{ 'besjaar_ui.footer.all_products' | t | json }},"url":{{ shop.url | append: sd_shop_url | json }}},
+            {"@type":"SiteNavigationElement","position":2,"name":{{ 'besjaar_ui.shower_collection.family_filter' | t | json }},"url":{{ shop.url | append: sd_filter_url | json }}},
+            {"@type":"SiteNavigationElement","position":3,"name":{{ sd_about_label | strip | json }},"url":{{ shop.url | append: sd_about_url | json }}},
+            {"@type":"SiteNavigationElement","position":4,"name":{{ 'besjaar_ui.navigation.faq' | t | json }},"url":{{ shop.url | append: sd_faq_url | json }}},
+            {"@type":"SiteNavigationElement","position":5,"name":{{ 'besjaar_ui.navigation.contact' | t | json }},"url":{{ shop.url | append: sd_contact_url | json }}},
+            {"@type":"SiteNavigationElement","position":6,"name":{{ sd_business_label | strip | json }},"url":{{ shop.url | append: sd_business_url | json }}}{% if sd_guide_blog != blank %},
+            {"@type":"SiteNavigationElement","position":7,"name":{{ sd_guide_blog.title | json }},"url":{{ shop.url | append: sd_guide_url | json }}}{% endif %}
+          ]
+        }
+      ]
+    }
+  </script>
+{% endif %}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  5. Content pages (About / Contact / generic).
+     The FAQ page is skipped: sections/main-faq-page.liquid already owns the
+     FAQPage node for that URL, and two page-level nodes for one document is
+     exactly the duplication this file exists to prevent.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'page' and page != blank %}
+  {%- liquid
+    assign sd_page_handle = page.handle | downcase | strip
+    assign sd_faq_handle = settings.faq_page.handle | default: 'faqs' | downcase
+
+    assign sd_page_type = 'WebPage'
+    assign sd_emit_page_node = true
+    if sd_page_handle == sd_faq_handle or sd_page_handle == 'faq' or sd_page_handle == 'faqs' or sd_page_handle == 'veelgestelde-vragen' or sd_page_handle == 'frequently-asked-questions'
+      assign sd_emit_page_node = false
+    elsif sd_page_handle == 'over-ons' or sd_page_handle == 'overons' or sd_page_handle == 'about-us' or sd_page_handle == 'about'
+      assign sd_page_type = 'AboutPage'
+    elsif sd_page_handle == 'contact' or sd_page_handle == 'contact-us' or sd_page_handle == 'contacteer-ons' or sd_page_handle == 'klantenservice'
+      assign sd_page_type = 'ContactPage'
+    endif
+  -%}
+  {% if sd_emit_page_node %}
+    {% capture sd_page_title %}{% render 'localized-page-title', page: page %}{% endcapture %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": {{ sd_page_type | json }},
+        "@id": {{ canonical_url | append: '#webpage' | json }},
+        "url": {{ canonical_url | json }},
+        "name": {{ sd_page_title | strip | default: page.title | json }},
+        {% if besjaar_ui_meta_description != blank %}"description": {{ besjaar_ui_meta_description | strip | json }},{% endif %}
+        "isPartOf": {"@id": {{ sd_website_id | json }}},
+        "about": {"@id": {{ sd_org_id | json }}},
+        "publisher": {"@id": {{ sd_org_id | json }}},
+        {% if page.published_at != blank %}"datePublished": {{ page.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},{% endif %}
+        "inLanguage": {{ request.locale.iso_code | json }}
+      }
+    </script>
+  {% endif %}
+{% endif %}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  6. Breadcrumbs.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'product' or request.page_type == 'collection' or request.page_type == 'article' or request.page_type == 'blog' or request.page_type == 'page' %}
+  {% capture sd_crumb_product_title %}{% if product != blank %}{% render 'localized-product-title', product: product %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_page_title %}{% if page != blank %}{% render 'localized-page-title', page: page %}{% endif %}{% endcapture %}
+  {% liquid
+    assign sd_crumb_collection = collection
+    if request.page_type == 'product' and sd_crumb_collection == blank and product.collections.size > 0
+      if settings.shower_collection != blank
+        for sd_product_collection in product.collections
+          if sd_product_collection.id == settings.shower_collection.id
+            assign sd_crumb_collection = sd_product_collection
+            break
+          endif
+        endfor
+      endif
+      if sd_crumb_collection == blank
+        for sd_product_collection in product.collections
+          unless sd_product_collection.handle == 'all' or sd_product_collection.handle == 'frontpage'
+            assign sd_crumb_collection = sd_product_collection
+            break
+          endunless
+        endfor
+      endif
+      if sd_crumb_collection == blank
+        assign sd_crumb_collection = product.collections.first
+      endif
+    endif
+  %}
+  {% capture sd_crumb_collection_title %}{% if sd_crumb_collection != blank %}{% render 'localized-collection-title', collection: sd_crumb_collection %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_collection_path %}{% if sd_crumb_collection != blank %}{% render 'localized-internal-url', url: sd_crumb_collection.url %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_blog_path %}{% if blog != blank %}{% render 'localized-internal-url', url: blog.url %}{% endif %}{% endcapture %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": {{ canonical_url | append: '#breadcrumb' | json }},
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ 'besjaar_ui.product.home' | t | json }},
+          "item": {{ shop.url | append: routes.root_url | json }}
+        }{% if request.page_type == 'product' and sd_crumb_collection != blank %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_collection_title | strip | default: sd_crumb_collection.title | json }},
+          "item": {{ shop.url | append: sd_crumb_collection_path | strip | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'product' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'collection' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_collection_title | strip | default: collection.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'article' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ blog.title | json }},
+          "item": {{ shop.url | append: sd_crumb_blog_path | strip | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ article.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'blog' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ blog.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'page' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_page_title | strip | default: page.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% endif %}
+      ]
+    }
+  </script>
+{% endif %}
+
+{%- comment -%}
+  ------------------------------------------------------------------
+  7. Collection page: CollectionPage wrapping a product ItemList.
+     Each entry carries image, price and availability so a crawler can read the
+     category without fetching every product URL first.
+  ------------------------------------------------------------------
+{%- endcomment -%}
+{% if request.page_type == 'collection' and collection != blank and collection.products.size > 0 %}
+  {% capture sd_itemlist_title %}{% render 'localized-collection-title', collection: collection %}{% endcapture %}
+  {%- liquid
+    assign sd_collection_currency = cart.currency.iso_code | default: shop.currency
+    assign sd_collection_description = besjaar_ui_meta_description | strip
+  -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": {{ canonical_url | append: '#collectionpage' | json }},
+      "url": {{ canonical_url | json }},
+      "name": {{ sd_itemlist_title | strip | default: collection.title | json }},
+      {% if sd_collection_description != blank %}"description": {{ sd_collection_description | json }},{% endif %}
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "mainEntity": {
+        "@type": "ItemList",
+        "@id": {{ canonical_url | append: '#products' | json }},
+        "name": {{ sd_itemlist_title | strip | default: collection.title | json }},
+        "numberOfItems": {{ collection.products_count | default: collection.products.size | json }},
+        "itemListOrder": "https://schema.org/ItemListOrderAscending",
+        "itemListElement": [{% for sd_p in collection.products limit: 24 %}{% capture sd_p_name %}{% render 'localized-product-title', product: sd_p %}{% endcapture %}{% capture sd_p_path %}{% render 'localized-internal-url', url: sd_p.url %}{% endcapture %}{%- liquid
+          assign sd_p_url = shop.url | append: sd_p_path | strip
+          assign sd_p_variant = sd_p.selected_or_first_available_variant | default: sd_p.variants.first
+        -%}{
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "url": {{ sd_p_url | json }},
+          "item": {
+            "@type": "Product",
+            "@id": {{ sd_p_url | append: '#product' | json }},
+            "name": {{ sd_p_name | strip | default: sd_p.title | json }},
+            "url": {{ sd_p_url | json }},
+            {% if sd_p.featured_media != blank %}"image": {{ sd_p.featured_media.preview_image | image_url: width: 1000 | prepend: 'https:' | json }},{% endif %}
+            {% if sd_p.vendor != blank %}"brand": {"@type": "Brand", "name": {{ sd_p.vendor | json }}},{% endif %}
+            "offers": {
+              "@type": "Offer",
+              "url": {{ sd_p_url | json }},
+              "priceCurrency": {{ sd_collection_currency | json }},
+              "price": {{ sd_p.price | divided_by: 100.0 | json }},
+              "availability": {% if sd_p.available %}"https://schema.org/InStock"{% else %}"https://schema.org/OutOfStock"{% endif %},
+              "itemCondition": "https://schema.org/NewCondition",
+              "seller": {"@id": {{ sd_org_id | json }}}
+            }
+          }
+        }{% unless forloop.last %},{% endunless %}{% endfor %}]
+      }
+    }
+  </script>
+{% endif %}
