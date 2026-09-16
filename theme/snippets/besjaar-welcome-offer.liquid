@@ -1,6 +1,6 @@
 {%- comment -%}
   Besjaar Welcome Drop — conversion-focused first-order offer.
-  - Opens only when the visitor requests the welcome offer.
+  - Opens after delay / scroll / desktop exit intent, and from the corner chip.
   - Weighted reward: 10%, 15%, 20%, or free shipping.
   - Captures newsletter consent through Shopify's native customer form.
   - Shows once per guest visit until claimed; after claim it stays suppressed while the welcome benefit is active.
@@ -25,10 +25,10 @@
   {{ 'besjaar-welcome-offer.css' | asset_url | stylesheet_tag }}
 
   {%- comment -%}
-    The invitation is the only entry point to the offer now that nothing opens it
-    automatically, so it is styled as a fixed corner chip. Both strings already
-    exist in all four locale files; no new translation keys are introduced,
-    because Shopify's language editor owns those files.
+    A fixed corner chip, so the offer stays reachable after someone closes the
+    popup or once a visit has already used up its automatic open. Both strings
+    already exist in all four locale files; no new translation keys are
+    introduced, because Shopify's language editor owns those files.
   {%- endcomment -%}
   <div class="besjaar-offer-invitation" data-offer-invitation hidden>
     <button class="besjaar-offer-invitation__open" type="button" data-offer-launch aria-controls="BesjaarWelcomeDialog">
@@ -44,6 +44,9 @@
   <dialog id="BesjaarWelcomeDialog"
     class="besjaar-welcome-offer"
     data-besjaar-welcome-offer
+    data-delay="{{ settings.welcome_offer_delay_seconds | default: 3 }}"
+    data-scroll="{{ settings.welcome_offer_scroll_percent | default: 35 }}"
+    data-exit-intent="{{ settings.welcome_offer_exit_intent | json }}"
     data-root-url="{{ routes.root_url }}"
     data-shop-url="{{ routes.all_products_collection_url }}"
     data-locale="{{ request.locale.iso_code | default: 'nl' | downcase | escape }}"

@@ -1,4 +1,5 @@
-/* Besjaar Welcome Drop v1.2 — compact no-scroll popup + 7-day claim suppression */
+/* Besjaar Welcome Drop v1.3 — auto-open (timer / scroll / desktop exit intent)
+   plus the corner chip as a manual way back in, and 7-day claim suppression */
 (() => {
   const dialog = document.querySelector('[data-besjaar-welcome-offer]');
   const configEl = document.querySelector('[data-besjaar-welcome-config]');
@@ -16,6 +17,9 @@
     pending: 'besjaar_welcome_offer_pending_session_v3',
     claimed: 'besjaar_welcome_offer_claimed_v3'
   };
+  const delay = Math.max(1, Number(dialog.dataset.delay || 3)) * 1000;
+  const scrollTarget = Math.max(10, Math.min(90, Number(dialog.dataset.scroll || 35)));
+  const exitIntent = dialog.dataset.exitIntent !== 'false';
   const rootUrl = dialog.dataset.rootUrl || '/';
   const shopUrl = dialog.dataset.shopUrl || `${rootUrl}collections/all`;
   const locale = String(dialog.dataset.locale || document.documentElement.lang || 'nl').toLowerCase().split('-')[0];
@@ -77,6 +81,7 @@
 
   let activeReward = null;
   let opened = false;
+  let openingTimer = null;
   let previousFocus = null;
 
   const setStage = name => {
@@ -111,6 +116,8 @@
     if (!preview) setStored(keys.seen, { at: Date.now(), source });
     previousFocus = document.activeElement;
     document.body.classList.add('besjaar-offer-open');
+    const chipOnOpen = document.querySelector('[data-offer-invitation]');
+    if (chipOnOpen) chipOnOpen.hidden = true;
     if (typeof dialog.showModal === 'function') dialog.showModal(); else dialog.setAttribute('open', '');
     setStage('intro');
     window.setTimeout(() => $('[data-offer-drop]')?.focus(), 80);
@@ -122,6 +129,8 @@
     if (!preview && !getValidClaim()) setStored(keys.closed, { at: Date.now(), reason });
     if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open');
     document.body.classList.remove('besjaar-offer-open');
+    const chipOnClose = document.querySelector('[data-offer-invitation]');
+    if (chipOnClose && !getValidClaim()) chipOnClose.hidden = false;
     opened = false;
     previousFocus?.focus?.();
     dispatch('welcome_offer_closed', { reason });
@@ -271,6 +280,19 @@
     removeStored(keys.pending);
   } else if (preview) {
     window.setTimeout(() => open('preview'), 250);
+  } else if (canOpen()) {
+    openingTimer = window.setTimeout(() => open('timer'), delay);
+    const onScroll = () => {
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - innerHeight);
+      if ((scrollY / max) * 100 >= scrollTarget) { window.removeEventListener('scroll', onScroll); clearTimeout(openingTimer); open('scroll'); }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    if (exitIntent && matchMedia('(min-width: 761px)').matches) {
+      let armed = false;
+      window.setTimeout(() => { armed = true; }, 3500);
+      document.addEventListener('mouseout', event => { if (armed && event.clientY <= 4 && !event.relatedTarget) { clearTimeout(openingTimer); open('exit'); armed = false; } }, { passive: true });
+    }
   }
 
   const invitation = document.querySelector('[data-offer-invitation]');
