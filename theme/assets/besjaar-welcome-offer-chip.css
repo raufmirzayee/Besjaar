@@ -1,0 +1,46 @@
+/* Besjaar chip styles. Loaded after besjaar-welcome-offer.css, which still
+   contains the superseded in-flow invitation rules; the overrides at the end of
+   this file cancel the ones that would otherwise leak through. */
+/* Besjaar 2026-09-16: the offer opens automatically again (timer / scroll /
+   desktop exit intent), and this chip is the way back in afterwards -- once a
+   visit has spent its automatic open, or the visitor closed the popup. It used
+   to render in normal document flow as the last element in <body>, which put it
+   underneath the entire footer where nobody scrolls.
+
+   It is now a fixed chip. Anchored bottom-LEFT on purpose: .besjaar-ui-sticky-atc
+   and .besjaar-ui-toast are both horizontally centred, so a left anchor cannot
+   collide with either. z-index sits below .besjaar-ui-bottom-nav (150), the cart
+   drawer (198/199) and the toast (250), so every real overlay still wins. */
+.besjaar-offer-invitation{position:fixed;z-index:140;left:20px;bottom:20px;display:flex;align-items:center;gap:2px;padding:6px;border:1px solid rgba(16,47,79,.14);border-radius:999px;background:rgba(255,255,255,.97);color:var(--bj-offer-navy);box-shadow:0 14px 38px rgba(9,31,52,.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);animation:bjOfferChipIn .5s cubic-bezier(.2,.8,.2,1) .9s both}
+.besjaar-offer-invitation[hidden]{display:none}
+.besjaar-offer-invitation button{font:inherit;color:inherit;background:transparent;border:0;cursor:pointer;padding:0}
+.besjaar-offer-invitation__open{display:flex;align-items:center;gap:9px;padding:3px 8px 3px 0;border-radius:999px;font:700 12.5px/1.15 Inter,Arial,sans-serif;text-align:left;transition:transform .2s ease}
+.besjaar-offer-invitation__open:hover{transform:translateY(-1px)}
+.besjaar-offer-invitation__mark{display:grid;place-items:center;flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:linear-gradient(145deg,#dff4ff,#7fc2e7);color:#0f3455}
+.besjaar-offer-invitation__mark svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.besjaar-offer-invitation__label{max-width:22ch}
+.besjaar-offer-invitation__dismiss{display:grid;place-items:center;flex:0 0 auto;width:26px;height:26px;border-radius:50%;color:#6b8296;transition:background .2s ease,color .2s ease}
+.besjaar-offer-invitation__dismiss:hover{background:#eef5fa;color:var(--bj-offer-navy)}
+.besjaar-offer-invitation__dismiss svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round}
+.besjaar-offer-invitation button:focus-visible{outline:3px solid rgba(89,170,220,.42);outline-offset:3px}
+@keyframes bjOfferChipIn{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+  .besjaar-offer-invitation{left:12px;bottom:calc(env(safe-area-inset-bottom) + 16px);max-width:calc(100vw - 24px)}
+  .besjaar-offer-invitation__label{font-size:12px}
+  /* .besjaar-ui-bottom-nav is fixed at bottom:8px and roughly 66px tall, so the
+     chip has to sit above it whenever settings.show_mobile_bottom_nav is on. */
+  body.besjaar-has-mobile-nav .besjaar-offer-invitation{bottom:calc(env(safe-area-inset-bottom) + 86px)}
+  /* Product pages add .besjaar-ui-sticky-atc, which mobile-corrections raises to
+     bottom:calc(74px + safe-area) with roughly 62px of height. Clear its top edge
+     outright rather than let the chip jump when the bar slides in. */
+  body[data-page-type="product"] .besjaar-offer-invitation{bottom:calc(env(safe-area-inset-bottom) + 150px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .besjaar-offer-invitation{animation-duration:.01ms;animation-delay:0s}
+  .besjaar-offer-invitation__open,.besjaar-offer-invitation__open:hover{transition:none;transform:none}
+}
+/* Cancel the superseded rules still present in besjaar-welcome-offer.css.
+   The underline rule is (0,2,0) and would beat .besjaar-offer-invitation__open
+   (0,1,0), so it has to be answered at matching specificity. */
+.besjaar-offer-invitation{justify-content:flex-start}
+.besjaar-offer-invitation [data-offer-launch]{text-decoration:none;text-underline-offset:auto}

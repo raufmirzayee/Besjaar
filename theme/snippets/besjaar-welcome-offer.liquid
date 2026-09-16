@@ -23,6 +23,7 @@
 -%}
 {%- if besjaar_offer_allowed -%}
   {{ 'besjaar-welcome-offer.css' | asset_url | stylesheet_tag }}
+  {{ 'besjaar-welcome-offer-chip.css' | asset_url | stylesheet_tag }}
 
   {%- comment -%}
     A fixed corner chip, so the offer stays reachable after someone closes the
