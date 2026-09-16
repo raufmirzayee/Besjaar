@@ -24,9 +24,22 @@
 {%- if besjaar_offer_allowed -%}
   {{ 'besjaar-welcome-offer.css' | asset_url | stylesheet_tag }}
 
+  {%- comment -%}
+    The invitation is the only entry point to the offer now that nothing opens it
+    automatically, so it is styled as a fixed corner chip. Both strings already
+    exist in all four locale files; no new translation keys are introduced,
+    because Shopify's language editor owns those files.
+  {%- endcomment -%}
   <div class="besjaar-offer-invitation" data-offer-invitation hidden>
-    <button type="button" data-offer-launch aria-controls="BesjaarWelcomeDialog">{{ 'besjaar_seo.offer.open' | t | escape }}</button>
-    <button type="button" data-offer-dismiss aria-label="{{ 'besjaar_ui.welcome_offer.close' | t | escape }}">×</button>
+    <button class="besjaar-offer-invitation__open" type="button" data-offer-launch aria-controls="BesjaarWelcomeDialog">
+      <span class="besjaar-offer-invitation__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3.4c-2.3 4.3-6.6 8.5-6.6 12.1a6.6 6.6 0 0 0 13.2 0c0-3.6-4.3-7.8-6.6-12.1Z"/></svg>
+      </span>
+      <span class="besjaar-offer-invitation__label">{{ 'besjaar_seo.offer.open' | t | escape }}</span>
+    </button>
+    <button class="besjaar-offer-invitation__dismiss" type="button" data-offer-dismiss aria-label="{{ 'besjaar_ui.welcome_offer.close' | t | escape }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
   </div>
   <dialog id="BesjaarWelcomeDialog"
     class="besjaar-welcome-offer"
