@@ -409,6 +409,7 @@
   </div>
 
   <nav class="besjaar-ui-mobile-menu" id="BesjaarUIMobileMenu-{{ section.id }}" data-mobile-menu aria-hidden="true" aria-label="{{ 'besjaar_ui.accessibility.mobile_menu' | t | escape }}" inert>
+    {% if settings.show_header_localization %}{% unless request.visual_preview_mode %}<div class="besjaar-ui-mobile-menu__localization">{% render 'besjaar-ui-localization', context: 'mobile', section_id: section.id %}</div>{% endunless %}{% endif %}
     <div class="besjaar-ui-mobile-menu__shop">
       <a class="besjaar-ui-mobile-menu__shop-title besjaar-ui-mobile-menu__shop-all" href="{{ besjaar_ui_shower_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
       <div class="besjaar-ui-mobile-menu__categories">
@@ -440,7 +441,6 @@
         <a class="besjaar-ui-mobile-menu__account" href="{{ besjaar_ui_account_url }}" rel="nofollow">{% if customer %}{{ 'besjaar_ui.header.my_account' | t }}{% else %}{{ 'besjaar_ui.header.sign_in_create' | t }}{% endif %} →</a>
       {% endif %}
     {% endif %}
-    {% if settings.show_header_localization %}{% unless request.visual_preview_mode %}<div class="besjaar-ui-mobile-menu__localization">{% render 'besjaar-ui-localization', context: 'mobile', section_id: section.id %}</div>{% endunless %}{% endif %}
   </nav>
 
   <div class="besjaar-ui-search-panel" id="BesjaarUISearchPanel-{{ section.id }}" data-search-panel aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="BesjaarUISearchDialogTitle-{{ section.id }}" tabindex="-1" inert>
