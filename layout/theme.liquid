@@ -120,6 +120,10 @@
     
     {% if request.page_type == 'product' %}{{ 'besjaar-mobile-detail-clarity.css' | asset_url | stylesheet_tag }}{% endif %}
     {{ 'besjaar-seo-finish.css' | asset_url | stylesheet_tag }}
+    {%- comment -%}Besjaar: cookie consent surface. Loaded last so its own namespace always wins the cascade.{%- endcomment -%}
+    {% if settings.show_cookie_preferences %}{{ 'besjaar-ui-consent.css' | asset_url | stylesheet_tag }}{% endif %}
+    {%- comment -%}Besjaar: hide Shopify's default cookie banner from the head so it never paints beside ours. besjaar-ui-consent.js removes this style — and Shopify's banner comes back — if the Customer Privacy API fails to initialise.{%- endcomment -%}
+    {% if settings.show_cookie_banner and settings.show_cookie_preferences %}{% unless request.design_mode or request.visual_preview_mode %}<style id="besjaar-consent-native-suppress">#shopify-pc__banner,.shopify-pc__banner,#shopify-pc__prefs,.shopify-pc__prefs{display:none!important}</style>{% endunless %}{% endif %}
     {%- comment -%}Besjaar 11.3: premium lux layer — must stay the LAST stylesheet so its navy unification and polish sit on top of every earlier generation.{%- endcomment -%}
     
     {%- comment -%}Besjaar 11.5: shared storefront refinement and interaction states.{%- endcomment -%}
@@ -486,6 +490,7 @@
       {% if request.page_type contains 'customers' or template.name contains 'customers' %}<script src="{{ 'besjaar-ui-account.js' | asset_url }}" defer="defer"></script>{% endif %}
       {% if request.path contains '/apps/parcelpanel' %}<script src="{{ 'besjaar-ui-tracking.js' | asset_url }}" defer="defer"></script>{% endif %}
       {% if settings.enable_measurement_layer %}{% unless request.design_mode %}<script src="{{ 'besjaar-ui-analytics.js' | asset_url }}" defer="defer"></script>{% endunless %}{% endif %}
+      {% if settings.show_cookie_preferences %}{% unless request.design_mode %}<script src="{{ 'besjaar-ui-consent.js' | asset_url }}" defer="defer"></script>{% endunless %}{% endif %}
     {% endunless %}
   </head>
   <body class="besjaar-ui-polish-v34 besjaar-ui-spatial-v4 besjaar-ui-launch-v7{% if settings.show_mobile_bottom_nav %} besjaar-has-mobile-nav{% endif %}{% if request.design_mode or request.visual_preview_mode %} besjaar-ui-editor-safe{% endif %}" data-page-type="{{ request.page_type | escape }}">
@@ -497,6 +502,7 @@
     </main>
     {% sections 'footer-group' %}
     {% unless request.design_mode or request.visual_preview_mode %}
+      {% render 'besjaar-ui-cookie-banner' %}
       {% render 'besjaar-ui-privacy-center' %}
       {% render 'besjaar-ui-measurement-debug' %}
     {% endunless %}

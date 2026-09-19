@@ -175,6 +175,7 @@
         {% if shop.privacy_policy != blank %}<a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_store.footer.privacy' | t }}</a>{% endif %}
         {% if shop.terms_of_service != blank %}<a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'besjaar_store.footer.terms' | t }}</a>{% endif %}
         <a href="{{ footer_refund_url }}">{{ 'besjaar_ui.delivery.returns_policy' | t }}</a>
+        {% if settings.show_cookie_preferences %}{% unless request.design_mode or request.visual_preview_mode %}<button class="besjaar-consent-footer-link" type="button" data-besjaar-ui-privacy-open aria-label="{{ 'besjaar_ui.consent.manage' | t | escape }}">{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button>{% endunless %}{% endif %}
       </div>
     </div>
   </div>

@@ -1,37 +1,104 @@
-{% if settings.enable_measurement_layer and settings.show_cookie_preferences %}
-<dialog class="besjaar-ui-privacy-center" data-besjaar-ui-privacy-dialog aria-labelledby="BesjaarUIPrivacyTitle">
-  <div class="besjaar-ui-privacy-center__head">
-    <div>
-      <span class="besjaar-ui-eyebrow"><span class="notranslate" translate="no" data-besjaar-ui-brand>BESJAAR</span> · {{ 'besjaar_ui.catalog.privacy' | t }}</span>
-      <h2 id="BesjaarUIPrivacyTitle">{{ 'besjaar_ui.analytics.privacy_title' | t }}</h2>
-      <p>{{ 'besjaar_ui.analytics.privacy_intro' | t }}</p>
+{%- comment -%}
+  Besjaar — cookie preference centre.
+
+  The `data-besjaar-ui-*` hooks are the contract with besjaar-ui-analytics.js
+  (which owns open/save whenever the measurement layer is on) and with
+  besjaar-ui-consent.js (which owns the banner and the quick actions below).
+  The save button must stay plain text: analytics.js swaps its textContent
+  while saving.
+{%- endcomment -%}
+{% if settings.show_cookie_preferences %}
+  <dialog class="besjaar-consent besjaar-consent-sheet" data-besjaar-ui-privacy-dialog aria-labelledby="BesjaarUIPrivacyTitle">
+    <div class="besjaar-consent-sheet__head">
+      <span class="besjaar-consent-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="9" cy="9.5" r="1.05" fill="currentColor" stroke="none"/>
+          <circle cx="14.6" cy="11" r="1.05" fill="currentColor" stroke="none"/>
+          <circle cx="10" cy="15" r="1.05" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="15.4" r="1.05" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      <div>
+        <span class="besjaar-consent-sheet__eyebrow"><span class="notranslate" translate="no" data-besjaar-ui-brand>BESJAAR</span> · {{ 'besjaar_ui.catalog.privacy' | t }}</span>
+        <h2 class="besjaar-consent-sheet__title" id="BesjaarUIPrivacyTitle">{{ 'besjaar_ui.analytics.privacy_title' | t }}</h2>
+        <p class="besjaar-consent-sheet__intro">{{ 'besjaar_ui.analytics.privacy_intro' | t }}</p>
+      </div>
+      <button class="besjaar-consent-sheet__close" type="button" data-besjaar-ui-privacy-close aria-label="{{ 'besjaar_ui.accessibility.close' | t | escape }}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
     </div>
-    <button class="besjaar-ui-icon-button" type="button" data-besjaar-ui-privacy-close aria-label="{{ 'besjaar_ui.analytics.cancel' | t }}">×</button>
-  </div>
-  <div class="besjaar-ui-privacy-center__options">
-    <div class="besjaar-ui-privacy-option besjaar-ui-privacy-option--essential">
-      <div><strong>{{ 'besjaar_ui.analytics.essential' | t }}</strong><span>{{ 'besjaar_ui.analytics.essential_copy' | t }}</span></div>
-      <b>{{ 'besjaar_ui.analytics.always_on' | t }}</b>
+
+    <div class="besjaar-consent-sheet__options">
+      <div class="besjaar-consent-option besjaar-consent-option--locked">
+        <span class="besjaar-consent-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><path d="M5 10h14v11H5z"/></svg>
+        </span>
+        <span>
+          <span class="besjaar-consent-option__name">{{ 'besjaar_ui.analytics.essential' | t }}</span>
+          <span class="besjaar-consent-option__copy">{{ 'besjaar_ui.analytics.essential_copy' | t }}</span>
+        </span>
+        <span class="besjaar-consent-pill">{{ 'besjaar_ui.analytics.always_on' | t }}</span>
+      </div>
+
+      <label class="besjaar-consent-option">
+        <span class="besjaar-consent-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></svg>
+        </span>
+        <span>
+          <span class="besjaar-consent-option__name">{{ 'besjaar_ui.analytics.preferences' | t }}</span>
+          <span class="besjaar-consent-option__copy">{{ 'besjaar_ui.analytics.preferences_copy' | t }}</span>
+        </span>
+        <span class="besjaar-consent-switch">
+          <input type="checkbox" data-besjaar-ui-consent="preferences">
+          <span class="besjaar-consent-switch__track" aria-hidden="true"></span>
+        </span>
+      </label>
+
+      <label class="besjaar-consent-option">
+        <span class="besjaar-consent-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 19V12M10 19V6M15 19V15M20 19V9"/></svg>
+        </span>
+        <span>
+          <span class="besjaar-consent-option__name">{{ 'besjaar_ui.analytics.analytics' | t }}</span>
+          <span class="besjaar-consent-option__copy">{{ 'besjaar_ui.analytics.analytics_copy' | t }}</span>
+        </span>
+        <span class="besjaar-consent-switch">
+          <input type="checkbox" data-besjaar-ui-consent="analytics">
+          <span class="besjaar-consent-switch__track" aria-hidden="true"></span>
+        </span>
+      </label>
+
+      <label class="besjaar-consent-option">
+        <span class="besjaar-consent-option__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 10v4h3l7 4V6l-7 4H4z"/><path d="M17.5 9.5a3.5 3.5 0 0 1 0 5"/></svg>
+        </span>
+        <span>
+          <span class="besjaar-consent-option__name">{{ 'besjaar_ui.analytics.marketing' | t }}</span>
+          <span class="besjaar-consent-option__copy">{{ 'besjaar_ui.analytics.marketing_copy' | t }}</span>
+        </span>
+        <span class="besjaar-consent-switch">
+          <input type="checkbox" data-besjaar-ui-consent="marketing">
+          <span class="besjaar-consent-switch__track" aria-hidden="true"></span>
+        </span>
+      </label>
     </div>
-    <label class="besjaar-ui-privacy-option">
-      <span><strong>{{ 'besjaar_ui.analytics.preferences' | t }}</strong><small>{{ 'besjaar_ui.analytics.preferences_copy' | t }}</small></span>
-      <input type="checkbox" data-besjaar-ui-consent="preferences"><i aria-hidden="true"></i>
-    </label>
-    <label class="besjaar-ui-privacy-option">
-      <span><strong>{{ 'besjaar_ui.analytics.analytics' | t }}</strong><small>{{ 'besjaar_ui.analytics.analytics_copy' | t }}</small></span>
-      <input type="checkbox" data-besjaar-ui-consent="analytics"><i aria-hidden="true"></i>
-    </label>
-    <label class="besjaar-ui-privacy-option">
-      <span><strong>{{ 'besjaar_ui.analytics.marketing' | t }}</strong><small>{{ 'besjaar_ui.analytics.marketing_copy' | t }}</small></span>
-      <input type="checkbox" data-besjaar-ui-consent="marketing"><i aria-hidden="true"></i>
-    </label>
-  </div>
-  <p class="besjaar-ui-privacy-center__status" data-besjaar-ui-privacy-status role="status"></p>
-  <div class="besjaar-ui-privacy-center__actions">
-    {% if shop.privacy_policy != blank %}<a class="besjaar-ui-mini-link" href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_ui.analytics.privacy_policy' | t }}</a>{% endif %}
-    <span></span>
-    <button class="besjaar-ui-button besjaar-ui-button--ghost" type="button" data-besjaar-ui-privacy-close>{{ 'besjaar_ui.analytics.cancel' | t }}</button>
-    <button class="besjaar-ui-button besjaar-ui-button--primary" type="button" data-besjaar-ui-privacy-save>{{ 'besjaar_ui.analytics.save' | t }}</button>
-  </div>
-</dialog>
+
+    <p class="besjaar-consent-sheet__status" data-besjaar-ui-privacy-status role="status"></p>
+
+    <div class="besjaar-consent-sheet__actions">
+      {% if shop.privacy_policy != blank %}
+        <a class="besjaar-consent-link" href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_ui.analytics.privacy_policy' | t }}</a>
+      {% endif %}
+      <div class="besjaar-consent-sheet__buttons">
+        <button class="besjaar-consent-btn besjaar-consent-btn--secondary" type="button" data-besjaar-consent-sheet-reject>
+          {{- 'besjaar_ui.consent.reject_all' | t -}}
+        </button>
+        <button class="besjaar-consent-btn besjaar-consent-btn--secondary" type="button" data-besjaar-consent-sheet-accept>
+          {{- 'besjaar_ui.consent.accept_all' | t -}}
+        </button>
+        <button class="besjaar-consent-btn besjaar-consent-btn--primary" type="button" data-besjaar-ui-privacy-save>{{ 'besjaar_ui.analytics.save' | t }}</button>
+      </div>
+    </div>
+  </dialog>
 {% endif %}

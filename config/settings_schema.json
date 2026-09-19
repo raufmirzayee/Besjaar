@@ -620,6 +620,14 @@
         "type": "checkbox",
         "id": "show_cookie_preferences",
         "label": "Show cookie preferences",
+        "info": "Renders the Besjaar cookie preference centre and the footer link that reopens it.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_cookie_banner",
+        "label": "Show Besjaar cookie consent banner",
+        "info": "Replaces Shopify's default cookie banner on the first visit. Shopify's banner stays the automatic fallback if the Customer Privacy API is unavailable.",
         "default": true
       },
       {

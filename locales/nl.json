@@ -1096,6 +1096,14 @@
       "unavailable_short": "Niet beschikbaar",
       "debug_pixel_bridge": "Shopify pixel-koppeling"
     },
+    "consent": {
+      "banner_title": "Cookies bij Besjaar",
+      "banner_body": "Noodzakelijke cookies laten de webshop, je winkelwagen en de checkout werken. Cookies voor voorkeuren, analyse en marketing plaatsen we alleen met jouw toestemming.",
+      "accept_all": "Alles accepteren",
+      "reject_all": "Alleen noodzakelijk",
+      "customize": "Zelf instellen",
+      "manage": "Cookievoorkeuren beheren"
+    },
     "markets": {
       "region_language": "Regio & taal",
       "country_region": "Land / regio",

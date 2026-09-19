@@ -948,6 +948,14 @@
       "unavailable_short": "Unavailable",
       "debug_pixel_bridge": "Shopify pixel bridge"
     },
+    "consent": {
+      "banner_title": "Cookies at Besjaar",
+      "banner_body": "Essential cookies keep the store, your cart and checkout working. Cookies for preferences, analytics and marketing are only placed with your consent.",
+      "accept_all": "Accept all",
+      "reject_all": "Essential only",
+      "customize": "Customise",
+      "manage": "Manage cookie preferences"
+    },
     "markets": {
       "region_language": "Region & language",
       "country_region": "Country / region",

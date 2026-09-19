@@ -948,6 +948,14 @@
       "unavailable_short": "Nicht verfügbar",
       "debug_pixel_bridge": "Shopify Pixel-Bridge"
     },
+    "consent": {
+      "banner_title": "Cookies bei Besjaar",
+      "banner_body": "Notwendige Cookies sorgen dafür, dass Shop, Warenkorb und Checkout funktionieren. Cookies für Präferenzen, Analyse und Marketing setzen wir nur mit deiner Einwilligung.",
+      "accept_all": "Alle akzeptieren",
+      "reject_all": "Nur notwendige",
+      "customize": "Einstellungen",
+      "manage": "Cookie-Einstellungen verwalten"
+    },
     "markets": {
       "region_language": "Region & Sprache",
       "country_region": "Land / Region",
