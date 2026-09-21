@@ -4,208 +4,122 @@
    Styles for snippets/besjaar-discount-badge.liquid. Loaded once per page
    by sections/besjaar-discount-1174.liquid (header group).
 
-   Palette follows the store tokens set in layout/theme.liquid:
-     --besjaar-ui-accent       #173B5E  navy
-     --besjaar-ui-accent-2     #102D49  deep navy
-     --besjaar-ui-accent-warm  #EEF6FB  pale blue
-     --besjaar-ui-muted        #61798E
-   Automatic discounts (everyone gets them, no action needed) are filled navy.
-   Code discounts (the shopper has to do something) are outlined, so the two
-   are never mistaken for one another.
+   The discount badge deliberately reuses each card's own badge element, so
+   position, size and shape stay exactly as the theme already draws them —
+   only the colour changes. Every rule below is scoped with the theme's own
+   badge class plus .bj-discount-badge, so it outranks the base badge styling
+   without needing !important.
    ------------------------------------------------------------------ */
 
-.bj-discount {
-  --bj-discount-ink: var(--besjaar-ui-accent, #173b5e);
-  --bj-discount-ink-strong: var(--besjaar-ui-accent-2, #102d49);
-  --bj-discount-soft: var(--besjaar-ui-accent-warm, #eef6fb);
-  --bj-discount-muted: var(--besjaar-ui-muted, #61798e);
-
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 8px;
-  margin: 0;
-  font-family: inherit;
+:root {
+  /* Sale red, chosen to sit next to the store's navy without clashing. */
+  --bj-sale: #d32f2f;
+  --bj-sale-ink: #b3261e;
 }
 
-.bj-discount__badge {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
-  padding: 4px 9px;
-  border: 1px solid var(--bj-discount-ink);
-  border-radius: 999px;
-  background: var(--bj-discount-ink);
+/* ---------- the "-20%" badge, in the theme's own badge slot ---------- */
+
+.besjaar-ui-product-card__badge.bj-discount-badge,
+.besjaar-collection-badge.bj-discount-badge,
+.besjaar-shop-card__badge.bj-discount-badge,
+.bp-model-card__badge.bj-discount-badge,
+.besjaar-ui-shower-card__badge.bj-discount-badge {
+  background: var(--bj-sale);
+  border-color: var(--bj-sale);
   color: #fff;
-  font-size: 11px;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
-/* A code discount is conditional, so it reads as an outline rather than a
-   filled "you already have this" chip. */
-.bj-discount--code .bj-discount__badge {
-  background: var(--bj-discount-soft);
-  color: var(--bj-discount-ink-strong);
+/* Some card badges draw a dot/rule through a child <i>; keep it on-colour. */
+.besjaar-ui-product-card__badge.bj-discount-badge i {
+  background: currentColor;
 }
 
-.bj-discount__note {
-  min-width: 0;
-  color: var(--bj-discount-muted);
-  font-size: 12px;
+/* ---------- price: discounted first, original struck through ---------- */
+
+.bj-price__now {
+  color: var(--bj-sale);
+  font-weight: 700;
+}
+
+.bj-price__was {
+  color: var(--besjaar-ui-muted, #61798e);
   font-weight: 500;
-  line-height: 1.35;
+  text-decoration: line-through;
+  /* Slightly smaller than the live price wherever the card sets no size. */
+  font-size: 0.92em;
 }
 
-.bj-discount__code {
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: var(--bj-discount-soft);
-  color: var(--bj-discount-ink-strong);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-
-/* ---------- product cards ---------- */
-
-/* Sits in the card body directly above the price: it never overlaps the
-   image or the theme's existing sale / sold-out / merchandising badges. */
-.bj-discount--card {
-  margin: 0 0 6px;
-}
-
-.bj-discount--card .bj-discount__note {
-  font-size: 11.5px;
+/* Cards put the two prices on one line with a small gap. */
+.besjaar-ui-price .bj-price__was,
+.besjaar-collection-product-card__price .bj-price__was,
+.besjaar-shop-card__price .bj-price__was,
+.bp-model-card__price .bj-price__was,
+.besjaar-ui-shower-card__price .bj-price__was {
+  margin-inline-start: 6px;
 }
 
 /* ---------- product page ---------- */
 
-.bj-discount--product {
-  display: block;
-  margin: 12px 0 4px;
-  padding: 12px 14px;
-  border: 1px solid rgba(23, 59, 94, 0.16);
-  border-radius: var(--besjaar-ui-radius, 12px);
-  background: var(--bj-discount-soft);
+/* The buy box price element keeps its own size and weight; only the colour
+   changes, so the discounted figure reads as the price you pay. */
+.besjaar-store-premium-pd__price.is-bj-discounted {
+  color: var(--bj-sale);
 }
 
-.bj-discount--product .bj-discount__headline {
-  display: flex;
-  flex-wrap: wrap;
+.besjaar-store-premium-pd__price-row .bj-price__was {
+  font-size: 1rem;
+  margin-inline-start: 8px;
+}
+
+.besjaar-store-premium-pd__topline .bj-discount-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 6px 8px;
-  margin: 0;
-}
-
-.bj-discount--product .bj-discount__note {
-  color: var(--bj-discount-ink-strong);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.bj-discount--product .bj-discount__code {
-  background: #fff;
-}
-
-.bj-discount__price {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
-  margin: 8px 0 0;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--bj-sale);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
   line-height: 1.25;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
-/* Deliberately not <s>: the theme already strikes compare_at_price above this
-   block, and two struck prices in one buy box read as two "was" prices. */
-.bj-discount__from {
-  color: var(--bj-discount-muted);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.bj-discount__arrow {
-  color: var(--bj-discount-muted);
-  font-size: 13px;
-}
-
-.bj-discount__to {
-  color: var(--bj-discount-ink-strong);
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.bj-discount__order-level,
-.bj-discount__alt {
-  margin: 8px 0 0;
-  color: var(--bj-discount-ink-strong);
+.bj-discount-note {
+  margin: 6px 0 0;
+  color: var(--besjaar-ui-muted, #61798e);
   font-size: 12.5px;
   line-height: 1.4;
 }
 
-.bj-discount__alt strong {
+.bj-discount-note::before {
+  content: "✓";
+  margin-inline-end: 5px;
+  color: var(--bj-sale);
   font-weight: 700;
-}
-
-.bj-discount__terms {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  margin: 8px 0 0;
-  color: var(--bj-discount-muted);
-  font-size: 11.5px;
-  line-height: 1.4;
-}
-
-.bj-discount__terms span {
-  position: relative;
-}
-
-.bj-discount__terms span + span::before {
-  content: "·";
-  position: absolute;
-  left: -7px;
-  color: rgba(97, 121, 142, 0.7);
-}
-
-.bj-discount[hidden] {
-  display: none;
 }
 
 /* ---------- responsive ---------- */
 
 @media (max-width: 760px) {
-  .bj-discount--card {
-    gap: 4px 6px;
+  .bj-price__was {
+    font-size: 0.88em;
   }
 
-  .bj-discount--card .bj-discount__badge {
-    padding: 3px 8px;
-    font-size: 10.5px;
+  .besjaar-store-premium-pd__price-row .bj-price__was {
+    font-size: 0.95rem;
   }
 
-  .bj-discount--card .bj-discount__note {
-    flex: 1 1 100%;
-    font-size: 11px;
-  }
-
-  .bj-discount--product {
-    padding: 11px 12px;
-  }
-
-  .bj-discount__to {
-    font-size: 17px;
+  .bj-discount-note {
+    font-size: 12px;
   }
 }
 
 @media print {
-  .bj-discount--product {
-    border-color: #999;
-    background: none;
+  .bj-price__now,
+  .besjaar-store-premium-pd__price.is-bj-discounted {
+    color: #000;
   }
 }

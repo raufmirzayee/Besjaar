@@ -66,6 +66,20 @@
       endif
     endfor
   endif
+
+  comment
+    Besjaar 11.74: the live automatic Shopify discount. It takes the card's
+    existing badge slot rather than adding a second chip over the image, and
+    replaces the price line with "discounted price / original struck through".
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: card_product, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_price
+    render 'besjaar-discount-badge', product: card_product, layout: 'price'
+  endcapture
+  assign bjd_price = bjd_price | strip
 %}
 
 <article class="bp-model-card{% unless card_product.available %} is-unavailable{% endunless %}">
@@ -76,7 +90,9 @@
       <div class="besjaar-ui-abstract-device" aria-hidden="true"></div>
     {% endif %}
 
-    {% if card_product.compare_at_price_max > card_product.price %}
+    {% if bjd_badge != '' %}
+      <span class="bp-model-card__badge bj-discount-badge">{{ bjd_badge }}</span>
+    {% elsif card_product.compare_at_price_max > card_product.price %}
       <span class="bp-model-card__badge">{{ 'besjaar_ui.product_card.sale' | t }}</span>
     {% elsif card_product.available == false %}
       <span class="bp-model-card__badge bp-model-card__badge--muted">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>
@@ -89,15 +105,12 @@
     <div class="bp-model-card__heading">
       <h3><a href="{{ card_url }}">{{ card_title }}</a></h3>
       <div class="bp-model-card__price">
-        <strong>{{ card_product.price | money }}</strong>
+        {% if bjd_price != '' %}{{ bjd_price }}{% else %}<strong>{{ card_product.price | money }}</strong>
         {% if card_product.compare_at_price_max > card_product.price %}
           <s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>
-        {% endif %}
+        {% endif %}{% endif %}
       </div>
     </div>
-
-    {%- comment -%}Besjaar 11.74: real Shopify discount (automatic or code), under the price and never over the image.{%- endcomment -%}
-    {% render 'besjaar-discount-badge', product: card_product %}
 
     {% if settings.show_card_review_ratings %}
       {% render 'review-stars', product: card_product, compact: true %}

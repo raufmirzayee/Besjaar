@@ -41,6 +41,20 @@
   if card_product.featured_image != blank and card_product.featured_image.alt != blank
     assign image_alt = card_product.featured_image.alt
   endif
+
+  comment
+    Besjaar 11.74: the live automatic Shopify discount. It takes the card's
+    existing badge slot rather than adding a second chip over the image, and
+    replaces the price line with "discounted price / original struck through".
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: card_product, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_price
+    render 'besjaar-discount-badge', product: card_product, layout: 'price'
+  endcapture
+  assign bjd_price = bjd_price | strip
 %}
 <article class="besjaar-shop-card{% unless card_product.available %} is-sold-out{% endunless %}" data-reveal>
   <div class="besjaar-shop-card__media">
@@ -52,7 +66,9 @@
       {% endif %}
     </a>
     <div class="besjaar-shop-card__badges">
-      {% if card_product.compare_at_price_max > card_product.price %}
+      {% if bjd_badge != '' %}
+        <span class="besjaar-shop-card__badge bj-discount-badge">{{ bjd_badge }}</span>
+      {% elsif card_product.compare_at_price_max > card_product.price %}
         <span class="besjaar-shop-card__badge besjaar-shop-card__badge--dark">{{ 'besjaar_ui.product_card.sale' | t }}{% if sale_percent > 0 %} · -{{ sale_percent }}%{% endif %}</span>
       {% elsif card_product.available %}
         <span class="besjaar-shop-card__badge">{{ 'besjaar_ui.product_card.in_stock' | t }}</span>
@@ -71,13 +87,10 @@
     <div class="besjaar-shop-card__heading">
       <h2><a href="{{ product_url }}">{{ display_title }}</a></h2>
       <div class="besjaar-shop-card__price">
-        <strong>{{ card_product.price | money }}</strong>
-        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+        {% if bjd_price != '' %}{{ bjd_price }}{% else %}<strong>{{ card_product.price | money }}</strong>
+        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}{% endif %}
       </div>
     </div>
-
-    {%- comment -%}Besjaar 11.74: real Shopify discount (automatic or code), under the price and never over the image.{%- endcomment -%}
-    {% render 'besjaar-discount-badge', product: card_product %}
 
     {% if best_for != blank %}
       <p class="besjaar-shop-card__best-for"><span>{{ 'besjaar_ui.product.best_for' | t }}</span>{{ best_for }}</p>

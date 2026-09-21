@@ -13,9 +13,15 @@
  * to copy them out of the Admin API into storefront-readable data.
  *
  * This script does exactly that. It reads the discounts from the Admin API,
- * keeps only those that can be stated truthfully on a product, resolves
- * collection/variant scoping down to product ids, and writes the result to the
- * shop metafield `besjaar_discounts.active` (type: json).
+ * keeps only the AUTOMATIC ones that can be stated truthfully on a product,
+ * resolves collection/variant scoping down to product ids, and writes the
+ * result to the shop metafield `besjaar_discounts.active` (type: json).
+ *
+ * Discount codes are never mirrored. A code only applies once the shopper types
+ * it, so it can never justify the struck-through price the storefront shows.
+ * A discount is only kept when Shopify applies it by itself, to everyone, with
+ * no order minimum and no quantity minimum — which makes the discounted price
+ * on the storefront the price that is actually charged.
  *
  * snippets/besjaar-discount-badge.liquid reads that metafield and re-checks
  * every rule's start/end window on each request, so discounts that expire
@@ -43,17 +49,6 @@ const KEY = 'active';
 const CONFIG = {
   /** Master switch. `--disable` flips this to false without deleting data. */
   enabled: true,
-  /**
-   * Which offer earns the badge when a product has both an automatic discount
-   * and a discount code:
-   *   'automatic_first' — the automatic one, even if a code is worth more. It
-   *                       needs no code, no minimum and no customer action, so
-   *                       it is the only one true for every visitor.
-   *   'best_value'      — whichever takes more off.
-   */
-  preference: 'automatic_first',
-  /** Mention the runner-up offer on the product page (never on cards). */
-  show_secondary_offer: true,
   /**
    * Hide every badge once the mirror is older than this many days. A discount
    * deleted in Shopify lingers here until the next run, so this bounds how long
@@ -104,7 +99,6 @@ const DISCOUNT_FIELDS = `
       status
       startsAt
       endsAt
-      combinesWith { orderDiscounts productDiscounts }
       customerGets {
         value {
           ... on DiscountPercentage { percentage }
@@ -124,34 +118,7 @@ const DISCOUNT_FIELDS = `
         ... on DiscountMinimumSubtotal { greaterThanOrEqualToSubtotal { amount } }
       }
     }
-    ... on DiscountCodeBasic {
-      title
-      status
-      startsAt
-      endsAt
-      appliesOncePerCustomer
-      combinesWith { orderDiscounts productDiscounts }
-      codes(first: 1) { nodes { code } }
-      customerSelection { __typename }
-      customerGets {
-        value {
-          ... on DiscountPercentage { percentage }
-          ... on DiscountAmount { amount { amount } appliesOnEachItem }
-        }
-        items {
-          ... on AllDiscountItems { allItems }
-          ... on DiscountProducts {
-            products(first: 250) { nodes { id } }
-            productVariants(first: 250) { nodes { id product { id } } }
-          }
-          ... on DiscountCollections { collections(first: 50) { nodes { id } } }
-        }
-      }
-      minimumRequirement {
-        ... on DiscountMinimumQuantity { greaterThanOrEqualToQuantity }
-        ... on DiscountMinimumSubtotal { greaterThanOrEqualToSubtotal { amount } }
-      }
-    }
+    ... on DiscountCodeBasic { title status }
   }
 `;
 
@@ -218,11 +185,24 @@ function percentageLabel(fraction) {
   return `${percent}%`;
 }
 
+const skipped = [];
+
 async function buildRule(node) {
   const discount = node.discount;
   const type = discount.__typename;
+  const note = (reason) => {
+    skipped.push(`${discount.title || node.id} — ${reason}`);
+    return null;
+  };
 
-  if (type !== 'DiscountAutomaticBasic' && type !== 'DiscountCodeBasic') return null;
+  // Codes are never advertised: they are not applied until the shopper types
+  // them, so the storefront cannot present the result as the price.
+  if (type !== 'DiscountAutomaticBasic') {
+    if (type === 'DiscountCodeBasic' && discount.status === 'ACTIVE') {
+      return note('discount code (codes are never shown on the storefront)');
+    }
+    return null;
+  }
   // SCHEDULED is kept on purpose: the theme checks startsAt itself, so a
   // discount starts showing the moment it goes live, with no extra sync.
   if (discount.status !== 'ACTIVE' && discount.status !== 'SCHEDULED') return null;
@@ -230,18 +210,23 @@ async function buildRule(node) {
   const value = discount.customerGets?.value ?? {};
   const isPercentage = typeof value.percentage === 'number';
   const isAmount = Boolean(value.amount);
-  if (!isPercentage && !isAmount) return null; // BXGY, free shipping, app discounts
+  if (!isPercentage && !isAmount) return note('buy-X-get-Y or app discount');
 
-  const method = type === 'DiscountAutomaticBasic' ? 'automatic' : 'code';
-
-  // A code limited to named customers or a segment cannot be advertised: the
-  // storefront has no way to know whether the visitor qualifies.
-  let customerEligibility = 'all';
-  if (method === 'code') {
-    customerEligibility =
-      discount.customerSelection?.__typename === 'DiscountCustomerAll' ? 'all' : 'specific';
+  // An order-level amount is spread across the whole order, so no single
+  // product's price can be restated from it.
+  if (isAmount && !value.appliesOnEachItem) {
+    return note('fixed amount applied once per order, not per item');
   }
-  if (customerEligibility !== 'all') return null;
+
+  // A minimum makes the discount conditional, so a discounted price on a
+  // product page would not be what a shopper necessarily pays.
+  const minimum = discount.minimumRequirement ?? {};
+  if (minimum.greaterThanOrEqualToSubtotal) {
+    return note(`minimum order value of ${minimum.greaterThanOrEqualToSubtotal.amount}`);
+  }
+  if (Number(minimum.greaterThanOrEqualToQuantity ?? 0) > 1) {
+    return note(`minimum quantity of ${minimum.greaterThanOrEqualToQuantity}`);
+  }
 
   const items = discount.customerGets?.items ?? {};
   let scope = 'products';
@@ -262,36 +247,26 @@ async function buildRule(node) {
       const ids = await productsInCollection(collection.id);
       productIds.push(...ids.map(numericId));
     }
-    if (!productIds.length) return null; // nothing left to advertise
+    if (!productIds.length) return note('targets no products');
   }
-
-  const minimum = discount.minimumRequirement ?? {};
 
   return {
     id: numericId(node.id),
     title: discount.title,
-    method,
-    code: method === 'code' ? discount.codes?.nodes?.[0]?.code ?? null : null,
+    method: 'automatic',
     value_type: isPercentage ? 'percentage' : 'fixed_amount',
     percentage_bp: isPercentage ? Math.round(value.percentage * 10000) : 0,
     percentage_label: isPercentage ? percentageLabel(value.percentage) : '',
     amount_cents: isAmount ? toCents(value.amount.amount) : 0,
-    each_item: isAmount ? Boolean(value.appliesOnEachItem) : true,
+    each_item: true,
     starts_at: Math.floor(new Date(discount.startsAt).getTime() / 1000),
     ends_at: discount.endsAt ? Math.floor(new Date(discount.endsAt).getTime() / 1000) : null,
     scope,
     product_ids: tokenList(productIds),
     variant_ids: tokenList(variantIds),
-    once_per_customer: Boolean(discount.appliesOncePerCustomer),
-    min_subtotal_cents: minimum.greaterThanOrEqualToSubtotal
-      ? toCents(minimum.greaterThanOrEqualToSubtotal.amount)
-      : 0,
-    min_quantity: minimum.greaterThanOrEqualToQuantity
-      ? Number(minimum.greaterThanOrEqualToQuantity)
-      : 0,
-    customer_eligibility: customerEligibility,
-    combines_with_product: Boolean(discount.combinesWith?.productDiscounts),
-    combines_with_order: Boolean(discount.combinesWith?.orderDiscounts),
+    min_subtotal_cents: 0,
+    min_quantity: 0,
+    customer_eligibility: 'all',
   };
 }
 
@@ -311,8 +286,6 @@ async function main() {
     generated_at: now,
     generated_at_iso: new Date(now * 1000).toISOString(),
     enabled: disable ? false : CONFIG.enabled,
-    preference: CONFIG.preference,
-    show_secondary_offer: CONFIG.show_secondary_offer,
     max_age_days: CONFIG.max_age_days,
     currency: shop.shop.currencyCode,
     rules,
@@ -327,11 +300,15 @@ async function main() {
     );
   }
 
-  console.log(`${rules.length} advertisable discount(s), ${bytes} bytes:`);
+  console.log(`${rules.length} automatic discount(s) shown on the storefront, ${bytes} bytes:`);
   for (const rule of rules) {
     const value = rule.value_type === 'percentage' ? rule.percentage_label : `${rule.amount_cents / 100}`;
     const reach = rule.scope === 'all' ? 'all products' : `${rule.product_ids.split('|').filter(Boolean).length} product(s)`;
-    console.log(`  ${rule.method.padEnd(9)} ${value.padEnd(7)} ${reach.padEnd(16)} ${rule.title}${rule.code ? ` (${rule.code})` : ''}`);
+    console.log(`  -${value.padEnd(7)} ${reach.padEnd(16)} ${rule.title}`);
+  }
+  if (skipped.length) {
+    console.log(`\n${skipped.length} discount(s) not shown:`);
+    for (const line of skipped) console.log(`  ${line}`);
   }
 
   if (dryRun) {

@@ -1,8 +1,11 @@
 # Showing real Shopify discounts on the Besjaar storefront
 
-This describes how the storefront shows the discounts configured in Shopify —
-on product cards everywhere and on the product page — without inventing a
-second, theme-side discount system.
+When an **automatic** Shopify discount is running on a product, the storefront
+shows it while people browse: a `-20%` badge on the card, and the price they
+actually pay leading, with the undiscounted price struck through beside it.
+
+No theme-side discount system is invented, and `compare_at_price` is never
+treated as a discount.
 
 ---
 
@@ -10,9 +13,8 @@ second, theme-side discount system.
 
 **Liquid has no discount object.** Shopify's storefront (Liquid) API exposes
 `product`, `variant`, `collection`, `cart` and `line_item`, but nothing on a
-product or variant says "an automatic discount or a discount code applies to
-me". Discounts only become visible to the theme once a line is already in the
-cart:
+product or variant says "a discount applies to me". Discounts only become
+visible to the theme once a line is already in the cart:
 
 | Where | What Liquid can see |
 | --- | --- |
@@ -23,8 +25,8 @@ cart:
 `compare_at_price` is **not** a discount. It is a merchandising number a
 merchant types on the variant, and a product can have one with no Shopify
 discount attached — which is exactly why the theme never treats it as one. The
-theme's existing "SALE / −20%" badges still come from `compare_at_price`; the
-new discount badges are a separate, independent thing.
+theme's existing compare-at sale badge still works; it just steps aside when a
+real discount badge is showing, so a card never carries two.
 
 So the only Shopify-supported way to put **real** discount facts in front of a
 browsing shopper is to copy the discount configuration out of the Admin API
@@ -39,73 +41,81 @@ Shopify Admin API (discountNodes)
 Shop metafield  besjaar_discounts.active   (type: json)
         │  shop.metafields.besjaar_discounts.active.value
         ▼
-snippets/besjaar-discount-badge.liquid  →  badge on cards + block on the PDP
+snippets/besjaar-discount-badge.liquid  →  badge + price on every card and PDP
 ```
 
-The sync keeps only discounts that can be stated truthfully on a product, and
+The sync keeps only discounts that can be stated truthfully as a price, and
 resolves collection- and variant-scoped discounts down to a list of product ids
 so the theme does not have to walk `product.collections` on every card.
 
 **The theme does not blindly trust the mirror.** On every single request the
-snippet re-checks:
+snippet re-checks the schedule, the customer eligibility, the minimums, the
+value type and the product scope, plus a freshness guard (below).
 
-1. **The schedule** — `starts_at` must be in the past and `ends_at`, if set,
-   in the future. A discount that expires between two syncs stops showing by
-   itself, with no sync needed.
-2. **Customer eligibility** — anything limited to named customers or a customer
-   segment is dropped at sync time and would be dropped again here. The
-   storefront cannot know who is looking, so it never guesses.
-3. **Product scope** — the product id must be in the rule's product list (or
-   the rule must cover all products).
-4. **Freshness** — see the staleness guard below.
+## 3. Automatic discounts only — no codes
 
-### What the shopper sees
+Discount codes are **never** shown, anywhere. A code only takes effect once the
+shopper types it at checkout, so a struck-through price next to it would not be
+the price Shopify charges. Codes are dropped at sync time and would be dropped
+again by the theme.
 
-| Discount | Badge | Supporting line |
-| --- | --- | --- |
-| Automatic | filled navy pill, `10% KORTING` | *Automatisch verrekend bij het afrekenen* |
-| Code | outlined pill, `20% KORTING` | *Met code **WELKOM20** bij het afrekenen* |
+A discount is only shown when **all** of these hold:
 
-On the product page the block also shows `€23,95 → €21,56` and every condition
-attached to the discount (once per customer, minimum order value, minimum
-quantity, end date).
+1. It is an **automatic** discount (Shopify applies it by itself).
+2. It is running right now — `startsAt` in the past, `endsAt` unset or future.
+3. It reaches **every** shopper — no customer segment, no named customers.
+4. It has **no minimum order value** and **no minimum quantity**. A minimum
+   makes the discount conditional, so a single product's price cannot be
+   restated from it.
+5. Its value is **per item** — a percentage, or a fixed amount that applies to
+   each item. An order-level amount is spread across the whole order.
+6. It actually covers this product (and this variant, if variant-scoped).
 
-Prices are never rewritten. The theme's own price element keeps showing what
-Shopify charges today; the discounted figure sits beside it, labelled as
-something that happens at checkout. Percentage maths uses the same half-up cent
-rounding Shopify uses, computed on the variant price in cents.
+That list is what makes the number on the page the number Shopify charges.
 
-### One badge per product
+Each sync prints the discounts it skipped and why, so nothing disappears
+silently:
 
-A product can be covered by several discounts at once. Only one is ever shown,
-so there are no duplicate or competing badges:
+```
+1 automatic discount(s) shown on the storefront, 493 bytes:
+  -10%     1 product(s)     10% KORTING
 
-- An **automatic** discount wins by default, even when a code is worth more,
-  because it applies to everyone with no code, no minimum and no action. Set
-  `"preference": "best_value"` in the metafield to promote the larger offer
-  instead.
-- Among discounts of the same kind, the largest wins.
-- On the product page only, the runner-up is mentioned on one extra line, and
-  the wording follows the discount's own `combinesWith` setting — "instead of"
-  when Shopify will not stack them, "on top of" when it will.
+3 discount(s) not shown:
+  WELKOM10 — discount code (codes are never shown on the storefront)
+  WELKOM15 — discount code (codes are never shown on the storefront)
+  WELKOM20 — discount code (codes are never shown on the storefront)
+```
 
-### What is deliberately not shown
+## 4. What the shopper sees
 
-- **Buy-X-get-Y, free shipping and app discounts.** These cannot be reduced to
-  an honest per-product percentage or amount, so the sync skips them.
-- **Customer-specific and segment discounts** (e.g. the one-off `TT-…` codes).
-- **Order-level fixed amounts** (`€10 off your order`) never appear on product
-  cards — they are not a per-product saving. They do appear on the product page,
-  worded as an order-level discount, with no per-product price calculated.
-- **The "Recently viewed" strip.** That strip is built in the browser from
-  `localStorage` (`assets/besjaar-1150.js`), not from Liquid, and it stores only
-  a handle, title, image and price. It shows no badges of any kind today — not
-  the sale badge, not the stock chip — so adding a discount badge there would
-  mean reimplementing the whole rule-resolution in JavaScript and keeping two
-  copies in step. It was left out on purpose. Every server-rendered surface
-  (collections, search, recommendations, home range, product page) is covered.
+**On a product card** — collection pages, search, recommendations, the home
+range and the shower cards:
 
-## 3. Keeping it accurate
+- a red **`-10%`** badge, in the card's own existing badge slot (so it keeps the
+  theme's position and shape, never covers the image, and never appears
+  alongside the compare-at sale badge);
+- the price line becomes **`€21,55`** in red with **`€23,95`** struck through
+  beside it.
+
+**On the product page**:
+
+- the same `-10%` badge at the top of the buy box, next to BESJAAR®;
+- the buy box price shows `€21,55` in red with `€23,95` struck through;
+- one small line underneath: *Korting automatisch verrekend bij het afrekenen*
+  (EN/DE/FR equivalents included) — because the deduction happens in the cart,
+  not on the product record;
+- switching variant keeps it correct: each `<option>` carries its own
+  server-rendered discounted price, so no currency is ever formatted in
+  JavaScript.
+
+If a product also has a `compare_at_price`, that struck compare-at is
+suppressed while a discount is showing, so the row never displays three
+numbers.
+
+**Rounding** matches Shopify's: half up, to the cent, on the variant price.
+€23,95 − 10% = €2,395 → €2,40 → **€21,55**, which is what checkout charges.
+
+## 5. Keeping it accurate
 
 Re-run the sync whenever you:
 
@@ -138,36 +148,36 @@ A daily scheduled run keeps that from ever happening. If you would rather the
 data never expire, set `max_age_days` to `0` in `tools/sync-shopify-discounts.mjs`
 and re-run — but then a deleted discount will keep showing until you sync.
 
-## 4. Things to be aware of
+## 6. Things to be aware of
 
-- **Discount codes still have to be entered.** The badge says so ("met code
-  WELKOM20"), and Shopify will not apply the code on its own. Automatic
-  discounts do apply on their own, which is why they are worded differently.
-- **"One use per customer" is shown but cannot be checked.** The storefront
-  does not know whether a given visitor has already used `WELKOM10`. The
-  condition is printed on the product page for exactly that reason.
-- **Discount codes and the automatic discount do not stack** in the current
-  configuration — all four discounts have `combinesWith` set to false for both
-  order and product discounts. If a shopper enters `WELKOM20`, Shopify applies
-  the code and drops the automatic 10%.
+- **Set the discount up as an automatic product discount** (Shopify admin →
+  Discounts → Create discount → **Amount off products** → Automatic discount).
+  A discount code will not appear on the storefront by design.
+- **Do not add a minimum order amount or quantity** to a discount you want
+  shown — it would make the displayed price conditional, so the theme skips it
+  and the sync tells you why.
 - **Multi-quantity lines.** Shopify rounds a percentage discount on the line
-  total. The price shown is the quantity-1 price, so a large quantity can differ by
-  a cent from the theme's figure × quantity. The cart and checkout always show
+  total. The price shown is the quantity-1 price, so a large quantity can differ
+  by a cent from the theme's figure × quantity. Cart and checkout always show
   Shopify's real number.
 - **Markets / multi-currency.** Amounts go through Liquid's `money` filter, so
-  they follow the presentment currency. Fixed-amount discounts are stored in
-  the shop currency; on a store selling in several currencies, prefer
-  percentage discounts for the clearest display.
-- **The metafield caps at 64 KB.** The sync refuses to write past 60 KB. With
-  collection-scoped discounts over very large collections you would need to
-  split the payload; the current store uses about 2 KB.
+  they follow the presentment currency. Fixed-amount discounts are stored in the
+  shop currency; on a store selling in several currencies, prefer percentage
+  discounts for the clearest display.
+- **The "Recently viewed" strip** is built in the browser from `localStorage`
+  (`assets/besjaar-1150.js`) and shows no badges of any kind today — not the
+  sale badge, not the stock chip. Adding one would mean a second copy of the
+  rule-resolution in JavaScript, so it was left out on purpose. Every
+  server-rendered surface is covered.
+- **The metafield caps at 64 KB.** The sync refuses to write past 60 KB. The
+  current payload is under 1 KB.
 
-## 5. Files
+## 7. Files
 
 | File | Role |
 | --- | --- |
-| `theme/snippets/besjaar-discount-badge.liquid` | Resolves and renders the applicable discount |
-| `theme/assets/besjaar-discount-badge.css` | Badge and product-page block styling |
+| `theme/snippets/besjaar-discount-badge.liquid` | Resolves the discount; renders badge / price / note |
+| `theme/assets/besjaar-discount-badge.css` | Red badge and price styling |
 | `theme/sections/besjaar-discount-1174.liquid` | Loads the stylesheet once per page (header group) |
 | `theme/sections/header-group.json` | Registers that carrier section |
 | `theme/snippets/product-card.liquid` | Search results, recommendations |

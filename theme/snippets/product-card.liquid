@@ -81,6 +81,20 @@
     assign besjaar_ui_sale_percent = besjaar_ui_sale_difference | times: 100 | divided_by: besjaar_ui_sale_variant.compare_at_price
   endif
 
+  comment
+    Besjaar 11.74: the live automatic Shopify discount. It takes the card's
+    existing badge slot rather than adding a second chip over the image, and
+    replaces the price line with "discounted price / original struck through".
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: card_product, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_price
+    render 'besjaar-discount-badge', product: card_product, layout: 'price'
+  endcapture
+  assign bjd_price = bjd_price | strip
+
   assign has_shower_card_specs = false
   if shower_spray_modes != blank or shower_filter_defined or shower_hose_defined or shower_connection != blank
     assign has_shower_card_specs = true
@@ -98,7 +112,7 @@
     {% else %}
       <div class="besjaar-ui-abstract-device" aria-hidden="true"></div>
     {% endif %}
-    {% if card_product.compare_at_price_max > card_product.price %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--sale"><i></i>{{ 'besjaar_ui.product_card.sale' | t }}{% if besjaar_ui_sale_percent > 0 %} · -{{ besjaar_ui_sale_percent }}%{% endif %}</span>{% elsif merch_badge_key != blank %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--merch">{{ merch_badge_key | t }}</span>{% elsif card_product.available %}<span class="besjaar-ui-product-card__badge">{{ 'besjaar_ui.product_card.available' | t }}</span>{% else %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--sold">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>{% endif %}
+    {% if bjd_badge != '' %}<span class="besjaar-ui-product-card__badge bj-discount-badge">{{ bjd_badge }}</span>{% elsif card_product.compare_at_price_max > card_product.price %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--sale"><i></i>{{ 'besjaar_ui.product_card.sale' | t }}{% if besjaar_ui_sale_percent > 0 %} · -{{ besjaar_ui_sale_percent }}%{% endif %}</span>{% elsif merch_badge_key != blank %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--merch">{{ merch_badge_key | t }}</span>{% elsif card_product.available %}<span class="besjaar-ui-product-card__badge">{{ 'besjaar_ui.product_card.available' | t }}</span>{% else %}<span class="besjaar-ui-product-card__badge besjaar-ui-product-card__badge--sold">{{ 'besjaar_ui.product_card.sold_out' | t }}</span>{% endif %}
     <span class="besjaar-ui-product-card__quicklink">{{ 'besjaar_ui.product_card.view_product' | t }} →</span>
   </a>
   <div class="besjaar-ui-product-card__body">
@@ -116,11 +130,9 @@
         {% if shower_connection != blank %}<span>{{ shower_connection }}</span>{% endif %}
       </div>
     {% endif %}
-    {%- comment -%}Besjaar 11.74: real Shopify discount (automatic or code), above the price and never over the image.{%- endcomment -%}
-    {% render 'besjaar-discount-badge', product: card_product %}
     <div class="besjaar-ui-price">
-      <span>{{ card_product.price | money }}</span>
-      {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+      {% if bjd_price != '' %}{{ bjd_price }}{% else %}<span>{{ card_product.price | money }}</span>
+      {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}{% endif %}
     </div>
     {% assign besjaar_ui_card_variant = card_product.selected_or_first_available_variant %}
     {% if besjaar_ui_card_variant.unit_price_measurement %}<small class="besjaar-ui-unit-price besjaar-ui-unit-price--card">{{ besjaar_ui_card_variant.unit_price | money | unit_price_with_measurement: besjaar_ui_card_variant.unit_price_measurement }}</small>{% endif %}

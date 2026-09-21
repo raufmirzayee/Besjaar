@@ -154,6 +154,33 @@
   if current_variant.inventory_management and inventory_qty > 0 and inventory_qty <= 5
     assign show_low_stock = true
   endif
+
+  comment
+    Besjaar 11.74: the live automatic Shopify discount for this product. When
+    one is running, the price the shopper actually pays leads the buy box and
+    the undiscounted price is struck through beside it. A compare-at price is
+    suppressed in that case, so the row never shows three numbers.
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_now
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'price_now'
+  endcapture
+  assign bjd_now = bjd_now | strip
+  capture bjd_note
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'note'
+  endcapture
+  assign bjd_note = bjd_note | strip
+
+  assign show_compare = false
+  if current_variant.compare_at_price > current_variant.price
+    assign show_compare = true
+  endif
+  if bjd_now != ''
+    assign show_compare = false
+  endif
 -%}
 
 <section class="besjaar-store besjaar-store-premium-pd" data-besjaar-product-section="{{ section.id }}" data-product-root data-added-status="{{ 'besjaar_ui.cart.added' | t | escape }}" data-add-error="{{ 'besjaar_ui.cart.add_error' | t | escape }}" data-zoom-label="{{ 'besjaar_ui.product.zoom_image' | t | escape }}" data-close-zoom-label="{{ 'besjaar_ui.product.close_zoom' | t | escape }}" data-previous-image-label="{{ 'besjaar_ui.accessibility.previous_product_image' | t | escape }}" data-next-image-label="{{ 'besjaar_ui.accessibility.next_product_image' | t | escape }}" data-in-stock-label="{{ ui_in_stock | escape }}" data-low-stock-label="{{ ui_low_stock | escape }}" data-sold-out-label="{{ ui_sold_out | escape }}">
@@ -225,6 +252,7 @@
       <div class="besjaar-store-premium-pd__summary">
         <div class="besjaar-store-premium-pd__topline">
           <span class="besjaar-store-premium-pd__brand">BESJAAR®</span>
+          {%- if bjd_badge != '' -%}<span class="bj-discount-badge">{{ bjd_badge }}</span>{%- endif -%}
           {%- if current_variant.available -%}
             <span class="besjaar-store-premium-pd__stock {% if show_low_stock %}is-low{% endif %}" data-product-stock><i></i><span data-product-stock-label>{% if show_low_stock %}{{ ui_low_stock }}{% else %}{{ ui_in_stock }}{% endif %}</span></span>
           {%- else -%}
@@ -258,7 +286,9 @@
                 {%- for variant in product.variants -%}
                   {%- assign variant_savings = variant.compare_at_price | minus: variant.price -%}
                   {%- assign variant_media = variant.featured_media.preview_image -%}
-                  <option value="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" data-price-cents="{{ variant.price }}" data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}" data-savings="{% if variant.compare_at_price > variant.price %}{{ variant_savings | money | escape }}{% endif %}" data-available="{{ variant.available }}" data-inventory-quantity="{{ variant.inventory_quantity | default: 0 }}" data-inventory-managed="{% if variant.inventory_management %}true{% else %}false{% endif %}"{% if variant_media %} data-image="{{ variant_media | image_url: width: 1600 }}" data-image-small="{{ variant_media | image_url: width: 700 }}" data-image-alt="{{ variant_media.alt | default: display_title | escape }}" data-media-id="{{ variant.featured_media.id }}"{% endif %} {% if variant.id == current_variant.id %}selected{% endif %}>
+                  {%- capture variant_discount_price -%}{% render 'besjaar-discount-badge', product: product, variant: variant, layout: 'price_now' %}{%- endcapture -%}
+                  {%- assign variant_discount_price = variant_discount_price | strip -%}
+                  <option value="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" data-price-cents="{{ variant.price }}" data-discount-price="{{ variant_discount_price | escape }}" data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}" data-savings="{% if variant.compare_at_price > variant.price %}{{ variant_savings | money | escape }}{% endif %}" data-available="{{ variant.available }}" data-inventory-quantity="{{ variant.inventory_quantity | default: 0 }}" data-inventory-managed="{% if variant.inventory_management %}true{% else %}false{% endif %}"{% if variant_media %} data-image="{{ variant_media | image_url: width: 1600 }}" data-image-small="{{ variant_media | image_url: width: 700 }}" data-image-alt="{{ variant_media.alt | default: display_title | escape }}" data-media-id="{{ variant.featured_media.id }}"{% endif %} {% if variant.id == current_variant.id %}selected{% endif %}>
                     {{ variant.title | escape }} — {{ variant.price | money }}{% unless variant.available %} — {{ ui_sold_out }}{% endunless %}
                   </option>
                 {%- endfor -%}
@@ -272,19 +302,13 @@
           <div class="besjaar-store-premium-pd__price-row">
             <div>
               <span class="besjaar-ui-visually-hidden" data-sale-price-prefix{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}>{{ 'besjaar_ui.product.sale_price' | t }} </span>
-              <span class="besjaar-store-premium-pd__price" id="BesjaarPrice-{{ section.id }}">{{ current_variant.price | money }}</span>
+              <span class="besjaar-store-premium-pd__price{% if bjd_now != '' %} is-bj-discounted{% endif %}" id="BesjaarPrice-{{ section.id }}">{% if bjd_now != '' %}{{ bjd_now }}{% else %}{{ current_variant.price | money }}{% endif %}</span>
+              <s class="bj-price__was" data-bj-price-was{% if bjd_now == '' %} hidden{% endif %}><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><span data-bj-was-value>{{ current_variant.price | money }}</span></s>
               <small>{{ ui_incl_vat }}</small>
             </div>
-            <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}"{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
+            <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}"{% unless show_compare %} hidden{% endunless %}><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
           </div>
-
-          {%- comment -%}
-            Besjaar 11.74: the live Shopify discount for this product, directly
-            under the price and above the buy button, so a shopper sees it
-            without opening the cart. Reads the mirrored discount configuration
-            (shop metafield besjaar_discounts.active) — never compare_at_price.
-          {%- endcomment -%}
-          {% render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'product' %}
+          {{ bjd_note }}
 
           <div class="besjaar-store-premium-pd__purchase">
             <div class="besjaar-store-premium-pd__qty" data-besjaar-qty>
@@ -479,12 +503,24 @@
       var available = option.dataset.available === 'true';
       var inventory = parseInt(option.dataset.inventoryQuantity || '0', 10);
       var lowStock = available && option.dataset.inventoryManaged === 'true' && inventory > 0 && inventory <= 5;
-      if (price) price.textContent = option.dataset.price;
-      if (stickyPrice) stickyPrice.textContent = option.dataset.price;
+      /* Besjaar 11.74: an automatic Shopify discount makes the discounted
+         figure the price on show, per variant, pre-rendered server side. */
+      var discountPrice = option.dataset.discountPrice || '';
+      if (price) {
+        price.textContent = discountPrice || option.dataset.price;
+        price.classList.toggle('is-bj-discounted', Boolean(discountPrice));
+      }
+      if (stickyPrice) stickyPrice.textContent = discountPrice || option.dataset.price;
+      var bjWas = root.querySelector('[data-bj-price-was]');
+      if (bjWas) {
+        bjWas.hidden = !discountPrice;
+        var bjWasValue = bjWas.querySelector('[data-bj-was-value]');
+        if (bjWasValue) bjWasValue.textContent = option.dataset.price;
+      }
       if (comparePrice) {
         var compareValue = comparePrice.querySelector('[data-compare-value]');
         (compareValue || comparePrice).textContent = option.dataset.comparePrice || '';
-        comparePrice.hidden = !option.dataset.comparePrice;
+        comparePrice.hidden = !option.dataset.comparePrice || Boolean(discountPrice);
       }
       root.querySelectorAll('[data-sale-price-prefix]').forEach(function (salePrefix) {
         salePrefix.hidden = !option.dataset.comparePrice;

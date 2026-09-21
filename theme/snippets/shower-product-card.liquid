@@ -94,6 +94,20 @@
     render 'localized-internal-url', url: card_product.url
   endcapture
   assign besjaar_ui_shower_card_url = besjaar_ui_shower_card_url_capture | strip
+
+  comment
+    Besjaar 11.74: the live automatic Shopify discount. It takes the card's
+    existing badge slot rather than adding a second chip over the image, and
+    replaces the price line with "discounted price / original struck through".
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: card_product, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_price
+    render 'besjaar-discount-badge', product: card_product, layout: 'price'
+  endcapture
+  assign bjd_price = bjd_price | strip
 %}
 
 <article class="besjaar-ui-shower-card{% unless card_product.available %} is-sold-out{% endunless %}" data-reveal data-shower-choice-card data-choice-filter="{{ filter_included }}" data-choice-hose="{{ hose_included }}" data-choice-spray="{{ spray_modes | default: 0 }}">
@@ -105,7 +119,7 @@
         <span class="besjaar-ui-shower-card__placeholder" aria-hidden="true"></span>
       {% endif %}
     </a>
-    <span class="besjaar-ui-shower-card__badge">{{ badge }}</span>
+    {% if bjd_badge != '' %}<span class="besjaar-ui-shower-card__badge bj-discount-badge">{{ bjd_badge }}</span>{% else %}<span class="besjaar-ui-shower-card__badge">{{ badge }}</span>{% endif %}
   </div>
 
   <div class="besjaar-ui-shower-card__body">
@@ -127,13 +141,10 @@
       {% if connection != blank %}<span><b>↔</b>{{ connection }}</span>{% endif %}
     </div>
 
-    {%- comment -%}Besjaar 11.74: real Shopify discount (automatic or code), above the price and never over the image.{%- endcomment -%}
-    {% render 'besjaar-discount-badge', product: card_product %}
-
     <div class="besjaar-ui-shower-card__purchase">
       <div class="besjaar-ui-shower-card__price">
-        <strong>{{ card_product.price | money }}</strong>
-        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}
+        {% if bjd_price != '' %}{{ bjd_price }}{% else %}<strong>{{ card_product.price | money }}</strong>
+        {% if card_product.compare_at_price_max > card_product.price %}<s><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ card_product.compare_at_price_max | money }}</s>{% endif %}{% endif %}
       </div>
       <span class="besjaar-ui-shower-card__stock{% unless card_product.available %} is-muted{% endunless %}">{% if card_product.available %}{{ 'besjaar_ui.product_card.in_stock' | t }}{% else %}{{ 'besjaar_ui.product_card.sold_out' | t }}{% endif %}</span>
     </div>
