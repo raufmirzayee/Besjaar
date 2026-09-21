@@ -262,7 +262,12 @@
     assign bjd_campaign_badge = false
     assign bjd_campaign = bjd_data.campaign
     if bjd_campaign.enabled == true and bjd_campaign.linked == true
-      if bjd_campaign.discount_id == bjd_best.id
+      capture bjd_best_token
+        echo '|'
+        echo bjd_best.id
+        echo '|'
+      endcapture
+      if bjd_campaign.discount_ids contains bjd_best_token
         assign bjd_campaign_starts = bjd_campaign.starts_at | default: 0
         assign bjd_campaign_ends = bjd_campaign.ends_at | default: 0
         if bjd_campaign_starts <= bjd_now and bjd_campaign_ends > bjd_now

@@ -4,29 +4,32 @@
   Renders the campaign banner and the product-page campaign block for
   "BESJAAR WATER WEEK 💧", 21–30 September 2026.
 
-  HOW THE CAMPAIGN IS TIED TO A REAL SHOPIFY DISCOUNT
-  ---------------------------------------------------
+  HOW THE CAMPAIGN IS TIED TO REAL SHOPIFY DISCOUNTS
+  --------------------------------------------------
   The campaign never claims a discount on its own. It is configured in the same
   shop metafield as the discount mirror (`besjaar_discounts.active`), and
-  `campaign.discount_id` points at one specific automatic Shopify discount that
-  tools/sync-shopify-discounts.mjs resolved by title. Nothing renders unless ALL
-  of these hold, re-checked on every request:
+  `campaign.discount_ids` lists the automatic Shopify discounts that
+  tools/sync-shopify-discounts.mjs resolved by title. A campaign can run several
+  at once — a different percentage per product is normal — so the banner states
+  a range and each product states its own value.
+
+  Nothing renders unless ALL of these hold, re-checked on every request:
 
     1. the mirror is present, enabled and fresh;
-    2. the campaign is enabled and was successfully linked to a discount;
+    2. the campaign is enabled and was linked to at least one discount;
     3. now is inside the campaign window (21 Sept – 30 Sept 2026, Amsterdam);
-    4. that exact discount is still in the mirror and inside its OWN window.
+    4. at least one linked discount is still in the mirror and inside its OWN
+       window — and for the product block, one that covers this product.
 
-  Pause or delete the discount in Shopify and re-sync, and the campaign goes
-  dark. Let the discount's own end date pass and it goes dark with no sync at
-  all. The percentage shown is always the discount's real value, never a
-  hard-coded 15.
+  Pause or delete the discounts in Shopify and re-sync, and the campaign goes
+  dark. Let their own end dates pass and it goes dark with no sync at all. Every
+  percentage shown is read from a discount, never hard-coded.
 
   PARAMETERS
     layout   'banner'  — the site-wide promotional bar (default)
              'product' — the block for the product page buy box
     product  required for layout 'product'; the block only renders when this
-             product is actually covered by the campaign discount
+             product is actually covered by a campaign discount
 {%- endcomment -%}
 
 {%- liquid
@@ -55,7 +58,7 @@
 
   comment
     Same staleness guard the discount badges use: stale data must not keep a
-    campaign on air after the discount behind it is gone.
+    campaign on air after the discounts behind it are gone.
   endcomment
   if bjc_live
     assign bjc_max_age_days = bjc_data.max_age_days | default: 30
@@ -94,16 +97,37 @@
   endif
 
   comment
-    The linked Shopify discount must still be in the mirror and still running.
-    This is what keeps the message honest without a sync.
+    Walk the linked discounts once, collecting what the banner needs (the range
+    of values still running) and what the product block needs (the strongest
+    value covering this product).
   endcomment
-  assign bjc_value = ''
-  assign bjc_rule_found = false
+  assign bjc_any = false
+  assign bjc_min_bp = 0
+  assign bjc_max_bp = 0
+  assign bjc_min_label = ''
+  assign bjc_max_label = ''
+  assign bjc_first_label = ''
+  assign bjc_product_found = false
+  assign bjc_product_bp = -1
+  assign bjc_product_label = ''
+
   if bjc_live
+    capture bjc_product_token
+      echo '|'
+      echo product.id
+      echo '|'
+    endcapture
+
     for bjc_rule in bjc_data.rules
-      unless bjc_rule.id == bjc_campaign.discount_id
+      capture bjc_rule_token
+        echo '|'
+        echo bjc_rule.id
+        echo '|'
+      endcapture
+      unless bjc_campaign.discount_ids contains bjc_rule_token
         continue
       endunless
+
       assign bjc_rule_starts = bjc_rule.starts_at | default: 0
       if bjc_rule_starts > bjc_now
         continue
@@ -114,54 +138,93 @@
           continue
         endif
       endif
-      assign bjc_rule_found = true
-      assign bjc_matched = bjc_rule
-      break
-    endfor
-    unless bjc_rule_found
-      assign bjc_live = false
-    endunless
-  endif
 
-  if bjc_live
-    capture bjc_value
-      if bjc_matched.value_type == 'percentage'
-        echo bjc_matched.percentage_label
-      else
-        echo bjc_matched.amount_cents | money_without_trailing_zeros
-      endif
-    endcapture
-    assign bjc_value = bjc_value | strip
-  endif
+      assign bjc_any = true
 
-  comment
-    Campaign copy. The promotional line always carries the discount's real
-    value, so changing the discount in Shopify changes the wording too.
-  endcomment
-  if bjc_live
-    assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_value
-  endif
-
-  comment
-    The product block only appears on products the campaign discount covers.
-  endcomment
-  if bjc_live and bjc_layout == 'product'
-    assign bjc_covered = false
-    if bjc_matched.scope == 'all'
-      assign bjc_covered = true
-    else
-      capture bjc_product_token
-        echo '|'
-        echo product.id
-        echo '|'
+      capture bjc_label
+        if bjc_rule.value_type == 'percentage'
+          echo bjc_rule.percentage_label
+        else
+          echo bjc_rule.amount_cents | money_without_trailing_zeros
+        endif
       endcapture
-      if bjc_matched.product_ids contains bjc_product_token
-        assign bjc_covered = true
+      assign bjc_label = bjc_label | strip
+      if bjc_first_label == ''
+        assign bjc_first_label = bjc_label
+      endif
+
+      comment
+        The range covers percentage discounts, the only values that compare
+        meaningfully without a product price in hand.
+      endcomment
+      assign bjc_rule_bp = 0
+      if bjc_rule.value_type == 'percentage'
+        assign bjc_rule_bp = bjc_rule.percentage_bp | plus: 0
+        if bjc_min_label == ''
+          assign bjc_min_bp = bjc_rule_bp
+          assign bjc_min_label = bjc_label
+          assign bjc_max_bp = bjc_rule_bp
+          assign bjc_max_label = bjc_label
+        else
+          if bjc_rule_bp < bjc_min_bp
+            assign bjc_min_bp = bjc_rule_bp
+            assign bjc_min_label = bjc_label
+          endif
+          if bjc_rule_bp > bjc_max_bp
+            assign bjc_max_bp = bjc_rule_bp
+            assign bjc_max_label = bjc_label
+          endif
+        endif
+      endif
+
+      if bjc_layout == 'product'
+        assign bjc_covers = false
+        if bjc_rule.scope == 'all'
+          assign bjc_covers = true
+        elsif bjc_rule.product_ids contains bjc_product_token
+          assign bjc_covers = true
+        endif
+        if bjc_covers
+          if bjc_rule_bp > bjc_product_bp
+            assign bjc_product_bp = bjc_rule_bp
+            assign bjc_product_label = bjc_label
+            assign bjc_product_found = true
+          endif
+        endif
+      endif
+    endfor
+  endif
+
+  comment
+    The promotional line always carries real discount values: this product's
+    own value on a product page, the live range on the banner.
+  endcomment
+  if bjc_live
+    if bjc_layout == 'product'
+      unless bjc_product_found
+        assign bjc_live = false
+      endunless
+      assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_product_label
+    else
+      unless bjc_any
+        assign bjc_live = false
+      endunless
+      assign bjc_spread = false
+      if bjc_min_label != ''
+        if bjc_min_label != bjc_max_label
+          assign bjc_spread = true
+        endif
+      endif
+      if bjc_spread
+        assign bjc_line = bjc_campaign.line_template_range | replace: '{min}', bjc_min_label | replace: '{max}', bjc_max_label
+      else
+        assign bjc_banner_label = bjc_max_label
+        if bjc_banner_label == ''
+          assign bjc_banner_label = bjc_first_label
+        endif
+        assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_banner_label
       endif
     endif
-    unless bjc_covered
-      assign bjc_live = false
-    endunless
   endif
 
   comment

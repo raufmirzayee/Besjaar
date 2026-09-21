@@ -77,8 +77,12 @@ const CAMPAIGN = {
   match_title: 'Nationale Kraanwaterdag',
   name: 'BESJAAR WATER WEEK 💧',
   tagline: 'Meer uit je water. Meer uit je douche.',
-  /** {value} is replaced with the discount's real value, e.g. "15%". */
+  /** {value} is replaced with the discount's real value, e.g. "15%". Used on a
+   *  product page, and on the banner when every campaign discount is worth the
+   *  same. */
   line_template: 'Profiteer t/m 30 september van {value} korting',
+  /** Used on the banner when the campaign runs several different percentages. */
+  line_template_range: 'Profiteer t/m 30 september van {min} tot {max} korting',
   /** Badge reads "<value> <suffix>", e.g. "15% KORTING". */
   badge_suffix: 'KORTING',
   cta_label: 'Bekijk de actie',
@@ -313,17 +317,21 @@ function buildCampaign(rules) {
 
   // Only discounts that passed every advertisability check are candidates, so
   // a campaign can never be linked to something the theme would refuse to show.
+  // Several may match: one campaign commonly runs a different percentage per
+  // product, and the theme states the range on the banner and the exact value
+  // on each product.
   const needle = CAMPAIGN.match_title.trim().toLowerCase();
-  const match = rules.find((rule) => rule.title.toLowerCase().includes(needle));
+  const matches = rules.filter((rule) => rule.title.toLowerCase().includes(needle));
 
   return {
     enabled: true,
-    linked: Boolean(match),
+    linked: matches.length > 0,
     match_title: CAMPAIGN.match_title,
-    discount_id: match ? match.id : '',
+    discount_ids: tokenList(matches.map((rule) => rule.id)),
     name: CAMPAIGN.name,
     tagline: CAMPAIGN.tagline,
     line_template: CAMPAIGN.line_template,
+    line_template_range: CAMPAIGN.line_template_range,
     badge_suffix: CAMPAIGN.badge_suffix,
     cta_label: CAMPAIGN.cta_label,
     cta_url: CAMPAIGN.cta_url,
@@ -380,8 +388,13 @@ async function main() {
   const campaign = payload.campaign;
   if (campaign.enabled) {
     if (campaign.linked) {
-      const linkedRule = rules.find((rule) => rule.id === campaign.discount_id);
-      console.log(`\nCampaign "${campaign.name}" linked to discount "${linkedRule.title}" (${campaign.discount_id}).`);
+      const linkedIds = campaign.discount_ids.split('|').filter(Boolean);
+      console.log(`\nCampaign "${campaign.name}" linked to ${linkedIds.length} discount(s):`);
+      for (const id of linkedIds) {
+        const rule = rules.find((candidate) => candidate.id === id);
+        const value = rule.value_type === 'percentage' ? rule.percentage_label : `${rule.amount_cents / 100}`;
+        console.log(`  -${value.padEnd(7)} ${rule.title}`);
+      }
       console.log(`  runs ${CAMPAIGN.starts_at} → ${CAMPAIGN.ends_at}`);
     } else {
       console.log(`\nCampaign "${campaign.name}" is NOT linked and will not appear.`);
