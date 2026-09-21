@@ -59,7 +59,6 @@
       assign ui_low_stock = 'Beperkte voorraad'
       assign ui_option = 'Kies uitvoering'
       assign ui_add = 'In winkelwagen'
-      assign ui_buy_now = 'Of reken direct af'
       assign ui_incl_vat = 'incl. btw'
       assign ui_save = 'Bespaar'
       assign ui_desc = 'Omschrijving'
@@ -78,7 +77,6 @@
       assign ui_low_stock = 'Nur wenige verfügbar'
       assign ui_option = 'Ausführung wählen'
       assign ui_add = 'In den Warenkorb'
-      assign ui_buy_now = 'Oder direkt bezahlen'
       assign ui_incl_vat = 'inkl. MwSt.'
       assign ui_save = 'Spare'
       assign ui_desc = 'Beschreibung'
@@ -97,7 +95,6 @@
       assign ui_low_stock = 'Stock limité'
       assign ui_option = 'Choisir la version'
       assign ui_add = 'Ajouter au panier'
-      assign ui_buy_now = 'Ou payer directement'
       assign ui_incl_vat = 'TVA incluse'
       assign ui_save = 'Économisez'
       assign ui_desc = 'Description'
@@ -116,7 +113,6 @@
       assign ui_low_stock = 'Limited stock'
       assign ui_option = 'Choose an option'
       assign ui_add = 'Add to cart'
-      assign ui_buy_now = 'Or checkout instantly'
       assign ui_incl_vat = 'VAT included'
       assign ui_save = 'Save'
       assign ui_desc = 'Description'
@@ -322,12 +318,12 @@
             </button>
           </div>
 
-          {%- if current_variant.available -%}
-            <div class="besjaar-store-premium-pd__instant">
-              <span>{{ ui_buy_now }}</span>
-              {{ form | payment_button }}
-            </div>
-          {%- endif -%}
+          {%- comment -%}
+            Besjaar 11.74: the dynamic checkout buttons (Shop Pay / PayPal and
+            the "more payment options" link) were removed from the buy box on
+            request. Add to cart is the single call to action here; the wallets
+            still appear at checkout.
+          {%- endcomment -%}
         {%- endform -%}
         <div class="besjaar-ui-product-form-status" role="status" aria-live="polite" aria-atomic="true" data-product-form-status></div>
 
