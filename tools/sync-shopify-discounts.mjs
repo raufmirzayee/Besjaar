@@ -157,6 +157,7 @@ const DISCOUNT_FIELDS = `
         ... on DiscountMinimumQuantity { greaterThanOrEqualToQuantity }
         ... on DiscountMinimumSubtotal { greaterThanOrEqualToSubtotal { amount } }
       }
+      combinesWith { orderDiscounts productDiscounts shippingDiscounts }
     }
     ... on DiscountCodeBasic { title status }
   }
@@ -290,7 +291,12 @@ async function buildRule(node) {
     if (!productIds.length) return note('targets no products');
   }
 
+  const combines = discount.combinesWith ?? {};
+
   return {
+    // Stripped before the payload is written; see dropNonCombining().
+    combines_products: Boolean(combines.productDiscounts),
+    combines_shipping: Boolean(combines.shippingDiscounts),
     id: numericId(node.id),
     title: discount.title,
     method: 'automatic',
@@ -308,6 +314,79 @@ async function buildRule(node) {
     min_quantity: 0,
     customer_eligibility: 'all',
   };
+}
+
+/** Not fatal, but worth saying out loud after a run. */
+const warnings = [];
+
+/**
+ * Shopify applies only ONE automatic discount to an order unless every
+ * discount involved has Combinations → "Product discounts" switched on. So as
+ * soon as two automatic discounts are advertisable at the same time and one of
+ * them refuses to combine, a cart holding a product from each receives only
+ * one of them — and the badge on the other product is promising a price
+ * Shopify will not charge at checkout.
+ *
+ * The storefront cannot say "15% off, unless you also buy something else that
+ * is on offer", so the honest move is not to advertise the non-combining
+ * discounts at all. Switch the combination on in Shopify and re-run; they come
+ * straight back.
+ *
+ * A lone advertisable discount is never dropped: with nothing to collide with,
+ * it always applies.
+ */
+function dropNonCombining(rules) {
+  if (rules.length < 2) return rules;
+
+  const blocked = rules.filter((rule) => !rule.combines_products);
+  if (!blocked.length) return rules;
+
+  for (const rule of blocked) {
+    skipped.push(
+      `${rule.title} — does not combine with other product discounts. ` +
+        `${rules.length} automatic discounts are running at once, so a cart holding ` +
+        'a product from two of them gets only one; the storefront would be showing ' +
+        'a price Shopify does not charge. Fix: Shopify → Discounts → this discount ' +
+        '→ Combinations → tick "Product discounts", then re-run this script.'
+    );
+  }
+
+  return rules.filter((rule) => rule.combines_products);
+}
+
+/**
+ * Two advisories that do not make a price wrong, so they never drop a rule:
+ *
+ *  - shipping combination off: a free-shipping code cancels this discount, so
+ *    a shopper using one pays full price for the product;
+ *  - a product covered by two discounts: Shopify stacks them, so the shopper
+ *    pays LESS than the storefront says. Safe, but understated.
+ */
+function collectWarnings(rules) {
+  for (const rule of rules) {
+    if (!rule.combines_shipping) {
+      warnings.push(
+        `${rule.title} does not combine with shipping discounts — a free-shipping ` +
+          'code would cancel it, and the shopper would pay the full product price.'
+      );
+    }
+  }
+
+  const seen = new Map();
+  for (const rule of rules) {
+    if (rule.scope === 'all') continue;
+    for (const id of rule.product_ids.split('|').filter(Boolean)) {
+      seen.set(id, (seen.get(id) ?? 0) + 1);
+    }
+  }
+  const overlapping = [...seen.entries()].filter(([, count]) => count > 1);
+  if (overlapping.length) {
+    warnings.push(
+      `${overlapping.length} product(s) are in more than one discount. Shopify ` +
+        'stacks them, so the shopper pays less than the badge says. The badge shows ' +
+        'the single largest discount, which is safe but understated.'
+    );
+  }
 }
 
 const toUnix = (iso) => Math.floor(new Date(iso).getTime() / 1000);
@@ -347,11 +426,17 @@ async function main() {
   const shop = await gql('{ shop { id myshopifyDomain currencyCode } }');
 
   const nodes = await fetchDiscounts();
-  const rules = [];
+  const candidates = [];
   for (const node of nodes) {
     const rule = await buildRule(node);
-    if (rule) rules.push(rule);
+    if (rule) candidates.push(rule);
   }
+
+  const kept = dropNonCombining(candidates);
+  collectWarnings(kept);
+
+  // The combination flags are a sync-time concern; the theme never sees them.
+  const rules = kept.map(({ combines_products, combines_shipping, ...rule }) => rule);
 
   const now = Math.floor(Date.now() / 1000);
   const payload = {
@@ -383,6 +468,10 @@ async function main() {
   if (skipped.length) {
     console.log(`\n${skipped.length} discount(s) not shown:`);
     for (const line of skipped) console.log(`  ${line}`);
+  }
+  if (warnings.length) {
+    console.log(`\n${warnings.length} thing(s) to be aware of:`);
+    for (const line of warnings) console.log(`  ${line}`);
   }
 
   const campaign = payload.campaign;

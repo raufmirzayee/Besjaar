@@ -148,6 +148,49 @@ A daily scheduled run keeps that from ever happening. If you would rather the
 data never expire, set `max_age_days` to `0` in `tools/sync-shopify-discounts.mjs`
 and re-run — but then a deleted discount will keep showing until you sync.
 
+### Discount combinations
+
+**Shopify applies only ONE automatic discount to an order** unless every
+discount involved allows combining. If you run two automatic discounts — say
+15% on the shower heads and 25% on the filter hose — and neither has
+Combinations → **Product discounts** ticked, a cart holding one of each gets
+only the better of the two. The other product's badge would then be promising a
+price Shopify never charges.
+
+So the sync **refuses to advertise a non-combining discount as soon as a second
+one is running**, and prints why:
+
+```
+2 discount(s) not shown:
+  Nationale Kraanwaterdag 1 — does not combine with other product discounts. 2
+  automatic discounts are running at once, so a cart holding a product from two
+  of them gets only one; the storefront would be showing a price Shopify does
+  not charge. Fix: Shopify → Discounts → this discount → Combinations → tick
+  "Product discounts", then re-run this script.
+```
+
+A single discount is never dropped for this — with nothing to collide with, it
+always applies.
+
+**When you create a discount, tick both of these under Combinations:**
+
+| Combination | Why |
+| --- | --- |
+| **Product discounts** | So two discounted products in one cart both get their discount. Without it the storefront cannot advertise either one. |
+| **Shipping discounts** | So a free-shipping code (or the free-shipping threshold) does not cancel the product discount. Without it the sync still shows the discount, but warns you. |
+
+Leave **Order discounts** off unless you really want an order-level promotion to
+stack on top.
+
+Two more things the sync only warns about, because neither makes a displayed
+price too low:
+
+- **Shipping combination off** — a shopper using a free-shipping code pays full
+  price for the product.
+- **A product in two discounts** — Shopify stacks them, so the shopper pays
+  *less* than the badge says. The badge shows the single largest discount, which
+  is safe but understated.
+
 ## 6. Things to be aware of
 
 - **Set the discount up as an automatic product discount** (Shopify admin →

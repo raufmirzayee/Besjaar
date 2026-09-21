@@ -24,7 +24,7 @@ The link is made by title. `tools/sync-shopify-discounts.mjs` has:
 ```js
 const CAMPAIGN = {
   enabled: true,
-  match_title: 'BESJAAR WATER WEEK',   // ← the Shopify discount's title
+  match_title: 'Nationale Kraanwaterdag',   // ← the Shopify discounts' title
   ...
 };
 ```
@@ -37,7 +37,7 @@ not, it writes `linked: false` and says so:
 
 ```
 Campaign "BESJAAR WATER WEEK 💧" is NOT linked and will not appear.
-  No advertisable automatic discount has a title containing "BESJAAR WATER WEEK".
+  No advertisable automatic discount has a title containing "Nationale Kraanwaterdag".
 ```
 
 ## 2. What has to be true before anything renders
@@ -87,14 +87,22 @@ The campaign is already deployed and wired. It needs one thing: the discount.
 
 1. Shopify admin → **Discounts → Create discount → Amount off products**.
 2. Choose **Automatic discount** (not a discount code).
-3. Title: **BESJAAR WATER WEEK** — this is what links it, so keep those words.
-4. Value: **15%**, applied to the products or collections in the promotion.
+3. Title: **Nationale Kraanwaterdag …** — the title is what links it, so keep
+   those words. Several discounts may share it; the campaign runs all of them
+   and the banner states the range.
+4. Value: **15%** (or whatever that group of products gets), applied to the
+   products or collections in the promotion.
 5. **No minimum purchase amount and no minimum quantity.** A minimum would make
    the discounted price conditional, so the theme would refuse to advertise it
    and the sync would tell you why.
-6. Active dates: starts **21 September 2026**, ends **30 September 2026** (end
+6. Under **Combinations**, tick **Product discounts** and **Shipping
+   discounts**. Without the first, Shopify applies only one automatic discount
+   per order, so a cart with two discounted products would be charged for just
+   one — and the sync refuses to advertise a discount in that state. See
+   [Discount combinations](shopify-discount-visibility.md#discount-combinations).
+7. Active dates: starts **21 September 2026**, ends **30 September 2026** (end
    of day).
-7. Re-run the sync:
+8. Re-run the sync:
 
 ```bash
 SHOPIFY_STORE=bc8d9f-69.myshopify.com \
@@ -102,7 +110,8 @@ SHOPIFY_ADMIN_TOKEN=shpat_xxx \
 node tools/sync-shopify-discounts.mjs
 ```
 
-It will print `Campaign "BESJAAR WATER WEEK 💧" linked to discount ...`.
+It will print `Campaign "BESJAAR WATER WEEK 💧" linked to 2 discount(s):` and
+list them with their real values.
 
 ## 5. Testing before publishing
 
@@ -161,6 +170,10 @@ and the ordinary discount badges keep working either way.
   the first moment after the campaign, so the whole of 30 September counts.
 - **If the discount and the campaign dates disagree**, the stricter of the two
   wins, because both windows are checked.
+- **Every campaign discount needs "Combine with product discounts" on.** The
+  campaign currently runs two (15% and 25%); without the combination Shopify
+  would apply only one of them to a cart holding both, and the sync would drop
+  them rather than advertise a price that is not charged.
 
 ## 8. Files
 
