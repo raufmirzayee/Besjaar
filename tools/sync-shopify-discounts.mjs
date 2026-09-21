@@ -71,8 +71,10 @@ const CONFIG = {
  */
 const CAMPAIGN = {
   enabled: true,
-  /** Title (or part of it) of the automatic discount behind the campaign. */
-  match_title: 'BESJAAR WATER WEEK',
+  /** Title (or part of it) of the automatic discount behind the campaign.
+   *  Matched against the AUTOMATIC discounts this script already cleared for
+   *  display, so a discount code of the same name can never be picked up. */
+  match_title: 'Nationale Kraanwaterdag',
   name: 'BESJAAR WATER WEEK 💧',
   tagline: 'Meer uit je water. Meer uit je douche.',
   /** {value} is replaced with the discount's real value, e.g. "15%". */

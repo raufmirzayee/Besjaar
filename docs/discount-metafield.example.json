@@ -1,14 +1,15 @@
 {
   "version": 1,
-  "generated_at": 1789995258,
-  "generated_at_iso": "2026-09-21T12:54:18.000Z",
+  "generated_at": 1789995913,
+  "generated_at_iso": "2026-09-21T13:05:13.000Z",
   "enabled": true,
   "max_age_days": 30,
   "currency": "EUR",
   "campaign": {
     "enabled": true,
-    "linked": false,
-    "discount_id": "",
+    "linked": true,
+    "match_title": "Nationale Kraanwaterdag",
+    "discount_id": "1921772880199",
     "name": "BESJAAR WATER WEEK 💧",
     "tagline": "Meer uit je water. Meer uit je douche.",
     "line_template": "Profiteer t/m 30 september van {value} korting",
@@ -19,10 +20,27 @@
     "ends_at": 1790805600,
     "countdown": true,
     "countdown_label": "Actie eindigt over:",
-    "countries": "|NL|",
-    "match_title": "BESJAAR WATER WEEK"
+    "countries": "|NL|"
   },
   "rules": [
+    {
+      "id": "1921772880199",
+      "title": "Nationale Kraanwaterdag 1",
+      "method": "automatic",
+      "value_type": "percentage",
+      "percentage_bp": 1500,
+      "percentage_label": "15%",
+      "amount_cents": 0,
+      "each_item": true,
+      "starts_at": 1789995632,
+      "ends_at": 1790805599,
+      "scope": "products",
+      "product_ids": "|10997729591623|10997821243719|10997944648007|10998051602759|",
+      "variant_ids": "",
+      "min_subtotal_cents": 0,
+      "min_quantity": 0,
+      "customer_eligibility": "all"
+    },
     {
       "id": "1921750991175",
       "title": "10% KORTING",
