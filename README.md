@@ -12,6 +12,11 @@ read by the theme. `compare_at_price` is never treated as a discount.
 for how it works, what it deliberately does not show, how to keep it accurate,
 and the Shopify limitations involved.
 
+A temporary campaign, **BESJAAR WATER WEEK 💧** (Nationale Kraanwaterdag,
+21–30 September 2026), is built on top of it and documented in
+[`docs/besjaar-water-week-campaign.md`](docs/besjaar-water-week-campaign.md) —
+including how it ends by itself and how to remove it.
+
 ## Layout
 
 ```

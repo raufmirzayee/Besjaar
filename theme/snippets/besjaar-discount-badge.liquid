@@ -252,6 +252,24 @@
       endif
     endcapture
     assign bjd_value = bjd_value | strip
+
+    comment
+      When the winning discount is the one a promotional campaign is built on,
+      the badge carries the campaign's wording ("15% KORTING") instead of the
+      plain "-15%". The value itself still comes from the Shopify discount, so
+      the badge cannot advertise a percentage the discount does not give.
+    endcomment
+    assign bjd_campaign_badge = false
+    assign bjd_campaign = bjd_data.campaign
+    if bjd_campaign.enabled == true and bjd_campaign.linked == true
+      if bjd_campaign.discount_id == bjd_best.id
+        assign bjd_campaign_starts = bjd_campaign.starts_at | default: 0
+        assign bjd_campaign_ends = bjd_campaign.ends_at | default: 0
+        if bjd_campaign_starts <= bjd_now and bjd_campaign_ends > bjd_now
+          assign bjd_campaign_badge = true
+        endif
+      endif
+    endif
   -%}
 
   {%- case bjd_layout -%}
@@ -271,6 +289,10 @@
         discount reuses the theme's existing badge position and shape instead of
         adding a second chip over the image.
       {%- endcomment -%}
-      <span aria-hidden="true">-{{ bjd_value }}</span><span class="besjaar-ui-visually-hidden">{{ bjd_value }} {{ t_sr }}</span>
+      {%- if bjd_campaign_badge -%}
+        {{- bjd_value }} {{ bjd_campaign.badge_suffix }}<span class="besjaar-ui-visually-hidden">, {{ t_sr }}</span>
+      {%- else -%}
+        <span aria-hidden="true">-{{ bjd_value }}</span><span class="besjaar-ui-visually-hidden">{{ bjd_value }} {{ t_sr }}</span>
+      {%- endif -%}
   {%- endcase -%}
 {%- endif -%}

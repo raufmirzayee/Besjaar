@@ -1,0 +1,197 @@
+/* ------------------------------------------------------------------
+   Besjaar — BESJAAR WATER WEEK campaign (Nationale Kraanwaterdag 2026)
+
+   Styles for snippets/besjaar-campaign.liquid. Loaded once per page by
+   sections/besjaar-campaign-1175.liquid (header group).
+
+   Deliberately restrained: the store's own navy, one water-blue accent, no
+   shouting colours, no animation. It reads as an announcement from the brand
+   rather than a discount sticker.
+   ------------------------------------------------------------------ */
+
+.bj-campaign {
+  --bj-campaign-ink: var(--besjaar-ui-accent-2, #102d49);
+  --bj-campaign-ink-2: var(--besjaar-ui-accent, #173b5e);
+  --bj-campaign-water: #5fb4e6;
+  --bj-campaign-soft: var(--besjaar-ui-accent-warm, #eef6fb);
+  font-family: inherit;
+}
+
+/* ---------- site-wide bar ---------- */
+
+.bj-campaign--banner {
+  position: relative;
+  background: linear-gradient(100deg, var(--bj-campaign-ink) 0%, var(--bj-campaign-ink-2) 62%, #1d4d78 100%);
+  color: #fff;
+}
+
+/* A thin water line along the bottom edge, instead of a loud border. */
+.bj-campaign--banner::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--bj-campaign-water), transparent);
+}
+
+.bj-campaign__shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 18px;
+  width: min(calc(100% - 32px), var(--besjaar-ui-width, 1280px));
+  margin-inline: auto;
+  padding: 10px 0 11px;
+  text-align: center;
+}
+
+.bj-campaign__copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px 10px;
+}
+
+.bj-campaign--banner .bj-campaign__name {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bj-campaign--banner .bj-campaign__tagline {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.bj-campaign--banner .bj-campaign__line {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.bj-campaign--banner .bj-campaign__countdown {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 3px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bj-campaign__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.bj-campaign__cta:hover,
+.bj-campaign__cta:focus-visible {
+  background: #fff;
+  border-color: #fff;
+  color: var(--bj-campaign-ink);
+}
+
+/* ---------- product page block ---------- */
+
+.bj-campaign--product {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(23, 59, 94, 0.16);
+  border-inline-start: 3px solid var(--bj-campaign-water);
+  border-radius: var(--besjaar-ui-radius, 12px);
+  background: var(--bj-campaign-soft);
+}
+
+.bj-campaign--product .bj-campaign__name {
+  margin: 0;
+  color: var(--bj-campaign-ink);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bj-campaign--product .bj-campaign__tagline {
+  margin: 4px 0 0;
+  color: var(--bj-campaign-ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bj-campaign--product .bj-campaign__line {
+  margin: 3px 0 0;
+  color: var(--besjaar-ui-muted, #61798e);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.bj-campaign--product .bj-campaign__countdown {
+  margin: 8px 0 0;
+  color: var(--bj-campaign-ink);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.bj-campaign [hidden] {
+  display: none;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 860px) {
+  .bj-campaign__shell {
+    flex-direction: column;
+    gap: 6px;
+    padding: 9px 0 10px;
+    width: calc(100% - 24px);
+  }
+
+  .bj-campaign--banner .bj-campaign__tagline,
+  .bj-campaign--banner .bj-campaign__line {
+    font-size: 12px;
+  }
+
+  .bj-campaign__cta {
+    padding: 5px 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .bj-campaign--banner .bj-campaign__name {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+  }
+
+  .bj-campaign--banner .bj-campaign__tagline {
+    font-size: 11.5px;
+  }
+}
+
+@media print {
+  .bj-campaign--banner {
+    display: none;
+  }
+}

@@ -1,10 +1,27 @@
 {
   "version": 1,
-  "generated_at": 1789993819,
-  "generated_at_iso": "2026-09-21T12:30:19.000Z",
+  "generated_at": 1789995258,
+  "generated_at_iso": "2026-09-21T12:54:18.000Z",
   "enabled": true,
   "max_age_days": 30,
   "currency": "EUR",
+  "campaign": {
+    "enabled": true,
+    "linked": false,
+    "discount_id": "",
+    "name": "BESJAAR WATER WEEK 💧",
+    "tagline": "Meer uit je water. Meer uit je douche.",
+    "line_template": "Profiteer t/m 30 september van {value} korting",
+    "badge_suffix": "KORTING",
+    "cta_label": "Bekijk de actie",
+    "cta_url": "/collections/showerhead",
+    "starts_at": 1789941600,
+    "ends_at": 1790805600,
+    "countdown": true,
+    "countdown_label": "Actie eindigt over:",
+    "countries": "|NL|",
+    "match_title": "BESJAAR WATER WEEK"
+  },
   "rules": [
     {
       "id": "1921750991175",

@@ -57,6 +57,40 @@ const CONFIG = {
   max_age_days: 30,
 };
 
+/**
+ * Temporary promotional campaign (Nationale Kraanwaterdag 2026).
+ *
+ * The campaign never carries a discount of its own. `match_title` names the
+ * automatic Shopify discount that powers it; the sync looks that discount up
+ * among the ones it is already allowed to advertise and records its id. If no
+ * such discount exists, `linked` is false and the theme shows nothing at all —
+ * no banner, no campaign badge, no countdown.
+ *
+ * Set `enabled: false` here and re-run to retire the campaign; see
+ * docs/besjaar-water-week-campaign.md.
+ */
+const CAMPAIGN = {
+  enabled: true,
+  /** Title (or part of it) of the automatic discount behind the campaign. */
+  match_title: 'BESJAAR WATER WEEK',
+  name: 'BESJAAR WATER WEEK 💧',
+  tagline: 'Meer uit je water. Meer uit je douche.',
+  /** {value} is replaced with the discount's real value, e.g. "15%". */
+  line_template: 'Profiteer t/m 30 september van {value} korting',
+  /** Badge reads "<value> <suffix>", e.g. "15% KORTING". */
+  badge_suffix: 'KORTING',
+  cta_label: 'Bekijk de actie',
+  cta_url: '/collections/showerhead',
+  /** Amsterdam time. ends_at is the first moment AFTER the campaign, so the
+   *  whole of 30 September is included. */
+  starts_at: '2026-09-21T00:00:00+02:00',
+  ends_at: '2026-10-01T00:00:00+02:00',
+  countdown: true,
+  countdown_label: 'Actie eindigt over:',
+  /** Market countries that see the banner. [] means everywhere. */
+  countries: ['NL'],
+};
+
 const store = process.env.SHOPIFY_STORE;
 const token = process.env.SHOPIFY_ADMIN_TOKEN;
 const dryRun = process.argv.includes('--dry-run');
@@ -270,6 +304,35 @@ async function buildRule(node) {
   };
 }
 
+const toUnix = (iso) => Math.floor(new Date(iso).getTime() / 1000);
+
+function buildCampaign(rules) {
+  if (!CAMPAIGN.enabled) return { enabled: false, linked: false };
+
+  // Only discounts that passed every advertisability check are candidates, so
+  // a campaign can never be linked to something the theme would refuse to show.
+  const needle = CAMPAIGN.match_title.trim().toLowerCase();
+  const match = rules.find((rule) => rule.title.toLowerCase().includes(needle));
+
+  return {
+    enabled: true,
+    linked: Boolean(match),
+    match_title: CAMPAIGN.match_title,
+    discount_id: match ? match.id : '',
+    name: CAMPAIGN.name,
+    tagline: CAMPAIGN.tagline,
+    line_template: CAMPAIGN.line_template,
+    badge_suffix: CAMPAIGN.badge_suffix,
+    cta_label: CAMPAIGN.cta_label,
+    cta_url: CAMPAIGN.cta_url,
+    starts_at: toUnix(CAMPAIGN.starts_at),
+    ends_at: toUnix(CAMPAIGN.ends_at),
+    countdown: Boolean(CAMPAIGN.countdown),
+    countdown_label: CAMPAIGN.countdown_label,
+    countries: tokenList(CAMPAIGN.countries),
+  };
+}
+
 async function main() {
   const shop = await gql('{ shop { id myshopifyDomain currencyCode } }');
 
@@ -288,6 +351,7 @@ async function main() {
     enabled: disable ? false : CONFIG.enabled,
     max_age_days: CONFIG.max_age_days,
     currency: shop.shop.currencyCode,
+    campaign: buildCampaign(rules),
     rules,
   };
 
@@ -309,6 +373,20 @@ async function main() {
   if (skipped.length) {
     console.log(`\n${skipped.length} discount(s) not shown:`);
     for (const line of skipped) console.log(`  ${line}`);
+  }
+
+  const campaign = payload.campaign;
+  if (campaign.enabled) {
+    if (campaign.linked) {
+      const linkedRule = rules.find((rule) => rule.id === campaign.discount_id);
+      console.log(`\nCampaign "${campaign.name}" linked to discount "${linkedRule.title}" (${campaign.discount_id}).`);
+      console.log(`  runs ${CAMPAIGN.starts_at} → ${CAMPAIGN.ends_at}`);
+    } else {
+      console.log(`\nCampaign "${campaign.name}" is NOT linked and will not appear.`);
+      console.log(`  No advertisable automatic discount has a title containing "${CAMPAIGN.match_title}".`);
+      console.log('  Create it in Shopify (Discounts → Amount off products → Automatic),');
+      console.log('  give it that title, no minimum requirement, then run this again.');
+    }
   }
 
   if (dryRun) {

@@ -15,6 +15,10 @@
       "type": "besjaar-tokens-1164",
       "settings": {}
     },
+    "besjaar-campaign": {
+      "type": "besjaar-campaign-1175",
+      "settings": {}
+    },
     "besjaar-discount": {
       "type": "besjaar-discount-1174",
       "settings": {}
@@ -111,6 +115,7 @@
   },
   "order": [
     "besjaar-tokens",
+    "besjaar-campaign",
     "besjaar-discount",
     "besjaar-nav",
     "besjaar-runtime",
