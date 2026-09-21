@@ -101,6 +101,25 @@
   font-weight: 700;
 }
 
+/* ---------- cart savings ---------- */
+
+/* "Je bespaart € 8,74" in the cart drawer and on the cart page. This is
+   Shopify's own cart.total_discount, not the mirror — the theme's JS fills
+   [data-cart-drawer-discount] and [data-cart-page-savings] from the live cart.
+   It states a saving, so it takes the store's success green (the same
+   --bc40-success the free-shipping row uses) instead of the muted grey of the
+   labels around it. 5.58:1 on white, so it still passes AA.
+
+   !important because assets/besjaar-cart-polish-1140.css sets the colours in
+   this part of the drawer with !important; matching that is the only way to
+   win the cascade here, and it is the convention that layer already uses. */
+[data-cart-drawer-discount],
+[data-cart-page-savings],
+[data-cart-page-savings-amount] {
+  color: var(--bc40-success, #35735d) !important;
+  font-weight: 700 !important;
+}
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 760px) {

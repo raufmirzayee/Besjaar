@@ -6,13 +6,13 @@
   carriers do: the badge appears on cards rendered by several different
   sections, so the stylesheet cannot belong to any one of them.
 
-  The tag is only emitted when the shop actually has mirrored discount data and
-  the feature is switched on, so stores without discounts pay nothing for it.
-  See snippets/besjaar-discount-badge.liquid for how the data gets there.
+  It loads unconditionally. The stylesheet also colours the cart's savings line,
+  which Shopify's own cart drives (cart.total_discount) rather than the mirror,
+  so gating it on the mirror being enabled would leave that line unstyled in
+  exactly the case where a discount is being applied.
+  See snippets/besjaar-discount-badge.liquid for how the badge data gets there.
 {%- endcomment -%}
-{%- if shop.metafields.besjaar_discounts.active.value.enabled -%}
-  {{ 'besjaar-discount-badge.css' | asset_url | stylesheet_tag }}
-{%- endif -%}
+{{ 'besjaar-discount-badge.css' | asset_url | stylesheet_tag }}
 
 {% schema %}
 {
