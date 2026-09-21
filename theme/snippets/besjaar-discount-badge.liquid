@@ -35,12 +35,12 @@
   assign bjd_data = shop.metafields.besjaar_discounts.active.value
   assign bjd_ready = true
 
-  if bjd_product == blank
+  unless bjd_product
     assign bjd_ready = false
-  endif
-  if bjd_data == blank
+  endunless
+  unless bjd_data
     assign bjd_ready = false
-  endif
+  endunless
   if bjd_data.enabled == false
     assign bjd_ready = false
   endif
@@ -71,17 +71,21 @@
   endif
 
   assign bjd_variant = variant
-  if bjd_variant == blank
+  unless bjd_variant
     assign bjd_variant = bjd_product.selected_or_first_available_variant
-  endif
+  endunless
   assign bjd_price = bjd_variant.price
-  if bjd_price == blank
+  unless bjd_price
     assign bjd_price = bjd_product.price
-  endif
+  endunless
 
-  assign bjd_auto_rule = blank
+  comment
+    Liquid has no null object to compare against portably, so the winner of
+    each method is tracked with an explicit flag rather than a blank sentinel.
+  endcomment
+  assign bjd_has_auto = false
   assign bjd_auto_rank = -1
-  assign bjd_code_rule = blank
+  assign bjd_has_code = false
   assign bjd_code_rank = -1
 
   if bjd_ready
@@ -99,7 +103,7 @@
       if bjd_starts > bjd_now
         continue
       endif
-      if bjd_rule.ends_at != blank
+      if bjd_rule.ends_at
         assign bjd_ends = bjd_rule.ends_at | plus: 0
         if bjd_ends <= bjd_now
           continue
@@ -164,11 +168,13 @@
         if bjd_rank > bjd_auto_rank
           assign bjd_auto_rank = bjd_rank
           assign bjd_auto_rule = bjd_rule
+          assign bjd_has_auto = true
         endif
       else
         if bjd_rank > bjd_code_rank
           assign bjd_code_rank = bjd_rank
           assign bjd_code_rule = bjd_rule
+          assign bjd_has_code = true
         endif
       endif
     endfor
@@ -178,13 +184,13 @@
     Exactly one offer is promoted to the badge, so a product never carries two
     competing discount badges. By default an automatic discount wins even when
     a code beats it on value: it needs no code, no minimum and no customer
-    action, so it is the only one that is true for every visitor. Set
-    "preference": "best_value" in the metafield to promote the larger offer.
+    action, so it is the only one that is true for every visitor. Setting
+    preference to best_value in the metafield promotes the larger offer.
   endcomment
-  assign bjd_primary = blank
-  assign bjd_secondary = blank
+  assign bjd_has_primary = false
+  assign bjd_has_secondary = false
 
-  if bjd_auto_rule != blank and bjd_code_rule != blank
+  if bjd_has_auto and bjd_has_code
     assign bjd_prefer_automatic = true
     if bjd_data.preference == 'best_value'
       if bjd_code_rank > bjd_auto_rank
@@ -198,17 +204,21 @@
       assign bjd_primary = bjd_code_rule
       assign bjd_secondary = bjd_auto_rule
     endif
-  elsif bjd_auto_rule != blank
+    assign bjd_has_primary = true
+    assign bjd_has_secondary = true
+  elsif bjd_has_auto
     assign bjd_primary = bjd_auto_rule
-  elsif bjd_code_rule != blank
+    assign bjd_has_primary = true
+  elsif bjd_has_code
     assign bjd_primary = bjd_code_rule
+    assign bjd_has_primary = true
   endif
 
   if bjd_data.show_secondary_offer != true
-    assign bjd_secondary = blank
+    assign bjd_has_secondary = false
   endif
   if bjd_layout != 'product'
-    assign bjd_secondary = blank
+    assign bjd_has_secondary = false
   endif
 
   comment
@@ -219,7 +229,7 @@
   assign bjd_per_item = false
   assign bjd_variant_covered = true
 
-  if bjd_primary != blank
+  if bjd_has_primary
     if bjd_primary.value_type == 'percentage'
       assign bjd_per_item = true
     elsif bjd_primary.each_item == true
@@ -232,7 +242,7 @@
       A discount limited to particular variants is only true while one of those
       variants is the one being priced.
     endcomment
-    if bjd_primary.variant_ids != blank
+    if bjd_primary.variant_ids != ''
       assign bjd_variant_covered = false
       capture bjd_variant_token
         echo '|'
@@ -243,7 +253,8 @@
         assign bjd_variant_covered = true
       endif
       if bjd_layout == 'product' and bjd_variant_covered == false
-        assign bjd_primary = blank
+        assign bjd_has_primary = false
+        assign bjd_has_secondary = false
       endif
     endif
   endif
@@ -255,7 +266,7 @@
   endcomment
   assign bjd_show_price = false
   assign bjd_new_price = 0
-  if bjd_primary != blank and bjd_per_item and bjd_variant_covered and bjd_price > 0
+  if bjd_has_primary and bjd_per_item and bjd_variant_covered and bjd_price > 0
     if bjd_primary.value_type == 'percentage'
       assign bjd_cut = bjd_price | times: bjd_primary.percentage_bp | plus: 5000 | divided_by: 10000
     else
@@ -269,7 +280,7 @@
   endif
 -%}
 
-{%- if bjd_primary != blank -%}
+{%- if bjd_has_primary -%}
   {%- liquid
     assign bjd_locale = request.locale.iso_code | split: '-' | first | downcase
 
@@ -391,7 +402,7 @@
     {%- if bjd_min_subtotal > 0 -%}<span>{{ t_min_subtotal }} {{ bjd_min_subtotal | money }}</span>{%- endif -%}
     {%- if bjd_min_quantity > 0 -%}<span>{{ t_min_quantity }} {{ bjd_min_quantity }} {{ t_items }}</span>{%- endif -%}
     {%- if bjd_primary.once_per_customer == true -%}<span>{{ t_once }}</span>{%- endif -%}
-    {%- if bjd_primary.ends_at != blank -%}<span>{{ t_until }} {{ bjd_primary.ends_at | date: t_date_format }}</span>{%- endif -%}
+    {%- if bjd_primary.ends_at -%}<span>{{ t_until }} {{ bjd_primary.ends_at | date: t_date_format }}</span>{%- endif -%}
   {%- endcapture -%}
   {%- assign bjd_terms = bjd_terms | strip -%}
 
@@ -415,11 +426,11 @@
         </p>
       {%- endif -%}
 
-      {%- if bjd_terms != blank -%}
+      {%- if bjd_terms != '' -%}
         <p class="bj-discount__terms">{{ bjd_terms }}</p>
       {%- endif -%}
 
-      {%- if bjd_secondary != blank -%}
+      {%- if bjd_has_secondary -%}
         {%- liquid
           comment
             Shopify only stacks two discounts when the combination is explicitly
@@ -465,7 +476,7 @@
           {%- for v in bjd_product.variants -%}
             {%- liquid
               assign v_covered = true
-              if bjd_primary.variant_ids != blank
+              if bjd_primary.variant_ids != ''
                 assign v_covered = false
                 capture v_token
                   echo '|'
@@ -490,7 +501,7 @@
                 assign v_new = v.price | minus: v_cut
               -%}
               {%- unless bjd_first -%},{%- endunless -%}
-              {{ v.id | json }}:{"f":{{ v.price | money | json }},"t":{{ v_new | money | json }}}
+              "{{ v.id }}":{"f":{{ v.price | money | json }},"t":{{ v_new | money | json }}}
               {%- assign bjd_first = false -%}
             {%- endif -%}
           {%- endfor -%}

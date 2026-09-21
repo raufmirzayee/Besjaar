@@ -97,6 +97,13 @@ so there are no duplicate or competing badges:
 - **Order-level fixed amounts** (`€10 off your order`) never appear on product
   cards — they are not a per-product saving. They do appear on the product page,
   worded as an order-level discount, with no per-product price calculated.
+- **The "Recently viewed" strip.** That strip is built in the browser from
+  `localStorage` (`assets/besjaar-1150.js`), not from Liquid, and it stores only
+  a handle, title, image and price. It shows no badges of any kind today — not
+  the sale badge, not the stock chip — so adding a discount badge there would
+  mean reimplementing the whole rule-resolution in JavaScript and keeping two
+  copies in step. It was left out on purpose. Every server-rendered surface
+  (collections, search, recommendations, home range, product page) is covered.
 
 ## 3. Keeping it accurate
 
