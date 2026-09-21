@@ -1,0 +1,30 @@
+{%- comment -%}
+  Besjaar 11.74 — Shopify discount visibility carrier.
+
+  Loads the stylesheet for snippets/besjaar-discount-badge.liquid once per
+  page. It lives in the header group for the same reason the other besjaar-*
+  carriers do: the badge appears on cards rendered by several different
+  sections, so the stylesheet cannot belong to any one of them.
+
+  The tag is only emitted when the shop actually has mirrored discount data and
+  the feature is switched on, so stores without discounts pay nothing for it.
+  See snippets/besjaar-discount-badge.liquid for how the data gets there.
+{%- endcomment -%}
+{%- if shop.metafields.besjaar_discounts.active.value.enabled -%}
+  {{ 'besjaar-discount-badge.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Besjaar discount badges",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loads the styling for the Shopify discount badges shown on product cards and on the product page. The badges read the live discount configuration mirrored into the shop metafield besjaar_discounts.active — they are not driven by compare-at prices. Keep this section in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

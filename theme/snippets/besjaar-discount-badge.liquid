@@ -1,0 +1,530 @@
+{%- comment -%}
+  Besjaar — Shopify discount visibility (2026-09-21)
+
+  Renders the *real* Shopify discount that applies to a product.
+
+  WHY A METAFIELD AND NOT compare_at_price
+  ----------------------------------------
+  Shopify's Liquid storefront API exposes no discount object on `product`,
+  `variant` or `collection`. Automatic discounts and discount codes only become
+  visible to Liquid once a line is in the cart
+  (`line_item.discount_allocations`) or at checkout. `compare_at_price` is a
+  merchandising field a merchant types on the variant — it is NOT a Shopify
+  discount and is frequently set without one.
+
+  So the authoritative discount configuration is mirrored out of the Admin API
+  into the shop metafield `besjaar_discounts.active` (type: json) by
+  tools/sync-shopify-discounts.mjs, and read here. Every rule still carries its
+  own start/end window, which this snippet re-checks on every request, so a
+  discount that expires between two syncs stops showing on its own.
+
+  PARAMETERS
+    product  (required) the product to evaluate
+    variant  (optional) the variant whose price is used; defaults to
+             product.selected_or_first_available_variant
+    layout   (optional) 'badge'   — compact chip, for product cards (default)
+                        'product' — full block for the product page
+
+  Renders nothing at all when no real, currently-active, customer-eligible
+  Shopify discount covers this product.
+{%- endcomment -%}
+
+{%- liquid
+  assign bjd_product = product
+  assign bjd_layout = layout | default: 'badge'
+  assign bjd_data = shop.metafields.besjaar_discounts.active.value
+  assign bjd_ready = true
+
+  if bjd_product == blank
+    assign bjd_ready = false
+  endif
+  if bjd_data == blank
+    assign bjd_ready = false
+  endif
+  if bjd_data.enabled == false
+    assign bjd_ready = false
+  endif
+
+  assign bjd_now = 'now' | date: '%s' | plus: 0
+
+  comment
+    Staleness guard. The mirror can only be as correct as its last sync: a
+    discount the merchant deletes or disables in Shopify stays in the metafield
+    until the next run. Rather than advertise a discount that may no longer
+    exist, the whole feature switches itself off once the data is older than
+    max_age_days. Set max_age_days to 0 in the metafield to disable the guard.
+  endcomment
+  if bjd_ready
+    assign bjd_max_age_days = bjd_data.max_age_days | default: 30
+    if bjd_max_age_days > 0
+      assign bjd_generated = bjd_data.generated_at | default: 0
+      if bjd_generated == 0
+        assign bjd_ready = false
+      else
+        assign bjd_age = bjd_now | minus: bjd_generated
+        assign bjd_max_age = bjd_max_age_days | times: 86400
+        if bjd_age > bjd_max_age
+          assign bjd_ready = false
+        endif
+      endif
+    endif
+  endif
+
+  assign bjd_variant = variant
+  if bjd_variant == blank
+    assign bjd_variant = bjd_product.selected_or_first_available_variant
+  endif
+  assign bjd_price = bjd_variant.price
+  if bjd_price == blank
+    assign bjd_price = bjd_product.price
+  endif
+
+  assign bjd_auto_rule = blank
+  assign bjd_auto_rank = -1
+  assign bjd_code_rule = blank
+  assign bjd_code_rank = -1
+
+  if bjd_ready
+    capture bjd_product_token
+      echo '|'
+      echo bjd_product.id
+      echo '|'
+    endcapture
+
+    for bjd_rule in bjd_data.rules
+      comment
+        1. The discount must be inside its own scheduled window right now.
+      endcomment
+      assign bjd_starts = bjd_rule.starts_at | default: 0
+      if bjd_starts > bjd_now
+        continue
+      endif
+      if bjd_rule.ends_at != blank
+        assign bjd_ends = bjd_rule.ends_at | plus: 0
+        if bjd_ends <= bjd_now
+          continue
+        endif
+      endif
+
+      comment
+        2. Never advertise a discount the visitor may not be entitled to.
+           Discounts limited to named customers or customer segments are
+           skipped entirely — the storefront cannot know who is looking.
+      endcomment
+      unless bjd_rule.customer_eligibility == 'all'
+        continue
+      endunless
+
+      comment
+        3. Only value types that can be stated truthfully on a product.
+           Buy-X-get-Y, free shipping and app discounts are not mirrored.
+      endcomment
+      unless bjd_rule.value_type == 'percentage' or bjd_rule.value_type == 'fixed_amount'
+        continue
+      endunless
+
+      comment
+        4. The discount must actually cover this product. Collection- and
+           variant-scoped discounts are resolved to product ids at sync time.
+      endcomment
+      assign bjd_in_scope = false
+      if bjd_rule.scope == 'all'
+        assign bjd_in_scope = true
+      elsif bjd_rule.product_ids contains bjd_product_token
+        assign bjd_in_scope = true
+      endif
+      unless bjd_in_scope
+        continue
+      endunless
+
+      comment
+        5. An order-level fixed amount (one amount spread over the whole order)
+           is not a per-product saving, so it never reaches a product card.
+      endcomment
+      if bjd_rule.value_type == 'fixed_amount'
+        if bjd_rule.each_item != true
+          if bjd_layout != 'product'
+            continue
+          endif
+        endif
+      endif
+
+      comment
+        6. Rank offers on a common scale (basis points off this price) so the
+           strongest one wins within each method.
+      endcomment
+      assign bjd_rank = 0
+      if bjd_rule.value_type == 'percentage'
+        assign bjd_rank = bjd_rule.percentage_bp | plus: 0
+      elsif bjd_price > 0
+        assign bjd_rank = bjd_rule.amount_cents | times: 10000 | divided_by: bjd_price
+      endif
+
+      if bjd_rule.method == 'automatic'
+        if bjd_rank > bjd_auto_rank
+          assign bjd_auto_rank = bjd_rank
+          assign bjd_auto_rule = bjd_rule
+        endif
+      else
+        if bjd_rank > bjd_code_rank
+          assign bjd_code_rank = bjd_rank
+          assign bjd_code_rule = bjd_rule
+        endif
+      endif
+    endfor
+  endif
+
+  comment
+    Exactly one offer is promoted to the badge, so a product never carries two
+    competing discount badges. By default an automatic discount wins even when
+    a code beats it on value: it needs no code, no minimum and no customer
+    action, so it is the only one that is true for every visitor. Set
+    "preference": "best_value" in the metafield to promote the larger offer.
+  endcomment
+  assign bjd_primary = blank
+  assign bjd_secondary = blank
+
+  if bjd_auto_rule != blank and bjd_code_rule != blank
+    assign bjd_prefer_automatic = true
+    if bjd_data.preference == 'best_value'
+      if bjd_code_rank > bjd_auto_rank
+        assign bjd_prefer_automatic = false
+      endif
+    endif
+    if bjd_prefer_automatic
+      assign bjd_primary = bjd_auto_rule
+      assign bjd_secondary = bjd_code_rule
+    else
+      assign bjd_primary = bjd_code_rule
+      assign bjd_secondary = bjd_auto_rule
+    endif
+  elsif bjd_auto_rule != blank
+    assign bjd_primary = bjd_auto_rule
+  elsif bjd_code_rule != blank
+    assign bjd_primary = bjd_code_rule
+  endif
+
+  if bjd_data.show_secondary_offer != true
+    assign bjd_secondary = blank
+  endif
+  if bjd_layout != 'product'
+    assign bjd_secondary = blank
+  endif
+
+  comment
+    Shape of the promoted offer, recomputed from the winner (never carried over
+    from the last loop iteration).
+  endcomment
+  assign bjd_order_level = false
+  assign bjd_per_item = false
+  assign bjd_variant_covered = true
+
+  if bjd_primary != blank
+    if bjd_primary.value_type == 'percentage'
+      assign bjd_per_item = true
+    elsif bjd_primary.each_item == true
+      assign bjd_per_item = true
+    else
+      assign bjd_order_level = true
+    endif
+
+    comment
+      A discount limited to particular variants is only true while one of those
+      variants is the one being priced.
+    endcomment
+    if bjd_primary.variant_ids != blank
+      assign bjd_variant_covered = false
+      capture bjd_variant_token
+        echo '|'
+        echo bjd_variant.id
+        echo '|'
+      endcapture
+      if bjd_primary.variant_ids contains bjd_variant_token
+        assign bjd_variant_covered = true
+      endif
+      if bjd_layout == 'product' and bjd_variant_covered == false
+        assign bjd_primary = blank
+      endif
+    endif
+  endif
+
+  comment
+    A discounted price is only ever printed when it is arithmetically the price
+    Shopify will charge for this exact line: a per-item value, on a variant the
+    rule actually covers. Rounding matches Shopify's half-up cent rounding.
+  endcomment
+  assign bjd_show_price = false
+  assign bjd_new_price = 0
+  if bjd_primary != blank and bjd_per_item and bjd_variant_covered and bjd_price > 0
+    if bjd_primary.value_type == 'percentage'
+      assign bjd_cut = bjd_price | times: bjd_primary.percentage_bp | plus: 5000 | divided_by: 10000
+    else
+      assign bjd_cut = bjd_primary.amount_cents | plus: 0
+    endif
+    if bjd_cut > bjd_price
+      assign bjd_cut = bjd_price
+    endif
+    assign bjd_new_price = bjd_price | minus: bjd_cut
+    assign bjd_show_price = true
+  endif
+-%}
+
+{%- if bjd_primary != blank -%}
+  {%- liquid
+    assign bjd_locale = request.locale.iso_code | split: '-' | first | downcase
+
+    case bjd_locale
+      when 'nl'
+        assign t_off = 'KORTING'
+        assign t_off_lc = 'korting'
+        assign t_offer = 'Aanbieding'
+        assign t_auto = 'Automatisch verrekend bij het afrekenen'
+        assign t_code_before = 'Met code'
+        assign t_code_before_lc = 'met code'
+        assign t_code_after = 'bij het afrekenen'
+        assign t_order_level = 'Kortingsbedrag geldt voor je hele bestelling'
+        assign t_your_price = 'Jouw prijs met deze korting'
+        assign t_current_price = 'Huidige prijs'
+        assign t_once = 'Eén keer per klant'
+        assign t_min_subtotal = 'Vanaf een bestelling van'
+        assign t_min_quantity = 'Vanaf'
+        assign t_items = 'artikelen'
+        assign t_until = 'Geldig t/m'
+        assign t_date_format = '%d-%m-%Y'
+        assign t_or = 'Of'
+        assign t_instead = 'in plaats van de automatische korting'
+        assign t_on_top = 'bovenop deze korting'
+      when 'de'
+        assign t_off = 'RABATT'
+        assign t_off_lc = 'Rabatt'
+        assign t_offer = 'Angebot'
+        assign t_auto = 'Wird im Checkout automatisch abgezogen'
+        assign t_code_before = 'Mit Code'
+        assign t_code_before_lc = 'mit Code'
+        assign t_code_after = 'im Checkout'
+        assign t_order_level = 'Der Rabattbetrag gilt für die gesamte Bestellung'
+        assign t_your_price = 'Dein Preis mit diesem Rabatt'
+        assign t_current_price = 'Aktueller Preis'
+        assign t_once = 'Einmal pro Kundin oder Kunde'
+        assign t_min_subtotal = 'Ab einem Bestellwert von'
+        assign t_min_quantity = 'Ab'
+        assign t_items = 'Artikeln'
+        assign t_until = 'Gültig bis'
+        assign t_date_format = '%d.%m.%Y'
+        assign t_or = 'Oder'
+        assign t_instead = 'anstelle des automatischen Rabatts'
+        assign t_on_top = 'zusätzlich zu diesem Rabatt'
+      when 'fr'
+        assign t_off = 'DE RÉDUCTION'
+        assign t_off_lc = 'de réduction'
+        assign t_offer = 'Offre'
+        assign t_auto = 'Appliquée automatiquement au paiement'
+        assign t_code_before = 'Avec le code'
+        assign t_code_before_lc = 'avec le code'
+        assign t_code_after = 'au paiement'
+        assign t_order_level = 'Le montant de la réduction s’applique à toute la commande'
+        assign t_your_price = 'Votre prix avec cette réduction'
+        assign t_current_price = 'Prix actuel'
+        assign t_once = 'Une seule fois par client'
+        assign t_min_subtotal = 'À partir de'
+        assign t_min_quantity = 'À partir de'
+        assign t_items = 'articles'
+        assign t_until = 'Valable jusqu’au'
+        assign t_date_format = '%d/%m/%Y'
+        assign t_or = 'Ou'
+        assign t_instead = 'à la place de la réduction automatique'
+        assign t_on_top = 'en plus de cette réduction'
+      else
+        assign t_off = 'OFF'
+        assign t_off_lc = 'off'
+        assign t_offer = 'Offer'
+        assign t_auto = 'Applied automatically at checkout'
+        assign t_code_before = 'With code'
+        assign t_code_before_lc = 'with code'
+        assign t_code_after = 'at checkout'
+        assign t_order_level = 'The discount amount applies to your whole order'
+        assign t_your_price = 'Your price with this discount'
+        assign t_current_price = 'Current price'
+        assign t_once = 'One use per customer'
+        assign t_min_subtotal = 'On orders from'
+        assign t_min_quantity = 'From'
+        assign t_items = 'items'
+        assign t_until = 'Valid until'
+        assign t_date_format = '%b %-d, %Y'
+        assign t_or = 'Or'
+        assign t_instead = 'instead of the automatic discount'
+        assign t_on_top = 'on top of this discount'
+    endcase
+
+    comment
+      percentage_label is formatted by the sync (e.g. "10%", "12.5%") so Liquid
+      never has to render a float. Amounts go through `money` so they follow the
+      shop's own currency format.
+    endcomment
+    capture bjd_value
+      if bjd_primary.value_type == 'percentage'
+        echo bjd_primary.percentage_label
+      else
+        echo bjd_primary.amount_cents | money_without_trailing_zeros
+      endif
+    endcapture
+    assign bjd_value = bjd_value | strip
+
+    assign bjd_min_subtotal = bjd_primary.min_subtotal_cents | default: 0
+    assign bjd_min_quantity = bjd_primary.min_quantity | default: 0
+  -%}
+
+  {%- capture bjd_note -%}
+    {%- if bjd_primary.method == 'code' -%}
+      {{ t_code_before }} <b class="bj-discount__code">{{ bjd_primary.code | escape }}</b> {{ t_code_after }}
+    {%- else -%}
+      {{ t_auto }}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- assign bjd_note = bjd_note | strip -%}
+
+  {%- comment -%}
+    Conditions are always spelled out, so a badge can never read as an
+    unconditional promise to every visitor.
+  {%- endcomment -%}
+  {%- capture bjd_terms -%}
+    {%- if bjd_min_subtotal > 0 -%}<span>{{ t_min_subtotal }} {{ bjd_min_subtotal | money }}</span>{%- endif -%}
+    {%- if bjd_min_quantity > 0 -%}<span>{{ t_min_quantity }} {{ bjd_min_quantity }} {{ t_items }}</span>{%- endif -%}
+    {%- if bjd_primary.once_per_customer == true -%}<span>{{ t_once }}</span>{%- endif -%}
+    {%- if bjd_primary.ends_at != blank -%}<span>{{ t_until }} {{ bjd_primary.ends_at | date: t_date_format }}</span>{%- endif -%}
+  {%- endcapture -%}
+  {%- assign bjd_terms = bjd_terms | strip -%}
+
+  {%- if bjd_layout == 'product' -%}
+    <div class="bj-discount bj-discount--product bj-discount--{{ bjd_primary.method }}" data-bj-discount>
+      <p class="bj-discount__headline">
+        <span class="besjaar-ui-visually-hidden">{{ t_offer }}: </span>
+        <span class="bj-discount__badge">{{ bjd_value }} {{ t_off }}</span>
+        <span class="bj-discount__note">{{ bjd_note }}</span>
+      </p>
+
+      {%- if bjd_order_level -%}
+        <p class="bj-discount__order-level">{{ t_order_level }}</p>
+      {%- elsif bjd_show_price -%}
+        <p class="bj-discount__price">
+          <span class="besjaar-ui-visually-hidden">{{ t_current_price }} </span>
+          <span class="bj-discount__from" data-bj-discount-from>{{ bjd_price | money }}</span>
+          <span class="bj-discount__arrow" aria-hidden="true">→</span>
+          <span class="besjaar-ui-visually-hidden">{{ t_your_price }}: </span>
+          <strong class="bj-discount__to" data-bj-discount-to>{{ bjd_new_price | money }}</strong>
+        </p>
+      {%- endif -%}
+
+      {%- if bjd_terms != blank -%}
+        <p class="bj-discount__terms">{{ bjd_terms }}</p>
+      {%- endif -%}
+
+      {%- if bjd_secondary != blank -%}
+        {%- liquid
+          comment
+            Shopify only stacks two discounts when the combination is explicitly
+            allowed on the discount itself, so the wording follows combinesWith
+            rather than assuming.
+          endcomment
+          assign bjd_combines = false
+          if bjd_primary.method == 'automatic'
+            if bjd_secondary.combines_with_product == true and bjd_secondary.combines_with_order == true
+              assign bjd_combines = true
+            endif
+          else
+            if bjd_primary.combines_with_product == true and bjd_primary.combines_with_order == true
+              assign bjd_combines = true
+            endif
+          endif
+
+          capture bjd_secondary_value
+            if bjd_secondary.value_type == 'percentage'
+              echo bjd_secondary.percentage_label
+            else
+              echo bjd_secondary.amount_cents | money_without_trailing_zeros
+            endif
+          endcapture
+          assign bjd_secondary_value = bjd_secondary_value | strip
+        -%}
+        <p class="bj-discount__alt">
+          {{ t_or }}: <strong>{{ bjd_secondary_value }} {{ t_off_lc }}</strong>
+          {%- if bjd_secondary.method == 'code' %} {{ t_code_before_lc }} <b class="bj-discount__code">{{ bjd_secondary.code | escape }}</b>{% endif %}
+          — {% if bjd_combines %}{{ t_on_top }}{% else %}{{ t_instead }}{% endif %}
+        </p>
+      {%- endif -%}
+
+      {%- comment -%}
+        Per-variant prices are pre-rendered server side with the money filter,
+        so switching variant never reformats currency in JavaScript. Variants
+        the discount does not cover are absent from the map and hide the block.
+      {%- endcomment -%}
+      {%- if bjd_show_price and bjd_product.variants.size > 1 -%}
+        {%- capture bjd_variant_map -%}
+          {
+          {%- assign bjd_first = true -%}
+          {%- for v in bjd_product.variants -%}
+            {%- liquid
+              assign v_covered = true
+              if bjd_primary.variant_ids != blank
+                assign v_covered = false
+                capture v_token
+                  echo '|'
+                  echo v.id
+                  echo '|'
+                endcapture
+                if bjd_primary.variant_ids contains v_token
+                  assign v_covered = true
+                endif
+              endif
+            -%}
+            {%- if v_covered and v.price > 0 -%}
+              {%- liquid
+                if bjd_primary.value_type == 'percentage'
+                  assign v_cut = v.price | times: bjd_primary.percentage_bp | plus: 5000 | divided_by: 10000
+                else
+                  assign v_cut = bjd_primary.amount_cents | plus: 0
+                endif
+                if v_cut > v.price
+                  assign v_cut = v.price
+                endif
+                assign v_new = v.price | minus: v_cut
+              -%}
+              {%- unless bjd_first -%},{%- endunless -%}
+              {{ v.id | json }}:{"f":{{ v.price | money | json }},"t":{{ v_new | money | json }}}
+              {%- assign bjd_first = false -%}
+            {%- endif -%}
+          {%- endfor -%}
+          }
+        {%- endcapture -%}
+        <script type="application/json" data-bj-discount-variants>{{ bjd_variant_map | strip }}</script>
+        <script>
+          (function () {
+            var current = document.currentScript;
+            var root = current && current.closest ? current.closest('[data-bj-discount]') : null;
+            if (!root) return;
+            var store = root.querySelector('[data-bj-discount-variants]');
+            var from = root.querySelector('[data-bj-discount-from]');
+            var to = root.querySelector('[data-bj-discount-to]');
+            if (!store || !from || !to) return;
+            var prices;
+            try { prices = JSON.parse(store.textContent); } catch (e) { return; }
+            document.addEventListener('besjaar_ui:variant-change', function (event) {
+              var detail = event && event.detail ? event.detail : {};
+              var next = prices[String(detail.variantId || detail.id || '')];
+              if (!next) { root.hidden = true; return; }
+              root.hidden = false;
+              from.textContent = next.f;
+              to.textContent = next.t;
+            });
+          })();
+        </script>
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    <p class="bj-discount bj-discount--card bj-discount--{{ bjd_primary.method }}">
+      <span class="besjaar-ui-visually-hidden">{{ t_offer }}: </span>
+      <span class="bj-discount__badge">{{ bjd_value }} {{ t_off }}</span>
+      <span class="bj-discount__note">{{ bjd_note }}</span>
+    </p>
+  {%- endif -%}
+{%- endif -%}
