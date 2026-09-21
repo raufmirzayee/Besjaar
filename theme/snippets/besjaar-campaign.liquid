@@ -1,8 +1,8 @@
 {%- comment -%}
   Besjaar — temporary promotional campaign (Nationale Kraanwaterdag 2026)
 
-  Renders the campaign banner and the product-page campaign block for
-  "BESJAAR WATER WEEK 💧", 21–30 September 2026.
+  Renders the single-line campaign bar for "BESJAAR WATER WEEK 💧",
+  21–30 September 2026.
 
   HOW THE CAMPAIGN IS TIED TO REAL SHOPIFY DISCOUNTS
   --------------------------------------------------
@@ -10,8 +10,8 @@
   shop metafield as the discount mirror (`besjaar_discounts.active`), and
   `campaign.discount_ids` lists the automatic Shopify discounts that
   tools/sync-shopify-discounts.mjs resolved by title. A campaign can run several
-  at once — a different percentage per product is normal — so the banner states
-  a range and each product states its own value.
+  at once — a different percentage per product is normal — so the bar states the
+  range of values that are actually live.
 
   Nothing renders unless ALL of these hold, re-checked on every request:
 
@@ -19,21 +19,19 @@
     2. the campaign is enabled and was linked to at least one discount;
     3. now is inside the campaign window (21 Sept – 30 Sept 2026, Amsterdam);
     4. at least one linked discount is still in the mirror and inside its OWN
-       window — and for the product block, one that covers this product.
+       window.
 
   Pause or delete the discounts in Shopify and re-sync, and the campaign goes
   dark. Let their own end dates pass and it goes dark with no sync at all. Every
   percentage shown is read from a discount, never hard-coded.
 
-  PARAMETERS
-    layout   'banner'  — the site-wide promotional bar (default)
-             'product' — the block for the product page buy box
-    product  required for layout 'product'; the block only renders when this
-             product is actually covered by a campaign discount
+  The per-product campaign block that used to sit in the buy box was removed —
+  the discount badge and the discounted price already say it there. Product
+  cards and the buy box get their campaign wording from
+  snippets/besjaar-discount-badge.liquid.
 {%- endcomment -%}
 
 {%- liquid
-  assign bjc_layout = layout | default: 'banner'
   assign bjc_data = shop.metafields.besjaar_discounts.active.value
   assign bjc_campaign = bjc_data.campaign
   assign bjc_live = true
@@ -78,7 +76,7 @@
 
   comment
     The campaign window itself. ends_at is the first second AFTER the campaign,
-    so the last day is included and the banner disappears on its own.
+    so the last day is included and the bar disappears on its own.
   endcomment
   assign bjc_ends = 0
   if bjc_live
@@ -97,9 +95,8 @@
   endif
 
   comment
-    Walk the linked discounts once, collecting what the banner needs (the range
-    of values still running) and what the product block needs (the strongest
-    value covering this product).
+    Walk the linked discounts once and collect the range of values still
+    running, so the bar narrows by itself when one of them ends.
   endcomment
   assign bjc_any = false
   assign bjc_min_bp = 0
@@ -107,17 +104,8 @@
   assign bjc_min_label = ''
   assign bjc_max_label = ''
   assign bjc_first_label = ''
-  assign bjc_product_found = false
-  assign bjc_product_bp = -1
-  assign bjc_product_label = ''
 
   if bjc_live
-    capture bjc_product_token
-      echo '|'
-      echo product.id
-      echo '|'
-    endcapture
-
     for bjc_rule in bjc_data.rules
       capture bjc_rule_token
         echo '|'
@@ -157,7 +145,6 @@
         The range covers percentage discounts, the only values that compare
         meaningfully without a product price in hand.
       endcomment
-      assign bjc_rule_bp = 0
       if bjc_rule.value_type == 'percentage'
         assign bjc_rule_bp = bjc_rule.percentage_bp | plus: 0
         if bjc_min_label == ''
@@ -176,64 +163,42 @@
           endif
         endif
       endif
-
-      if bjc_layout == 'product'
-        assign bjc_covers = false
-        if bjc_rule.scope == 'all'
-          assign bjc_covers = true
-        elsif bjc_rule.product_ids contains bjc_product_token
-          assign bjc_covers = true
-        endif
-        if bjc_covers
-          if bjc_rule_bp > bjc_product_bp
-            assign bjc_product_bp = bjc_rule_bp
-            assign bjc_product_label = bjc_label
-            assign bjc_product_found = true
-          endif
-        endif
-      endif
     endfor
+
+    unless bjc_any
+      assign bjc_live = false
+    endunless
   endif
 
   comment
-    The promotional line always carries real discount values: this product's
-    own value on a product page, the live range on the banner.
+    The promotional line always carries real discount values: the live range
+    when they differ, the single value when they do not.
   endcomment
   if bjc_live
-    if bjc_layout == 'product'
-      unless bjc_product_found
-        assign bjc_live = false
-      endunless
-      assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_product_label
+    assign bjc_spread = false
+    if bjc_min_label != ''
+      if bjc_min_label != bjc_max_label
+        assign bjc_spread = true
+      endif
+    endif
+    if bjc_spread
+      assign bjc_line = bjc_campaign.line_template_range | replace: '{min}', bjc_min_label | replace: '{max}', bjc_max_label
     else
-      unless bjc_any
-        assign bjc_live = false
-      endunless
-      assign bjc_spread = false
-      if bjc_min_label != ''
-        if bjc_min_label != bjc_max_label
-          assign bjc_spread = true
-        endif
+      assign bjc_banner_label = bjc_max_label
+      if bjc_banner_label == ''
+        assign bjc_banner_label = bjc_first_label
       endif
-      if bjc_spread
-        assign bjc_line = bjc_campaign.line_template_range | replace: '{min}', bjc_min_label | replace: '{max}', bjc_max_label
-      else
-        assign bjc_banner_label = bjc_max_label
-        if bjc_banner_label == ''
-          assign bjc_banner_label = bjc_first_label
-        endif
-        assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_banner_label
-      endif
+      assign bjc_line = bjc_campaign.line_template | replace: '{value}', bjc_banner_label
     endif
   endif
 
   comment
-    The banner is aimed at shoppers in the Netherlands. An empty country list
-    means "show everywhere". If the market country cannot be resolved — markets
+    The bar is aimed at shoppers in the Netherlands. An empty country list shows
+    it everywhere. If the market country cannot be resolved — markets
     localization switched off, for instance — fall back to the request locale
     rather than silently dropping the campaign.
   endcomment
-  if bjc_live and bjc_layout == 'banner'
+  if bjc_live
     if bjc_campaign.countries != ''
       assign bjc_country = localization.country.iso_code
       if bjc_country
@@ -253,34 +218,36 @@
       endif
     endif
   endif
+
+  if bjc_live
+    capture bjc_cta_url
+      render 'localized-internal-url', url: bjc_campaign.cta_url
+    endcapture
+    assign bjc_cta_url = bjc_cta_url | strip
+  endif
 -%}
 
 {%- if bjc_live -%}
-  {%- if bjc_layout == 'product' -%}
-    <aside class="bj-campaign bj-campaign--product" aria-label="{{ bjc_campaign.name | escape }}">
-      <p class="bj-campaign__name">{{ bjc_campaign.name }}</p>
-      <p class="bj-campaign__tagline">{{ bjc_campaign.tagline }}</p>
-      <p class="bj-campaign__line">{{ bjc_line }}</p>
+  {%- comment -%}
+    One row, in one line. The whole bar is the link, so the call to action can
+    shrink to an arrow on a narrow screen without losing the tap target. The
+    stylesheet drops the tagline, then the label, then the countdown, then the
+    campaign name as the viewport narrows, so the offer itself always fits.
+  {%- endcomment -%}
+  <aside class="bj-campaign bj-campaign--banner" aria-label="{{ bjc_campaign.name | escape }}" data-bj-campaign-banner>
+    {%- if bjc_cta_url != '' -%}<a class="bj-campaign__bar" href="{{ bjc_cta_url }}">{%- else -%}<div class="bj-campaign__bar">{%- endif -%}
+      <span class="bj-campaign__name">{{ bjc_campaign.name }}</span>
+      {%- if bjc_campaign.tagline != '' -%}<span class="bj-campaign__tagline">{{ bjc_campaign.tagline }}</span>{%- endif -%}
+      <span class="bj-campaign__line">{{ bjc_line }}</span>
       {%- if bjc_campaign.countdown == true -%}
-        <p class="bj-campaign__countdown" data-bj-countdown="{{ bjc_ends }}" data-bj-countdown-label="{{ bjc_campaign.countdown_label | escape }}" hidden></p>
+        <span class="bj-campaign__countdown" data-bj-countdown="{{ bjc_ends }}" data-bj-countdown-label="{{ bjc_campaign.countdown_label | escape }}" hidden></span>
       {%- endif -%}
-    </aside>
-  {%- else -%}
-    <aside class="bj-campaign bj-campaign--banner" aria-label="{{ bjc_campaign.name | escape }}" data-bj-campaign-banner>
-      <div class="bj-campaign__shell">
-        <div class="bj-campaign__copy">
-          <p class="bj-campaign__name">{{ bjc_campaign.name }}</p>
-          <p class="bj-campaign__tagline">{{ bjc_campaign.tagline }}</p>
-        </div>
-        <p class="bj-campaign__line">{{ bjc_line }}</p>
-        {%- if bjc_campaign.countdown == true -%}
-          <p class="bj-campaign__countdown" data-bj-countdown="{{ bjc_ends }}" data-bj-countdown-label="{{ bjc_campaign.countdown_label | escape }}" hidden></p>
-        {%- endif -%}
-        {%- if bjc_campaign.cta_label != '' and bjc_campaign.cta_url != '' -%}
-          {%- capture bjc_cta_url -%}{% render 'localized-internal-url', url: bjc_campaign.cta_url %}{%- endcapture -%}
-          <a class="bj-campaign__cta" href="{{ bjc_cta_url | strip }}">{{ bjc_campaign.cta_label }} <span aria-hidden="true">→</span></a>
-        {%- endif -%}
-      </div>
-    </aside>
-  {%- endif -%}
+      {%- if bjc_cta_url != '' -%}
+        <span class="bj-campaign__cta">
+          {%- if bjc_campaign.cta_label != '' -%}<span class="bj-campaign__cta-label">{{ bjc_campaign.cta_label }}</span>{%- endif -%}
+          <span aria-hidden="true">→</span>
+        </span>
+      {%- endif -%}
+    {%- if bjc_cta_url != '' -%}</a>{%- else -%}</div>{%- endif -%}
+  </aside>
 {%- endif -%}

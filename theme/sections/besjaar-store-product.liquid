@@ -305,12 +305,6 @@
             <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}"{% unless show_compare %} hidden{% endunless %}><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
           </div>
           {{ bjd_note }}
-          {%- comment -%}
-            Besjaar 11.75: the temporary BESJAAR WATER WEEK block. It renders
-            only on products the campaign's Shopify discount actually covers,
-            and only while that discount is running.
-          {%- endcomment -%}
-          {% render 'besjaar-campaign', layout: 'product', product: product %}
 
           <div class="besjaar-store-premium-pd__purchase">
             <div class="besjaar-store-premium-pd__qty" data-besjaar-qty>

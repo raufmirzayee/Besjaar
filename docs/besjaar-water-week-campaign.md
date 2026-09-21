@@ -63,9 +63,9 @@ wording, no countdown.
 
 | Surface | What appears |
 | --- | --- |
-| Campaign bar (all pages, NL) | Name, tagline, promotional line, countdown, **Bekijk de actie →** |
+| Campaign bar (all pages, NL) | One compact line: name · tagline · promotional line · countdown · **Bekijk de actie →**. The whole bar is the link. As the viewport narrows it drops the tagline (1180px), then the CTA label (900px), then the countdown (700px), then the campaign name (560px), so the offer always fits on one line. |
 | Product cards — collections, search, recommendations, home range, shower cards | Badge reads **15% KORTING** instead of the usual `-15%`, plus the discounted price in red with the original struck through |
-| Product page | The same badge at the top of the buy box, the discounted price, and a campaign block with name, tagline, line and countdown |
+| Product page | The same badge at the top of the buy box and the discounted price. There is no separate campaign block in the buy box — the badge and price already carry it. |
 
 Products **not** in the Shopify discount show nothing — no badge, no block. A
 product with a different discount keeps the normal `-10%` badge; the campaign
@@ -139,9 +139,8 @@ When you want to remove the code as well, in increasing order of thoroughness:
    `sections/header-group.json` (both the `sections` object and the `order`
    array), or switch it off in the theme editor under the header group.
 3. **Delete the files** — `sections/besjaar-campaign-1175.liquid`,
-   `snippets/besjaar-campaign.liquid`, `assets/besjaar-campaign.css`,
-   `assets/besjaar-campaign.js`, and the two `{% render 'besjaar-campaign' %}`
-   calls in `sections/besjaar-store-product.liquid`. Also drop the
+   `snippets/besjaar-campaign.liquid`, `assets/besjaar-campaign.css` and
+   `assets/besjaar-campaign.js`. Also drop the
    `bjd_campaign_badge` block in `snippets/besjaar-discount-badge.liquid` if you
    want the badge to go back to `-15%` permanently.
 
@@ -167,11 +166,10 @@ and the ordinary discount badges keep working either way.
 
 | File | Role |
 | --- | --- |
-| `theme/snippets/besjaar-campaign.liquid` | Campaign resolution; banner and product-page markup |
+| `theme/snippets/besjaar-campaign.liquid` | Campaign resolution and the single-line bar |
 | `theme/sections/besjaar-campaign-1175.liquid` | Header-group carrier: renders the bar, loads CSS/JS |
 | `theme/assets/besjaar-campaign.css` | Bar and product-block styling |
 | `theme/assets/besjaar-campaign.js` | Countdown |
 | `theme/sections/header-group.json` | Registers the carrier |
 | `theme/snippets/besjaar-discount-badge.liquid` | Badge says "15% KORTING" during the campaign |
-| `theme/sections/besjaar-store-product.liquid` | Renders the product-page block |
 | `tools/sync-shopify-discounts.mjs` | `CAMPAIGN` config and the title → discount link |

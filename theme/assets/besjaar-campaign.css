@@ -1,28 +1,25 @@
 /* ------------------------------------------------------------------
-   Besjaar — BESJAAR WATER WEEK campaign (Nationale Kraanwaterdag 2026)
+   Besjaar — BESJAAR WATER WEEK campaign bar (Nationale Kraanwaterdag 2026)
 
    Styles for snippets/besjaar-campaign.liquid. Loaded once per page by
    sections/besjaar-campaign-1175.liquid (header group).
 
-   Deliberately restrained: the store's own navy, one water-blue accent, no
-   shouting colours, no animation. It reads as an announcement from the brand
-   rather than a discount sticker.
+   One row, one line, ~36px tall. It sits above the header, so it has to earn
+   very little vertical space: everything is inline, nothing wraps, and as the
+   viewport narrows the least important part is dropped first — tagline, then
+   the CTA label, then the countdown, then the campaign name — so the offer
+   itself always stays on screen.
    ------------------------------------------------------------------ */
 
-.bj-campaign {
+.bj-campaign--banner {
   --bj-campaign-ink: var(--besjaar-ui-accent-2, #102d49);
   --bj-campaign-ink-2: var(--besjaar-ui-accent, #173b5e);
   --bj-campaign-water: #5fb4e6;
-  --bj-campaign-soft: var(--besjaar-ui-accent-warm, #eef6fb);
-  font-family: inherit;
-}
 
-/* ---------- site-wide bar ---------- */
-
-.bj-campaign--banner {
   position: relative;
   background: linear-gradient(100deg, var(--bj-campaign-ink) 0%, var(--bj-campaign-ink-2) 62%, #1d4d78 100%);
   color: #fff;
+  font-family: inherit;
 }
 
 /* A thin water line along the bottom edge, instead of a loud border. */
@@ -35,158 +32,129 @@
   background: linear-gradient(90deg, transparent, var(--bj-campaign-water), transparent);
 }
 
-.bj-campaign__shell {
+.bj-campaign__bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 6px 18px;
-  width: min(calc(100% - 32px), var(--besjaar-ui-width, 1280px));
+  gap: 0 10px;
+  width: min(calc(100% - 24px), var(--besjaar-ui-width, 1280px));
   margin-inline: auto;
-  padding: 10px 0 11px;
-  text-align: center;
-}
-
-.bj-campaign__copy {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 4px 10px;
-}
-
-.bj-campaign--banner .bj-campaign__name {
-  margin: 0;
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  padding: 9px 0 10px;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.2;
   white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none;
 }
 
-.bj-campaign--banner .bj-campaign__tagline {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 12.5px;
+/* Separator before every part except the first. Hiding a part takes its
+   separator with it, so the line never starts or ends on a stray dot. */
+.bj-campaign__tagline::before,
+.bj-campaign__line::before,
+.bj-campaign__countdown::before {
+  content: "·";
+  margin-inline-end: 10px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.bj-campaign__name {
+  flex: 0 0 auto;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bj-campaign__tagline {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.bj-campaign--banner .bj-campaign__line {
-  margin: 0;
-  font-size: 12.5px;
+.bj-campaign__line {
+  flex: 0 1 auto;
+  min-width: 0;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.bj-campaign--banner .bj-campaign__countdown {
-  display: inline-flex;
-  align-items: center;
-  margin: 0;
-  padding: 3px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  font-size: 11.5px;
+.bj-campaign__countdown {
+  flex: 0 0 auto;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 .bj-campaign__cta {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 13px;
+  flex: 0 0 auto;
+  margin-inline-start: 4px;
+  padding: 3px 11px;
   border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 999px;
-  color: #fff;
-  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  transition: background-color 0.18s ease, border-color 0.18s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.bj-campaign__cta:hover,
-.bj-campaign__cta:focus-visible {
+.bj-campaign__bar:hover .bj-campaign__cta,
+.bj-campaign__bar:focus-visible .bj-campaign__cta {
   background: #fff;
   border-color: #fff;
   color: var(--bj-campaign-ink);
-}
-
-/* ---------- product page block ---------- */
-
-.bj-campaign--product {
-  margin: 12px 0 0;
-  padding: 12px 14px;
-  border: 1px solid rgba(23, 59, 94, 0.16);
-  border-inline-start: 3px solid var(--bj-campaign-water);
-  border-radius: var(--besjaar-ui-radius, 12px);
-  background: var(--bj-campaign-soft);
-}
-
-.bj-campaign--product .bj-campaign__name {
-  margin: 0;
-  color: var(--bj-campaign-ink);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.bj-campaign--product .bj-campaign__tagline {
-  margin: 4px 0 0;
-  color: var(--bj-campaign-ink-2);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.bj-campaign--product .bj-campaign__line {
-  margin: 3px 0 0;
-  color: var(--besjaar-ui-muted, #61798e);
-  font-size: 12.5px;
-  line-height: 1.4;
-}
-
-.bj-campaign--product .bj-campaign__countdown {
-  margin: 8px 0 0;
-  color: var(--bj-campaign-ink);
-  font-size: 12px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
 }
 
 .bj-campaign [hidden] {
   display: none;
 }
 
-/* ---------- responsive ---------- */
+/* ---------- progressive trimming, widest part first ---------- */
 
-@media (max-width: 860px) {
-  .bj-campaign__shell {
-    flex-direction: column;
-    gap: 6px;
-    padding: 9px 0 10px;
-    width: calc(100% - 24px);
-  }
-
-  .bj-campaign--banner .bj-campaign__tagline,
-  .bj-campaign--banner .bj-campaign__line {
-    font-size: 12px;
-  }
-
-  .bj-campaign__cta {
-    padding: 5px 14px;
+@media (max-width: 1180px) {
+  .bj-campaign__tagline {
+    display: none;
   }
 }
 
-@media (max-width: 520px) {
-  .bj-campaign--banner .bj-campaign__name {
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
+@media (max-width: 900px) {
+  .bj-campaign__cta-label {
+    display: none;
   }
 
-  .bj-campaign--banner .bj-campaign__tagline {
+  .bj-campaign__cta {
+    padding: 3px 9px;
+  }
+}
+
+@media (max-width: 700px) {
+  .bj-campaign__countdown {
+    display: none;
+  }
+
+  .bj-campaign__bar {
     font-size: 11.5px;
+    gap: 0 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bj-campaign__name {
+    display: none;
+  }
+
+  .bj-campaign__line::before {
+    content: none;
+    margin-inline-end: 0;
+  }
+
+  .bj-campaign__bar {
+    font-size: 11px;
+    padding: 8px 0 9px;
   }
 }
 
