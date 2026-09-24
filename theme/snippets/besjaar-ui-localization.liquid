@@ -45,7 +45,7 @@
                   title="{{ language.endonym_name | escape }}"
                   aria-label="{{ language.endonym_name | escape }}"
                   {% if besjaar_ui_is_current_language %}aria-current="true"{% endif %}
-                >{{ besjaar_ui_option_language_code | upcase }}</button>
+                ><span>{{ besjaar_ui_option_language_code | upcase }}</span>{% if besjaar_ui_is_current_language %}<svg class="besjaar-ui-language-pill__check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m3.2 8.2 3 3 6.6-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{% endif %}</button>
               {% endif %}
             {% endfor %}
           </div>
@@ -53,23 +53,24 @@
       </div>
     </details>
     <style>
-      .besjaar-ui-language-pill{position:relative;display:inline-block}
-      .besjaar-ui-language-pill>summary{list-style:none}
-      .besjaar-ui-language-pill>summary::-webkit-details-marker{display:none}
-      .besjaar-ui-language-pill__trigger{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;background:#f2f2f2;color:#171717;font-size:.875rem;font-weight:500;line-height:1;letter-spacing:.02em;cursor:pointer;user-select:none;transition:background-color .16s ease}
-      .besjaar-ui-language-pill__trigger:hover,.besjaar-ui-language-pill[open]>.besjaar-ui-language-pill__trigger{background:#e8e8e8}
-      .besjaar-ui-language-pill__trigger:focus-visible{outline:2px solid currentColor;outline-offset:2px}
-      .besjaar-ui-language-pill__globe{width:18px;height:18px;flex:none}
-      .besjaar-ui-language-pill__chevron{width:10px;height:7px;flex:none;transition:transform .16s ease}
-      .besjaar-ui-language-pill[open] .besjaar-ui-language-pill__chevron{transform:rotate(180deg)}
-      .besjaar-ui-language-pill__panel{position:absolute;top:calc(100% + 8px);right:0;z-index:60;min-width:100%;padding:6px;border:1px solid rgba(17,17,17,.08);border-radius:14px;background:#fff;box-shadow:0 18px 40px -20px rgba(17,17,17,.35)}
-      .besjaar-ui-language-pill__form{margin:0}
-      .besjaar-ui-language-pill__list{display:flex;flex-direction:column;gap:2px}
-      .besjaar-ui-language-pill__option{display:flex;align-items:center;justify-content:center;width:100%;min-width:64px;height:36px;margin:0;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#444;font:inherit;font-size:.85rem;font-weight:500;line-height:1;letter-spacing:.02em;cursor:pointer;box-shadow:none;transition:background-color .16s ease,color .16s ease}
-      .besjaar-ui-language-pill__option:hover{background:#f2f2f2;color:#171717}
-      .besjaar-ui-language-pill__option.is-active{background:#111;color:#fff}
-      .besjaar-ui-language-pill__option:focus-visible{outline:2px solid currentColor;outline-offset:2px}
-      @media(prefers-reduced-motion:reduce){.besjaar-ui-language-pill__trigger,.besjaar-ui-language-pill__chevron,.besjaar-ui-language-pill__option{transition:none}}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill{position:relative;display:inline-block}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill>summary{list-style:none}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill>summary::-webkit-details-marker{display:none}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill>.besjaar-ui-language-pill__trigger{display:inline-flex!important;align-items:center!important;gap:8px!important;height:42px!important;margin:0!important;padding:0 14px 0 12px!important;border:1px solid var(--bj-line,rgba(23,59,94,.12))!important;border-radius:999px!important;background:#fff!important;color:var(--bj-navy,#173B5E)!important;font-size:.82rem!important;font-weight:600!important;line-height:1!important;letter-spacing:.02em!important;box-shadow:none!important;cursor:pointer;user-select:none}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill>.besjaar-ui-language-pill__trigger:hover,body .besjaar-ui-localization-slot .besjaar-ui-language-pill[open]>.besjaar-ui-language-pill__trigger{background:var(--bj-ice-100,#EDF6FA)!important;border-color:var(--bj-line-strong,rgba(23,59,94,.22))!important}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill>.besjaar-ui-language-pill__trigger:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__globe{width:18px!important;height:18px!important;flex:none}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__chevron{width:10px!important;height:7px!important;flex:none;transition:transform .16s ease}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill[open] .besjaar-ui-language-pill__chevron{transform:rotate(180deg)}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__panel{position:absolute;top:calc(100% + 8px);right:0;z-index:60;width:128px;padding:6px;border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:16px;background:#fff;box-shadow:0 18px 40px -18px rgba(15,41,71,.28)}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__form{margin:0}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__list{display:flex;flex-direction:column;gap:2px}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__option{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;width:100%!important;min-width:0!important;height:38px!important;margin:0!important;padding:0 12px!important;border:0!important;border-radius:10px!important;background:transparent!important;color:var(--bj-navy,#173B5E)!important;font:inherit;font-size:.85rem!important;font-weight:600!important;line-height:1!important;letter-spacing:.02em!important;text-align:left!important;box-shadow:none!important;cursor:pointer}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__option:hover{background:var(--bj-ice-50,#F6FAFC)!important}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__option.is-active{background:var(--bj-ice-100,#EDF6FA)!important}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__option:focus-visible{outline:2px solid currentColor;outline-offset:-2px}
+      body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__check{width:14px;height:14px;flex:none}
+      @media(prefers-reduced-motion:reduce){body .besjaar-ui-localization-slot .besjaar-ui-language-pill .besjaar-ui-language-pill__chevron{transition:none}}
     </style>
     <script>
       (function () {
