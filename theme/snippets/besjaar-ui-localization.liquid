@@ -1,0 +1,117 @@
+{% liquid
+  assign besjaar_ui_context = context | default: 'default'
+  assign besjaar_ui_section_id = section_id | default: 'global'
+  assign besjaar_ui_supported_language_count = 0
+  for besjaar_ui_language in localization.available_languages
+    assign besjaar_ui_language_code = besjaar_ui_language.iso_code | downcase | split: '-' | first
+    if besjaar_ui_language_code == 'nl' or besjaar_ui_language_code == 'en' or besjaar_ui_language_code == 'de' or besjaar_ui_language_code == 'fr'
+      assign besjaar_ui_supported_language_count = besjaar_ui_supported_language_count | plus: 1
+    endif
+  endfor
+  assign besjaar_ui_localization_id = 'BesjaarUILocalization-' | append: besjaar_ui_context | append: '-' | append: besjaar_ui_section_id
+  assign besjaar_ui_active_language_code = localization.language.iso_code | downcase | split: '-' | first
+%}
+{% if settings.enable_markets_localization and besjaar_ui_supported_language_count > 1 %}
+  {% if besjaar_ui_context == 'header' or besjaar_ui_context == 'mobile' %}
+    {% form 'localization', id: besjaar_ui_localization_id, class: 'besjaar-ui-language-switch' %}
+      <div class="besjaar-ui-language-switch__track" role="group" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}">
+        {% for language in localization.available_languages %}
+          {% liquid
+            assign besjaar_ui_option_language_code = language.iso_code | downcase | split: '-' | first
+            assign besjaar_ui_supported_language = false
+            if besjaar_ui_option_language_code == 'nl' or besjaar_ui_option_language_code == 'en' or besjaar_ui_option_language_code == 'de' or besjaar_ui_option_language_code == 'fr'
+              assign besjaar_ui_supported_language = true
+            endif
+            assign besjaar_ui_is_current_language = false
+            if language.iso_code == localization.language.iso_code
+              assign besjaar_ui_is_current_language = true
+            endif
+          %}
+          {% if besjaar_ui_supported_language %}
+            <button
+              class="besjaar-ui-language-switch__option{% if besjaar_ui_is_current_language %} is-active{% endif %}"
+              type="submit"
+              name="language_code"
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              title="{{ language.endonym_name | escape }}"
+              {% if besjaar_ui_is_current_language %}aria-current="true"{% endif %}
+            >{{ besjaar_ui_option_language_code | upcase }}</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endform %}
+  {% else %}
+  <details class="besjaar-ui-localization besjaar-ui-localization--language-only besjaar-ui-localization--direct besjaar-ui-localization--{{ besjaar_ui_context }}" data-besjaar-ui-localization>
+    <summary class="besjaar-ui-localization__trigger" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}">
+      <span class="besjaar-ui-localization__language-flag" aria-hidden="true">
+        {% case besjaar_ui_active_language_code %}
+          {% when 'nl' %}
+            <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h24v5.333H0z" fill="#AE1C28"/><path d="M0 10.667h24V16H0z" fill="#21468B"/>
+            </svg>
+          {% when 'en' %}
+            <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 30 18" role="presentation" focusable="false">
+              <defs><clipPath id="besjaar-ui-gb-active-{{ besjaar_ui_context }}-{{ besjaar_ui_section_id }}"><rect width="30" height="18" rx="2"/></clipPath></defs>
+              <g clip-path="url(#besjaar-ui-gb-active-{{ besjaar_ui_context }}-{{ besjaar_ui_section_id }})"><path fill="#012169" d="M0 0h30v18H0z"/><path stroke="#fff" stroke-width="4" d="m0 0 30 18M30 0 0 18"/><path stroke="#C8102E" stroke-width="2" d="m0 0 30 18M30 0 0 18"/><path fill="#fff" d="M12 0h6v18h-6zM0 6h30v6H0z"/><path fill="#C8102E" d="M13 0h4v18h-4zM0 7h30v4H0z"/></g>
+            </svg>
+          {% when 'de' %}
+            <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#FFCE00"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/>
+            </svg>
+          {% when 'fr' %}
+            <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/>
+            </svg>
+          {% else %}
+            <svg class="besjaar-ui-localization__flag-svg besjaar-ui-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
+        {% endcase %}
+      </span>
+      <span class="besjaar-ui-localization__language-code">{{ besjaar_ui_active_language_code | upcase }}</span>
+      <svg class="besjaar-ui-localization__chevron" viewBox="0 0 12 8" aria-hidden="true"><path d="m1 1.5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </summary>
+
+    <div class="besjaar-ui-localization__panel" role="group" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}">
+      <div class="besjaar-ui-localization__direct-head"><strong>{{ 'besjaar_ui.markets.language' | t }}</strong></div>
+
+      {% form 'localization', id: besjaar_ui_localization_id, class: 'besjaar-ui-localization__direct-form' %}
+        <div class="besjaar-ui-localization__choices">
+          {% for language in localization.available_languages %}
+            {% liquid
+              assign besjaar_ui_option_language_code = language.iso_code | downcase | split: '-' | first
+              assign besjaar_ui_supported_language = false
+              if besjaar_ui_option_language_code == 'nl' or besjaar_ui_option_language_code == 'en' or besjaar_ui_option_language_code == 'de' or besjaar_ui_option_language_code == 'fr'
+                assign besjaar_ui_supported_language = true
+              endif
+              assign besjaar_ui_is_current_language = false
+              if language.iso_code == localization.language.iso_code
+                assign besjaar_ui_is_current_language = true
+              endif
+            %}
+            {% if besjaar_ui_supported_language %}
+              <button class="besjaar-ui-localization__choice{% if besjaar_ui_is_current_language %} is-active{% endif %}" type="submit" name="language_code" value="{{ language.iso_code }}" lang="{{ language.iso_code }}" {% if besjaar_ui_is_current_language %}aria-current="true"{% endif %}>
+                <span class="besjaar-ui-localization__choice-flag" aria-hidden="true">
+                  {% case besjaar_ui_option_language_code %}
+                    {% when 'nl' %}
+                      <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h24v5.333H0z" fill="#AE1C28"/><path d="M0 10.667h24V16H0z" fill="#21468B"/></svg>
+                    {% when 'en' %}
+                      <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 30 18" role="presentation" focusable="false"><defs><clipPath id="besjaar-ui-gb-choice-{{ besjaar_ui_context }}-{{ besjaar_ui_section_id }}-{{ forloop.index }}"><rect width="30" height="18" rx="2"/></clipPath></defs><g clip-path="url(#besjaar-ui-gb-choice-{{ besjaar_ui_context }}-{{ besjaar_ui_section_id }}-{{ forloop.index }})"><path fill="#012169" d="M0 0h30v18H0z"/><path stroke="#fff" stroke-width="4" d="m0 0 30 18M30 0 0 18"/><path stroke="#C8102E" stroke-width="2" d="m0 0 30 18M30 0 0 18"/><path fill="#fff" d="M12 0h6v18h-6zM0 6h30v6H0z"/><path fill="#C8102E" d="M13 0h4v18h-4zM0 7h30v4H0z"/></g></svg>
+                    {% when 'de' %}
+                      <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#FFCE00"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/></svg>
+                    {% when 'fr' %}
+                      <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/></svg>
+                    {% else %}
+                      <svg class="besjaar-ui-localization__flag-svg besjaar-ui-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
+                  {% endcase %}
+                </span>
+                <span class="besjaar-ui-localization__choice-copy"><strong>{{ language.endonym_name }}</strong><small>{{ besjaar_ui_option_language_code | upcase }}</small></span>
+                {% if besjaar_ui_is_current_language %}<span class="besjaar-ui-localization__choice-check" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="m3.2 8.2 3 3 6.6-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>{% else %}<span class="besjaar-ui-localization__choice-arrow" aria-hidden="true">→</span>{% endif %}
+              </button>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endform %}
+    </div>
+  </details>
+  {% endif %}
+{% endif %}
