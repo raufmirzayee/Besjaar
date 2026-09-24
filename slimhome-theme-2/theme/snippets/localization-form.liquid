@@ -1,0 +1,96 @@
+{%- comment -%}
+  Country/currency and language selectors (Shopify Markets).
+
+  Accepts:
+  - form_id: {String} Unique ID
+  - show_country: {Boolean}
+  - show_language: {Boolean}
+  - class: {String} Optional wrapper class
+  - compact: {Boolean} Show a small language-only button (NL, DE, ...) that opens a list of language codes
+{%- endcomment -%}
+{%- liquid
+  assign has_countries = false
+  if show_country and localization.available_countries.size > 1
+    assign has_countries = true
+  endif
+  assign has_languages = false
+  if show_language and localization.available_languages.size > 1
+    assign has_languages = true
+  endif
+-%}
+{%- if has_countries or has_languages -%}
+  <localization-form class="{{ class }}">
+    {%- if compact -%}
+      {%- comment -%} Compact (header) version: language only, shown as its code (NL, DE, ...). {%- endcomment -%}
+      {%- if has_languages -%}
+        {{ 'localization-languages.css' | asset_url | stylesheet_tag }}
+        <details-dropdown data-trigger="click" class="localization-dropdown">
+          <details>
+            <summary class="header__menu-link localization-dropdown__toggle" aria-expanded="false">
+              {% render 'icon', icon: 'globe' %}
+              <span class="visually-hidden">{{ 'localization.language_label' | t }}: {{ localization.language.endonym_name }}</span>
+              <span aria-hidden="true">{{ localization.language.iso_code | upcase }}</span>
+              {% render 'icon', icon: 'chevron-down' %}
+            </summary>
+            <div class="dropdown-panel dropdown-panel--right localization-dropdown__panel localization-dropdown__panel--languages">
+            {%- form 'localization', id: form_id, class: 'localization-form' -%}
+              <ul class="list-unstyled localization-dropdown__languages" role="list">
+                {%- for language in localization.available_languages -%}
+                  {%- assign is_current_language = false -%}
+                  {%- if language.iso_code == localization.language.iso_code -%}
+                    {%- assign is_current_language = true -%}
+                  {%- endif -%}
+                  <li>
+                    <button
+                      type="submit"
+                      name="language_code"
+                      value="{{ language.iso_code }}"
+                      lang="{{ language.iso_code }}"
+                      class="localization-dropdown__language"
+                      title="{{ language.endonym_name | escape }}"
+                      aria-label="{{ language.endonym_name | escape }}"
+                      {% if is_current_language %}aria-current="true"{% endif %}
+                    >
+                      {{- language.iso_code | upcase -}}
+                    </button>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endform -%}
+            </div>
+          </details>
+        </details-dropdown>
+      {%- endif -%}
+    {%- else -%}
+    {%- form 'localization', id: form_id, class: 'localization-form' -%}
+      {%- if has_countries -%}
+        <div class="select">
+          <label class="visually-hidden" for="{{ form_id }}-country">{{ 'localization.country_label' | t }}</label>
+          <select id="{{ form_id }}-country" name="country_code" class="select__select">
+            {%- for country in localization.available_countries -%}
+              <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>
+                {{- country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon', icon: 'chevron-down' %}
+        </div>
+      {%- endif -%}
+      {%- if has_languages -%}
+        <div class="select">
+          <label class="visually-hidden" for="{{ form_id }}-language">{{ 'localization.language_label' | t }}</label>
+          <select id="{{ form_id }}-language" name="language_code" class="select__select">
+            {%- for language in localization.available_languages -%}
+              <option value="{{ language.iso_code }}" lang="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>
+                {{- language.endonym_name | capitalize -}}
+              </option>
+            {%- endfor -%}
+          </select>
+          {% render 'icon', icon: 'chevron-down' %}
+        </div>
+      {%- endif -%}
+      <noscript><button type="submit" class="button button--small">{{ 'localization.update' | t }}</button></noscript>
+    {%- endform -%}
+    {%- endif -%}
+  </localization-form>
+{%- endif -%}

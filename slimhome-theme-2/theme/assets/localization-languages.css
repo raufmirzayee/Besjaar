@@ -1,0 +1,38 @@
+/* Compact header language switcher (NL, DE, ...), used by snippets/localization-form.liquid */
+.localization-dropdown__panel--languages {
+  min-width: 0;
+  padding: 0.6rem;
+}
+
+.localization-dropdown__languages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.localization-dropdown__language {
+  display: block;
+  width: 100%;
+  min-width: 7.2rem;
+  padding: 0.8rem 1.4rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: var(--font-body-weight-medium);
+  letter-spacing: 0.04em;
+  text-align: left;
+  cursor: pointer;
+}
+
+.localization-dropdown__language:hover,
+.localization-dropdown__language:focus-visible {
+  background: rgba(var(--color-foreground), 0.06);
+}
+
+.localization-dropdown__language[aria-current='true'] {
+  background: rgba(var(--color-foreground), 0.08);
+  font-weight: var(--font-body-weight-bold);
+}
