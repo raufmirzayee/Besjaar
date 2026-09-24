@@ -12,7 +12,84 @@
   assign besjaar_ui_active_language_code = localization.language.iso_code | downcase | split: '-' | first
 %}
 {% if settings.enable_markets_localization and besjaar_ui_supported_language_count > 1 %}
-  {% if besjaar_ui_context == 'header' or besjaar_ui_context == 'mobile' %}
+  {% if besjaar_ui_context == 'header' %}
+    {%- comment -%}2026-09-24: desktop header shows a single pill (globe · NL · chevron) that opens a short list of language codes, instead of four buttons side by side.{%- endcomment -%}
+    <details class="besjaar-ui-language-pill" data-besjaar-ui-language-pill>
+      <summary class="besjaar-ui-language-pill__trigger" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}: {{ localization.language.endonym_name | escape }}">
+        <svg class="besjaar-ui-language-pill__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg>
+        <span class="besjaar-ui-language-pill__code">{{ besjaar_ui_active_language_code | upcase }}</span>
+        <svg class="besjaar-ui-language-pill__chevron" viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="m1 1.5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>
+      <div class="besjaar-ui-language-pill__panel">
+        {% form 'localization', id: besjaar_ui_localization_id, class: 'besjaar-ui-language-pill__form' %}
+          <div class="besjaar-ui-language-pill__list" role="group" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}">
+            {% for language in localization.available_languages %}
+              {% liquid
+                assign besjaar_ui_option_language_code = language.iso_code | downcase | split: '-' | first
+                assign besjaar_ui_supported_language = false
+                if besjaar_ui_option_language_code == 'nl' or besjaar_ui_option_language_code == 'en' or besjaar_ui_option_language_code == 'de' or besjaar_ui_option_language_code == 'fr'
+                  assign besjaar_ui_supported_language = true
+                endif
+                assign besjaar_ui_is_current_language = false
+                if language.iso_code == localization.language.iso_code
+                  assign besjaar_ui_is_current_language = true
+                endif
+              %}
+              {% if besjaar_ui_supported_language %}
+                <button
+                  class="besjaar-ui-language-pill__option{% if besjaar_ui_is_current_language %} is-active{% endif %}"
+                  type="submit"
+                  name="language_code"
+                  value="{{ language.iso_code }}"
+                  lang="{{ language.iso_code }}"
+                  title="{{ language.endonym_name | escape }}"
+                  aria-label="{{ language.endonym_name | escape }}"
+                  {% if besjaar_ui_is_current_language %}aria-current="true"{% endif %}
+                >{{ besjaar_ui_option_language_code | upcase }}</button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endform %}
+      </div>
+    </details>
+    <style>
+      .besjaar-ui-language-pill{position:relative;display:inline-block}
+      .besjaar-ui-language-pill>summary{list-style:none}
+      .besjaar-ui-language-pill>summary::-webkit-details-marker{display:none}
+      .besjaar-ui-language-pill__trigger{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;background:#f2f2f2;color:#171717;font-size:.875rem;font-weight:500;line-height:1;letter-spacing:.02em;cursor:pointer;user-select:none;transition:background-color .16s ease}
+      .besjaar-ui-language-pill__trigger:hover,.besjaar-ui-language-pill[open]>.besjaar-ui-language-pill__trigger{background:#e8e8e8}
+      .besjaar-ui-language-pill__trigger:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+      .besjaar-ui-language-pill__globe{width:18px;height:18px;flex:none}
+      .besjaar-ui-language-pill__chevron{width:10px;height:7px;flex:none;transition:transform .16s ease}
+      .besjaar-ui-language-pill[open] .besjaar-ui-language-pill__chevron{transform:rotate(180deg)}
+      .besjaar-ui-language-pill__panel{position:absolute;top:calc(100% + 8px);right:0;z-index:60;min-width:100%;padding:6px;border:1px solid rgba(17,17,17,.08);border-radius:14px;background:#fff;box-shadow:0 18px 40px -20px rgba(17,17,17,.35)}
+      .besjaar-ui-language-pill__form{margin:0}
+      .besjaar-ui-language-pill__list{display:flex;flex-direction:column;gap:2px}
+      .besjaar-ui-language-pill__option{display:flex;align-items:center;justify-content:center;width:100%;min-width:64px;height:36px;margin:0;padding:0 12px;border:0;border-radius:10px;background:transparent;color:#444;font:inherit;font-size:.85rem;font-weight:500;line-height:1;letter-spacing:.02em;cursor:pointer;box-shadow:none;transition:background-color .16s ease,color .16s ease}
+      .besjaar-ui-language-pill__option:hover{background:#f2f2f2;color:#171717}
+      .besjaar-ui-language-pill__option.is-active{background:#111;color:#fff}
+      .besjaar-ui-language-pill__option:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+      @media(prefers-reduced-motion:reduce){.besjaar-ui-language-pill__trigger,.besjaar-ui-language-pill__chevron,.besjaar-ui-language-pill__option{transition:none}}
+    </style>
+    <script>
+      (function () {
+        if (window.besjaarUILanguagePill) return;
+        window.besjaarUILanguagePill = true;
+        function openPills() { return document.querySelectorAll('[data-besjaar-ui-language-pill][open]'); }
+        document.addEventListener('click', function (event) {
+          openPills().forEach(function (pill) { if (!pill.contains(event.target)) pill.removeAttribute('open'); });
+        });
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          openPills().forEach(function (pill) {
+            pill.removeAttribute('open');
+            var summary = pill.querySelector('summary');
+            if (summary) summary.focus();
+          });
+        });
+      })();
+    </script>
+  {% elsif besjaar_ui_context == 'mobile' %}
     {% form 'localization', id: besjaar_ui_localization_id, class: 'besjaar-ui-language-switch' %}
       <div class="besjaar-ui-language-switch__track" role="group" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}">
         {% for language in localization.available_languages %}
