@@ -401,3 +401,10 @@ Niet aangeraakt: prijs, "In winkelwagen", Judge.me-sterren, bezorgbelofte, stick
 
 Controleren vóór publiceren (Online Store › Themes › "Besjaar – productpagina 29 sep (preview)" › Preview): productpagina op telefoon en desktop, de vergelijking onder "Bezorging", de panelen "Specificaties" en "In de verpakking", en de winkelwagen-balk "nog €… tot gratis verzending".
 
+
+### R.6 Productpagina afgewerkt (staged in "Besjaar – productpagina 29 sep (preview)")
+
+- Koopblok in de volgorde van het voorbeeld van de eigenaar: sterren + score + aantal reviews (Judge.me), titel, prijs met badges (alleen echte korting; groen "Filter inbegrepen" / "Slang inbegrepen"), 4 voordeel-tegels uit `custom.highlights`, varianten als knoppen, aantal + "In winkelwagen", Shop Pay, verzend-pil ("Verzonden op woensdag 30 september · NL Gratis verzending"), één regel retour/garantie/veilig betalen.
+- "Wat klanten zeggen": tot 3 echte 5-sterrenreviews (≥ 30 tekens) uit de Judge.me-data van het product, met naam en het echte aandeel 5-sterren (bijv. "87% geeft 5 sterren"). Uit te zetten in de sectie-instellingen.
+- Fototeller "1 / 9" op de productfoto, rustiger accordeon met ronde +/−, sticky balk op mobiel met productfoto.
+- Let op: de reviews zijn door Judge.me gemarkeerd als "verzameld via een andere aanbieder" (vermoedelijk bol.com-import). Ze worden daarom niet als "geverifieerde koper" getoond.
