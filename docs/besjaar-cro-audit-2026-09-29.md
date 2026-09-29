@@ -343,3 +343,9 @@ Oorzaak van de lege ruimte: de navulfilters werden door het thema als "douchekop
 - Live (productdata): metaveld `custom.shower_family` gezet op alle 5 producten (shower_filter / filtered_shower_head / hand_shower / shower_set). Daarmee kloppen ook de familie-labels op de kaarten ("Vervangingsfilters", "Douchekop met filter", "Handdouche", "Doucheset").
 - Staged (thema "Besjaar – winkelwagen aanbevelingen (preview)", id 201592799559; het thema "homepage 29 sep" was inmiddels gepubliceerd): `sections/besjaar-ui-smart-recommendations.liquid` kiest nu deterministisch: in de winkelwagen eerst de navulfilters, dan de andere douchekoppen; op een productpagina eerst de andere douchekoppen. Alles wat al in de winkelwagen ligt wordt overgeslagen (niet alleen de eerste regel). Kaarten in deze sectie wachten niet meer op de "reveal"-animatie.
 - Aanbeveling: Theme settings › Brand & layout › "Section reveal animations" uitzetten. Inhoud die pas zichtbaar wordt na een scroll-animatie oogt als lege ruimte en kost conversie op mobiel.
+
+### R.3 Trust-strip statisch en smallere winkelwagen-lade (staged, thema "Besjaar – winkelwagen aanbevelingen (preview)")
+
+- De strip onder de hero liep als een ticker (het runtime-script kloonde de items zodra ze niet pasten). De strip staat nu stil: 4 items op één regel op desktop, 2 per rij op mobiel (`sections/besjaar-store-strip.liquid`).
+- De winkelwagen-lade (het paneel dat opent na "In winkelwagen") was op desktop tot 1040 px breed met een zijkolom met suggesties. Nu 440 px, één kolom; de suggesties staan op de winkelwagenpagina (`sections/besjaar-cart-1168.liquid`). Op telefoons blijft de lade schermvullend.
+- De "Bespaar 20%"-tab is limoengroen met witte rand zodat hij op elke achtergrond opvalt (`snippets/besjaar-welcome-offer.liquid`).
