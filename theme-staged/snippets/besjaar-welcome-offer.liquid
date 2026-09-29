@@ -2,7 +2,7 @@
   Besjaar welcome offer — simple one-step version (2026-09-29).
 
   One card: the discount, one line of text, first name (optional), e-mail,
-  one button. A small tab in the lower-right corner ("Bespaar 20%") is
+  one button. A small tab in the lower-left corner ("Bespaar 20%") is
   visible from page load and reopens it. It opens by itself once per visit,
   10 seconds after the page loads, on the homepage and collection pages only — never on product, cart or checkout pages.
 
@@ -132,7 +132,7 @@
 -%}
 {%- if bjw_allowed -%}
 <style>
-  .bjw-tab{position:fixed;right:16px;bottom:16px;z-index:60;display:inline-flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#173B5E;color:#fff;font:600 15px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(15,41,71,.28)}
+  .bjw-tab{position:fixed;left:16px;bottom:16px;z-index:60;display:inline-flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#173B5E;color:#fff;font:600 15px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(15,41,71,.28)}
   .bjw-tab[hidden]{display:none}
   .bjw-tab button{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;cursor:pointer;line-height:1}
   .bjw-tab .bjw-tab__x{font-size:18px;opacity:.75}
@@ -152,7 +152,7 @@
   .bjw__btn:hover{background:#102D49}
   .bjw__note{margin:14px 0 0;font-size:12px;line-height:1.5;color:#61798E}
   .bjw__error{margin:0 0 10px;font-size:14px;line-height:1.4;color:#B42318}
-  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}.bjw-tab{right:12px;bottom:12px;padding:11px 14px;font-size:14px}}
+  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}.bjw-tab{left:12px;bottom:12px;padding:11px 14px;font-size:14px}}
 </style>
 
 <div id="BjwTab" class="bjw-tab">

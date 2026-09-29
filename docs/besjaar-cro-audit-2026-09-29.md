@@ -331,7 +331,7 @@ De drie-staps "tik op de druppel"-pop-up is vervangen door één kaart, naar het
 - Titel **"Bespaar 20%"** (het percentage met het hoogste gewicht in Theme settings › Welcome offer; op verzoek van de eigenaar blijft dat 20%).
 - Eén regel: "Meld je aan en ontvang 10% korting op je eerste Besjaar-bestelling."
 - Voornaam (optioneel), e-mailadres, één knop "Ontvang mijn korting", kleine regel over uitschrijven.
-- Kleine tab rechtsonder "Bespaar 20%" met ×, zichtbaar vanaf het laden van de pagina; opent de kaart (opnieuw).
+- Kleine tab linksonder "Bespaar 20%" met ×, zichtbaar vanaf het laden van de pagina; opent de kaart (opnieuw).
 - Opent één keer per bezoek 10 seconden na het laden, alleen op de homepage en collectiepagina's; nooit op productpagina's, winkelwagen of checkout.
 - Na aanmelden zet Shopify de code automatisch klaar (/discount/CODE) en toont de bestaande melding "Je welkomstkorting is toegepast"; de welkomstprijzen op de kaarten blijven werken (zelfde opslagsleutels).
 - Geen loterij meer, geen confetti, geen aparte CSS/JS-assets: alles staat in `theme-staged/snippets/besjaar-welcome-offer.liquid`.
