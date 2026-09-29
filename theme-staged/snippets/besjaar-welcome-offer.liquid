@@ -2,9 +2,9 @@
   Besjaar welcome offer — simple one-step version (2026-09-29).
 
   One card: the discount, one line of text, first name (optional), e-mail,
-  one button. A small tab in the corner ("Bespaar 10%") reopens it. It opens
-  by itself once per visit, after a short delay, on the homepage and
-  collection pages only — never on product, cart or checkout pages.
+  one button. A small tab in the lower-right corner ("Bespaar 20%") is
+  visible from page load and reopens it. It opens by itself once per visit,
+  10 seconds after the page loads, on the homepage and collection pages only — never on product, cart or checkout pages.
 
   The offer shown is the reward with the highest weight in Theme settings >
   Welcome offer (no lottery any more). It keeps the storage keys and the
@@ -132,7 +132,7 @@
 -%}
 {%- if bjw_allowed -%}
 <style>
-  .bjw-tab{position:fixed;left:16px;bottom:16px;z-index:60;display:inline-flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#173B5E;color:#fff;font:600 15px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(15,41,71,.28)}
+  .bjw-tab{position:fixed;right:16px;bottom:16px;z-index:60;display:inline-flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#173B5E;color:#fff;font:600 15px/1 Inter,system-ui,sans-serif;box-shadow:0 8px 24px rgba(15,41,71,.28)}
   .bjw-tab[hidden]{display:none}
   .bjw-tab button{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;cursor:pointer;line-height:1}
   .bjw-tab .bjw-tab__x{font-size:18px;opacity:.75}
@@ -152,10 +152,10 @@
   .bjw__btn:hover{background:#102D49}
   .bjw__note{margin:14px 0 0;font-size:12px;line-height:1.5;color:#61798E}
   .bjw__error{margin:0 0 10px;font-size:14px;line-height:1.4;color:#B42318}
-  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}.bjw-tab{left:12px;bottom:12px;padding:11px 14px;font-size:14px}}
+  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}.bjw-tab{right:12px;bottom:12px;padding:11px 14px;font-size:14px}}
 </style>
 
-<div id="BjwTab" class="bjw-tab" hidden>
+<div id="BjwTab" class="bjw-tab">
   <button type="button" data-bjw-open aria-controls="BjwDialog">{{ bjw_tab | escape }}</button>
   <button type="button" class="bjw-tab__x" data-bjw-dismiss aria-label="{{ bjw_close | escape }}">&times;</button>
 </div>
@@ -164,7 +164,7 @@
   data-reward-id="{{ bjw_id }}"
   data-reward-code="{{ bjw_code | escape }}"
   data-auto-open="{% if bjw_auto %}true{% else %}false{% endif %}"
-  data-delay="6"
+  data-delay="10"
   data-has-errors="{% if form.errors %}true{% else %}false{% endif %}"
   aria-labelledby="BjwTitle">
   <div class="bjw__inner">
@@ -239,19 +239,13 @@
     tab.querySelector('[data-bjw-dismiss]').addEventListener('click', function () { tab.hidden = true; set(sessionStorage, K.tab, { at: Date.now() }); });
   }
 
+  if (tab && (claimed || get(sessionStorage, K.tab))) tab.hidden = true;
   if (claimed) return;
   if (d.getAttribute('data-has-errors') === 'true') { open(); return; }
-  if (tab && !get(sessionStorage, K.tab)) tab.hidden = false;
   var autoOpen = d.getAttribute('data-auto-open') === 'true' && !get(sessionStorage, K.seen) && !get(sessionStorage, K.closed);
   if (!autoOpen) return;
-  var delay = Math.max(1, Number(d.getAttribute('data-delay') || 6)) * 1000;
-  var timer = setTimeout(function () { if (!document.querySelector('dialog[open]')) open(); }, delay);
-  function onScroll() {
-    var doc = document.documentElement;
-    var max = Math.max(1, doc.scrollHeight - window.innerHeight);
-    if ((window.scrollY / max) * 100 >= 30) { window.removeEventListener('scroll', onScroll); clearTimeout(timer); if (!document.querySelector('dialog[open]')) open(); }
-  }
-  window.addEventListener('scroll', onScroll, { passive: true });
+  var delay = Math.max(1, Number(d.getAttribute('data-delay') || 10)) * 1000;
+  setTimeout(function () { if (!document.querySelector('dialog[open]')) open(); }, delay);
 })();
 </script>
 {%- endif -%}
