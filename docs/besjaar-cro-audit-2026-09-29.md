@@ -335,3 +335,11 @@ De drie-staps "tik op de druppel"-pop-up is vervangen door één kaart, naar het
 - Opent één keer per bezoek 10 seconden na het laden, alleen op de homepage en collectiepagina's; nooit op productpagina's, winkelwagen of checkout.
 - Na aanmelden zet Shopify de code automatisch klaar (/discount/CODE) en toont de bestaande melding "Je welkomstkorting is toegepast"; de welkomstprijzen op de kaarten blijven werken (zelfde opslagsleutels).
 - Geen loterij meer, geen confetti, geen aparte CSS/JS-assets: alles staat in `theme-staged/snippets/besjaar-welcome-offer.liquid`.
+
+### R.2 "Misschien ook interessant" (winkelwagen) toont nu altijd het volledige assortiment
+
+Oorzaak van de lege ruimte: de navulfilters werden door het thema als "douchekop" geclassificeerd (de titel bevat "Douchekop"), waardoor ze in de accessoire-stap werden overgeslagen, en de sectie leunde op Shopify's "related products"-antwoord dat maar 3 producten teruggaf.
+
+- Live (productdata): metaveld `custom.shower_family` gezet op alle 5 producten (shower_filter / filtered_shower_head / hand_shower / shower_set). Daarmee kloppen ook de familie-labels op de kaarten ("Vervangingsfilters", "Douchekop met filter", "Handdouche", "Doucheset").
+- Staged (thema "Besjaar – homepage 29 sep (preview)"): `sections/besjaar-ui-smart-recommendations.liquid` kiest nu deterministisch: in de winkelwagen eerst de navulfilters, dan de andere douchekoppen; op een productpagina eerst de andere douchekoppen. Alles wat al in de winkelwagen ligt wordt overgeslagen (niet alleen de eerste regel). Kaarten in deze sectie wachten niet meer op de "reveal"-animatie.
+- Aanbeveling: Theme settings › Brand & layout › "Section reveal animations" uitzetten. Inhoud die pas zichtbaar wordt na een scroll-animatie oogt als lege ruimte en kost conversie op mobiel.
