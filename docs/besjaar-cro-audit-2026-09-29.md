@@ -349,3 +349,7 @@ Oorzaak van de lege ruimte: de navulfilters werden door het thema als "douchekop
 - De strip onder de hero liep als een ticker (het runtime-script kloonde de items zodra ze niet pasten). De strip staat nu stil: 4 items op één regel op desktop, 2 per rij op mobiel (`sections/besjaar-store-strip.liquid`).
 - De winkelwagen-lade (het paneel dat opent na "In winkelwagen") was op desktop tot 1040 px breed met een zijkolom met suggesties. Nu 440 px, één kolom; de suggesties staan op de winkelwagenpagina (`sections/besjaar-cart-1168.liquid`). Op telefoons blijft de lade schermvullend.
 - De "Bespaar 20%"-tab is limoengroen met witte rand zodat hij op elke achtergrond opvalt (`snippets/besjaar-welcome-offer.liquid`).
+
+### R.4 Betaalmethoden onder de koopknop (staged, thema "Besjaar – winkelwagen aanbevelingen (preview)")
+
+De regel "Secure Checkout With" met alleen creditcard-logo's komt uit de app Conversion Bear Trust Badges (Engels, geen iDEAL). Het thema toont nu zelf, direct onder de koopknop, "Veilig betalen met" gevolgd door de betaalmethoden die in Settings › Payments aanstaan, met iDEAL vooraan (`sections/besjaar-store-product.liquid`). Zet de Conversion Bear-badge uit (Online Store › Themes › Customize › App embeds, of de app verwijderen) zodat er niet twee rijen staan.
