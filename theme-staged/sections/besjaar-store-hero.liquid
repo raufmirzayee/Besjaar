@@ -1,0 +1,196 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_eyebrow = 'besjaar_store.hero.eyebrow' | t
+    assign v_heading = 'besjaar_store.hero.heading' | t
+    assign v_accent = 'besjaar_store.hero.heading_accent' | t
+    assign v_text = 'besjaar_store.hero.text' | t
+    assign v_primary = 'besjaar_store.hero.primary' | t
+    assign v_secondary = 'besjaar_store.hero.secondary' | t
+  else
+    assign v_eyebrow = section.settings.eyebrow
+    assign v_heading = section.settings.heading
+    assign v_accent = section.settings.heading_accent
+    assign v_text = section.settings.text
+    assign v_primary = section.settings.primary_label
+    assign v_secondary = section.settings.secondary_label
+  endif
+  comment
+    Besjaar CRO 2026-09-29: on the Dutch storefront the section's own Dutch
+    fields win over the locale strings, so the merchant can edit the headline
+    in the theme editor without touching locale files. Other languages keep
+    their translated copy.
+  endcomment
+  assign hero_lang = request.locale.iso_code | split: '-' | first | downcase
+  if hero_lang == 'nl'
+    if section.settings.heading_nl != blank
+      assign v_heading = section.settings.heading_nl
+    endif
+    if section.settings.heading_accent_nl != blank
+      assign v_accent = section.settings.heading_accent_nl
+    endif
+    if section.settings.text_nl != blank
+      assign v_text = section.settings.text_nl
+    endif
+    if section.settings.primary_label_nl != blank
+      assign v_primary = section.settings.primary_label_nl
+    endif
+  endif
+  comment
+    Besjaar CRO 2026-09-29: the proof line under the buttons used a static,
+    unverifiable "20.000+ tevreden klanten" claim. It now shows the real
+    store-wide Judge.me rating and review count (the same data the review
+    widgets use). Falls back to the locale strings only when Judge.me has no
+    reviews yet.
+  endcomment
+  assign customer_happy_value = 'besjaar_store.hero.customer_happy_value' | t
+  assign customer_happy_label = 'besjaar_store.hero.customer_happy_label' | t
+  assign jm_header = shop.metafields.judgeme.all_reviews_header
+  assign hero_has_reviews = false
+  if jm_header contains "data-average-rating='" and jm_header contains "data-number-of-reviews='"
+    assign jm_rating = jm_header | split: "data-average-rating='" | last | split: "'" | first | times: 1.0 | round: 1
+    assign jm_count = jm_header | split: "data-number-of-reviews='" | last | split: "'" | first | plus: 0
+    if jm_count > 0 and jm_rating > 0
+      assign hero_has_reviews = true
+      assign customer_happy_value = jm_rating | append: ' / 5' | replace: '.', ','
+      assign customer_happy_label = 'besjaar_ui.reviews.based_on' | t: count: jm_count
+    endif
+  endif
+  comment
+    2026-09-22: descriptive alt for the hero photo instead of repeating the h1.
+  endcomment
+  assign v_lang = request.locale.iso_code | split: '-' | first | downcase
+  case v_lang
+    when 'en'
+      assign v_hero_alt = 'Besjaar chrome hand shower with the filter in the handle, spraying water in a bright bathroom'
+    when 'de'
+      assign v_hero_alt = 'Besjaar Handbrause in Chrom mit Filter im Griff, sprühend in einem hellen Badezimmer'
+    when 'fr'
+      assign v_hero_alt = 'Douchette Besjaar chromée avec filtre dans la poignée, en fonctionnement dans une salle de bain lumineuse'
+    else
+      assign v_hero_alt = 'Besjaar chromen handdouche met filter in de handgreep, sproeiend in een lichte badkamer'
+  endcase
+%}
+{% capture hero_primary_url %}{% render 'shower-store-url' %}{% endcapture %}
+{% assign hero_primary_url = hero_primary_url | strip %}
+<section class="besjaar-store besjaar-store-hero besjaar-store-hero--premium-exact">
+  <div class="besjaar-store-shell besjaar-store-hero__grid">
+    <div class="besjaar-store-hero__content">
+      <span class="besjaar-store-kicker besjaar-store-hero__kicker"><i aria-hidden="true"></i>{{ v_eyebrow | escape }}</span>
+      <h1 class="besjaar-store-hero__title"><span>{{ v_heading | escape }}</span> <em>{{ v_accent | escape }}</em></h1>
+      <p class="besjaar-store-hero__copy">{{ v_text | escape }}</p>
+      <div class="besjaar-store-hero__actions">
+        <a class="besjaar-store-btn besjaar-store-btn--primary" href="{% if section.settings.primary_link != blank %}{% render 'localized-internal-url', url: section.settings.primary_link %}{% else %}{{ hero_primary_url }}{% endif %}">{{ v_primary | escape }}</a>
+        <a class="besjaar-store-btn besjaar-store-btn--secondary" href="#besjaar-store-details">{{ v_secondary | escape }}</a>
+      </div>
+      {%- if hero_has_reviews or section.settings.show_fallback_proof -%}
+      <div class="besjaar-store-hero__customer-proof" aria-label="{{ customer_happy_value | append: ' ' | append: customer_happy_label | escape }}">
+        <span class="besjaar-store-hero__customer-stars" aria-hidden="true">★★★★★</span>
+        <p class="besjaar-store-hero__customer-copy"><strong>{{ customer_happy_value }}</strong> <span>{{ customer_happy_label }}</span></p>
+      </div>
+      {%- endif -%}
+    </div>
+
+    <figure class="besjaar-store-hero__visual">
+      <div class="besjaar-store-hero__image-card">
+        {%- comment -%}Besjaar 11.6.1: no srcset here — Shopify's CDN does not generate on-demand size variants for theme assets (only for product/file images), so sized asset URLs resolve to the "No image" placeholder.{%- endcomment -%}
+        <img src="{{ 'besjaar-hero-premium-spa.webp' | asset_url }}" width="1916" height="821" loading="eager" decoding="async" fetchpriority="high" alt="{{ v_hero_alt | escape }}">
+      </div>
+      <figcaption class="besjaar-store-hero__image-pill">
+        <span aria-hidden="true">◌</span>
+        <strong>{{ 'besjaar_store.strip.i2' | t }}</strong>
+      </figcaption>
+    </figure>
+  </div>
+
+</section>
+{% schema %}
+{
+  "name": "Besjaar-style hero",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "use_localized_copy",
+      "label": "Use translated copy (NL/EN/DE/FR)",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "PRESSURE · COMFORT · ROUTINE"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "A better shower."
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading second line",
+      "default": "Every day."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Premium showerheads for a strong, comfortable flow and flexible spray modes — a simple upgrade for every day."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button",
+      "default": "Shop showerheads"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button",
+      "default": "Why Besjaar"
+    },
+    {
+      "type": "header",
+      "content": "Nederlandse tekst (alleen op /nl)"
+    },
+    {
+      "type": "text",
+      "id": "heading_nl",
+      "label": "Kop (NL)"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent_nl",
+      "label": "Kop tweede regel (NL)"
+    },
+    {
+      "type": "textarea",
+      "id": "text_nl",
+      "label": "Subkop (NL)"
+    },
+    {
+      "type": "text",
+      "id": "primary_label_nl",
+      "label": "Primaire knop (NL)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_fallback_proof",
+      "label": "Show the locale proof line when Judge.me has no reviews yet",
+      "info": "Off by default: the hero only shows a rating line backed by real Judge.me data.",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Besjaar-style hero"
+    }
+  ]
+}
+{% endschema %}
+
