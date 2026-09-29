@@ -33,9 +33,10 @@
         "s1": { "type": "item", "settings": { "text": "Gratis verzending in NL vanaf €20,99" } },
         "s2": { "type": "item", "settings": { "text": "Voor 16:00 besteld, morgen in huis" } },
         "s3": { "type": "item", "settings": { "text": "30 dagen bedenktijd" } },
+        "item_Ug38rR": { "type": "item", "settings": { "text": "CHROOM AFWERKING" } },
         "s4": { "type": "item", "settings": { "text": "Veilig betalen met iDEAL" } }
       },
-      "block_order": ["s1", "s2", "s3", "s4"],
+      "block_order": ["s1", "s2", "s3", "item_Ug38rR", "s4"],
       "settings": {
         "use_localized_copy": true
       }
