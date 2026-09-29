@@ -41,15 +41,16 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill{min-height:52px;padding:0 26px;border:1px solid #11161c;border-radius:999px;background:#fff;color:#11161c;font:inherit;font-size:.9rem;cursor:pointer}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill[aria-pressed="true"]{background:#11161c;color:#fff}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill.is-unavailable{opacity:.45;text-decoration:line-through}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{margin-bottom:4px}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{display:inline-flex;align-items:center;gap:9px;padding:0 20px 0 10px;text-decoration:none;transition:background .15s ease,border-color .15s ease}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;max-width:520px;margin-bottom:4px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{display:flex;align-items:center;gap:10px;min-width:0;min-height:58px;padding:6px 14px 6px 7px;text-decoration:none;transition:background .15s ease,border-color .15s ease}
   body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill{border-color:#cfd5da}
   body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill:hover{border-color:#11161c}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill[aria-current="true"]{background:#11161c;border-color:#11161c;color:#fff}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex:0 0 32px;width:32px;height:32px;border-radius:50%;background:#fff;object-fit:contain;padding:2px;border:1px solid #e3e6ea}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.86rem;font-weight:600;white-space:nowrap}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{font-size:.74rem;opacity:.7;white-space:nowrap}
-  @media(max-width:420px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{padding:0 14px 0 8px;gap:7px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.8rem}}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff;object-fit:contain;padding:2px;border:1px solid #e3e6ea}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__label{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{overflow:hidden;font-size:.86rem;font-weight:650;white-space:nowrap;text-overflow:ellipsis}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{margin-top:2px;font-size:.74rem;opacity:.72;white-space:nowrap}
+  @media(max-width:420px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{gap:8px!important}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{min-height:54px;gap:8px;padding:5px 10px 5px 5px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex-basis:36px;width:36px;height:36px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.8rem}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{font-size:.7rem}}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;margin-top:14px;padding:12px 18px;border-radius:999px;background:#f1f2f4;color:#1f2a37;font-size:.8rem;line-height:1.3}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when{display:inline-flex;align-items:center;gap:9px}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when strong{font-weight:750}
@@ -810,8 +811,7 @@
                 {%- if sw_price == '' -%}{%- assign sw_price = sw_variant.price | money -%}{%- endif -%}
                 {%- capture sw_inner -%}
                   {%- if sw_prod.featured_image -%}<img class="bj-pd-switch__img" src="{{ sw_prod.featured_image | image_url: width: 96 }}" alt="" width="28" height="28" loading="lazy" decoding="async">{%- endif -%}
-                  <span class="bj-pd-switch__text">{{ sw_text }}</span>
-                  <span class="bj-pd-switch__price">{{ sw_price }}</span>
+                  <span class="bj-pd-switch__label"><span class="bj-pd-switch__text">{{ sw_text }}</span><span class="bj-pd-switch__price">{{ sw_price }}</span></span>
                 {%- endcapture -%}
                 {%- if sw_prod.id == product.id -%}
                   <span class="bj-pd-variant__pill bj-pd-switch__pill" aria-current="true">{{ sw_inner }}</span>
