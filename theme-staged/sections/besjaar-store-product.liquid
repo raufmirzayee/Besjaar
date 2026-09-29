@@ -28,12 +28,8 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights__icon svg{width:24px;height:24px}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights__text{color:#173555;font-size:.86rem;font-weight:720;line-height:1.32;text-wrap:balance}
   @media(max-width:760px){
-    /* Phone: keep two columns but compact, so the six facts take three short rows instead of six tall ones and the price stays close to the intro. */
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin-top:16px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights li{gap:9px;align-items:flex-start}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights__icon{flex-basis:38px;width:38px;height:38px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights__icon svg{width:18px;height:18px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights__text{font-size:.74rem;line-height:1.3;padding-top:2px;text-wrap:pretty}
+    /* Phone: the benefit grid is hidden on request; the same facts are in the Specificaties panel and the description. */
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights{display:none!important}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating{font-size:.8rem;margin-bottom:8px}
     body[data-page-type="product"] .besjaar-store-premium-pd__description-group .besjaar-store-premium-pd__lede{font-size:.86rem!important;line-height:1.55!important}
     /* Quantity narrower so "In winkelwagen" keeps its full width next to it. */
@@ -44,7 +40,6 @@
     /* The floating "back to top" button sat on top of the buy button on phones; the sticky bar already brings the shopper back to the cart button. */
     body[data-page-type="product"] .besjaar-to-top{display:none!important}
   }
-  @media(max-width:360px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights{grid-template-columns:1fr}}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare{margin-top:18px;padding:14px 14px 6px;border:1px solid #e0e7ec;border-radius:14px;background:#fff}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__title{margin:0 0 4px;color:#0f1924;font-size:.82rem;font-weight:780}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:10px 8px;margin:0 -8px;border-top:1px solid #eef2f5;border-radius:10px;color:inherit;text-decoration:none}
