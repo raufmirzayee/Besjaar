@@ -350,7 +350,7 @@ Oorzaak van de lege ruimte: de navulfilters werden door het thema als "douchekop
 - De winkelwagen-lade (het paneel dat opent na "In winkelwagen") was op desktop tot 1040 px breed met een zijkolom met suggesties. Nu 440 px, één kolom; de suggesties staan op de winkelwagenpagina (`sections/besjaar-cart-1168.liquid`). Op telefoons blijft de lade schermvullend.
 - De "Bespaar 20%"-tab is limoengroen met witte rand zodat hij op elke achtergrond opvalt (`snippets/besjaar-welcome-offer.liquid`).
 
-### R.4 Gratis verzending vanaf €20,99 (NL) – overal gelijkgetrokken (staged)
+### R.4 Gratis verzending vanaf €20,99 (NL) – overal gelijkgetrokken (staged in "Besjaar – productpagina 29 sep (preview)")
 
 De eigenaar heeft Settings › Shipping aangepast: Nederland €4,50 verzendkosten, gratis vanaf €20,99; België/Duitsland/Frankrijk €4,50, gratis vanaf €30. Het thema kende alleen hele euro's (schuifregelaar "Free shipping threshold"). Daarom:
 
@@ -384,7 +384,7 @@ Live gezet als productdata (metavelden, bewerkbaar in Admin › Products › Met
 | `custom.compatibility` (navulfilters) | Besjaar Douchekop met Filter (10 sproeistanden), met of zonder slang. Niet geschikt voor andere douchekoppen. |
 | `custom.introduction` (navulfilters) | Intro zonder de "zware metalen"-claim; de pagina viel eerder terug op een nietszeggende accessoire-tekst |
 
-Staged in thema "Besjaar – winkelwagen aanbevelingen (preview)" (`sections/besjaar-store-product.liquid`):
+Staged in thema **"Besjaar – productpagina 29 sep (preview)"** (id 201598075207, kopie van het inmiddels gepubliceerde "winkelwagen aanbevelingen"-thema; `sections/besjaar-store-product.liquid`):
 
 | Wat | Waarom |
 |-----|--------|
@@ -399,5 +399,5 @@ Op de Engelse, Duitse en Franse storefront worden de Nederlandse tekstvelden nie
 
 Niet aangeraakt: prijs, "In winkelwagen", Judge.me-sterren, bezorgbelofte, sticky knop op mobiel, de rij "Secure Checkout With" van de Conversion Bear-app.
 
-Controleren vóór publiceren (Online Store › Themes › "Besjaar – winkelwagen aanbevelingen (preview)" › Preview): productpagina op telefoon en desktop, de vergelijking onder "Bezorging", de panelen "Specificaties" en "In de verpakking", en de winkelwagen-balk "nog €… tot gratis verzending".
+Controleren vóór publiceren (Online Store › Themes › "Besjaar – productpagina 29 sep (preview)" › Preview): productpagina op telefoon en desktop, de vergelijking onder "Bezorging", de panelen "Specificaties" en "In de verpakking", en de winkelwagen-balk "nog €… tot gratis verzending".
 
