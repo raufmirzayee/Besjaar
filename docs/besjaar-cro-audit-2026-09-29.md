@@ -323,3 +323,15 @@ Direct live gezet (productdata, geen thema-wijziging):
 - Regel "Geschikt voor: …" op elke productkaart via metaveld `custom.best_for` (bijv. "kalk, hard water en een droge huid").
 
 Publiceren: Online Store › Themes › "Besjaar – homepage 29 sep (preview)" › Preview (controleer op je telefoon) › Publish. Terugdraaien: publiceer het vorige thema opnieuw.
+
+### R.1 Welkomstpop-up vereenvoudigd (staged in "Besjaar – homepage 29 sep (preview)")
+
+De drie-staps "tik op de druppel"-pop-up is vervangen door één kaart, naar het voorbeeld van de eigenaar:
+
+- Titel **"Bespaar 10%"** (of het percentage dat in Theme settings › Welcome offer het hoogste gewicht heeft; nu staat 20% op 100, dus de kaart toont "Bespaar 20%" totdat je 10% op 100 zet en 20% op 0).
+- Eén regel: "Meld je aan en ontvang 10% korting op je eerste Besjaar-bestelling."
+- Voornaam (optioneel), e-mailadres, één knop "Ontvang mijn korting", kleine regel over uitschrijven.
+- Kleine tab linksonder "Bespaar 10%" met ×, zoals in het voorbeeld; opent de kaart opnieuw.
+- Opent één keer per bezoek na 6 seconden of bij 30% scrollen, alleen op de homepage en collectiepagina's; nooit op productpagina's, winkelwagen of checkout.
+- Na aanmelden zet Shopify de code automatisch klaar (/discount/CODE) en toont de bestaande melding "Je welkomstkorting is toegepast"; de welkomstprijzen op de kaarten blijven werken (zelfde opslagsleutels).
+- Geen loterij meer, geen confetti, geen aparte CSS/JS-assets: alles staat in `theme-staged/snippets/besjaar-welcome-offer.liquid`.
