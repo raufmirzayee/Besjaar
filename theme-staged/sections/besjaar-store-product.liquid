@@ -40,6 +40,14 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec strong{color:#25394b;font-weight:650}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-box{margin:0;padding-left:18px}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-box li{margin:0 0 5px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-add{justify-content:center!important;gap:10px!important;font-size:.84rem!important;letter-spacing:.01em!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-add__icon{flex:0 0 18px;width:18px;height:18px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant{display:grid;gap:8px;margin-top:10px;text-align:center}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant:empty{display:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button{width:100%}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__button{width:100%!important;min-height:54px!important;border-radius:999px!important;font-size:.84rem!important;font-weight:800!important;box-shadow:none!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__button--unbranded{background:#173555!important;color:#fff!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__more-options{display:block!important;margin-top:4px!important;color:#25394b!important;font-size:.74rem!important;font-weight:600!important;text-decoration:underline!important;text-underline-offset:3px!important}
   @media(max-width:430px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-highlights li{font-size:.76rem}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare{padding:12px 12px 4px}}
 </style>
 
@@ -554,18 +562,21 @@
               <input type="number" name="quantity" value="1" min="1" inputmode="numeric" enterkeyhint="done" aria-label="{{ ui_quantity | escape }}" data-product-quantity>
               <button type="button" data-step="1" aria-label="{{ ui_increase | escape }}">+</button>
             </div>
-            <button id="BesjaarMainAdd-{{ section.id }}" type="submit" class="besjaar-store-premium-pd__add" data-product-submit data-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}" {% unless current_variant.available %}disabled{% endunless %}>
-              <span>{% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}</span>
-              <span aria-hidden="true">→</span>
+            <button id="BesjaarMainAdd-{{ section.id }}" type="submit" class="besjaar-store-premium-pd__add bj-pd-add" data-product-submit data-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}" {% unless current_variant.available %}disabled{% endunless %}>
+              <svg class="bj-pd-add__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              <span data-add-label>{% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}</span>
             </button>
           </div>
 
           {%- comment -%}
-            Besjaar 11.74: the dynamic checkout buttons (Shop Pay / PayPal and
-            the "more payment options" link) were removed from the buy box on
-            request. Add to cart is the single call to action here; the wallets
-            still appear at checkout.
+            2026-09-29: dynamic checkout buttons back under "In winkelwagen" on
+            request: Shopify renders the shopper's accelerated wallet (Shop Pay,
+            PayPal, Apple Pay or Google Pay) plus the "More payment options"
+            link. Which wallets appear is set in Settings > Payments.
           {%- endcomment -%}
+          <div class="besjaar-store-premium-pd__instant bj-pd-instant">
+            {{ form | payment_button }}
+          </div>
         {%- endform -%}
         <div class="besjaar-ui-product-form-status" role="status" aria-live="polite" aria-atomic="true" data-product-form-status></div>
 
@@ -873,7 +884,7 @@
       if (mainAdd) {
         mainAdd.disabled = !available;
         mainAdd.dataset.variantAvailable = available ? 'true' : 'false';
-        var currentMainAddLabel = mainAdd.querySelector('span:first-child');
+        var currentMainAddLabel = mainAdd.querySelector('[data-add-label]') || mainAdd.querySelector('span:first-child');
         if (currentMainAddLabel) currentMainAddLabel.textContent = available ? addLabel : soldOutLabel;
       }
       if (stickyAdd) {
