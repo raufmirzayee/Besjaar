@@ -41,6 +41,15 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill{min-height:52px;padding:0 26px;border:1px solid #11161c;border-radius:999px;background:#fff;color:#11161c;font:inherit;font-size:.9rem;cursor:pointer}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill[aria-pressed="true"]{background:#11161c;color:#fff}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill.is-unavailable{opacity:.45;text-decoration:line-through}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{margin-bottom:4px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{display:inline-flex;align-items:center;gap:9px;padding:0 20px 0 10px;text-decoration:none;transition:background .15s ease,border-color .15s ease}
+  body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill{border-color:#cfd5da}
+  body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill:hover{border-color:#11161c}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill[aria-current="true"]{background:#11161c;border-color:#11161c;color:#fff}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex:0 0 32px;width:32px;height:32px;border-radius:50%;background:#fff;object-fit:contain;padding:2px;border:1px solid #e3e6ea}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.86rem;font-weight:600;white-space:nowrap}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{font-size:.74rem;opacity:.7;white-space:nowrap}
+  @media(max-width:420px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{padding:0 14px 0 8px;gap:7px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.8rem}}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;margin-top:14px;padding:12px 18px;border-radius:999px;background:#f1f2f4;color:#1f2a37;font-size:.8rem;line-height:1.3}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when{display:inline-flex;align-items:center;gap:9px}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when strong{font-weight:750}
@@ -705,6 +714,117 @@
           {%- endif -%}
         </div>
 
+        {%- comment -%}
+          2026-09-29: "Uitvoering" switch between the same shower head with and
+          without hose. The sibling is found in the shower-head collection by
+          product data (same spray modes, same filter, other hose state), so
+          no handles are hard-coded. Clicking the other pill opens that
+          product, so photos, price, reviews and details all belong to it.
+        {%- endcomment -%}
+        {%- if section.settings.show_hose_switch and product_is_shower_head == 'true' -%}
+          {%- liquid
+            assign sw_collection = settings.shower_collection
+            if sw_collection == blank
+              assign sw_collection = collections['showerhead']
+            endif
+            if sw_collection == blank
+              assign sw_collection = product.collections.first
+            endif
+            assign sw_found = false
+            if sw_collection != blank
+              for sw_p in sw_collection.products limit: 24
+                if sw_p.id == product.id
+                  continue
+                endif
+                unless sw_p.available
+                  continue
+                endunless
+                capture sw_c
+                  render 'is-shower-head', product: sw_p
+                endcapture
+                assign sw_head = sw_c | strip
+                if sw_head != 'true'
+                  continue
+                endif
+                capture sw_c
+                  render 'shower-spray-modes', product: sw_p
+                endcapture
+                assign sw_modes = sw_c | strip
+                capture sw_c
+                  render 'shower-filter-state', product: sw_p
+                endcapture
+                assign sw_filter = sw_c | strip
+                capture sw_c
+                  render 'shower-hose-state', product: sw_p
+                endcapture
+                assign sw_hose = sw_c | strip
+                if sw_modes == bj_modes and sw_filter == bj_filter and sw_hose != bj_hose
+                  assign sw_sibling = sw_p
+                  assign sw_found = true
+                  break
+                endif
+              endfor
+            endif
+            case product_copy_locale
+              when 'de'
+                assign sw_label = 'Ausführung'
+                assign sw_without = 'Ohne Schlauch'
+                assign sw_with = 'Mit Schlauch'
+              when 'fr'
+                assign sw_label = 'Version'
+                assign sw_without = 'Sans flexible'
+                assign sw_with = 'Avec flexible'
+              when 'en'
+                assign sw_label = 'Version'
+                assign sw_without = 'Without hose'
+                assign sw_with = 'With hose'
+              else
+                assign sw_label = 'Uitvoering'
+                assign sw_without = 'Zonder slang'
+                assign sw_with = 'Met slang'
+            endcase
+          -%}
+          {%- if sw_found -%}
+            {%- liquid
+              if bj_hose == 'true'
+                assign sw_current_label = sw_with
+                assign sw_without_product = sw_sibling
+                assign sw_with_product = product
+              else
+                assign sw_current_label = sw_without
+                assign sw_without_product = product
+                assign sw_with_product = sw_sibling
+              endif
+            -%}
+            <p class="bj-pd-variant__label">{{ sw_label }}: <span>{{ sw_current_label }}</span></p>
+            <div class="bj-pd-variant__pills bj-pd-switch" role="group" aria-label="{{ sw_label | escape }}">
+              {%- for sw_item in (1..2) -%}
+                {%- if sw_item == 1 -%}
+                  {%- assign sw_prod = sw_without_product -%}{%- assign sw_text = sw_without -%}
+                {%- else -%}
+                  {%- assign sw_prod = sw_with_product -%}{%- assign sw_text = sw_with -%}
+                {%- endif -%}
+                {%- assign sw_variant = sw_prod.selected_or_first_available_variant -%}
+                {%- capture sw_price -%}{% render 'besjaar-discount-badge', product: sw_prod, variant: sw_variant, layout: 'price_now' %}{%- endcapture -%}
+                {%- assign sw_price = sw_price | strip -%}
+                {%- if sw_price == '' -%}{%- assign sw_price = sw_variant.price | money -%}{%- endif -%}
+                {%- capture sw_inner -%}
+                  {%- if sw_prod.featured_image -%}<img class="bj-pd-switch__img" src="{{ sw_prod.featured_image | image_url: width: 96 }}" alt="" width="28" height="28" loading="lazy" decoding="async">{%- endif -%}
+                  <span class="bj-pd-switch__text">{{ sw_text }}</span>
+                  <span class="bj-pd-switch__price">{{ sw_price }}</span>
+                {%- endcapture -%}
+                {%- if sw_prod.id == product.id -%}
+                  <span class="bj-pd-variant__pill bj-pd-switch__pill" aria-current="true">{{ sw_inner }}</span>
+                {%- else -%}
+                  {%- capture sw_url -%}{% render 'localized-internal-url', url: sw_prod.url %}{%- endcapture -%}
+                  <a class="bj-pd-variant__pill bj-pd-switch__pill" href="{{ sw_url | strip }}">{{ sw_inner }}</a>
+                  <link rel="prefetch" href="{{ sw_url | strip }}">
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
         {%- form 'product', product, id: form_id, class: 'besjaar-store-premium-pd__form', novalidate: 'novalidate', data-ajax-product-form: '', data-product-form: '' -%}
           {%- if product.variants.size > 1 -%}
             {%- assign bj_option_name = product.options.first | default: ui_option -%}
@@ -1298,6 +1418,7 @@
     { "type": "checkbox", "id": "show_intro", "label": "Show the intro paragraph under the title", "info": "Off by default; the full text is in the Description panel.", "default": false },
     { "type": "checkbox", "id": "show_highlights", "label": "Show 4 benefit tiles under the price", "info": "Reads product metafield custom.highlights (first 4 lines) on /nl; other languages show spray modes, filter, hose and diameter.", "default": true },
     { "type": "checkbox", "id": "show_specs", "label": "Show Specifications and In the box panels", "info": "Built from product metafields (custom.diameter_mm, hose_length_cm, material, connection_size, water_use, model_number, filter_type, filter_replacement_interval, compatibility, package_contents).", "default": true },
+    { "type": "checkbox", "id": "show_hose_switch", "label": "Show \"Uitvoering: Zonder slang / Met slang\" switch", "info": "Links the same shower head with and without hose (found by spray modes and filter).", "default": true },
     { "type": "checkbox", "id": "show_quotes", "label": "Show \"What customers say\" review quotes", "info": "Up to ten real five-star review texts from Judge.me for this product, as a swipeable slider with arrows.", "default": true },
     { "type": "checkbox", "id": "show_compare", "label": "Show \"Which Besjaar fits you\" model comparison", "info": "Lists the available shower heads of the main collection with spray modes, filter, hose and price.", "default": false }
   ],

@@ -103,6 +103,26 @@
   </div>
 
 </section>
+{%- comment -%}
+  2026-09-29: one gold for every review star on the homepage (hero rating
+  line, product-card ratings, the Judge.me carousel and the bol.com rating
+  card), matching the product page. Older rules painted them navy or amber.
+{%- endcomment -%}
+<style>
+  html body[data-page-type="index"] .besjaar-store-hero__customer-stars,
+  html body[data-page-type="index"] .besjaar-store.besjaar-store-reviews .besjaar-store-rating-card__stars,
+  html body[data-page-type="index"] .bj-proof__stars,
+  html body[data-page-type="index"] .besjaar-ui-home-bol-proof__stars,
+  html body[data-page-type="index"] .besjaar-ui-review-stars__fill,
+  html body[data-page-type="index"] .besjaar-ui-rating-meter__fill,
+  html body[data-page-type="index"] .jdgm-star,
+  html body[data-page-type="index"] .jdgm-star::before,
+  html body[data-page-type="index"] [id$="17881022079efec756"] .jdgm-star,
+  html body #shopify-section-17881022079efec756 .jdgm-star{color:#f5b301!important;-webkit-text-fill-color:#f5b301!important}
+  html body[data-page-type="index"] .jdgm-star.jdgm--off,
+  html body[data-page-type="index"] .jdgm-star.jdgm--off::before,
+  html body #shopify-section-17881022079efec756 .jdgm-star.jdgm--off{color:#e3e6ea!important;-webkit-text-fill-color:#e3e6ea!important}
+</style>
 {% schema %}
 {
   "name": "Besjaar-style hero",
