@@ -1,0 +1,87 @@
+{%- comment -%}
+  Besjaar — shipping zone of the current shopper (2026-09-23).
+
+  Shopify Liquid cannot read shipping rates, so the theme mirrors the two
+  shipping zones from Settings > Shipping in theme settings and picks the one
+  that matches the shopper's country (localization.country, i.e. the market /
+  country selector Shopify resolved for this visitor).
+
+    zone 1 = "home" zone: settings.policy_countries (default NL) with
+             free_shipping_threshold, standard_shipping_rate and the
+             transit_*_business_days settings
+    zone 2 = settings.ship_zone2_countries (default BE,DE,FR) with
+             ship_zone2_threshold / ship_zone2_rate / ship_zone2_transit_*
+    none   = any other country: no free-shipping promise, no rate
+
+  Usage: {% render 'besjaar-shipping-zone', field: 'threshold_cents' %}
+  field: zone | threshold_cents | rate | transit_min | transit_max |
+         country_code | country_name
+  Output is plain text (no whitespace) so callers can capture + strip it.
+{%- endcomment -%}
+{%- liquid
+  assign bsz_field = field | default: 'zone'
+  assign bsz_country = ''
+  if settings.enable_markets_localization and localization.country != blank
+    assign bsz_country = localization.country.iso_code | upcase
+  endif
+  if bsz_country == ''
+    assign bsz_country = shop.address.country_code | upcase | default: 'NL'
+  endif
+  assign bsz_token = '|' | append: bsz_country | append: '|'
+  assign bsz_zone1 = settings.policy_countries | default: 'NL' | upcase | replace: ' ', '' | replace: ';', ',' | prepend: '|' | append: '|' | replace: ',', '|'
+  assign bsz_zone2 = settings.ship_zone2_countries | default: '' | upcase | replace: ' ', '' | replace: ';', ',' | prepend: '|' | append: '|' | replace: ',', '|'
+  assign bsz_zone = ''
+  if bsz_zone1 contains bsz_token
+    assign bsz_zone = '1'
+  elsif bsz_zone2 contains bsz_token
+    assign bsz_zone = '2'
+  endif
+
+  case bsz_field
+    when 'zone'
+      echo bsz_zone
+    when 'country_code'
+      echo bsz_country
+    when 'country_name'
+      if settings.enable_markets_localization and localization.country != blank
+        echo localization.country.name
+      else
+        echo shop.address.country
+      endif
+    when 'threshold_cents'
+      comment
+        2026-09-29: Settings > Shipping now has a free-shipping threshold with
+        cents (NL: €20,99). The slider only takes whole euros, so the exact
+        text setting wins when it is filled in (e.g. "20.99" or "20,99").
+      endcomment
+      assign bsz_exact = settings.free_shipping_threshold_exact | default: '' | strip | replace: ',', '.'
+      if bsz_zone == '1' and bsz_exact != blank
+        echo bsz_exact | times: 100 | round
+      elsif bsz_zone == '1'
+        echo settings.free_shipping_threshold | default: 0 | times: 100
+      elsif bsz_zone == '2'
+        echo settings.ship_zone2_threshold | default: 0 | times: 100
+      else
+        echo 0
+      endif
+    when 'rate'
+      if bsz_zone == '1'
+        echo settings.standard_shipping_rate | default: ''
+      elsif bsz_zone == '2'
+        echo settings.ship_zone2_rate | default: ''
+      endif
+    when 'transit_min'
+      if bsz_zone == '2'
+        echo settings.ship_zone2_transit_min | default: 1
+      else
+        echo settings.transit_min_business_days | default: 1
+      endif
+    when 'transit_max'
+      if bsz_zone == '2'
+        echo settings.ship_zone2_transit_max | default: 2
+      else
+        echo settings.transit_max_business_days | default: 1
+      endif
+  endcase
+-%}
+

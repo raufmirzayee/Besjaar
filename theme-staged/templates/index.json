@@ -30,7 +30,7 @@
     "besjaar_store_strip": {
       "type": "besjaar-store-strip",
       "blocks": {
-        "s1": { "type": "item", "settings": { "text": "Gratis verzending in NL vanaf €25" } },
+        "s1": { "type": "item", "settings": { "text": "Gratis verzending in NL vanaf €20,99" } },
         "s2": { "type": "item", "settings": { "text": "Voor 16:00 besteld, morgen in huis" } },
         "s3": { "type": "item", "settings": { "text": "30 dagen bedenktijd" } },
         "s4": { "type": "item", "settings": { "text": "Veilig betalen met iDEAL" } }

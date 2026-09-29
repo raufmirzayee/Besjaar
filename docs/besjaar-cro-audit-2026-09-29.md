@@ -42,7 +42,7 @@ Er zijn slechts 13 "abandoned checkouts" geregistreerd (Shopify maakt die pas aa
 ### 1.2 Wat ik in de winkel zelf heb gevonden dat kopers afschrikt
 
 1. **Verkeerd bedrijf in de checkout-contactgegevens.** Settings › Policies › Contactgegevens toont "SelectStore B.V., selectstorebv@gmail.com, KVK 95218475" – een ander bedrijf dan Univex B.V. dat in de footer, Legal notice en het privacybeleid staat. Dit is de link "Contact" onderaan de checkout. Voor een oplettende koper is dit een rode vlag.
-2. **Verzendkosten kloppen niet met het beleid.** Shopify rekent NL €3,99 onder €25; het verzendbeleid zegt €4,99. BE/DE/FR (€4,95, gratis vanaf €30) staan nergens in het beleid; de Algemene Voorwaarden zeggen zelfs "alleen verzending binnen Nederland".
+2. **Verzendkosten kloppen niet met het beleid.** Shopify rekende NL €3,99 onder €25 (sinds 29 sep: €4,50 onder €20,99, zie R.4); het verzendbeleid zegt €4,99. BE/DE/FR (nu €4,50, gratis vanaf €30) staan nergens in het beleid; de Algemene Voorwaarden zeggen zelfs "alleen verzending binnen Nederland".
 3. **Retourbeleid is twee beleidsteksten door elkaar**, met een afgebroken zin ("ere noodzakelijke oplossing…"), tegenstrijdigheden (klant betaalt retour vs. "wij sturen een retourlabel"), en de clausule "artikelen in de uitverkoop kunnen niet worden geretourneerd" – bij verkoop op afstand aan consumenten in de EU niet toegestaan. Alle douchekoppen staan nu "in de uitverkoop" (doorgestreepte prijs).
 4. **Drie verschillende telefoonnummers**: Legal notice 0687616931, Shopify-adres/privacybeleid +31 6 44341881, thema-instelling +31 6 16745062.
 5. **Garantie tegenstrijdig**: het thema toont overal "12 maanden garantie" (productpagina, FAQ, footer); de Algemene Voorwaarden zeggen "wij bieden geen garanties". Daarnaast geldt in NL altijd de wettelijke conformiteitsgarantie.
@@ -60,7 +60,7 @@ Er zijn slechts 13 "abandoned checkouts" geregistreerd (Shopify maakt die pas aa
 17. **Cookiebanner**: de eigen Besjaar-banner staat uit (`show_cookie_preferences: false`), dus alles hangt af van Shopify's standaardbanner in Settings › Customer privacy. Als die op "consent vereist" staat en de banner niet zichtbaar is, vuren Meta/Google-pixels in de EU niet.
 18. **Thema-gewicht**: het live thema laadt ~1,3 MB aan CSS-bronnen (o.a. besjaar-seo-base.css 269 kB, besjaar-seo-design.css 204 kB, besjaar-ui-core.css 190 kB, besjaar-polish-layer.css 113 kB, besjaar-ui-product-page.css 107 kB) plus 21 "sectie-lagen" in de header-group die alleen CSS injecteren. Dat is traag op mobiel (waar 70% van het echte verkeer zit).
 19. **Productgewicht staat op 0 kg** bij alle producten. Nu geen probleem (vaste tarieven), wel zodra je carrier-tarieven of Sendcloud/MyParcel gaat gebruiken, en Google Merchant Center kan om gewicht vragen.
-20. **Theme-instelling "standard_shipping_rate"** staat niet expliciet ingevuld en valt terug op 4,99 in de structured data (Google), terwijl je €3,99 rekent. Zet in Theme settings › Delivery & trust › "Standard shipping rate (EUR)" op `3.99`.
+20. **Theme-instelling "standard_shipping_rate"** stond niet expliciet ingevuld en viel terug op 4,99 in de structured data (Google). In het staging-thema staat nu `4.50` (zone 1 en zone 2), gelijk aan Settings › Shipping (R.4).
 
 ---
 
@@ -106,7 +106,7 @@ Staged (in het duplicaat-thema, zichtbaar op /nl):
 - Bewijsregel: **4,7 / 5 · Gebaseerd op 395 reviews** (live uit Judge.me; verdwijnt vanzelf als er geen reviews zijn)
 
 Verdere homepage-aanbevelingen:
-- De "spec strip" onder de hero zegt "PREMIUM CHROOMAFWERKING · KRACHTIG AANVOELENDE STRAAL · …". Vervang door de drie dingen die kopers écht willen weten: **Gratis verzending vanaf €25 · Morgen in huis · 30 dagen retour** (Prio HIGH, thema-editor: sectie "spec strip" → vinkje "vertaalde teksten" uit en 3 blokken invullen).
+- De "spec strip" onder de hero zegt "PREMIUM CHROOMAFWERKING · KRACHTIG AANVOELENDE STRAAL · …". Vervang door de drie dingen die kopers écht willen weten: **Gratis verzending vanaf €20,99 · Morgen in huis · 30 dagen retour** (Prio HIGH, thema-editor: sectie "spec strip" → vinkje "vertaalde teksten" uit en 3 blokken invullen).
 - De sectie "Publiek marketplace-bewijs" toont 4.7/5 en 391 reviews handmatig ingevuld; hetzelfde staat nu in de hero. Houd één van beide (Prio LOW).
 - De feature-tekst "Mineraalfilter … zeven filterlagen" spreekt de productpagina tegen ("8-traps filtratie"). Maak het 8 (Prio MEDIUM, thema-editor).
 - Homepage SEO-title staat goed ("Besjaar | Douchekoppen & Douchefilters").
@@ -188,7 +188,7 @@ Goed: Nederlandse SEO-titels en meta-omschrijvingen per product/collectie, canon
 Feed-basis is in orde: alle 5 producten hebben een EAN, merk Besjaar, Google-productcategorie (581 / 5048), zijn gepubliceerd op het Google & YouTube-kanaal, en de prijs/sale-prijs komt uit Shopify.
 
 Controleer/repareer:
-1. Verzendinstellingen in Merchant Center moeten NL €3,99 (<€25, gratis ≥€25) en BE/DE/FR €4,95 (<€30) zijn – niet €4,99 (Prio HIGH).
+1. Verzendinstellingen in Merchant Center moeten NL €4,50 (<€20,99, gratis ≥€20,99) en BE/DE/FR €4,50 (<€30, gratis ≥€30) zijn – niet €4,99 (Prio HIGH). Dit zijn de tarieven die sinds 29 september in Settings › Shipping staan.
 2. Retourbeleid in Merchant Center: 30 dagen, klant betaalt retour (of gratis, wat je kiest) – gelijk aan de website (HIGH).
 3. Bedrijfsgegevens: Univex B.V., Assen, zelfde telefoonnummer als de site (HIGH).
 4. Sale-prijs: alleen met compare-at als het een echte, tijdelijke actie is; permanente "sale" leidt tot afkeuring "misleading pricing" (HIGH).
@@ -312,7 +312,7 @@ Het thema "Besjaar – CRO fixes 29 sep" is inmiddels door de eigenaar gepublice
 
 | Wat | Waarom | Bestand |
 |-----|--------|---------|
-| Trust-strip onder de hero toont nu: Gratis verzending in NL vanaf €25 · Voor 16:00 besteld, morgen in huis · 30 dagen bedenktijd · Veilig betalen met iDEAL | De koper ziet verzendkosten, levertijd, retour en betaalmethode zonder te scrollen | `theme-staged/sections/besjaar-store-strip.liquid`, `templates/index.json` |
+| Trust-strip onder de hero toont nu: Gratis verzending in NL vanaf €20,99 (29 sep aangepast, zie R.4) · Voor 16:00 besteld, morgen in huis · 30 dagen bedenktijd · Veilig betalen met iDEAL | De koper ziet verzendkosten, levertijd, retour en betaalmethode zonder te scrollen | `theme-staged/sections/besjaar-store-strip.liquid`, `templates/index.json` |
 | Sectie "quote over een lifestyle-foto" verwijderd | Vage tekst zonder doel, extra scroll op mobiel | `templates/index.json` |
 | Drie "Waarom Besjaar"-kaarten herschreven en feitelijk gemaakt (kalk wegvegen · 3 of 10 sproeistanden · 8-traps filter in de greep) met NL-kop "Drie dingen die je meteen merkt." | Vervangt vage teksten en de foute "zeven filterlagen"-claim | `theme-staged/sections/besjaar-store-features.liquid`, `templates/index.json` |
 | Volgorde: hero → trust-strip → 4 douchekoppen → waarom → Judge.me-reviews → Bol.com-bewijs → CTA | Eerst wat het is en wat het kost, dan waarom, dan bewijs | `templates/index.json` |
@@ -349,3 +349,55 @@ Oorzaak van de lege ruimte: de navulfilters werden door het thema als "douchekop
 - De strip onder de hero liep als een ticker (het runtime-script kloonde de items zodra ze niet pasten). De strip staat nu stil: 4 items op één regel op desktop, 2 per rij op mobiel (`sections/besjaar-store-strip.liquid`).
 - De winkelwagen-lade (het paneel dat opent na "In winkelwagen") was op desktop tot 1040 px breed met een zijkolom met suggesties. Nu 440 px, één kolom; de suggesties staan op de winkelwagenpagina (`sections/besjaar-cart-1168.liquid`). Op telefoons blijft de lade schermvullend.
 - De "Bespaar 20%"-tab is limoengroen met witte rand zodat hij op elke achtergrond opvalt (`snippets/besjaar-welcome-offer.liquid`).
+
+### R.4 Gratis verzending vanaf €20,99 (NL) – overal gelijkgetrokken (staged)
+
+De eigenaar heeft Settings › Shipping aangepast: Nederland €4,50 verzendkosten, gratis vanaf €20,99; België/Duitsland/Frankrijk €4,50, gratis vanaf €30. Het thema kende alleen hele euro's (schuifregelaar "Free shipping threshold"). Daarom:
+
+- Nieuwe theme-instelling **"Exact free shipping threshold (EUR)"** (Theme settings › Delivery & trust), ingevuld met `20.99`. Alle plekken die de drempel tonen lezen dit veld via `snippets/besjaar-shipping-zone.liquid`: aankondigingsbalk, gratis-verzendbalk in de winkelwagen(lade), trust-tegels en FAQ op de productpagina, structured data voor Google (`snippets/structured-data.liquid`). Leeg laten = schuifregelaar.
+- "Standard shipping rate" en "Zone 2 shipping rate" staan nu op `4.50` (`config/settings_data.json`), zodat Google in de productdata het juiste tarief ziet.
+- Teksten: trust-strip homepage ("Gratis verzending in NL vanaf €20,99"), aankondigingsteksten in `sections/header-group.json`, FAQ-antwoord "Wat zijn de verzendkosten" en de meta-omschrijving van de shop in `locales/nl.json`, SEO-omschrijvingen homepage in de thema-instellingen.
+- `docs/policies/shipping-policy.html` (nog te plakken in Settings › Policies) is bijgewerkt: NL €4,50 / gratis vanaf €20,99; BE/DE/FR €4,50 / gratis vanaf €30.
+- Nog te doen door de eigenaar: hetzelfde tarief invullen in Google Merchant Center (sectie I) en de verzendkosten in de Algemene Voorwaarden laten kloppen (sectie P).
+
+Let op: €20,99 ligt precies boven de instapdouchekop (€19,99). Wie alleen die kop koopt betaalt €4,50 verzending; de winkelwagen laat dan "nog €1,00 tot gratis verzending" zien, wat de navulfilters (€9,99) of de set met slang aantrekkelijk maakt. Dat is een bewuste keuze; als te veel mensen bij €19,99 + €4,50 afhaken, is €19,99 als drempel het alternatief.
+
+### R.5 Productpagina: feiten boven de knop, specificaties en modelvergelijking (staged)
+
+Wat er mis was: alle koopinformatie (standen, filter, slang, 13 cm, waterverbruik, inhoud van de doos) stond alleen in de ingeklapte "Omschrijving". Boven de knop stond een generieke intro. Een koper moest de omschrijving openen om te weten wat hij kocht, en kon de vier modellen nergens naast elkaar zien.
+
+Alle nieuwe inhoud is overgenomen uit de bestaande productbeschrijvingen van de eigenaar; er is niets verzonnen. De niet-onderbouwde claim "zware metalen" uit de beschrijving van de navulfilters is bewust niet overgenomen (het thema filterde die zin al weg).
+
+Live gezet als productdata (metavelden, bewerkbaar in Admin › Products › Metafields):
+
+| Metaveld | Inhoud (voorbeeld: Douchekop met filter – 10 standen) |
+|----------|--------------------------------------------------------|
+| `custom.highlights` (lijst) | Ingebouwd filter tegen kalk en chloor · 10 standen: 8 wellness + 2 PowerWash · Hoge Druk Boost met air-injectie · Pauzeknop: tot 30% minder water · Past op elke standaard doucheslang of -arm |
+| `custom.package_contents` | Douchekop met filter (8 standen + 2 PowerWash) · Teflontape · 2× Rubberen afdichtring · Handleiding NL/EN |
+| `custom.diameter_mm` | 130 (alle vier douchekoppen) |
+| `custom.hose_length_cm` | 150 (de twee sets met slang) |
+| `custom.material` | Chroom (ABS) / Chroom |
+| `custom.connection_size` | Universeel G½″, gereedschapsvrij |
+| `custom.water_use` | Tot 30% besparing met de pauzeknop / max. 8 l/min (3 standen) |
+| `custom.model_number` | 1002025 (alleen het filtermodel zonder slang, zoals in de beschrijving) |
+| `custom.filter_type`, `custom.filter_replacement_interval` | Vervangbare 8-traps filtercartridge · Elke 3 tot 5 maanden; navulset bevat 2 cartridges |
+| `custom.compatibility` (navulfilters) | Besjaar Douchekop met Filter (10 sproeistanden), met of zonder slang. Niet geschikt voor andere douchekoppen. |
+| `custom.introduction` (navulfilters) | Intro zonder de "zware metalen"-claim; de pagina viel eerder terug op een nietszeggende accessoire-tekst |
+
+Staged in thema "Besjaar – winkelwagen aanbevelingen (preview)" (`sections/besjaar-store-product.liquid`):
+
+| Wat | Waarom |
+|-----|--------|
+| De eigen openingszin van de beschrijving ("Gefilterd water. Volle druk. Tien standen.") staat als kop boven de intro | Werd door het thema overgeslagen omdat hij korter dan 80 tekens is; het is de sterkste zin op de pagina |
+| Lijst "Waarom dit model?" met 5–6 vinkjes uit `custom.highlights`, plus "Beste voor: …" | De koopargumenten staan nu boven de knop in plaats van in een ingeklapt paneel |
+| Blok "Welke Besjaar past bij jou?" onder de bezorginformatie: alle leverbare douchekoppen met standen · filter · slang · prijs, huidig model gemarkeerd, elk een link | De prijsladder €19,99 → €29,99 → €29,99 → €34,99 is nu op elke productpagina zichtbaar; twijfelaars hoeven niet terug naar de collectie |
+| Panelen "Specificaties" (tabel uit de metavelden, incl. 12 maanden garantie) en "In de verpakking" | Vragen over pasvorm, slanglengte, filter en inhoud worden beantwoord zonder de lange beschrijving |
+| Trust-tegel "Gratis verzending vanaf €20,99" en FAQ-antwoord volgen automatisch de nieuwe drempel | Zie R.4 |
+| Drie vinkjes in de sectie-instellingen (highlights, specificaties/inhoud, modelvergelijking) | Uit te zetten zonder code |
+
+Op de Engelse, Duitse en Franse storefront worden de Nederlandse tekstvelden niet getoond; daar staan de taalneutrale feiten (standen, filter ja/nee, slang ja/nee met lengte, Ø 13 cm, garantie) en de vergelijking in de eigen taal. Vertaalde highlights kunnen later via `custom.introduction_en` enz. worden toegevoegd.
+
+Niet aangeraakt: prijs, "In winkelwagen", Judge.me-sterren, bezorgbelofte, sticky knop op mobiel, de rij "Secure Checkout With" van de Conversion Bear-app.
+
+Controleren vóór publiceren (Online Store › Themes › "Besjaar – winkelwagen aanbevelingen (preview)" › Preview): productpagina op telefoon en desktop, de vergelijking onder "Bezorging", de panelen "Specificaties" en "In de verpakking", en de winkelwagen-balk "nog €… tot gratis verzending".
+
