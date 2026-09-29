@@ -89,7 +89,15 @@
   html body .bj-proof__stars:not(#bj-gold-a):not(#bj-gold-b),
   html body .besjaar-store-rating-card__stars:not(#bj-gold-a):not(#bj-gold-b),
   html body .besjaar-store-hero__customer-stars:not(#bj-gold-a):not(#bj-gold-b),
-  html body .besjaar-ui-home-bol-proof__stars:not(#bj-gold-a):not(#bj-gold-b){color:#f5b301!important;-webkit-text-fill-color:#f5b301!important}
+  html body .besjaar-ui-home-bol-proof__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b){color:#f5b301!important;-webkit-text-fill-color:#f5b301!important}
+  /* Judge.me widgets that draw stars as SVG (e.g. the cart-drawer review widget): gold fill, empty stars grey. */
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b) svg,
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b) svg *{fill:#f5b301!important}
+  html body [class*="jdgm"][class*="star"][class*="off"]:not(#bj-gold-a):not(#bj-gold-b),
+  html body [class*="jdgm"][class*="star"][class*="empty"]:not(#bj-gold-a):not(#bj-gold-b){color:#e3e6ea!important;-webkit-text-fill-color:#e3e6ea!important}
+  html body [class*="jdgm"][class*="star"][class*="off"]:not(#bj-gold-a):not(#bj-gold-b) svg *,
+  html body [class*="jdgm"][class*="star"][class*="empty"]:not(#bj-gold-a):not(#bj-gold-b) svg *{fill:#e3e6ea!important}
   html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b),
   html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b)::before,
   html body .besjaar-ui-review-stars__base:not(#bj-gold-a):not(#bj-gold-b),
