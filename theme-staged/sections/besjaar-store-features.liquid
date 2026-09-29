@@ -1,0 +1,142 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_kicker = 'besjaar_store.features.kicker' | t
+    assign v_heading = 'besjaar_store.features.heading' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_heading = section.settings.heading
+  endif
+  comment
+    Besjaar CRO 2026-09-29: on the Dutch storefront the section's own blocks
+    and Dutch heading win over the translated copy, so the merchant can keep
+    the three feature cards factual and in step with the product pages. Other
+    languages keep the translated copy.
+  endcomment
+  assign feat_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign feat_use_blocks = false
+  if section.blocks.size > 0
+    if section.settings.use_localized_copy == false or feat_lang == 'nl'
+      assign feat_use_blocks = true
+    endif
+  endif
+  if feat_lang == 'nl'
+    if section.settings.kicker_nl != blank
+      assign v_kicker = section.settings.kicker_nl
+    endif
+    if section.settings.heading_nl != blank
+      assign v_heading = section.settings.heading_nl
+    endif
+  endif
+%}
+<section class="besjaar-store besjaar-store-features" id="besjaar-store-details">
+  <div class="besjaar-store-shell besjaar-store-features__inner">
+    <div class="besjaar-store-sechead besjaar-store-sechead--wide">
+      <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
+      <h2 class="besjaar-store-h2">{{ v_heading | escape }}</h2>
+    </div>
+    <div class="besjaar-store-cards">
+      {% if section.settings.use_localized_copy and feat_use_blocks == false %}
+        {% assign imgs = 'besjaar-macro-nozzles.webp,besjaar-web-real-modes.webp,besjaar-web-real-water.webp' | split: ',' %}
+        {% for i in (1..3) %}
+          {% assign kicker_key = 'besjaar_store.features.f' | append: i | append: '_kicker' %}
+          {% assign title_key = 'besjaar_store.features.f' | append: i | append: '_title' %}
+          {% assign text_key = 'besjaar_store.features.f' | append: i | append: '_text' %}
+          {% assign feature_w = 900 %}
+          {% assign feature_h = 900 %}
+          {% if i == 2 %}{% assign feature_w = 1000 %}{% assign feature_h = 815 %}{% elsif i == 3 %}{% assign feature_w = 900 %}{% assign feature_h = 1200 %}{% endif %}
+          {%- comment -%}2026-09-22: per-image alts that describe the photo instead of repeating the h3.{%- endcomment -%}
+          {%- liquid
+            assign v_feature_lang = request.locale.iso_code | split: '-' | first | downcase
+            case v_feature_lang
+              when 'en'
+                if i == 1
+                  assign v_feature_alt = 'Close-up of the silicone nozzles on the spray face of a Besjaar showerhead'
+                elsif i == 2
+                  assign v_feature_alt = 'Spray face of the Besjaar showerhead with its different spray zones'
+                else
+                  assign v_feature_alt = 'Besjaar showerhead with a full, powerful water spray'
+                endif
+              when 'de'
+                if i == 1
+                  assign v_feature_alt = 'Nahaufnahme der Silikondüsen auf dem Brausekopf eines Besjaar Duschkopfs'
+                elsif i == 2
+                  assign v_feature_alt = 'Brausekopf des Besjaar Duschkopfs mit den verschiedenen Strahlzonen'
+                else
+                  assign v_feature_alt = 'Besjaar Duschkopf mit vollem, kräftigem Wasserstrahl'
+                endif
+              when 'fr'
+                if i == 1
+                  assign v_feature_alt = 'Gros plan sur les buses en silicone de la tête d’un pommeau de douche Besjaar'
+                elsif i == 2
+                  assign v_feature_alt = 'Tête du pommeau de douche Besjaar avec ses différentes zones de jet'
+                else
+                  assign v_feature_alt = 'Pommeau de douche Besjaar avec un jet d’eau plein et puissant'
+                endif
+              else
+                if i == 1
+                  assign v_feature_alt = 'Close-up van de siliconen sproeiers op de sproeikop van een Besjaar douchekop'
+                elsif i == 2
+                  assign v_feature_alt = 'Sproeikop van de Besjaar douchekop met de verschillende straalzones'
+                else
+                  assign v_feature_alt = 'Besjaar douchekop met een volle, krachtige waterstraal'
+                endif
+            endcase
+          -%}
+          <article class="besjaar-store-card">
+            <div class="besjaar-store-card__media"><img src="{{ imgs[forloop.index0] | asset_url }}" alt="{{ v_feature_alt | escape }}" width="{{ feature_w }}" height="{{ feature_h }}" loading="lazy" decoding="async"></div>
+            <div class="besjaar-store-card__body">
+              <span class="besjaar-store-card__kicker">0{{ i }} · {{ kicker_key | t }}</span>
+              <h3 class="besjaar-store-card__title">{{ title_key | t }}</h3>
+              <p class="besjaar-store-card__text">{{ text_key | t }}</p>
+            </div>
+          </article>
+        {% endfor %}
+      {% else %}
+        {% for block in section.blocks %}
+          <article class="besjaar-store-card" {{ block.shopify_attributes }}>
+            <div class="besjaar-store-card__media">
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 1000 | image_tag: alt: block.settings.title, loading: 'lazy' }}
+              {% else %}
+                {% assign besjaar_ui_feature_asset = block.settings.asset_image | default: 'besjaar-web-real-nozzles.webp' %}
+                {% assign besjaar_ui_feature_asset_w = 900 %}
+                {% assign besjaar_ui_feature_asset_h = 900 %}
+                {% if besjaar_ui_feature_asset contains 'modes' %}{% assign besjaar_ui_feature_asset_w = 1000 %}{% assign besjaar_ui_feature_asset_h = 815 %}{% elsif besjaar_ui_feature_asset contains 'water' %}{% assign besjaar_ui_feature_asset_w = 900 %}{% assign besjaar_ui_feature_asset_h = 1200 %}{% endif %}
+                <img src="{{ besjaar_ui_feature_asset | asset_url }}" alt="{{ block.settings.title | escape }}" width="{{ besjaar_ui_feature_asset_w }}" height="{{ besjaar_ui_feature_asset_h }}" loading="lazy" decoding="async">
+              {% endif %}
+            </div>
+            <div class="besjaar-store-card__body">
+              <span class="besjaar-store-card__kicker">{{ forloop.index | prepend: '0' | slice: -2, 2 }} · {{ block.settings.kicker | escape }}</span>
+              <h3 class="besjaar-store-card__title">{{ block.settings.title | escape }}</h3>
+              <p class="besjaar-store-card__text">{{ block.settings.text | escape }}</p>
+            </div>
+          </article>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium feature story",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true, "info": "Op /nl worden de blokken en de NL-kop hieronder gebruikt zodra ze zijn ingevuld."},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "WHY BESJAAR"},
+    {"type": "text", "id": "heading", "label": "Heading", "default": "Built around the way you actually shower."},
+    {"type": "header", "content": "Nederlandse tekst (alleen op /nl)"},
+    {"type": "text", "id": "kicker_nl", "label": "Kicker (NL)"},
+    {"type": "text", "id": "heading_nl", "label": "Kop (NL)"}
+  ],
+  "blocks": [
+    {"type": "feature", "name": "Feature", "settings": [
+      {"type": "image_picker", "id": "image", "label": "Afbeelding"},
+      {"type": "text", "id": "asset_image", "label": "Theme-asset bestandsnaam (fallback)", "info": "Bijv. besjaar-web-real-nozzles.webp"},
+      {"type": "text", "id": "kicker", "label": "Kicker", "default": "NOZZLES"},
+      {"type": "text", "id": "title", "label": "Titel", "default": "Self-clearing nozzles"},
+      {"type": "textarea", "id": "text", "label": "Tekst", "default": "Flexible silicone tips help make daily care simpler."}
+    ]}
+  ],
+  "presets": [{"name": "Premium feature story"}]
+}
+{% endschema %}
+

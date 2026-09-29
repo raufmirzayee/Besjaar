@@ -1,0 +1,47 @@
+{%- liquid
+  comment
+    Besjaar CRO 2026-09-29: on the Dutch storefront the section's own blocks
+    win over the translated spec phrases, so the strip can carry the three
+    things a shopper wants to know before buying (shipping, delivery, returns)
+    instead of product adjectives. Other languages keep the translated copy
+    unless "use translated copy" is switched off.
+  endcomment
+  assign strip_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign strip_use_blocks = false
+  if section.blocks.size > 0
+    if section.settings.use_localized_copy == false or strip_lang == 'nl'
+      assign strip_use_blocks = true
+    endif
+  endif
+-%}
+<div class="besjaar-store besjaar-store-strip">
+  <div class="besjaar-store-shell besjaar-store-strip__row">
+    {% if strip_use_blocks %}
+      {% for block in section.blocks %}<span {{ block.shopify_attributes }}><i aria-hidden="true">✓</i>{{ block.settings.text | escape }}</span>{% endfor %}
+    {% elsif section.settings.use_localized_copy %}
+      <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i1' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i2' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i3' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i4' | t }}</span>
+      <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i5' | t }}</span>
+    {% else %}
+      <span><i aria-hidden="true">✓</i>PREMIUM CHROOMAFWERKING</span>
+      <span><i aria-hidden="true">✓</i>KRACHTIGE STRAAL</span>
+      <span><i aria-hidden="true">✓</i>½″ UNIVERSELE AANSLUITING</span>
+      <span><i aria-hidden="true">✓</i>FILTEROPTIE BESCHIKBAAR</span>
+      <span><i aria-hidden="true">✓</i>30 DAGEN BEDENKTIJD</span>
+    {% endif %}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Besjaar Store spec strip",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true, "info": "Op /nl worden de blokken hieronder gebruikt zodra er blokken zijn."}
+  ],
+  "blocks": [
+    {"type": "item", "name": "Item", "settings": [{"type": "text", "id": "text", "label": "Text", "default": "CHROOM AFWERKING"}]}
+  ],
+  "presets": [{"name": "Besjaar Store spec strip"}]
+}
+{% endschema %}

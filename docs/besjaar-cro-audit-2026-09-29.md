@@ -303,3 +303,23 @@ Plus: omzet, orders per product, mobiel vs desktop, bron (Google Ads / Meta / or
 - `docs/policies/page-reviews.html` – de nu gepubliceerde reviewpagina.
 - `docs/backups/` – originele teksten (voor terugdraaien).
 - `theme-staged/sections/besjaar-store-hero.liquid`, `theme-staged/templates/index.json` – geüpload naar het duplicaat-thema "Besjaar – CRO fixes 29 sep".
+
+---
+
+## R. Aanvulling 29 september (homepage in één oogopslag)
+
+Het thema "Besjaar – CRO fixes 29 sep" is inmiddels door de eigenaar gepubliceerd (nieuwe hero met echte reviewscore staat live). De volgende ronde staat klaar in het **onafhankelijke thema "Besjaar – homepage 29 sep (preview)"** (id 201589817671, niet gepubliceerd):
+
+| Wat | Waarom | Bestand |
+|-----|--------|---------|
+| Trust-strip onder de hero toont nu: Gratis verzending in NL vanaf €25 · Voor 16:00 besteld, morgen in huis · 30 dagen bedenktijd · Veilig betalen met iDEAL | De koper ziet verzendkosten, levertijd, retour en betaalmethode zonder te scrollen | `theme-staged/sections/besjaar-store-strip.liquid`, `templates/index.json` |
+| Sectie "quote over een lifestyle-foto" verwijderd | Vage tekst zonder doel, extra scroll op mobiel | `templates/index.json` |
+| Drie "Waarom Besjaar"-kaarten herschreven en feitelijk gemaakt (kalk wegvegen · 3 of 10 sproeistanden · 8-traps filter in de greep) met NL-kop "Drie dingen die je meteen merkt." | Vervangt vage teksten en de foute "zeven filterlagen"-claim | `theme-staged/sections/besjaar-store-features.liquid`, `templates/index.json` |
+| Volgorde: hero → trust-strip → 4 douchekoppen → waarom → Judge.me-reviews → Bol.com-bewijs → CTA | Eerst wat het is en wat het kost, dan waarom, dan bewijs | `templates/index.json` |
+| Welkomstpop-up opent niet meer vanzelf (geen timer, scroll of exit-intent); de knop "Bekijk je welkomstaanbod" rechtsonder blijft | Een pop-up na 3 seconden maakt "in één oogopslag begrijpen" onmogelijk | `theme-staged/snippets/besjaar-welcome-offer.liquid`, `assets/besjaar-welcome-offer.js` |
+
+Direct live gezet (productdata, geen thema-wijziging):
+- Korte Nederlandse producttitels via metaveld `custom.short_title_nl` (het thema gebruikte dit veld al): "Douchekop met filter – 10 standen", "Douchekop met filter + slang – 10 standen", "Douchekop – 3 standen", "Douchekop + slang – 3 standen", "Navulfilters – set van 2". De officiële producttitel (Google Shopping, admin) is ongewijzigd.
+- Regel "Geschikt voor: …" op elke productkaart via metaveld `custom.best_for` (bijv. "kalk, hard water en een droge huid").
+
+Publiceren: Online Store › Themes › "Besjaar – homepage 29 sep (preview)" › Preview (controleer op je telefoon) › Publish. Terugdraaien: publiceer het vorige thema opnieuw.
