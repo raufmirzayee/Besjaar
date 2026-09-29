@@ -74,6 +74,27 @@
   };
 })();
 </script>
+{%- comment -%}
+  2026-09-29: one gold (#F5B301) for every review star on every page –
+  collection and search cards, product page, homepage, cart. Older theme rules
+  painted stars navy, amber (#D79545) or a darker gold, some with an id in the
+  selector. The two :not(#…) parts only raise specificity (no element has
+  those ids), so this rule wins over any of them.
+{%- endcomment -%}
+<style>
+  html body .jdgm-star:not(#bj-gold-a):not(#bj-gold-b),
+  html body .jdgm-star:not(#bj-gold-a):not(#bj-gold-b)::before,
+  html body .besjaar-ui-review-stars__fill:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-rating-meter__fill:not(#bj-gold-a):not(#bj-gold-b),
+  html body .bj-proof__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-store-rating-card__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-store-hero__customer-stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-home-bol-proof__stars:not(#bj-gold-a):not(#bj-gold-b){color:#f5b301!important;-webkit-text-fill-color:#f5b301!important}
+  html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b),
+  html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b)::before,
+  html body .besjaar-ui-review-stars__base:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-rating-meter__base:not(#bj-gold-a):not(#bj-gold-b){color:#e3e6ea!important;-webkit-text-fill-color:#e3e6ea!important}
+</style>
 {% schema %}
 {
   "name": "Besjaar cart polish",
