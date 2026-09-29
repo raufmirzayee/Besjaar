@@ -46,7 +46,32 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__dot{flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:#22a447;box-shadow:0 0 0 3px rgba(34,164,71,.15)}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__free b{margin-right:6px;font-size:.72rem;font-weight:800;letter-spacing:.04em}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-assure{margin:10px 0 0;color:#6b7580;font-size:.72rem;text-align:center}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes{margin-top:22px;padding:16px 0 4px;border-top:1px solid #e6e9ec}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head strong{color:#11161c;font-size:.92rem;font-weight:750}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head span{color:#4e9a5c;font-size:.74rem;font-weight:700}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,82%);gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row::-webkit-scrollbar{display:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote{display:flex;flex-direction:column;gap:8px;margin:0;padding:14px 16px;border:1px solid #e6e9ec;border-radius:14px;background:#fff;scroll-snap-align:start}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote__stars{color:#1f2a37;font-size:.82rem;letter-spacing:1.5px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote blockquote{margin:0;color:#25394b;font-size:.82rem;line-height:1.5}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote figcaption{margin-top:auto;color:#6b7580;font-size:.72rem;font-weight:700}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__all{display:inline-block;margin-top:8px;color:#173555;font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{position:absolute;z-index:3;right:14px;bottom:14px;padding:5px 10px;border-radius:999px;background:rgba(17,22,28,.72);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.04em;pointer-events:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd__swipe{display:none!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details{margin-top:24px!important;border-top:1px solid #e3e7ea!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details summary{padding:18px 2px!important;color:#11161c!important;font-size:.86rem!important;font-weight:750!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details summary::after{display:grid!important;place-items:center!important;width:26px!important;height:26px!important;border:1px solid #d5dbe0!important;border-radius:50%!important;color:#11161c!important;font-size:1rem!important;line-height:1!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details details[open] summary::after{background:#11161c!important;border-color:#11161c!important;color:#fff!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details details>div{font-size:.84rem!important;color:#46535e!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__thumb[aria-current="true"]{border-color:#11161c!important;box-shadow:0 0 0 1px #11161c inset}
   @media(max-width:760px){
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky{grid-template-columns:44px minmax(0,1fr) auto!important;padding:8px 8px 8px 8px!important;border-radius:16px!important}
+    body[data-page-type="product"] .bj-pd-sticky__img{width:44px;height:44px;border-radius:10px;background:#f3f4f5;object-fit:contain}
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky-add{background:#11161c!important;border-color:#11161c!important;min-height:44px!important;padding:0 18px!important;font-size:.74rem!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky-copy span{color:#11161c!important;font-size:.8rem!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row{grid-auto-columns:82%}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{right:12px;bottom:12px}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating{font-size:.84rem;margin-bottom:8px}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price .besjaar-store-premium-pd__price{font-size:1.55rem}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{gap:7px;margin-top:14px}
@@ -464,7 +489,10 @@
 
     <div class="besjaar-store-premium-pd__grid">
       <div class="besjaar-store-premium-pd__gallery">
+        {%- assign bj_img_total = 0 -%}
+        {%- for media in product.media limit: 10 -%}{%- if media.preview_image -%}{%- assign bj_img_total = bj_img_total | plus: 1 -%}{%- endif -%}{%- endfor -%}
         <div class="besjaar-store-premium-pd__stage" id="BesjaarStage-{{ section.id }}">
+          {%- if bj_img_total > 1 -%}<span class="bj-pd-counter" data-bj-counter aria-hidden="true">1 / {{ bj_img_total }}</span>{%- endif -%}
           {%- if selected_image -%}
             <img
               id="BesjaarMainImage-{{ section.id }}"
@@ -737,6 +765,77 @@
         <template data-bj-ship-template>{{ bj_ship_prefix }} <strong></strong></template>
         <p class="bj-pd-assure">{{ ui_returns }} · {{ ui_warranty }} · {{ ui_secure }}</p>
 
+        {%- comment -%}
+          2026-09-29: "Wat klanten zeggen" – up to three real five-star review
+          texts for this product, read from Judge.me's own server-rendered
+          review HTML (judgeme.review_widget_ssr_html). Reviews shorter than
+          30 characters are skipped; the texts are shown as written, with the
+          reviewer's name. The 5-star share comes from the same data.
+        {%- endcomment -%}
+        {%- if section.settings.show_quotes -%}
+          {%- assign bj_ssr = product.metafields.judgeme.review_widget_ssr_html.value | default: '' -%}
+          {%- if bj_ssr contains 'jdgm-rev__body' -%}
+            {%- liquid
+              case product_copy_locale
+                when 'de'
+                  assign bj_q_title = 'Das sagen Kunden'
+                  assign bj_q_all = 'Alle Bewertungen'
+                  assign bj_q_share = 'vergeben 5 Sterne'
+                when 'fr'
+                  assign bj_q_title = 'Ce qu’en disent nos clients'
+                  assign bj_q_all = 'Tous les avis'
+                  assign bj_q_share = 'donnent 5 étoiles'
+                when 'en'
+                  assign bj_q_title = 'What customers say'
+                  assign bj_q_all = 'All reviews'
+                  assign bj_q_share = 'give 5 stars'
+                else
+                  assign bj_q_title = 'Wat klanten zeggen'
+                  assign bj_q_all = 'Alle beoordelingen'
+                  assign bj_q_share = 'geeft 5 sterren'
+              endcase
+              assign bj_five_share = ''
+              if bj_ssr contains '5 stars: '
+                assign bj_five_tmp = bj_ssr | split: '5 stars: '
+                assign bj_five_tmp = bj_five_tmp[1] | split: '(' 
+                assign bj_five_tmp = bj_five_tmp[1] | split: '%'
+                assign bj_five_share = bj_five_tmp[0] | strip
+              endif
+              assign bj_rev_chunks = bj_ssr | split: "<div class='jdgm-rev jdgm-divider-top'"
+            -%}
+            {%- capture bj_quote_cards -%}
+              {%- assign bj_q_count = 0 -%}
+              {%- for bj_chunk in bj_rev_chunks offset: 1 -%}
+                {%- if bj_q_count >= 3 -%}{%- break -%}{%- endif -%}
+                {%- assign bj_q_score = bj_chunk | split: "data-score='" -%}
+                {%- assign bj_q_score = bj_q_score[1] | split: "'" | first -%}
+                {%- if bj_q_score != '5' -%}{%- continue -%}{%- endif -%}
+                {%- assign bj_q_body = bj_chunk | split: "jdgm-rev__body'>" -%}
+                {%- assign bj_q_body = bj_q_body[1] | split: '</div>' | first | replace: '<br />', ' ' | strip_html | strip_newlines | strip -%}
+                {%- if bj_q_body.size < 30 -%}{%- continue -%}{%- endif -%}
+                {%- assign bj_q_author = bj_chunk | split: "jdgm-rev__author'>" -%}
+                {%- assign bj_q_author = bj_q_author[1] | split: '<' | first | strip -%}
+                {%- assign bj_q_count = bj_q_count | plus: 1 -%}
+                <figure class="bj-pd-quote">
+                  <span class="bj-pd-quote__stars" aria-label="5/5">★★★★★</span>
+                  <blockquote>“{{ bj_q_body | truncate: 150 | escape_once }}”</blockquote>
+                  {%- if bj_q_author != '' -%}<figcaption>{{ bj_q_author | escape_once }}</figcaption>{%- endif -%}
+                </figure>
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if bj_quote_cards contains 'bj-pd-quote' -%}
+              <section class="bj-pd-quotes" aria-label="{{ bj_q_title | escape }}">
+                <div class="bj-pd-quotes__head">
+                  <strong>{{ bj_q_title }}</strong>
+                  {%- if bj_five_share != '' -%}<span>{{ bj_five_share }}% {{ bj_q_share }}</span>{%- endif -%}
+                </div>
+                <div class="bj-pd-quotes__row">{{ bj_quote_cards }}</div>
+                <a class="bj-pd-quotes__all" href="#besjaar-ui-reviews">{{ bj_q_all }}{% if bj_rating_count_num > 0 %} ({{ bj_rating_count_num }}){% endif %} →</a>
+              </section>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+
         {% if template.suffix == 'shower' %}
           <a class="besjaar-ui-product-model-finder-link" href="#besjaar-model-finder">
             <span aria-hidden="true">⌁</span>
@@ -866,6 +965,7 @@
   </div>
 
   <div class="besjaar-store-premium-pd__sticky" id="BesjaarSticky-{{ section.id }}" aria-hidden="true">
+    {%- if selected_image -%}<img class="bj-pd-sticky__img" src="{{ selected_image | image_url: width: 120 }}" alt="" width="44" height="44" loading="lazy" decoding="async">{%- endif -%}
     <div class="besjaar-store-premium-pd__sticky-copy">
       <strong>{{ display_title | replace: '&amp;', '&' | escape_once }}</strong>
       <span id="BesjaarStickyPrice-{{ section.id }}">{% if bjd_now != '' %}{{ bjd_now }}{% else %}{{ current_variant.price | money }}{% endif %}</span>
@@ -892,6 +992,8 @@
       thumbButtons.forEach(function (item) {
         item.setAttribute('aria-current', item === btn ? 'true' : 'false');
       });
+      var bjCounter = root.querySelector('[data-bj-counter]');
+      if (bjCounter) bjCounter.textContent = (thumbButtons.indexOf(btn) + 1) + ' / ' + thumbButtons.length;
       try {
         var besjaarReduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         btn.scrollIntoView({ behavior: besjaarReduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
@@ -1113,6 +1215,7 @@
     { "type": "checkbox", "id": "show_intro", "label": "Show the intro paragraph under the title", "info": "Off by default; the full text is in the Description panel.", "default": false },
     { "type": "checkbox", "id": "show_highlights", "label": "Show 4 benefit tiles under the price", "info": "Reads product metafield custom.highlights (first 4 lines) on /nl; other languages show spray modes, filter, hose and diameter.", "default": true },
     { "type": "checkbox", "id": "show_specs", "label": "Show Specifications and In the box panels", "info": "Built from product metafields (custom.diameter_mm, hose_length_cm, material, connection_size, water_use, model_number, filter_type, filter_replacement_interval, compatibility, package_contents).", "default": true },
+    { "type": "checkbox", "id": "show_quotes", "label": "Show \"What customers say\" review quotes", "info": "Up to three real five-star review texts from Judge.me for this product.", "default": true },
     { "type": "checkbox", "id": "show_compare", "label": "Show \"Which Besjaar fits you\" model comparison", "info": "Lists the available shower heads of the main collection with spray modes, filter, hose and price.", "default": true }
   ],
   "blocks": [
