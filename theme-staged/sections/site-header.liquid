@@ -737,26 +737,47 @@
           assign bjcd_note = 'Anmerkung zur Bestellung'
           assign bjcd_note_ph = 'Zum Beispiel Lieferhinweise'
           assign bjcd_trust = 'Sicher bezahlen · ' | append: settings.return_window_days | append: ' Tage Rückgabe'
+          assign bjcd_total = 'Gesamt'
+          assign bjcd_tax_a = 'Inkl. MwSt. Rabatte und '
+          assign bjcd_tax_link = 'Versand'
+          assign bjcd_tax_b = ' werden an der Kasse berechnet.'
+          assign bjcd_remove = 'Rabattcode entfernen'
         when 'fr'
           assign bjcd_code = 'Code de réduction'
           assign bjcd_apply = 'Appliquer'
           assign bjcd_note = 'Ajouter une note à la commande'
           assign bjcd_note_ph = 'Par exemple des instructions de livraison'
           assign bjcd_trust = 'Paiement sécurisé · retours sous ' | append: settings.return_window_days | append: ' jours'
+          assign bjcd_total = 'Total'
+          assign bjcd_tax_a = 'TVA incluse. Réductions et '
+          assign bjcd_tax_link = 'livraison'
+          assign bjcd_tax_b = ' calculées au paiement.'
+          assign bjcd_remove = 'Retirer le code'
         when 'en'
           assign bjcd_code = 'Discount code'
           assign bjcd_apply = 'Apply'
           assign bjcd_note = 'Add a note to your order'
           assign bjcd_note_ph = 'For example delivery instructions'
           assign bjcd_trust = 'Secure checkout · ' | append: settings.return_window_days | append: '-day returns'
+          assign bjcd_total = 'Total'
+          assign bjcd_tax_a = 'Taxes included. Discounts and '
+          assign bjcd_tax_link = 'shipping'
+          assign bjcd_tax_b = ' calculated at checkout.'
+          assign bjcd_remove = 'Remove discount code'
         else
           assign bjcd_code = 'Kortingscode'
           assign bjcd_apply = 'Toepassen'
           assign bjcd_note = 'Opmerking bij je bestelling'
           assign bjcd_note_ph = 'Bijvoorbeeld een bezorginstructie'
           assign bjcd_trust = 'Veilig afrekenen · ' | append: settings.return_window_days | append: ' dagen retour'
+          assign bjcd_total = 'Totaal'
+          assign bjcd_tax_a = 'Btw inbegrepen. Kortingen en '
+          assign bjcd_tax_link = 'verzending'
+          assign bjcd_tax_b = ' worden berekend bij het afrekenen.'
+          assign bjcd_remove = 'Kortingscode verwijderen'
       endcase
     -%}
+    <ul class="bj-cd-codes" data-bj-cd-codes data-remove-label="{{ bjcd_remove | escape }}" role="list" hidden></ul>
     <div class="bj-cd-folds">
       <details class="bj-cd-fold" data-bj-cd-discount>
         <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ bjcd_code }}</span></summary>
@@ -776,7 +797,8 @@
       <div class="besjaar-ui-cart-drawer__summary-row" data-cart-drawer-subtotal-row hidden><span>{{ 'besjaar_ui.cart.drawer_subtotal' | t }}</span><span data-cart-drawer-subtotal></span></div>
       <div class="besjaar-ui-cart-drawer__summary-row is-discount" data-cart-drawer-discount-row hidden><span>{{ 'besjaar_ui.cart.drawer_discount' | t }}</span><span data-cart-drawer-discount-amount aria-live="polite"></span></div>
     </div>
-    <div class="besjaar-ui-cart__total"><span>{{ 'besjaar_ui.cart.estimated_total' | t }}<small>{{ 'besjaar_ui.cart.drawer_total_note' | t }}</small></span><strong data-cart-drawer-total aria-live="polite">{{ cart.total_price | money }}</strong></div>
+    {%- capture bjcd_ship_link -%}{%- if shop.shipping_policy != blank -%}<a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ bjcd_tax_link }}</a>{%- else -%}{{ bjcd_tax_link }}{%- endif -%}{%- endcapture -%}
+    <div class="besjaar-ui-cart__total"><span>{{ bjcd_total }}<small>{{ bjcd_tax_a }}{{ bjcd_ship_link }}{{ bjcd_tax_b }}</small></span><strong data-cart-drawer-total aria-live="polite">{{ cart.total_price | money }}</strong></div>
     <div class="besjaar-ui-cart-drawer__actions"><a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ routes.cart_url }}">{{ 'besjaar_ui.header.view_cart' | t }}</a><form action="{{ routes.cart_url }}" method="post" data-cart-checkout-form><input type="hidden" name="checkout" value="Checkout"><button class="besjaar-ui-button besjaar-ui-button--primary" type="submit" name="checkout" value="Checkout" data-cart-drawer-checkout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>{{ 'besjaar_ui.cart.drawer_checkout' | t | replace: '→', '' | strip }}</span><span class="besjaar-ui-cart-drawer__checkout-total" data-cart-drawer-checkout-total>{{ cart.total_price | money }}</span></button></form><button class="besjaar-ui-cart-drawer__continue" type="button" data-close-drawer>{{ 'besjaar_ui.cart.drawer_continue' | t }}</button></div>
     <p class="bj-cd-trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>{{ bjcd_trust }}</p>
     <div class="besjaar-ui-cart-drawer__benefits" aria-label="{{ 'besjaar_ui.product.purchase_confidence' | t | escape }}">
