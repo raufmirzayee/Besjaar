@@ -114,9 +114,40 @@
   html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add::before{content:"+";color:#11161c;font-size:1.5rem;font-weight:300;line-height:1}
   html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add:hover{background:#11161c!important;border-color:#11161c!important}
   html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add:hover::before{color:#fff}
-  @media (min-width:761px){
-    html body #BesjaarUICartDrawer{overflow-y:auto!important;display:grid!important;grid-template-columns:380px minmax(0,1fr)!important;grid-template-rows:auto auto minmax(190px,1fr) auto!important;grid-template-areas:"upsell head" "upsell ship" "upsell body" "upsell foot"!important;width:min(940px,calc(100vw - 24px))!important;max-width:940px!important}
-    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell[hidden]){grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"head" "ship" "body" "foot"!important;width:min(560px,calc(100vw - 24px))!important}
+  @media (min-width:1800px){
+    html body #BesjaarUICartDrawer{overflow-y:auto!important;display:grid!important;grid-template-columns:290px minmax(0,1fr)!important;grid-template-rows:auto auto minmax(190px,1fr) auto!important;grid-template-areas:"upsell head" "upsell ship" "upsell body" "upsell foot"!important;width:min(760px,calc(100vw - 24px))!important;max-width:760px!important}
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell[hidden]){grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"head" "ship" "body" "foot"!important;width:min(470px,calc(100vw - 24px))!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__upsell{padding:22px 16px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__header{margin-bottom:14px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{gap:10px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product{grid-template-columns:60px minmax(0,1fr) 38px!important;gap:10px!important;padding:10px!important;border-radius:14px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media{width:60px!important;height:60px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy strong{font-size:.8rem!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;overflow:hidden!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy>span{font-size:.8rem!important;margin-top:4px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add{width:38px!important;height:38px!important;min-height:38px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-drawer__head,html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__shipping-progress{padding-left:22px!important;padding-right:22px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-drawer__body{padding-left:22px!important;padding-right:22px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__foot{padding-left:22px!important;padding-right:22px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{grid-template-columns:84px minmax(0,1fr) auto!important;gap:10px 14px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media{width:84px!important;height:84px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{font-size:.88rem!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__remove{margin-left:128px!important}
+  }
+  @media (min-width:761px) and (max-width:1799px){
+    html body #BesjaarUICartDrawer{overflow-y:auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto minmax(170px,1fr) auto auto!important;grid-template-areas:"head" "ship" "body" "upsell" "foot"!important;width:min(480px,calc(100vw - 24px))!important;max-width:480px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-drawer__head,html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__shipping-progress,html body #BesjaarUICartDrawer>.besjaar-ui-drawer__body,html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__foot{padding-left:22px!important;padding-right:22px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{grid-template-columns:84px minmax(0,1fr) auto!important;gap:10px 14px!important;padding:16px 0!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media{width:84px!important;height:84px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{font-size:.88rem!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__remove{margin-left:128px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__upsell{padding:14px 22px!important;border-right:0!important;border-top:1px solid #e8e3d8!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__header{margin-bottom:10px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__label span{font-size:.92rem!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{flex-direction:row!important;overflow-x:auto!important;scroll-snap-type:x mandatory!important;scrollbar-width:none!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product{flex:0 0 82%!important;grid-template-columns:60px minmax(0,1fr) 40px!important;gap:10px!important;padding:10px!important;scroll-snap-align:start}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media{width:60px!important;height:60px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy strong{font-size:.8rem!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add{width:40px!important;height:40px!important;min-height:40px!important}
   }
   @media (max-width:760px){
     html body #BesjaarUICartDrawer{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto minmax(0,1fr) auto auto!important;grid-template-areas:"head" "ship" "body" "upsell" "foot"!important}
