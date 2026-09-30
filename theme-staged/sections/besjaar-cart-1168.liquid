@@ -175,6 +175,11 @@
   html body #BesjaarUICartDrawer .bj-cd-main{display:contents}
   html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{background:#fff!important;box-shadow:none!important}
   html body #BesjaarUICartDrawer .bj-cd-main{background:#fff}
+  /* Spacer between the lines (and suggestions) and the checkout block: with a
+     short cart it pushes the checkout block to the bottom of the drawer, with a
+     long one it is 0 high. A display:contents parent still generates its
+     ::after, so this works in both layouts. */
+  html body #BesjaarUICartDrawer .bj-cd-main::after{content:""!important;display:block!important;order:0!important;flex:1 0 0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;background:none!important}
   html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__upsell{border-top:1px solid #E4E1DB!important}
   @media (min-width:761px){
     html body #BesjaarUICartDrawer{width:min(440px,100vw)!important;max-width:440px!important}
