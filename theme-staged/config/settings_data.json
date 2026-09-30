@@ -9,12 +9,12 @@
  */
 {
   "current": {
-    "accent": "#173B5E",
-    "accent_2": "#102D49",
-    "accent_warm": "#EEF6FB",
+    "accent": "#173555",
+    "accent_2": "#0F2944",
+    "accent_warm": "#F4F1EA",
     "account_member_label": "Besjaar Account",
     "analytics_debug_mode": false,
-    "bg": "#FBFCFD",
+    "bg": "#FFFFFF",
     "blocks": {
       "13047258039897440615": {
         "disabled": false,
@@ -73,7 +73,7 @@
     "mobile_fullscreen_search": true,
     "mobile_nav_account": true,
     "mobile_swipe_gallery": true,
-    "muted": "#61798E",
+    "muted": "#6B7580",
     "order_cutoff_hour": 16,
     "page_width": 1280,
     "processing_business_days": 0,
@@ -113,7 +113,7 @@
     "support_email": "info@univexbv.com",
     "support_phone": "+31 6 16745062",
     "surface": "#FFFFFF",
-    "text": "#132A3E",
+    "text": "#11161C",
     "transit_max_business_days": 1,
     "transit_min_business_days": 1,
     "warranty_months": 12,
