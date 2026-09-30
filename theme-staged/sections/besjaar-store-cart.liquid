@@ -1,0 +1,481 @@
+{% liquid
+  capture threshold
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  assign threshold = threshold | strip | plus: 0
+  assign remaining = threshold | minus: cart.total_price
+  assign progress = 0
+  assign remaining_money = remaining | money
+  if threshold > 0
+    assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+  endif
+  capture continue_url_capture
+    render 'shower-store-url'
+  endcapture
+  assign continue_url = continue_url_capture | strip
+  comment
+    Besjaar 11.6: the continue/empty links are merchant-overridable via the two
+    theme-editor URL settings; the focused shower collection stays the default.
+  endcomment
+  if section.settings.continue_link != blank
+    capture continue_url_capture
+      render 'localized-internal-url', url: section.settings.continue_link
+    endcapture
+    assign continue_url = continue_url_capture | strip
+  endif
+  assign empty_url = continue_url
+  if section.settings.empty_link != blank
+    capture empty_url_capture
+      render 'localized-internal-url', url: section.settings.empty_link
+    endcapture
+    assign empty_url = empty_url_capture | strip
+  endif
+
+  assign bjc_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bjc_lang
+    when 'de'
+      assign bjc_summary = 'Bestellübersicht'
+      assign bjc_note = 'Anmerkung zur Bestellung'
+      assign bjc_tax_a = 'Inkl. MwSt. Rabatte und '
+      assign bjc_tax_link = 'Versand'
+      assign bjc_tax_b = ' werden an der Kasse berechnet.'
+      assign bjc_trust = 'Sicher bezahlen · ' | append: settings.return_window_days | append: ' Tage Rückgabe'
+      assign bjc_remove_code = 'Rabattcode entfernen'
+      assign bjc_login = 'Hast du ein Konto? <a href="' | append: routes.account_login_url | append: '">Anmelden</a>, um schneller zu bezahlen.'
+      assign bjc_ok = 'Rabattcode %c angewendet.'
+      assign bjc_bad = 'Code %c ist für diese Bestellung nicht gültig.'
+      assign bjc_empty_code = 'Gib einen Rabattcode ein.'
+      assign bjc_err = 'Etwas ist schiefgelaufen. Bitte versuche es erneut.'
+    when 'fr'
+      assign bjc_summary = 'Récapitulatif'
+      assign bjc_note = 'Ajouter une note à la commande'
+      assign bjc_tax_a = 'TVA incluse. Réductions et '
+      assign bjc_tax_link = 'livraison'
+      assign bjc_tax_b = ' calculées au paiement.'
+      assign bjc_trust = 'Paiement sécurisé · retours sous ' | append: settings.return_window_days | append: ' jours'
+      assign bjc_remove_code = 'Retirer le code'
+      assign bjc_login = 'Vous avez un compte ? <a href="' | append: routes.account_login_url | append: '">Connectez-vous</a> pour payer plus vite.'
+      assign bjc_ok = 'Code %c appliqué.'
+      assign bjc_bad = 'Le code %c n’est pas valable pour cette commande.'
+      assign bjc_empty_code = 'Saisissez un code de réduction.'
+      assign bjc_err = 'Une erreur est survenue. Veuillez réessayer.'
+    when 'en'
+      assign bjc_summary = 'Order summary'
+      assign bjc_note = 'Add a note to your order'
+      assign bjc_tax_a = 'Taxes included. Discounts and '
+      assign bjc_tax_link = 'shipping'
+      assign bjc_tax_b = ' calculated at checkout.'
+      assign bjc_trust = 'Secure checkout · ' | append: settings.return_window_days | append: '-day returns'
+      assign bjc_remove_code = 'Remove discount code'
+      assign bjc_login = 'Have an account? <a href="' | append: routes.account_login_url | append: '">Log in</a> to check out faster.'
+      assign bjc_ok = 'Discount code %c applied.'
+      assign bjc_bad = 'Code %c is not valid for this order.'
+      assign bjc_empty_code = 'Enter a discount code.'
+      assign bjc_err = 'Something went wrong. Please try again.'
+    else
+      assign bjc_summary = 'Overzicht'
+      assign bjc_note = 'Opmerking bij je bestelling'
+      assign bjc_tax_a = 'Btw inbegrepen. Kortingen en '
+      assign bjc_tax_link = 'verzending'
+      assign bjc_tax_b = ' worden berekend bij het afrekenen.'
+      assign bjc_trust = 'Veilig afrekenen · ' | append: settings.return_window_days | append: ' dagen retour'
+      assign bjc_remove_code = 'Kortingscode verwijderen'
+      assign bjc_login = 'Heb je een account? <a href="' | append: routes.account_login_url | append: '">Log in</a> om sneller af te rekenen.'
+      assign bjc_ok = 'Kortingscode %c toegepast.'
+      assign bjc_bad = 'Code %c is niet geldig voor deze bestelling.'
+      assign bjc_empty_code = 'Vul een kortingscode in.'
+      assign bjc_err = 'Er ging iets mis. Probeer het opnieuw.'
+  endcase
+  assign bjc_checkout = 'besjaar_ui.cart.drawer_checkout' | t | replace: '→', '' | strip
+  assign bjc_codes = cart.discount_applications | where: 'type', 'discount_code' | map: 'title' | uniq
+%}
+
+<style>
+  /* 2026-09-30 cart page, a copy of the Univex cart page: title with
+     "Verder winkelen →", the lines on the left (free-shipping band on top,
+     120px tiles, line discounts in red, crossed-out price, quantity pill and
+     bin), a sticky beige summary card on the right (applied code chips,
+     discount code and note folds, total with currency, tax line, checkout
+     button, trust line, payment icons). New class names (bj-cp), so none of
+     the older cart-page layers apply. */
+  html body .bj-cp{padding:40px 0 48px;background:#fff;color:#1C2326}
+  html body .bj-cp *{box-sizing:border-box}
+  html body .bj-cp a{color:inherit}
+  html body .bj-cp__wrap{width:100%;max-width:calc(var(--besjaar-ui-width,1280px) + 64px);margin:0 auto;padding:0 32px}
+  html body .bj-cp__header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin:0 0 32px}
+  html body .bj-cp__header h1{margin:0!important;color:#1C2326!important;font-size:clamp(32px,4vw,44px)!important;line-height:1.1!important;letter-spacing:0!important}
+  html body .bj-cp__continue{display:inline-flex;align-items:center;gap:6px;color:#1C2326;font-size:15px;font-weight:500;text-decoration:none}
+  html body .bj-cp__continue svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+  html body .bj-cp__continue:hover{text-decoration:underline;text-underline-offset:3px}
+  html body .bj-cp__continue:hover svg{transform:translateX(3px)}
+  html body .bj-cp__grid{display:grid;gap:32px;align-items:start;margin:0;padding:0;border:0;background:none}
+  html body .bj-cp__items{min-width:0}
+  /* free shipping */
+  html body .bj-cp-ship{margin:0 0 24px;padding:14px 24px 16px;border-radius:16px;background:#F5F2EC;font-size:13.5px}
+  html body .bj-cp-ship__text{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:#1C2326;font-weight:600}
+  html body .bj-cp-ship__text svg{flex:0 0 20px;width:20px;height:20px;fill:none;stroke:#1F5F52;stroke-width:1.8;stroke-linejoin:round}
+  html body .bj-cp-ship[data-shipping-state="unlocked"] .bj-cp-ship__text span{color:#1F5F52}
+  html body .bj-cp-ship__bar{height:6px;border-radius:99px;background:rgba(28,35,38,.1);overflow:hidden}
+  html body .bj-cp-ship__bar i{display:block;height:100%;border-radius:inherit;background:#1F5F52;transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  /* lines */
+  html body .bj-cp-list{margin:0;padding:0;list-style:none}
+  html body .bj-cp-item{display:grid;grid-template-columns:120px minmax(0,1fr);gap:20px;padding:24px 0;border-bottom:1px solid #E4E1DB}
+  html body .bj-cp-item:first-child{padding-top:4px}
+  html body .bj-cp-item:last-child{border-bottom:0}
+  html body .bj-cp-item.is-updating{opacity:.55;transition:opacity .2s ease}
+  html body .bj-cp-item__media{position:relative;display:block;aspect-ratio:1;border-radius:10px;background:#F5F2EC;overflow:hidden}
+  html body .bj-cp-item__media img{position:absolute;inset:0;width:100%;height:100%;padding:5%;object-fit:contain;mix-blend-mode:multiply}
+  html body .bj-cp-item__details{display:flex;flex-direction:column;gap:4px;min-width:0}
+  html body .bj-cp-item__top{display:flex;justify-content:space-between;gap:10px}
+  html body .bj-cp-item__title{font-size:17px;font-weight:500;line-height:1.35;text-decoration:none}
+  html body .bj-cp-item__title:hover{text-decoration:underline;text-underline-offset:3px}
+  html body .bj-cp-item__options,html body .bj-cp-item__discounts{margin:4px 0 0;padding:0;list-style:none;color:#5B6668;font-size:13px;line-height:1.5}
+  html body .bj-cp-item__discounts{margin-top:2px;color:#B24530}
+  html body .bj-cp-item__discounts li{display:flex;align-items:center;gap:5px}
+  html body .bj-cp-item__discounts svg,html body .bj-cp-code>svg{flex:0 0 14px;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+  html body .bj-cp-item__unit{color:#5B6668;font-size:12px}
+  html body .bj-cp-item__price{display:flex;flex-direction:column;align-items:flex-end;text-align:right;white-space:nowrap;font-size:15px;font-weight:500}
+  html body .bj-cp-item__price s{color:#5B6668;font-size:13px;font-weight:400}
+  html body .bj-cp-item__actions{display:flex;align-items:center;gap:12px;margin-top:6px}
+  html body .bj-cp-qty{display:inline-flex;align-items:center;border:1px solid rgba(28,35,38,.22);border-radius:40px;background:#fff;overflow:hidden}
+  html body .bj-cp-qty:focus-within{border-color:#1F5F52}
+  html body .bj-cp-qty button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:0;background:transparent;color:#1C2326;cursor:pointer;box-shadow:none}
+  html body .bj-cp-qty button:hover{background:rgba(28,35,38,.06)}
+  html body .bj-cp-qty button[disabled]{opacity:.35;cursor:default}
+  html body .bj-cp-qty button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+  html body .bj-cp-qty input{width:40px;height:40px;margin:0;padding:0;border:0;background:transparent;color:#1C2326;font:inherit;font-size:15px;font-weight:500;text-align:center;-moz-appearance:textfield;appearance:textfield;box-shadow:none}
+  html body .bj-cp-qty input::-webkit-outer-spin-button,html body .bj-cp-qty input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  html body .bj-cp-qty input:focus{outline:none}
+  html body .bj-cp-item__remove{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:#5B6668}
+  html body .bj-cp-item__remove:hover{background:rgba(28,35,38,.06);color:#1C2326}
+  html body .bj-cp-item__remove svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  /* summary */
+  html body .bj-cp-summary{min-width:0}
+  html body .bj-cp-summary__inner{padding:24px;border-radius:16px;background:#F5F2EC}
+  html body .bj-cp-summary__title{margin:0 0 16px!important;color:#1C2326!important;font-size:22px!important;line-height:1.2!important}
+  html body .bj-cp-extras{display:flex;flex-direction:column;gap:2px;margin:0 0 12px}
+  html body .bj-cp-codes{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px;padding:0;list-style:none}
+  html body .bj-cp-codes[hidden]{display:none}
+  html body .bj-cp-code{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 10px;border-radius:99px;background:rgba(31,95,82,.1);color:#1F5F52;font-size:13px;font-weight:700;letter-spacing:.02em}
+  html body .bj-cp-code button{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;min-height:24px;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
+  html body .bj-cp-code button:hover{background:rgba(31,95,82,.15)}
+  html body .bj-cp-code button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  html body .bj-cp-fold{border-bottom:1px solid rgba(28,35,38,.12)}
+  html body .bj-cp-fold summary{display:flex;align-items:center;gap:8px;padding:10px 0;list-style:none;cursor:pointer;color:#1C2326;font-size:14px;font-weight:500}
+  html body .bj-cp-fold summary::-webkit-details-marker{display:none}
+  html body .bj-cp-fold summary svg{flex:0 0 18px;width:18px;height:18px;fill:none;stroke:#1C2326;stroke-width:1.7;stroke-linejoin:round}
+  html body .bj-cp-fold summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:1.7px solid #1C2326;border-bottom:1.7px solid #1C2326;transform:translateY(-2px) rotate(45deg);transition:transform .15s ease}
+  html body .bj-cp-fold[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+  html body .bj-cp-discount{display:flex;gap:8px;margin:4px 0 12px}
+  html body .bj-cp-discount input,html body .bj-cp-fold textarea{flex:1;min-width:0;min-height:44px;margin:0;padding:8px 14px;border:1px solid rgba(28,35,38,.22);border-radius:10px;background:#fff;color:#1C2326;font:inherit;font-size:15px;box-shadow:none}
+  html body .bj-cp-discount input:focus,html body .bj-cp-fold textarea:focus{outline:none;border-color:#1F5F52;box-shadow:0 0 0 3px rgba(31,95,82,.15)}
+  html body .bj-cp-fold textarea{display:block;width:100%;min-height:80px;margin:4px 0 12px;font-size:14px;resize:vertical}
+  html body .bj-cp-discount button{flex:0 0 auto;min-height:44px;padding:0 20px;border:0;border-radius:40px;background:#1F5F52;color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer;box-shadow:none}
+  html body .bj-cp-discount button:hover{background:#174A40}
+  html body .bj-cp-discount button[disabled]{opacity:.55;cursor:default}
+  html body .bj-cp-msg{margin:-6px 0 10px;font-size:13px}
+  html body .bj-cp-msg:empty{display:none}
+  html body .bj-cp-msg.is-ok{color:#1F5F52}
+  html body .bj-cp-msg.is-error{color:#B24530}
+  html body .bj-cp-sum{display:flex;flex-direction:column;gap:12px}
+  html body .bj-cp-sum__row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:15px}
+  html body .bj-cp-sum__row[hidden],html body .bj-cp-sum__order[hidden]{display:none}
+  html body .bj-cp-sum__order{margin:0;padding:0;list-style:none;color:#B24530;font-size:14px}
+  html body .bj-cp-sum__order li{display:flex;justify-content:space-between;gap:10px}
+  html body .bj-cp-sum__total{font-size:18px;font-weight:700}
+  html body .bj-cp-sum__tax{margin:0;color:#5B6668;font-size:13px;line-height:1.5}
+  html body .bj-cp-sum__tax a{text-decoration:underline;text-underline-offset:2px}
+  html body .bj-cp-checkout{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;min-height:56px!important;margin:0!important;padding:0 24px!important;border:0!important;border-radius:40px!important;background:#1F5F52!important;background-image:none!important;color:#fff!important;font:inherit!important;font-size:17px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important;cursor:pointer!important;box-shadow:none!important;transform:none!important}
+  html body .bj-cp-checkout:hover{background:#174A40!important}
+  html body .bj-cp-checkout[disabled]{opacity:.6!important;cursor:default!important}
+  html body .bj-cp-checkout::before{content:"";flex:0 0 18px;width:18px;height:18px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='2.5'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='2.5'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E") center/contain no-repeat}
+  html body .bj-cp-trust{display:flex;align-items:center;justify-content:center;gap:6px;margin:0;color:#5B6668;font-size:13px;text-align:center}
+  html body .bj-cp-trust svg{flex:0 0 16px;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  html body .bj-cp .besjaar-ui-payments{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0;padding:0}
+  html body .bj-cp .besjaar-ui-payments svg{width:38px;height:24px}
+  html body .bj-cp .besjaar-ui-delivery-promise{margin:0}
+  /* empty */
+  html body .bj-cp-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:64px 16px;border-radius:16px;background:#F5F2EC;text-align:center}
+  html body .bj-cp-empty__icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:#fff;color:#1F5F52}
+  html body .bj-cp-empty__icon svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  html body .bj-cp-empty h2{margin:0!important;color:#1C2326!important;font-size:clamp(24px,3vw,32px)!important}
+  html body .bj-cp-empty p{max-width:480px;margin:0;color:#5B6668}
+  html body .bj-cp-empty__btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;margin-top:8px;padding:0 32px;border-radius:40px;background:#1F5F52;color:#fff!important;font-weight:700;text-decoration:none}
+  html body .bj-cp-empty__btn:hover{background:#174A40}
+  html body .bj-cp-empty__login{font-size:14px}
+  html body .bj-cp-empty__login a{text-decoration:underline;text-underline-offset:2px}
+  @media (min-width:990px){
+    html body .bj-cp__grid{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:56px}
+    html body .bj-cp-summary__inner{position:sticky;top:calc(var(--header-height,80px) + 24px);padding:32px}
+  }
+  @media (max-width:749px){
+    html body .bj-cp{padding:24px 0 40px}
+    html body .bj-cp__wrap{padding:0 16px}
+    html body .bj-cp__header{margin-bottom:20px}
+    html body .bj-cp-ship{padding:12px 16px 14px}
+    html body .bj-cp-item{grid-template-columns:90px minmax(0,1fr);gap:14px;padding:18px 0}
+    html body .bj-cp-item__title{font-size:15px}
+    html body .bj-cp-qty button,html body .bj-cp-qty input{width:34px;height:34px;min-height:34px}
+    html body .bj-cp-summary__inner{padding:20px 16px}
+  }
+</style>
+
+<section class="bj-cp" aria-labelledby="CartTitle-{{ section.id }}">
+  <div class="bj-cp__wrap">
+    <div class="bj-cp__header">
+      <h1 id="CartTitle-{{ section.id }}">{{ 'besjaar_ui.header.cart_title' | t }}</h1>
+      <a class="bj-cp__continue" href="{{ continue_url }}">{{ 'besjaar_ui.cart.drawer_continue' | t }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+
+    {% if cart.item_count == 0 %}
+      <div class="bj-cp-empty">
+        <span class="bj-cp-empty__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg></span>
+        <h2>{{ 'besjaar_ui.cart.empty' | t }}</h2>
+        <p>{{ 'besjaar_ui.shower_collection.default_intro' | t }}</p>
+        <a class="bj-cp-empty__btn" href="{{ empty_url }}">{{ 'besjaar_ui.cart.shop_products' | t }}</a>
+        {% if shop.customer_accounts_enabled and customer == nil %}<p class="bj-cp-empty__login">{{ bjc_login }}</p>{% endif %}
+      </div>
+    {% else %}
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="bj-cp__grid" id="besjaar-store-cart-form" data-cart-page-form>
+        <p class="besjaar-ui-visually-hidden" role="status" aria-live="polite" aria-atomic="true" data-cart-page-status></p>
+        <div class="bj-cp__items">
+          {% if settings.show_free_shipping_bar and threshold > 0 %}
+            <div class="bj-cp-ship" aria-label="{{ 'besjaar_ui.cart.free_shipping_progress' | t | escape }}" data-cart-page-free-shipping data-shipping-state="{% if remaining > 0 %}progress{% else %}unlocked{% endif %}">
+              <p class="bj-cp-ship__text"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><span data-cart-page-free-shipping-text>{% if remaining > 0 %}{{ 'besjaar_ui.cart.free_shipping_remaining' | t: amount: remaining_money }}{% else %}{{ 'besjaar_ui.cart.free_shipping_unlocked' | t }}{% endif %}</span></p>
+              <div class="bj-cp-ship__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}" data-cart-page-free-shipping-track><i style="width:{{ progress }}%" data-cart-page-free-shipping-progress></i></div>
+            </div>
+          {% endif %}
+
+          <ul class="bj-cp-list" role="list">
+            {% for item in cart.items %}
+              {% capture cart_item_title_capture %}{% render 'localized-product-title', product: item.product %}{% endcapture %}
+              {% assign cart_item_title = cart_item_title_capture | strip | default: item.product.title %}
+              {% capture cart_item_url_capture %}{% render 'localized-internal-url', url: item.url %}{% endcapture %}
+              {% assign cart_item_url = cart_item_url_capture | strip %}
+              {% liquid
+                assign compare_unit = 0
+                if item.variant.compare_at_price > item.original_price
+                  assign compare_unit = item.variant.compare_at_price
+                endif
+                assign line_original = item.original_line_price
+                assign compare_line = compare_unit | times: item.quantity
+                if compare_line > line_original
+                  assign line_original = compare_line
+                endif
+              %}
+              <li class="bj-cp-item" data-cart-page-line data-cart-line-key="{{ item.key | escape }}" data-compare-unit="{{ compare_unit }}" aria-busy="false">
+                <a class="bj-cp-item__media" href="{{ cart_item_url }}" tabindex="-1" aria-hidden="true">
+                  {% if item.image %}{{ item.image | image_url: width: 360 | image_tag: loading: 'lazy', widths: '120,240,360', sizes: '(min-width: 750px) 120px, 90px', alt: '' }}{% endif %}
+                </a>
+                <div class="bj-cp-item__details">
+                  <div class="bj-cp-item__top">
+                    <div>
+                      <a class="bj-cp-item__title" href="{{ cart_item_url }}">{{ cart_item_title | escape }}</a>
+                      <ul class="bj-cp-item__options" role="list">
+                        {%- unless item.product.has_only_default_variant -%}
+                          {%- for option in item.options_with_values -%}<li>{{ option.name | escape }}: {{ option.value | escape }}</li>{%- endfor -%}
+                        {%- endunless -%}
+                        {%- for property in item.properties -%}
+                          {%- assign property_prefix = property.first | slice: 0 -%}
+                          {%- unless property.last == blank or property_prefix == '_' -%}
+                            <li>{{ property.first | escape }}: {% if property.last contains '/uploads/' %}<a href="{{ property.last | escape }}" target="_blank" rel="noopener noreferrer">{{ property.last | split: '/' | last | escape }}<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>{% else %}{{ property.last | escape }}{% endif %}</li>
+                          {%- endunless -%}
+                        {%- endfor -%}
+                        {%- if item.selling_plan_allocation -%}<li>{{ item.selling_plan_allocation.selling_plan.name | escape }}</li>{%- endif -%}
+                      </ul>
+                      {%- if item.unit_price_measurement -%}<div class="bj-cp-item__unit">{{ item.unit_price | money | unit_price_with_measurement: item.unit_price_measurement }}</div>{%- endif -%}
+                      <ul class="bj-cp-item__discounts" role="list" data-bj-cp-line-disc>
+                        {%- for discount in item.line_level_discount_allocations -%}
+                          {%- if discount.amount > 0 -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</span></li>{%- endif -%}
+                        {%- endfor -%}
+                      </ul>
+                    </div>
+                    <div class="bj-cp-item__price">
+                      <s data-bj-cp-line-original{% unless line_original > item.final_line_price %} hidden{% endunless %}>{% if line_original > item.final_line_price %}{{ line_original | money }}{% endif %}</s>
+                      <span data-cart-page-line-price>{{ item.final_line_price | money }}</span>
+                    </div>
+                  </div>
+                  <div class="bj-cp-item__actions">
+                    <div class="bj-cp-qty">
+                      <button type="button" data-cart-page-minus aria-label="{{ 'besjaar_ui.product.decrease_quantity' | t | escape }} — {{ cart_item_title | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+                      <input type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric" enterkeyhint="done" aria-label="{{ 'besjaar_ui.product.quantity' | t | escape }} — {{ cart_item_title | escape }}" data-cart-page-quantity>
+                      <button type="button" data-cart-page-plus aria-label="{{ 'besjaar_ui.product.increase_quantity' | t | escape }} — {{ cart_item_title | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+                    </div>
+                    <a class="bj-cp-item__remove" href="{{ item.url_to_remove }}" data-cart-page-remove aria-label="{{ 'besjaar_ui.cart.remove' | t | escape }} — {{ cart_item_title | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></a>
+                  </div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <aside class="bj-cp-summary" aria-labelledby="CartSummary-{{ section.id }}">
+          <div class="bj-cp-summary__inner">
+            <h2 class="bj-cp-summary__title" id="CartSummary-{{ section.id }}">{{ bjc_summary }}</h2>
+            <div class="bj-cp-extras">
+              {% if section.settings.show_discount_entry %}
+                <ul class="bj-cp-codes" role="list" data-bj-cp-codes data-remove-label="{{ bjc_remove_code | escape }}"{% if bjc_codes.size == 0 %} hidden{% endif %}>
+                  {%- for code in bjc_codes -%}
+                    <li class="bj-cp-code"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ code | upcase | escape }}</span><button type="button" data-bj-cp-remove-code="{{ code | escape }}" aria-label="{{ bjc_remove_code | escape }} {{ code | upcase | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></li>
+                  {%- endfor -%}
+                </ul>
+                <details class="bj-cp-fold" data-bj-cp-discount>
+                  <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ 'besjaar_ui.cart.discount_label' | t }}</span></summary>
+                  <div class="bj-cp-discount">
+                    <label class="besjaar-ui-visually-hidden" for="BjCartDiscount-{{ section.id }}">{{ 'besjaar_ui.cart.discount_label' | t }}</label>
+                    <input id="BjCartDiscount-{{ section.id }}" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="{{ 'besjaar_ui.cart.discount_label' | t | escape }}" data-bj-cp-code-input>
+                    <button type="button" data-bj-cp-apply>{{ 'besjaar_ui.cart.discount_apply' | t }}</button>
+                  </div>
+                  <p class="bj-cp-msg" role="status" aria-live="polite" data-bj-cp-msg></p>
+                </details>
+              {% endif %}
+              {% if section.settings.show_cart_note %}
+                <details class="bj-cp-fold"{% if cart.note != blank %} open{% endif %}>
+                  <summary><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/></svg><span>{{ bjc_note }}</span></summary>
+                  <label class="besjaar-ui-visually-hidden" for="BjCartNote-{{ section.id }}">{{ bjc_note }}</label>
+                  <textarea id="BjCartNote-{{ section.id }}" name="note" rows="3" placeholder="{{ 'besjaar_ui.cart.note_placeholder' | t | escape }}" data-bj-cp-note>{{ cart.note }}</textarea>
+                </details>
+              {% endif %}
+            </div>
+
+            <div class="bj-cp-sum">
+              <div class="bj-cp-sum__row" data-bj-cp-subtotal-row{% if cart.cart_level_discount_applications.size == 0 %} hidden{% endif %}><span>{{ 'besjaar_ui.cart.drawer_subtotal' | t }}</span><span data-bj-cp-subtotal>{{ cart.items_subtotal_price | money }}</span></div>
+              <ul class="bj-cp-sum__order" role="list" data-bj-cp-order{% if cart.cart_level_discount_applications.size == 0 %} hidden{% endif %}>
+                {%- for discount in cart.cart_level_discount_applications -%}<li><span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span></li>{%- endfor -%}
+              </ul>
+              <div class="bj-cp-sum__row bj-cp-sum__total"><span>{{ 'besjaar_ui.cart.total' | t }}</span><span><span data-cart-page-total>{{ cart.total_price | money }}</span> {{ cart.currency.iso_code }}</span></div>
+              <p class="bj-cp-sum__tax">{{ bjc_tax_a }}{% if shop.shipping_policy != blank %}<a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ bjc_tax_link }}</a>{% else %}{{ bjc_tax_link }}{% endif %}{{ bjc_tax_b }}</p>
+              <button type="submit" name="checkout" value="Checkout" class="bj-cp-checkout" data-cart-page-checkout>{{ bjc_checkout }}</button>
+              <p class="bj-cp-trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>{{ bjc_trust }}</p>
+              {% if shop.enabled_payment_types.size > 0 %}
+                <div class="besjaar-ui-payments" aria-label="{{ 'besjaar_ui.footer.payments_label' | t | escape }}">
+                  {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}
+                </div>
+              {% endif %}
+              {% if settings.show_delivery_estimates %}
+                {% render 'delivery-promise', context: 'cart' %}
+              {% endif %}
+            </div>
+          </div>
+        </aside>
+      </form>
+    {% endif %}
+  </div>
+</section>
+
+{% if cart.item_count > 0 %}
+<script>
+(function () {
+  /* 2026-09-30 cart page (Univex copy): discount code apply/remove through
+     /cart/update.js (the page reloads so every price is rendered by Shopify),
+     the order note saved as you type, and after each quantity change the
+     line discounts, crossed-out prices and order discounts are refreshed from
+     the cart the theme just received (event from besjaar-cart-1168). */
+  var form = document.querySelector('[data-cart-page-form]');
+  if (!form || form.dataset.bjCpReady) return;
+  form.dataset.bjCpReady = '1';
+  var TXT = {{ bjc_ok | json }}, BAD = {{ bjc_bad | json }}, EMPTY = {{ bjc_empty_code | json }}, ERR = {{ bjc_err | json }};
+  var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+  var post = function (payload) {
+    return fetch(root + 'cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
+      .then(function (r) { if (!r.ok) throw new Error('cart_update'); return r.json(); });
+  };
+  var msg = form.querySelector('[data-bj-cp-msg]');
+  var say = function (text, ok) { if (!msg) return; msg.textContent = text; msg.classList.toggle('is-ok', !!ok); msg.classList.toggle('is-error', !ok); };
+  var input = form.querySelector('[data-bj-cp-code-input]');
+  var applyBtn = form.querySelector('[data-bj-cp-apply]');
+  var apply = function () {
+    var code = String(input && input.value || '').trim();
+    if (!code) { say(EMPTY, false); if (input) input.focus(); return; }
+    if (applyBtn) applyBtn.disabled = true;
+    fetch(root + 'cart.js', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var existing = (cart.discount_codes || []).filter(function (d) { return d.applicable; }).map(function (d) { return d.code; });
+        if (existing.map(function (c) { return String(c).toUpperCase(); }).indexOf(code.toUpperCase()) === -1) existing.push(code);
+        return post({ discount: existing.join(',') });
+      })
+      .then(function (cart) {
+        var hit = (cart.discount_codes || []).filter(function (d) { return String(d.code).toUpperCase() === code.toUpperCase(); })[0];
+        if (hit && hit.applicable) { say(TXT.replace('%c', code.toUpperCase()), true); window.location.reload(); }
+        else { say(BAD.replace('%c', code.toUpperCase()), false); if (applyBtn) applyBtn.disabled = false; }
+      })
+      .catch(function () { say(ERR, false); if (applyBtn) applyBtn.disabled = false; });
+  };
+  if (applyBtn) applyBtn.addEventListener('click', apply);
+  if (input) input.addEventListener('keydown', function (event) { if (event.key === 'Enter') { event.preventDefault(); apply(); } });
+
+  var codes = form.querySelector('[data-bj-cp-codes]');
+  if (codes) codes.addEventListener('click', function (event) {
+    var b = event.target.closest('[data-bj-cp-remove-code]');
+    if (!b) return;
+    var gone = String(b.getAttribute('data-bj-cp-remove-code')).toUpperCase();
+    b.disabled = true;
+    fetch(root + 'cart.js', { headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var keep = (cart.discount_codes || []).filter(function (d) { return d.applicable && String(d.code).toUpperCase() !== gone; }).map(function (d) { return d.code; });
+        return post({ discount: keep.join(',') });
+      })
+      .then(function () { window.location.reload(); }, function () { b.disabled = false; say(ERR, false); });
+  });
+
+  var note = form.querySelector('[data-bj-cp-note]');
+  if (note) {
+    var timer = null, last = note.value;
+    var save = function () { if (note.value === last) return; last = note.value; post({ note: note.value }).catch(function () {}); };
+    note.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(save, 700); });
+    note.addEventListener('blur', save);
+  }
+
+  var tagIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg>';
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var money = function (cents, cur) {
+    try { return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: cur || 'EUR' }).format((Number(cents) || 0) / 100).replace(/\s/g, ''); }
+    catch (e) { return (Number(cents) / 100).toFixed(2).replace('.', ','); }
+  };
+  document.addEventListener('bj:cart', function (event) {
+    var cart = event.detail;
+    if (!cart || !cart.items) return;
+    var cur = cart.currency || 'EUR';
+    Array.prototype.forEach.call(form.querySelectorAll('[data-cart-page-line]'), function (line) {
+      var item = cart.items.filter(function (i) { return i.key === line.getAttribute('data-cart-line-key'); })[0];
+      if (!item) return;
+      var list = line.querySelector('[data-bj-cp-line-disc]');
+      if (list) list.innerHTML = (item.line_level_discount_allocations || []).filter(function (a) { return Number(a.amount) > 0; }).map(function (a) {
+        return '<li>' + tagIcon + '<span>' + esc((a.discount_application && a.discount_application.title) || '') + ' (−' + money(a.amount, cur) + ')</span></li>';
+      }).join('');
+      var s = line.querySelector('[data-bj-cp-line-original]');
+      if (s) {
+        var original = Math.max(Number(item.original_line_price || 0), Number(line.getAttribute('data-compare-unit') || 0) * Number(item.quantity || 0));
+        var show = original > Number(item.final_line_price || 0);
+        s.hidden = !show;
+        s.textContent = show ? money(original, cur) : '';
+      }
+    });
+    var levels = (cart.cart_level_discount_applications || []).filter(function (d) { return Number(d.total_allocated_amount) > 0; });
+    var subRow = form.querySelector('[data-bj-cp-subtotal-row]'), sub = form.querySelector('[data-bj-cp-subtotal]'), order = form.querySelector('[data-bj-cp-order]');
+    if (subRow) subRow.hidden = !levels.length;
+    if (sub) sub.textContent = money(cart.items_subtotal_price, cur);
+    if (order) {
+      order.hidden = !levels.length;
+      order.innerHTML = levels.map(function (d) { return '<li><span>' + esc(d.title) + '</span><span>−' + money(d.total_allocated_amount, cur) + '</span></li>'; }).join('');
+    }
+  });
+})();
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Besjaar Store winkelwagen",
+  "settings": [
+    { "type": "paragraph", "content": "Opgebouwd zoals de Univex-winkelwagen. Teksten komen uit de vertaalbestanden (besjaar_ui.cart.*), zodat alle vier de talen kloppen." },
+    { "type": "url", "id": "empty_link", "label": "Leeg: link", "info": "Overschrijft de standaard collectielink in de lege winkelwagen." },
+    { "type": "url", "id": "continue_link", "label": "Verder winkelen link", "info": "Overschrijft de standaard collectielink naast de titel." },
+    { "type": "checkbox", "id": "show_cart_note", "label": "Opmerking bij bestelling toestaan", "default": true },
+    { "type": "checkbox", "id": "show_discount_entry", "label": "Kortingscodeveld tonen", "default": true }
+  ],
+  "presets": [{ "name": "Besjaar Store winkelwagen" }]
+}
+{% endschema %}
