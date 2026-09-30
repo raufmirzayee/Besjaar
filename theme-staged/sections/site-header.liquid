@@ -718,8 +718,11 @@
     </div>
   {% endif %}
   {%- comment -%}Besjaar 11.6: no aria-live on the full drawer body — re-rendering every line made screen readers announce the entire cart after each quantity tap. The totals/discount nodes below keep their own aria-live for the meaningful outcome.{%- endcomment -%}
+  {%- comment -%}2026-09-30: lines and suggestions share one scroll area (as in the Univex cart), so the pinned checkout block never covers the suggestions on phones. From 1100px the wrapper is display:contents and the suggestions become the left column.{%- endcomment -%}
+  <div class="bj-cd-scroll">
   <div class="besjaar-ui-drawer__body" data-cart-drawer-body aria-busy="false"></div>
   <div class="besjaar-ui-cart-drawer__upsell" data-cart-drawer-upsell hidden></div>
+  </div>
   <div class="besjaar-ui-drawer__foot besjaar-ui-cart-drawer__foot" data-cart-drawer-foot{% if cart.item_count == 0 %} hidden{% endif %}>
     <div class="besjaar-ui-cart-drawer__discount" data-cart-drawer-discount hidden aria-live="polite"></div>
     {%- comment -%}
