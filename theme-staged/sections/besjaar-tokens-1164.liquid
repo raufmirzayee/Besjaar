@@ -169,6 +169,29 @@ html body[data-page-type="product"] .besjaar-store-premium-pd__form{background:v
 html body .besjaar-ui-free-shipping__track i,html body .besjaar-cart-progress__track i{background:var(--bj-navy)!important}
 html body .besjaar-store-strip{background:var(--bj-navy)!important}
 
+/* 2026-09-30 Univex style (fonts, type and shapes copied from the owner's
+   Univex BV theme). Jost medium for headings, Inter for everything else,
+   Inter medium for product-card and cart-line titles, pill buttons in bold
+   Inter, 16px cards with the photo on a beige tile, 20px product photos,
+   10px inputs, pill badges. The :not(#…) parts only raise specificity so
+   these rules win over the older layers; Judge.me elements keep their own
+   (icon) fonts. Fonts and radii are set in Theme settings → Brand & layout. */
+html body:not(#bj-u1):not(#bj-u2){font-family:var(--bj-font-body)!important;letter-spacing:.005em}
+html body *:not([class*="jdgm"]):not(svg):not(svg *):not(:is(h1,h2,h3,h4,h5,.h0,.h1,.h2,.h3) *):not(#bj-u1):not(#bj-u2){font-family:var(--bj-font-body)!important}
+html body :is(h1,h2,h3,h4,h5,.h0,.h1,.h2,.h3):not([class*="jdgm"]):not(#bj-u1):not(#bj-u2):not(#bj-u3),
+html body :is(h1,h2,h3,h4,h5,.h0,.h1,.h2,.h3):not([class*="jdgm"]):not(#bj-u1):not(#bj-u2):not(#bj-u3) *:not(svg):not(svg *){font-family:var(--bj-font-heading)!important;font-weight:500!important;letter-spacing:-.01em!important;text-transform:none!important}
+html body :is(.besjaar-ui-product-card__title,.besjaar-ui-cart-drawer__line-main h3,.besjaar-shop-card h3,.besjaar-ui-shower-card h3,.besjaar-collection-product-card h3,.besjaar-ui-cart-upsell__copy strong,.bj-pd-switch__text):not(#bj-u1):not(#bj-u2):not(#bj-u3):not(#bj-u4),
+html body :is(.besjaar-ui-product-card__title,.besjaar-ui-cart-drawer__line-main h3,.besjaar-shop-card h3,.besjaar-ui-shower-card h3,.besjaar-collection-product-card h3,.besjaar-ui-cart-upsell__copy strong,.bj-pd-switch__text):not(#bj-u1):not(#bj-u2):not(#bj-u3):not(#bj-u4) *{font-family:var(--bj-font-body)!important;font-weight:500!important;letter-spacing:0!important}
+html body :is(.besjaar-ui-button,.besjaar-store-btn,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout,.besjaar-ui-card-quick-add,.besjaar-collection-product-card__quick,.bj-cd-discount button,[data-cart-drawer-checkout],.shopify-payment-button__button):not(#bj-u1):not(#bj-u2){border-radius:var(--bj-radius-button)!important;font-family:var(--bj-font-body)!important;font-weight:700!important;letter-spacing:.01em!important;text-transform:none!important}
+html body :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-cart-summary__checkout,[data-cart-drawer-checkout]):not(:disabled):hover:not(#bj-u1):not(#bj-u2){box-shadow:0 8px 24px -10px rgba(31,95,82,.65)!important;transform:none!important}
+html body :is(.besjaar-ui-product-card,.besjaar-shop-card,.besjaar-ui-shower-card,.besjaar-collection-product-card):not(#bj-u1):not(#bj-u2){border-radius:var(--bj-radius-card)!important}
+html body :is(.besjaar-ui-product-card__media,.besjaar-shop-card__media,.besjaar-ui-shower-card__media,.besjaar-collection-product-card__media):not(#bj-u1):not(#bj-u2){border-radius:var(--bj-radius-card)!important;background:var(--bj-ice-100)!important;overflow:hidden!important}
+html body :is(.besjaar-ui-product-card__media,.besjaar-shop-card__media,.besjaar-ui-shower-card__media,.besjaar-collection-product-card__media) img:not(#bj-u1):not(#bj-u2){mix-blend-mode:multiply;object-fit:contain!important}
+html body :is(input[type="text"],input[type="email"],input[type="search"],input[type="tel"],input[type="password"],select,textarea,.besjaar-ui-input,.besjaar-ui-select,.besjaar-ui-textarea):not([class*="jdgm"]):not(#bj-u1):not(#bj-u2){border-radius:var(--bj-radius-input)!important}
+html body :is(input[type="text"],input[type="email"],input[type="search"],input[type="tel"],input[type="password"],select,textarea):focus:not(#bj-u1):not(#bj-u2){outline:none!important;border-color:var(--bj-navy)!important;box-shadow:0 0 0 3px rgba(31,95,82,.18)!important}
+html body :is(.bj-pd-badge,.bj-discount-badge,.besjaar-ui-product-card__badge,.besjaar-ui-chip):not(#bj-u1):not(#bj-u2){border-radius:99px!important}
+@media (min-width:761px){html body[data-page-type="product"] :is(.besjaar-store-premium-pd__stage,.besjaar-store-premium-pd__thumb):not(#bj-u1):not(#bj-u2){border-radius:var(--bj-radius-media)!important}}
+
 /* Colour leftovers: green-era ink, second gold, second green. */
 .besjaar-cart-note textarea{color:var(--bj-ink)}
 .b116-recent__copy strong{color:var(--bj-ink)}

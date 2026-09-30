@@ -40,7 +40,12 @@
       }
     },
     "bundle_accessories_preselected": false,
-    "card_radius": 12,
+    "card_radius": 16,
+    "type_heading_font": "jost_n5",
+    "type_body_font": "inter_n4",
+    "button_radius": 40,
+    "input_radius": 10,
+    "media_radius": 20,
     "club_name": "Besjaar Club",
     "compact_card_titles": true,
     "contact_page": "contact-us",

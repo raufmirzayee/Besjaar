@@ -69,6 +69,52 @@
         "unit": "px"
       },
       {
+        "type": "header",
+        "content": "Typography & shapes (Univex style)"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_heading_font",
+        "label": "Heading font",
+        "default": "jost_n5"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "label": "Body font",
+        "default": "inter_n4"
+      },
+      {
+        "type": "range",
+        "id": "button_radius",
+        "label": "Button radius",
+        "min": 0,
+        "max": 40,
+        "step": 2,
+        "default": 40,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "input_radius",
+        "label": "Input radius",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "default": 10,
+        "unit": "px"
+      },
+      {
+        "type": "range",
+        "id": "media_radius",
+        "label": "Product image radius",
+        "min": 0,
+        "max": 32,
+        "step": 1,
+        "default": 20,
+        "unit": "px"
+      },
+      {
         "type": "image_picker",
         "id": "favicon",
         "label": "Favicon"
