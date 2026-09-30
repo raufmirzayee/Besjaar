@@ -538,8 +538,6 @@
   </div>
 
   <nav class="besjaar-ui-mobile-menu" id="BesjaarUIMobileMenu-{{ section.id }}" data-mobile-menu aria-hidden="true" aria-label="{{ 'besjaar_ui.accessibility.mobile_menu' | t | escape }}" inert>
-    {%- comment -%}2026-09-22: language switch moved from the bottom of the mobile menu to the top (merchant: shoppers could not find it at the end).{%- endcomment -%}
-    {% if settings.show_header_localization %}{% unless request.visual_preview_mode %}<div class="besjaar-ui-mobile-menu__localization besjaar-ui-mobile-menu__localization--top"><span class="besjaar-ui-mobile-menu__localization-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg>{{ 'besjaar_ui.markets.change_language' | t }}</span>{% render 'besjaar-ui-localization', context: 'mobile', section_id: section.id %}</div>{% endunless %}{% endif %}
     <div class="besjaar-ui-mobile-menu__shop">
       <a class="besjaar-ui-mobile-menu__shop-title besjaar-ui-mobile-menu__shop-all" href="{{ besjaar_ui_shower_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
       <div class="besjaar-ui-mobile-menu__categories">
@@ -564,14 +562,80 @@
       <a href="{{ besjaar_ui_contact_url }}"{% if besjaar_ui_contact_current %} aria-current="page"{% endif %}>{{ 'besjaar_ui.shower_store.nav.contact' | t }}</a>
       <a href="{{ besjaar_ui_track_url }}"{% if besjaar_ui_track_current %} aria-current="page"{% endif %}>{{ 'besjaar_ui.shower_store.nav.track' | t }}</a>
     </div>
-    {% if shop.customer_accounts_enabled %}
-      {% if section.settings.use_shopify_account_component %}
-        <div class="besjaar-ui-mobile-menu__account-component"><span>{{ 'besjaar_ui.header.my_account' | t }}</span><shopify-account class="besjaar-ui-shopify-account besjaar-ui-shopify-account--mobile" menu="{{ besjaar_ui_customer_account_menu }}"></shopify-account></div>
-      {% else %}
-        <a class="besjaar-ui-mobile-menu__account" href="{{ besjaar_ui_account_url }}" rel="nofollow">{% if customer %}{{ 'besjaar_ui.header.my_account' | t }}{% else %}{{ 'besjaar_ui.header.sign_in_create' | t }}{% endif %} →</a>
-      {% endif %}
-    {% endif %}
+    {%- comment -%}
+      2026-09-30: bottom of the mobile menu as in the Univex theme: "Inloggen"
+      with a person icon, then the country (currency) and language selects of
+      Shopify's localization form on a light band pinned to the bottom of the
+      menu. A select change submits the form (Shopify then reloads the page
+      in that market / language).
+    {%- endcomment -%}
+    {%- liquid
+      assign bj_mm_countries = false
+      if localization.available_countries.size > 1
+        assign bj_mm_countries = true
+      endif
+      assign bj_mm_languages = false
+      if localization.available_languages.size > 1
+        assign bj_mm_languages = true
+      endif
+      unless settings.show_header_localization
+        assign bj_mm_countries = false
+        assign bj_mm_languages = false
+      endunless
+    -%}
+    {%- if shop.customer_accounts_enabled or bj_mm_countries or bj_mm_languages -%}
+      <div class="bj-mm-foot">
+        {%- if shop.customer_accounts_enabled -%}
+          <a class="bj-mm-foot__account" href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span>{% if customer %}{{ 'besjaar_ui.header.my_account' | t }}{% else %}{{ 'besjaar_ui.header.sign_in' | t }}{% endif %}</span></a>
+        {%- endif -%}
+        {%- if bj_mm_countries or bj_mm_languages -%}
+          {%- form 'localization', id: 'BjMenuLocalization', class: 'bj-mm-foot__loc', data-bj-mm-loc: '' -%}
+            {%- if bj_mm_countries -%}
+              <div class="bj-mm-foot__select">
+                <label class="besjaar-ui-visually-hidden" for="BjMenuLocalization-country">{{ 'besjaar_ui.markets.country_region' | t }}</label>
+                <select id="BjMenuLocalization-country" name="country_code">
+                  {%- for country in localization.available_countries -%}
+                    <option value="{{ country.iso_code }}"{% if country.iso_code == localization.country.iso_code %} selected{% endif %}>{{ country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol }})</option>
+                  {%- endfor -%}
+                </select>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            {%- endif -%}
+            {%- if bj_mm_languages -%}
+              <div class="bj-mm-foot__select">
+                <label class="besjaar-ui-visually-hidden" for="BjMenuLocalization-language">{{ 'besjaar_ui.markets.language' | t }}</label>
+                <select id="BjMenuLocalization-language" name="language_code">
+                  {%- for language in localization.available_languages -%}
+                    <option value="{{ language.iso_code }}" lang="{{ language.iso_code }}"{% if language.iso_code == localization.language.iso_code %} selected{% endif %}>{{ language.endonym_name | capitalize }}</option>
+                  {%- endfor -%}
+                </select>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            {%- endif -%}
+            <noscript><button type="submit">OK</button></noscript>
+          {%- endform -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
   </nav>
+  <style>
+    /* 2026-09-30 mobile menu footer as in the Univex theme */
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2){padding-left:18px!important;padding-right:18px!important;padding-bottom:0!important}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot{position:sticky;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:flex-start;gap:16px;margin:28px -18px 0;padding:20px 24px calc(24px + env(safe-area-inset-bottom));border-top:1px solid #E5E7EB;background:#F3F4F6;box-shadow:0 60vh 0 60vh #F3F4F6;clip-path:inset(0 -100vw -120vh -100vw)}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__account{display:inline-flex!important;align-items:center!important;gap:12px!important;width:auto!important;min-height:0!important;margin:0!important;padding:4px 0!important;border:0!important;background:none!important;color:#1C2326!important;font-size:17px!important;font-weight:500!important;letter-spacing:0!important;text-transform:none!important;text-decoration:none!important}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__account::after,html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__account::before{content:none!important}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__account svg{flex:0 0 24px;width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__loc{display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:100%;margin:0}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__select{position:relative;display:inline-flex;max-width:100%}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__select select{max-width:100%;min-height:48px;margin:0;padding:12px 46px 12px 18px;border:1px solid rgba(28,35,38,.2);border-radius:10px;background:#fff;color:#1C2326;font:inherit;font-size:16px;line-height:1.3;-webkit-appearance:none;appearance:none;cursor:pointer;box-shadow:none}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__select select:focus-visible{outline:none;border-color:#1F5F52;box-shadow:0 0 0 3px rgba(31,95,82,.18)}
+    html body .besjaar-ui-mobile-menu:not(#bj-m1):not(#bj-m2) .bj-mm-foot__select svg{position:absolute;top:50%;right:16px;width:16px;height:16px;transform:translateY(-50%);fill:none;stroke:#1C2326;stroke-width:1.8;pointer-events:none}
+  </style>
+  <script>
+    document.querySelectorAll('[data-bj-mm-loc] select').forEach(function (select) {
+      select.addEventListener('change', function () { if (select.form) select.form.submit(); });
+    });
+  </script>
 
   <div class="besjaar-ui-search-panel" id="BesjaarUISearchPanel-{{ section.id }}" data-search-panel aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="BesjaarUISearchDialogTitle-{{ section.id }}" tabindex="-1" inert>
     <div class="besjaar-ui-shell besjaar-ui-search-panel__inner">
