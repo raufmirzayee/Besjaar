@@ -710,6 +710,8 @@
 
 <div class="besjaar-ui-drawer-backdrop" data-drawer-backdrop aria-hidden="true"></div>
 <aside class="besjaar-ui-drawer besjaar-ui-drawer--cart" id="BesjaarUICartDrawer" data-drawer="cart" role="dialog" aria-modal="true" aria-labelledby="BesjaarUICartDrawerTitle" tabindex="-1" aria-hidden="true" inert>
+  {%- comment -%}2026-09-30: the cart column (header, shipping bar, lines, checkout block) is one wrapper that scrolls as a whole; only the checkout button is pinned to its bottom, so at least two lines are always in view. The suggestions are a sibling: the left column from 1100px, a swipe row after the lines below that.{%- endcomment -%}
+  <div class="bj-cd-main">
   <div class="besjaar-ui-drawer__head"><div><p class="besjaar-ui-kicker">BESJAAR / {{ 'besjaar_ui.catalog.cart' | t }}</p><h2 id="BesjaarUICartDrawerTitle">{{ 'besjaar_ui.header.cart_title' | t }} <span class="besjaar-ui-cart-drawer__count" data-cart-count aria-label="{{ 'besjaar_ui.cart.items_kicker' | t: count: cart.item_count | escape }}">{{ cart.item_count }}</span></h2></div><button class="besjaar-ui-drawer__close" type="button" data-close-drawer aria-label="{{ 'besjaar_ui.accessibility.close' | t }}">×</button></div>
   {% if settings.show_free_shipping_bar and besjaar_ui_free_shipping_threshold_cents > 0 %}
     <div class="besjaar-ui-cart-drawer__shipping-progress besjaar-ui-free-shipping" data-free-shipping aria-label="{{ 'besjaar_ui.cart.free_shipping_progress' | t | escape }}">
@@ -718,11 +720,7 @@
     </div>
   {% endif %}
   {%- comment -%}Besjaar 11.6: no aria-live on the full drawer body — re-rendering every line made screen readers announce the entire cart after each quantity tap. The totals/discount nodes below keep their own aria-live for the meaningful outcome.{%- endcomment -%}
-  {%- comment -%}2026-09-30: lines and suggestions share one scroll area (as in the Univex cart), so the pinned checkout block never covers the suggestions on phones. From 1100px the wrapper is display:contents and the suggestions become the left column.{%- endcomment -%}
-  <div class="bj-cd-scroll">
   <div class="besjaar-ui-drawer__body" data-cart-drawer-body aria-busy="false"></div>
-  <div class="besjaar-ui-cart-drawer__upsell" data-cart-drawer-upsell hidden></div>
-  </div>
   <div class="besjaar-ui-drawer__foot besjaar-ui-cart-drawer__foot" data-cart-drawer-foot{% if cart.item_count == 0 %} hidden{% endif %}>
     <div class="besjaar-ui-cart-drawer__discount" data-cart-drawer-discount hidden aria-live="polite"></div>
     {%- comment -%}
@@ -831,6 +829,8 @@
       </div>
     {% endif %}
   </div>
+  </div>
+  <div class="besjaar-ui-cart-drawer__upsell" data-cart-drawer-upsell hidden></div>
 </aside>
 
 {% if settings.show_mobile_bottom_nav %}
