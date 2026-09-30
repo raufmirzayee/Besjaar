@@ -12,39 +12,42 @@
   be rewritten by hand. During the CSS consolidation, move the <style> block
   into the <head> after the last stylesheet and delete this section.
 
-  2026-09-30: palette taken from the cart drawer (on request): navy #173555
-  for buttons and accents, warm beige #F4F1EA for soft panels (replaces the
-  light ice blue), ink #11161C, grey #6B7580 for secondary text, light grey
-  lines, green #2F7D45 for positive messages, gold #F5B301 for stars. The
-  main colours also live in Theme settings → Brand & layout.
+  2026-09-30: palette of the owner's Univex theme (its colour schemes 1-5):
+  green #1F5F52 for buttons and accents (deep #174A40, light #2A6E60),
+  charcoal #1C2326 text, warm beige #F5F2EC panels, stone #E4E1DB lines,
+  mint #E6F0EC, warm gold #F2C57C, stars #E0A526, sale red #B24530. The
+  token names still say "navy" for compatibility; the value is the green.
+  The main colours also live in Theme settings → Brand & layout.
 {%- endcomment -%}
 <style id="besjaar-tokens-1164">
 :root{
   --bj-navy:{{ settings.accent | default: '#153252' }};
   --bj-navy-deep:{{ settings.accent_2 | default: '#0F2947' }};
-  --bj-navy-bright:#1F4570;
-  --bj-blue:#2F628F;
-  --bj-sky:#8CC8EC;
+  --bj-navy-bright:#2A6E60;
+  --bj-blue:#2A6E60;
+  --bj-sky:#8FD1BF;
   --bj-ink:{{ settings.text | default: '#11110E' }};
   --bj-muted:{{ settings.muted | default: '#49627D' }};
   --bj-bg:{{ settings.bg | default: '#FFFFFF' }};
   --bj-surface:{{ settings.surface | default: '#FFFFFF' }};
   --bj-ice-50:#FAF8F4;
-  --bj-ice-100:#F4F1EA;
-  --bj-ice-200:#E8E3D8;
-  --bj-line:rgba(17,22,28,.10);
-  --bj-line-strong:rgba(17,22,28,.18);
-  --bj-gold:#F5B301;
-  --bj-success:#2F7D45;
-  --bj-danger:#B3261E;
-  --bj-shadow-xs:0 1px 2px rgba(15,41,71,.05);
-  --bj-shadow-sm:0 2px 6px rgba(15,41,71,.05),0 10px 26px rgba(15,41,71,.07);
-  --bj-shadow-md:0 4px 12px rgba(15,41,71,.06),0 18px 40px rgba(15,41,71,.10);
-  --bj-shadow-lg:0 8px 22px rgba(15,41,71,.08),0 28px 64px rgba(15,41,71,.14);
-  --bj-focus:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(47,98,143,.24);
+  --bj-ice-100:#F5F2EC;
+  --bj-ice-200:#E4E1DB;
+  --bj-mint:#E6F0EC;
+  --bj-warm:#F2C57C;
+  --bj-line:rgba(28,35,38,.10);
+  --bj-line-strong:rgba(28,35,38,.18);
+  --bj-gold:#E0A526;
+  --bj-success:#1F5F52;
+  --bj-danger:#B24530;
+  --bj-shadow-xs:0 1px 2px rgba(28,35,38,.05);
+  --bj-shadow-sm:0 2px 6px rgba(28,35,38,.05),0 10px 26px rgba(28,35,38,.07);
+  --bj-shadow-md:0 4px 12px rgba(28,35,38,.06),0 18px 40px rgba(28,35,38,.10);
+  --bj-shadow-lg:0 8px 22px rgba(28,35,38,.08),0 28px 64px rgba(28,35,38,.14);
+  --bj-focus:0 0 0 2px rgba(255,255,255,.92),0 0 0 5px rgba(31,95,82,.24);
   --bj-ease:cubic-bezier(.22,.61,.36,1);
   --bj-grad-primary:linear-gradient(180deg,var(--bj-navy-bright) 0%,var(--bj-navy) 58%,var(--bj-navy-deep) 100%);
-  --bj-grad-band:linear-gradient(135deg,var(--bj-navy-deep) 0%,var(--bj-navy) 52%,#1F4570 100%);
+  --bj-grad-band:linear-gradient(135deg,var(--bj-navy-deep) 0%,var(--bj-navy) 52%,#2A6E60 100%);
   --besjaar-ui-accent-warm:var(--bj-ice-100)!important;
 
   --besjaar-ui-accent:var(--bj-navy)!important;
@@ -82,7 +85,7 @@
   --lux-shadow-sm:var(--bj-shadow-sm);
   --lux-shadow-md:var(--bj-shadow-md);
   --lux-shadow-lg:var(--bj-shadow-lg);
-  --lux-ring:0 0 0 3px rgba(47,98,143,.2);
+  --lux-ring:0 0 0 3px rgba(31,95,82,.2);
   --lux-ease:var(--bj-ease);
   --b115-navy:var(--bj-navy);
   --b115-navy-deep:var(--bj-navy-deep);
@@ -102,7 +105,7 @@ body.besjaar-ui-polish-v34 .besjaar-collection-step3{--bk3-navy:var(--bj-navy)!i
 /* One focus ring everywhere: blue outline, white keyline, soft halo. */
 body.besjaar-ui-polish-v34 :focus-visible{outline:2px solid var(--bj-blue)!important;outline-offset:3px!important;box-shadow:var(--bj-focus)!important}
 body.besjaar-ui-polish-v34 :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout):focus-visible,
-body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:focus-visible{box-shadow:var(--bj-focus),inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(15,41,71,.16)!important}
+body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__actions form .besjaar-ui-button:focus-visible{box-shadow:var(--bj-focus),inset 0 1px 0 rgba(255,255,255,.14),0 8px 20px rgba(28,35,38,.16)!important}
 body[data-page-type="product"] .besjaar-store-premium-pd__select:focus-visible{outline-color:var(--bj-blue)!important;border-color:var(--bj-blue)!important}
 body.besjaar-ui-polish-v34 .besjaar-ui-input:focus,
 body.besjaar-ui-polish-v34 .besjaar-ui-select:focus,
@@ -155,6 +158,16 @@ body.besjaar-ui-polish-v34.besjaar-ui-spatial-v4 .besjaar-ui-cart-drawer__action
 [style*="#E6EEF4"],[style*="#e6eef4"]{border-color:#ECEFF1!important}
 [style*="color:#49627D"],[style*="color: #49627D"],[style*="color:#49627d"]{color:var(--bj-muted)!important}
 [style*="color:#11110E"]{color:var(--bj-ink)!important}
+[style*="color:#153252"],[style*="color:#0F2947"]{color:var(--bj-ink)!important}
+[style*="background:#153252"]{background-color:var(--bj-navy)!important}
+
+/* 2026-09-30 Univex palette: older stylesheets hard-code the navy on the
+   main buttons and a blue-white buy box; pull them onto the palette. */
+html body :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout,.besjaar-collection-step3 .besjaar-collection-product-card__quick,.besjaar-ui-card-quick-add,.besjaar-ui-cart-drawer__actions form .besjaar-ui-button):not(:disabled){background:var(--bj-navy)!important;background-image:none!important;border-color:var(--bj-navy)!important;color:#fff!important}
+html body :is(.besjaar-ui-button--primary,.besjaar-store-btn--primary,.besjaar-store-premium-pd__add,.besjaar-store-premium-pd__sticky-add,.besjaar-cart-summary__checkout,.besjaar-ui-card-quick-add):not(:disabled):hover{background:var(--bj-navy-deep)!important;filter:none!important}
+html body[data-page-type="product"] .besjaar-store-premium-pd__form{background:var(--bj-ice-50)!important;border-color:var(--bj-ice-200)!important}
+html body .besjaar-ui-free-shipping__track i,html body .besjaar-cart-progress__track i{background:var(--bj-navy)!important}
+html body .besjaar-store-strip{background:var(--bj-navy)!important}
 
 /* Colour leftovers: green-era ink, second gold, second green. */
 .besjaar-cart-note textarea{color:var(--bj-ink)}
