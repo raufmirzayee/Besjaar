@@ -167,16 +167,34 @@
     html body #BesjaarUICartDrawer:has(.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(>.besjaar-ui-cart-drawer__foot[hidden])) .besjaar-ui-cart-upsell__product{flex:0 0 auto!important;width:100%!important;box-sizing:border-box!important}
   }
   @media (max-width:760px){
-    html body #BesjaarUICartDrawer>.besjaar-ui-drawer__head{padding:12px 8px 12px 16px!important}
-    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__shipping-progress{padding:12px 16px!important}
-    html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{padding:12px 16px!important}
-    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{grid-template-columns:80px minmax(0,1fr) auto!important;gap:4px 12px!important}
+    /* Phones: the whole cart scrolls as one page so the lines get most of
+       the screen (3+ products visible); only the checkout button, carrying
+       the total, stays pinned to the bottom. The scroll wrapper and the
+       footer are display:contents, so every part is a flex item of the
+       drawer and the button can stick to the drawer's bottom edge. */
+    html body #BesjaarUICartDrawer{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+    html body #BesjaarUICartDrawer>.besjaar-ui-drawer__head{order:-4!important;position:sticky!important;top:0!important;z-index:6!important;flex:none!important;padding:10px 8px 10px 16px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__shipping-progress{order:-3!important;flex:none!important;padding:10px 16px 12px!important}
+    html body #BesjaarUICartDrawer .bj-cd-scroll{display:contents!important}
+    html body #BesjaarUICartDrawer .bj-cd-scroll>.besjaar-ui-drawer__body{order:-2!important;flex:none!important;padding:4px 16px 8px!important}
+    html body #BesjaarUICartDrawer .bj-cd-scroll>.besjaar-ui-cart-drawer__upsell{order:-1!important;flex:none!important;padding:14px 16px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{grid-template-columns:80px minmax(0,1fr) auto!important;gap:4px 12px!important;padding:14px 0!important}
     html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media{width:80px!important;height:80px!important}
     html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{font-size:14px!important}
-    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__upsell{padding:14px 16px!important}
     html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{margin:0 -16px!important;padding:0 16px 4px!important;scroll-padding-inline:16px}
-    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__foot{padding:12px 16px 16px!important}
-    html body #BesjaarUICartDrawer [data-cart-drawer-checkout]{min-height:54px!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__foot:not([hidden]){display:contents!important}
+    html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__foot[hidden]{display:none!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot>*{flex:none!important;margin-left:16px!important;margin-right:16px!important}
+    html body #BesjaarUICartDrawer .bj-cd-codes{margin-top:14px!important}
+    html body #BesjaarUICartDrawer .bj-cd-folds{margin-top:4px!important;margin-bottom:12px!important;padding-top:4px;border-top:1px solid #E4E1DB}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart__total{margin-bottom:4px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions{position:sticky!important;bottom:0!important;z-index:6!important;margin:8px 0 0!important;padding:10px 16px calc(10px + env(safe-area-inset-bottom))!important;background:#fff!important;box-shadow:0 -8px 18px -14px rgba(28,35,38,.45)!important}
+    html body #BesjaarUICartDrawer [data-cart-drawer-checkout]{min-height:52px!important;font-size:16px!important}
+    html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]{display:inline!important;margin:0!important;padding:0!important;border:0!important;background:none!important;color:inherit!important;font-size:inherit!important;font-weight:700!important;opacity:1!important}
+    html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]::after{content:none!important}
+    html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]::before{content:"·";margin:0 8px 0 2px;opacity:.7}
+    html body #BesjaarUICartDrawer .bj-cd-trust{margin-top:12px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{margin-bottom:20px!important}
   }
 </style>
 
