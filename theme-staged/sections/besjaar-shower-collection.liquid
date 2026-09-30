@@ -1,3 +1,7 @@
+{{ 'besjaar-shower-collection.css' | asset_url | stylesheet_tag }}
+{{ 'besjaar-collection-step3.css' | asset_url | stylesheet_tag }}
+{{ 'besjaar-collection-actions-1134.css' | asset_url | stylesheet_tag }}
+
 {% liquid
   capture root_url_localized
     render 'localized-internal-url', url: routes.root_url
@@ -9,171 +13,31 @@
     assign is_all_collection = true
   endif
   assign current_sort = collection.sort_by | default: collection.default_sort_by
-  assign show_hero_image = false
-  if section.settings.show_image and collection.image and is_all_collection == false
-    assign show_hero_image = true
-  endif
 %}
 
-<style>
-  /* 2026-09-30 collection page, a copy of the Univex collection page: beige
-     header band (breadcrumbs, title, intro, collection image), toolbar with
-     product count and sort, a 4 / 3 / 2 column grid of cards (square beige
-     tile, pill badges, round + quick add on the photo, title, gold stars,
-     price). The card markup is the theme's own snippet; it is restyled here
-     only. Rules carry two :not(#id) parts to win over the older card layers. */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2){background:#fff;color:#1C2326}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) *{box-sizing:border-box}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll__wrap{width:100%;max-width:calc(var(--besjaar-ui-width,1280px) + 64px);margin:0 auto;padding:0 32px}
-  /* header band */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero{padding:24px 0 32px;background:#F5F2EC}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero__inner{display:grid;gap:24px;align-items:center}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs{margin:0 0 16px;color:#5B6668;font-size:13px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:0;padding:0;list-style:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs li{display:inline-flex;align-items:center;gap:4px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs li+li::before{content:"/";opacity:.5}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs a{color:inherit;text-decoration:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs a:hover{text-decoration:underline}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-crumbs [aria-current="page"]{color:#1C2326}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero h1{margin:0!important;color:#1C2326!important;font-size:clamp(34px,4.4vw,52px)!important;line-height:1.08!important;letter-spacing:0!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero__intro{max-width:640px;margin:14px 0 0;color:rgba(28,35,38,.8);font-size:16px;line-height:1.6}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero__media{position:relative;aspect-ratio:16/9;max-height:340px;border-radius:20px;background:#fff;overflow:hidden}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero__media img{position:absolute;inset:0;width:100%;height:100%;padding:4%;object-fit:contain;mix-blend-mode:multiply}
-  /* toolbar */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-body{padding:32px 0 64px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin:0 0 24px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-toolbar__count{margin:0;color:#5B6668;font-size:14px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort{display:flex;align-items:center;gap:10px;margin:0 0 0 auto}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort label{color:#5B6668;font-size:14px;white-space:nowrap}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort__select{position:relative}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort select{min-width:200px;min-height:40px;margin:0;padding:8px 40px 8px 16px;border:1px solid rgba(28,35,38,.22);border-radius:40px;background:#fff;color:#1C2326;font:inherit;font-size:14px;appearance:none;-webkit-appearance:none;cursor:pointer;box-shadow:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort select:focus-visible{outline:2px solid #1F5F52;outline-offset:2px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort__select svg{position:absolute;top:50%;right:14px;width:14px;height:14px;transform:translateY(-50%);fill:none;stroke:currentColor;stroke-width:1.8;pointer-events:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort__submit{min-height:40px;padding:0 16px;border:0;border-radius:40px;background:#1F5F52;color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
-  html.besjaar-v115-ready body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort__submit{display:none}
-  /* grid */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:24px 12px!important;margin:0!important;padding:0!important}
-  /* cards */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card{position:relative!important;display:flex!important;flex-direction:column!important;height:100%!important;min-width:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;transform:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__media{position:relative!important;flex:0 0 auto!important;aspect-ratio:1/1!important;margin:0!important;border:0!important;border-radius:16px!important;background:#F5F2EC!important;box-shadow:none!important;overflow:hidden!important;transform:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__media-link{position:relative!important;display:block!important;width:100%!important;height:100%!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__image{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;padding:7%!important;object-fit:contain!important;mix-blend-mode:multiply;transition:opacity .4s ease,transform .6s cubic-bezier(.2,.7,.2,1)!important;transform:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__image--alternate{opacity:0!important}
-  @media (hover:hover) and (pointer:fine){
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card:hover .besjaar-collection-product-card__image--primary:has(+ .besjaar-collection-product-card__image--alternate){opacity:0!important}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card:hover .besjaar-collection-product-card__image--alternate{opacity:1!important}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card:hover .besjaar-collection-product-card__image--primary:only-of-type{transform:scale(1.04)!important}
-  }
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__badges{position:absolute!important;inset:10px auto auto 10px!important;z-index:2!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:6px!important;pointer-events:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-badge{display:inline-flex!important;align-items:center!important;gap:4px!important;min-height:0!important;padding:4px 10px!important;border-radius:99px!important;background:#B24530!important;color:#fff!important;font-size:12px!important;font-weight:700!important;line-height:1.3!important;letter-spacing:.02em!important;white-space:nowrap!important;box-shadow:none!important;backdrop-filter:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__body{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;gap:5px!important;min-height:0!important;padding:14px 2px 0!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__meta{display:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card h3{order:1!important;min-height:0!important;margin:0!important;color:#1C2326!important;font-family:var(--bj-font-body,inherit)!important;font-size:15px!important;font-weight:500!important;line-height:1.35!important;letter-spacing:0!important;text-transform:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card h3 a{display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important;color:inherit!important;text-decoration:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card h3 a:hover{text-decoration:underline!important;text-underline-offset:3px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__rating{order:2!important;min-height:0!important;margin:0!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price{order:3!important;display:flex!important;flex-wrap:wrap!important;align-items:baseline!important;gap:2px 8px!important;margin:0!important;color:#1C2326!important;font-size:15px!important;font-weight:500!important;line-height:1.3!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price strong{color:inherit!important;font-size:15px!important;font-weight:500!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price s{color:#5B6668!important;font-size:.9em!important;font-weight:400!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price:has(s) strong{color:#B24530!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price .bj-price__now{color:#B24530!important;font-size:15px!important;font-weight:500!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price .bj-price__was{color:#5B6668!important;font-size:.9em!important;font-weight:400!important;text-decoration:line-through!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__facts{display:none!important}
-  /* round + quick add on the photo */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__action{position:absolute!important;top:0!important;left:0!important;right:0!important;z-index:3!important;display:flex!important;align-items:flex-end!important;justify-content:flex-end!important;aspect-ratio:1/1!important;margin:0!important;padding:10px!important;pointer-events:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__view{display:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick-form{display:block!important;width:auto!important;margin:0!important;pointer-events:auto!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;background:#fff!important;background-image:none!important;color:transparent!important;font-size:0!important;box-shadow:0 2px 10px rgba(0,0,0,.1)!important;transform:none!important;filter:none!important;overflow:hidden!important;cursor:pointer!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick>span{display:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick::after{content:none!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick::before{content:"";width:20px;height:20px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231C2326' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E")}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick:hover{background:#fff!important;box-shadow:0 4px 16px rgba(0,0,0,.16)!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick.is-loading::before{width:18px;height:18px;border:2px solid #1C2326;border-right-color:transparent;border-radius:50%;background:none;animation:bj-coll-spin .7s linear infinite}
-  @keyframes bj-coll-spin{to{transform:rotate(360deg)}}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick-disabled{position:absolute!important;left:10px!important;bottom:10px!important;display:inline-flex!important;width:auto!important;min-height:0!important;padding:4px 10px!important;border:0!important;border-radius:99px!important;background:#E4E1DB!important;color:#1C2326!important;font-size:12px!important;font-weight:700!important;line-height:1.3!important;pointer-events:none!important}
-  @media (hover:hover) and (pointer:fine) and (min-width:990px){
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick-form{opacity:0;transform:translateY(6px);transition:opacity .2s ease,transform .2s ease}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card:hover .besjaar-collection-product-card__quick-form,html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card:focus-within .besjaar-collection-product-card__quick-form{opacity:1;transform:none}
-  }
-  /* groups on the all-products page */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-groups{display:grid;gap:64px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-group{scroll-margin-top:120px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-group__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin:0 0 24px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-group__head h2{margin:0!important;color:#1C2326!important;font-size:clamp(26px,3vw,34px)!important;line-height:1.15!important;letter-spacing:0!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-group__count{margin:6px 0 0;color:#5B6668;font-size:14px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-arrow-link{display:inline-flex;align-items:center;gap:6px;color:#1C2326;font-size:15px;font-weight:500;text-decoration:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-arrow-link svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-arrow-link:hover{text-decoration:underline;text-underline-offset:3px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-arrow-link:hover svg{transform:translateX(3px)}
-  /* empty, pagination, more */
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-empty{padding:64px 16px;border-radius:16px;background:#F5F2EC;text-align:center}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-empty h2{margin:0!important;font-size:24px!important}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-pagination{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin:48px 0 0}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-pagination a,html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-pagination span{display:inline-grid;place-items:center;min-width:44px;height:44px;padding:0 12px;border-radius:40px;color:#1C2326;font-size:15px;text-decoration:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-pagination a:hover{background:#F5F2EC}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-pagination .is-current{background:#1C2326;color:#fff}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more{max-width:760px;margin:48px 0 0;border-top:1px solid #E4E1DB;border-bottom:1px solid #E4E1DB}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 0;cursor:pointer;list-style:none;color:#1C2326;font-size:15px;font-weight:500}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more summary::-webkit-details-marker{display:none}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more summary::after{content:"";width:8px;height:8px;border-right:1.7px solid #1C2326;border-bottom:1.7px solid #1C2326;transform:translateY(-2px) rotate(45deg);transition:transform .15s ease}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more[open] summary::after{transform:translateY(2px) rotate(-135deg)}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more__body{padding:0 0 18px;color:#5B6668;font-size:15px;line-height:1.65}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more__body p{margin:0 0 12px}
-  html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-more__body a{color:#1F5F52;text-decoration:underline;text-underline-offset:3px}
-  @media (min-width:750px){
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:32px 18px!important}
-  }
-  @media (min-width:990px){
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero{padding:32px 0 48px}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero--image .bj-coll-hero__inner{grid-template-columns:1.2fr 1fr;gap:64px}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-hero__media{aspect-ratio:2/1}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:36px 24px!important}
-  }
-  @media (max-width:749px){
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll__wrap{padding:0 16px}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-body{padding:24px 0 48px}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort{flex:1 1 auto;margin:0}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort__select,html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-sort select{width:100%;min-width:0}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .bj-coll-toolbar__count{order:3;flex-basis:100%}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__quick{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__action{padding:8px!important}
-    html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card h3,html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price,html body .bj-coll:not(#bj-c1):not(#bj-c2) .besjaar-collection-product-card__price strong{font-size:14px!important}
-  }
-</style>
-
-<div class="bj-coll" data-besjaar-collection-collection>
-  {%- capture current_collection_title -%}{% if is_all_collection %}{{ 'besjaar_ui.shower_store.catalog.heading' | t }}{% else %}{% render 'localized-collection-title', collection: collection %}{% endif %}{%- endcapture -%}
-  {%- capture current_collection_description -%}{% unless is_all_collection %}{% render 'localized-collection-description', collection: collection %}{% endunless %}{%- endcapture -%}
-  {%- comment -%}The first paragraph of the (localized) collection description is the intro under the h1; the rest sits in the "Meer over ..." panel below the grid.{%- endcomment -%}
-  {%- assign current_collection_intro = current_collection_description | split: '</p>' | first | strip_html | strip -%}
-
-  <div class="bj-coll-hero{% if show_hero_image %} bj-coll-hero--image{% endif %}">
-    <div class="bj-coll__wrap bj-coll-hero__inner">
-      <div>
-        <nav class="bj-coll-crumbs" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
-          <ol role="list">
-            <li><a href="{{ root_url_localized }}">{{ 'besjaar_grouped_collection.home' | t }}</a></li>
-            <li><span aria-current="page">{{ current_collection_title | strip | escape_once }}</span></li>
-          </ol>
+<section class="besjaar-collection-collection besjaar-collection-collection--grouped besjaar-collection-step3" data-besjaar-collection-collection>
+  <div class="besjaar-collection-collection__shell">
+    {% unless is_all_collection %}
+      <div class="besjaar-collection-collection__crumbs-wrap">
+        <nav class="besjaar-collection-breadcrumbs" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
+          <a href="{{ root_url_localized }}">{{ 'besjaar_grouped_collection.home' | t }}</a>
+          <span aria-hidden="true">›</span>
+          <span>{% render 'localized-collection-title', collection: collection %}</span>
         </nav>
-        <h1>{{ current_collection_title | strip | escape_once }}</h1>
-        {%- if current_collection_intro != blank -%}
-          <p class="bj-coll-hero__intro">{{ current_collection_intro | escape_once }}</p>
-        {%- endif -%}
       </div>
-      {%- if show_hero_image -%}
-        <div class="bj-coll-hero__media">
-          {{ collection.image | image_url: width: 1200 | image_tag: widths: '400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 40vw, 100vw', loading: 'eager', fetchpriority: 'high', alt: '' }}
-        </div>
-      {%- endif -%}
-    </div>
-  </div>
+    {% endunless %}
 
-  <div class="bj-coll-body">
-    <div class="bj-coll__wrap">
     {% if is_all_collection %}
-      <div class="bj-coll-groups">
+      {%- comment -%}Besjaar 11.6: the grouped shop hub previously rendered no h1 at all — only per-collection h2s.{%- endcomment -%}
+      <header class="besjaar-collection-collection__header besjaar-collection-collection__header--single besjaar-collection-collection__header--all">
+        <div class="besjaar-collection-collection__heading-wrap">
+          <div>
+            <p class="besjaar-collection-collection__eyebrow">BESJAAR</p>
+            <h1>{{ 'besjaar_ui.shower_store.catalog.heading' | t }}</h1>
+          </div>
+        </div>
+      </header>
+      <div class="besjaar-collection-collection-groups besjaar-collection-collection-groups--shop-first">
         {% assign rendered_collection_count = 0 %}
         {% assign rendered_collection_ids = '|' %}
 
@@ -184,26 +48,35 @@
           {% assign is_filter_collection = false %}
           {% if shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% assign is_filter_collection = true %}{% endif %}
           {% if is_filter_collection %}{% continue %}{% endif %}
+
           {% assign is_head_collection = false %}
           {% if shop_collection.handle == 'badkamer-douche' or shop_collection.handle == 'douchekoppen' or shop_collection.handle == 'showerheads' or shop_collection.handle == 'douche' or shop_collection.handle == 'shower' %}{% assign is_head_collection = true %}{% endif %}
           {% if shop_collection_identity contains 'shower head' or shop_collection_identity contains 'showerhead' or shop_collection_identity contains 'douchekop' or shop_collection_identity contains 'hand shower' or shop_collection_identity contains 'handdouche' %}{% assign is_head_collection = true %}{% endif %}
           {% unless is_head_collection %}{% continue %}{% endunless %}
+
           {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
           {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
           {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
           {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
-          <section class="bj-coll-group bj-coll-group--heads" id="Collection-{{ shop_collection.handle | escape }}">
-            <header class="bj-coll-group__head">
-              <div>
-                <h2>{{ shop_collection_title | strip | escape_once }}</h2>
-                <p class="bj-coll-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="besjaar-collection-collection-group besjaar-collection-collection-group--heads" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="besjaar-collection-collection-group__head">
+              <div class="besjaar-collection-collection-group__identity">
+                <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip | escape_once }}</h2>
+                  {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
+                </div>
               </div>
-              <a class="bj-coll-arrow-link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a class="besjaar-collection-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
             </header>
-            {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
-            <div class="bj-coll-grid besjaar-collection-product-grid">
+
+            <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
+              {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
               {% for product in shop_collection.products limit: 50 %}
-                {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if rendered_collection_count == 0 and forloop.index <= 4 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
+                {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if rendered_collection_count == 0 and forloop.index <= 2 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
                 {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading, image_priority: card_priority %}
               {% endfor %}
             </div>
@@ -219,18 +92,26 @@
           {% unless shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% continue %}{% endunless %}
           {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
           {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
+
           {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
           {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
-          <section class="bj-coll-group bj-coll-group--filters" id="Collection-{{ shop_collection.handle | escape }}">
-            <header class="bj-coll-group__head">
-              <div>
-                <h2>{{ shop_collection_title | strip | escape_once }}</h2>
-                <p class="bj-coll-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="besjaar-collection-collection-group besjaar-collection-collection-group--filters" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="besjaar-collection-collection-group__head">
+              <div class="besjaar-collection-collection-group__identity">
+                <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip | escape_once }}</h2>
+                  {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
+                </div>
               </div>
-              <a class="bj-coll-arrow-link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a class="besjaar-collection-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
             </header>
-            {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
-            <div class="bj-coll-grid besjaar-collection-product-grid">
+
+            <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
+              {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
               {% for product in shop_collection.products limit: 50 %}
                 {% assign card_loading = 'lazy' %}
                 {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
@@ -248,16 +129,23 @@
           {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
           {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
           {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
-          <section class="bj-coll-group" id="Collection-{{ shop_collection.handle | escape }}">
-            <header class="bj-coll-group__head">
-              <div>
-                <h2>{{ shop_collection_title | strip | escape_once }}</h2>
-                <p class="bj-coll-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+          {% assign group_number = rendered_collection_count | plus: 1 %}
+
+          <section class="besjaar-collection-collection-group" id="Collection-{{ shop_collection.handle | escape }}">
+            <header class="besjaar-collection-collection-group__head">
+              <div class="besjaar-collection-collection-group__identity">
+                <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
+                <div>
+                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <h2>{{ shop_collection_title | strip | escape_once }}</h2>
+                  {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
+                </div>
               </div>
-              <a class="bj-coll-arrow-link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+              <a class="besjaar-collection-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
             </header>
-            {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
-            <div class="bj-coll-grid besjaar-collection-product-grid">
+
+            <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
+              {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
               {% for product in shop_collection.products limit: 50 %}
                 {% assign card_loading = 'lazy' %}
                 {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
@@ -269,43 +157,64 @@
         {% endfor %}
 
         {% if rendered_collection_count == 0 %}
-          <div class="bj-coll-empty"><h2>{{ 'besjaar_ui.collection.no_products' | t }}</h2></div>
+          <div class="besjaar-collection-empty"><h2>{{ 'besjaar_ui.collection.no_products' | t }}</h2></div>
         {% endif %}
       </div>
     {% else %}
-      <div class="bj-coll-toolbar">
-        <p class="bj-coll-toolbar__count" role="status">{{ 'besjaar_ui.collection.products_count' | t: count: collection.products_count }}</p>
-        {% if section.settings.show_sort and collection.sort_options.size > 1 %}
-          <form class="bj-coll-sort" action="{% render 'localized-internal-url', url: collection.url %}" method="get" data-collection-sort>
-            <label for="BjCollectionSort-{{ section.id }}">{{ 'besjaar_ui.collection.sort' | t }}</label>
-            <div class="bj-coll-sort__select">
-              <select id="BjCollectionSort-{{ section.id }}" name="sort_by" data-collection-sort-select>
+      {% capture current_collection_title %}{% render 'localized-collection-title', collection: collection %}{% endcapture %}
+
+      <header class="besjaar-collection-collection__header besjaar-collection-collection__header--single">
+        <div class="besjaar-collection-collection__heading-wrap">
+          <div>
+            <p class="besjaar-collection-collection__eyebrow">BESJAAR</p>
+            <h1>{{ current_collection_title | strip | escape_once }}</h1>
+            {%- comment -%}2026-09-22: the first paragraph of the (localized) collection description runs under the h1 as a short lead; the merchant controls the sentence in Admin. The full description still feeds meta tags and structured data.{%- endcomment -%}
+            {%- capture current_collection_description -%}{% render 'localized-collection-description', collection: collection %}{%- endcapture -%}
+            {%- assign current_collection_intro = current_collection_description | split: '</p>' | first | strip_html | strip -%}
+            {%- if current_collection_intro != blank -%}
+              <p class="besjaar-collection-collection__intro">{{ current_collection_intro | escape_once }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      </header>
+
+      {%- comment -%}2026-09-22: the product-count / sort toolbar is hidden when sorting is off (templates/collection.json) so the grid follows the intro directly.{%- endcomment -%}
+      {% if section.settings.show_sort and collection.sort_options.size > 1 %}
+      <div class="besjaar-collection-single-collection-meta besjaar-collection-single-collection-toolbar">
+        <div class="besjaar-collection-single-collection-toolbar__count">
+          <span aria-hidden="true">—</span>
+          <strong>{{ 'besjaar_ui.collection.products_count' | t: count: collection.products_count }}</strong>
+        </div>
+          <form class="besjaar-collection-collection-sort" action="{{ collection.url }}" method="get" data-collection-sort>
+            <label for="BesjaarCollectionSort-{{ section.id }}">{{ 'besjaar_ui.collection.sort' | t }}</label>
+            <div class="besjaar-collection-collection-sort__select">
+              <select id="BesjaarCollectionSort-{{ section.id }}" name="sort_by" data-collection-sort-select>
                 {% for option in collection.sort_options %}
                   <option value="{{ option.value | escape }}"{% if option.value == current_sort %} selected{% endif %}>{{ option.name | escape }}</option>
                 {% endfor %}
               </select>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m3 5 4 4 4-4"></path></svg>
             </div>
-            <button class="bj-coll-sort__submit" type="submit">{{ 'besjaar_ui.collection.sort' | t }}</button>
+            <button class="besjaar-collection-collection-sort__submit" type="submit">{{ 'besjaar_ui.collection.sort' | t }}</button>
           </form>
-        {% endif %}
       </div>
+      {% endif %}
 
       {% paginate collection.products by section.settings.products_per_page %}
         {% if collection.products_count > 0 %}
-          {% render 'seo-visible-item-list', products: collection.products, list_key: section.id, limit_count: section.settings.products_per_page, offset: paginate.current_offset %}
-          <div class="bj-coll-grid besjaar-collection-product-grid">
+          <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
+            {% render 'seo-visible-item-list', products: collection.products, list_key: section.id, limit_count: section.settings.products_per_page, offset: paginate.current_offset %}
             {% for product in collection.products %}
-              {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if forloop.index <= 4 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
+              {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if forloop.index <= 2 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
               {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading, image_priority: card_priority %}
             {% endfor %}
           </div>
         {% else %}
-          <div class="bj-coll-empty"><h2>{{ 'besjaar_ui.collection.no_products' | t }}</h2></div>
+          <div class="besjaar-collection-empty"><h2>{{ 'besjaar_ui.collection.no_products' | t }}</h2></div>
         {% endif %}
 
         {% if paginate.pages > 1 %}
-          <nav class="bj-coll-pagination" aria-label="{{ 'besjaar_ui.conversion.pagination' | t | escape }}">
+          <nav class="besjaar-collection-pagination" aria-label="{{ 'besjaar_ui.conversion.pagination' | t | escape }}">
             {% if paginate.previous %}<a href="{% render 'localized-internal-url', url: paginate.previous.url %}" aria-label="{{ 'besjaar_ui.conversion.previous_page' | t | escape }}">←</a>{% endif %}
             {% for part in paginate.parts %}
               {% if part.is_link %}<a href="{% render 'localized-internal-url', url: part.url %}">{{ part.title }}</a>
@@ -317,9 +226,13 @@
         {% endif %}
       {% endpaginate %}
       {%- comment -%}
-        The rest of the merchant's collection description (after the intro
-        paragraph) in a collapsed "Meer over ..." panel, so the category text
-        stays on the page and indexable.
+        2026-09-13: the full collection description no longer renders under the
+        grid; it pushed the trust row and footer further down on a five-product
+        shop. 2026-09-22: the first paragraph of the description renders under
+        the h1 in the header above; the remaining paragraphs render here in a
+        collapsed "Meer over ..." panel so the merchant's own category text is
+        still on the page (and indexable) without pushing the trust row down.
+        The text is untouched in Shopify.
       {%- endcomment -%}
       {%- liquid
         assign more_paragraphs = current_collection_description | split: '</p>'
@@ -346,27 +259,43 @@
           else
             assign more_label = 'Meer over'
         endcase
-        assign more_collection_title = current_collection_title | strip | replace: '&amp;', '&' | downcase
+        capture more_collection_title
+          render 'localized-collection-title', collection: collection
+        endcapture
+        assign more_collection_title = more_collection_title | strip | replace: '&amp;', '&' | downcase
       -%}
       {%- if current_collection_more_text != blank -%}
-        <details class="bj-coll-more">
+        <style>
+          .besjaar-collection-collection__more{max-width:760px;margin:26px 0 4px;border-top:1px solid var(--besjaar-collection-line,#e7e9eb)}
+          .besjaar-collection-collection__more summary{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 0;cursor:pointer;list-style:none;color:var(--besjaar-collection-ink,#101820);font-size:.92rem;font-weight:700}
+          .besjaar-collection-collection__more summary::-webkit-details-marker{display:none}
+          .besjaar-collection-collection__more summary::after{content:"+";font-size:1.1rem;font-weight:500;color:#173555}
+          .besjaar-collection-collection__more[open] summary::after{content:"\2013"}
+          .besjaar-collection-collection__more .besjaar-collection-collection__more-body{padding:0 0 18px;color:#4b5a66;font-size:.92rem;line-height:1.65}
+          .besjaar-collection-collection__more .besjaar-collection-collection__more-body p{margin:0 0 12px}
+          .besjaar-collection-collection__more .besjaar-collection-collection__more-body a{color:#173555;text-decoration:underline;text-underline-offset:3px}
+        </style>
+        <details class="besjaar-collection-collection__more">
           <summary>{{ more_label }} {{ more_collection_title | escape_once }}</summary>
-          <div class="bj-coll-more__body">{{ current_collection_more }}</div>
+          <div class="besjaar-collection-collection__more-body">{{ current_collection_more }}</div>
         </details>
       {%- endif -%}
     {% endif %}
+
+    <div class="besjaar-collection-trust-row" aria-label="{{ 'besjaar_shower_collection.trust_label' | t | escape }}">
+      <div class="besjaar-collection-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>{%- capture sc_thr -%}{% render 'besjaar-shipping-zone', field: 'threshold_cents' %}{%- endcapture -%}{%- assign sc_thr = sc_thr | strip | plus: 0 | divided_by: 100 -%}<span>{% if sc_thr > 0 %}{{ 'besjaar_shower_collection.shipping' | t: amount: sc_thr }}{% else %}{{ 'besjaar_ui.footer.nl_shipping' | t }}{% endif %}</span></div>
+      <div class="besjaar-collection-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10a6 6 0 1 1-5.2 9M4 7l3-3M4 7l3 3"/></svg><span>{{ 'besjaar_shower_collection.returns' | t: days: settings.return_window_days }}</span></div>
+      <div class="besjaar-collection-trust-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3"/></svg><span>{{ 'besjaar_shower_collection.secure' | t }}</span></div>
     </div>
   </div>
-</div>
+</section>
 
 {% schema %}
 {
   "name": "Grouped collection shop",
   "settings": [
-    {"type":"paragraph","content":"Opgebouwd zoals de Univex-collectiepagina: beige kop met broodkruimels, titel en intro, daaronder aantal producten, sorteren en een raster van 4 kolommen."},
     {"type":"range","id":"products_per_page","label":"Products per page","min":8,"max":24,"step":4,"default":12},
-    {"type":"checkbox","id":"show_sort","label":"Show collection sorting","default":true},
-    {"type":"checkbox","id":"show_image","label":"Show collection image","default":true}
+    {"type":"checkbox","id":"show_sort","label":"Show collection sorting","default":true}
   ],
   "presets":[{"name":"Grouped collection shop"}]
 }

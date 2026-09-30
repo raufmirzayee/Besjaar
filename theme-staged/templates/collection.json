@@ -13,7 +13,7 @@
       "type": "besjaar-shower-collection",
       "settings": {
         "products_per_page": 12,
-        "show_sort": true
+        "show_sort": false
       }
     },
     "1788015123d9b13b21": {
