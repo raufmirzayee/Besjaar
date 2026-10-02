@@ -424,8 +424,8 @@
       "description_title": "Productbeschrijving",
       "drag_gallery": "Sleep of veeg om productmedia te bekijken",
       "gallery_browse_label": "Productmediagalerij. Sleep, veeg of gebruik de pijltjestoetsen om te bladeren.",
-      "fbesjaar_store_model_title": "Twijfelt u tussen modellen?",
-      "fbesjaar_store_model_copy": "Gebruik de keuzehulp en vind in drie stappen uw beste match.",
+      "fbesjaar_store_model_title": "Twijfel je tussen modellen?",
+      "fbesjaar_store_model_copy": "Gebruik de keuzehulp en vind in drie stappen je beste match.",
       "filter_note_title": "Waterfilter",
       "filter_note_copy": "Helpt kleine deeltjes en zichtbare onzuiverheden uit het douchewater op te vangen. Het filter is uitneembaar en vervangbaar.",
       "filter_note_chip_replaceable": "Vervangbaar",
@@ -835,7 +835,7 @@
       "all_products": "Alle douchekoppen",
       "all_collections": "Douchekoppen",
       "faq": "Veelgestelde vragen",
-      "track_order": "Volg uw bestelling",
+      "track_order": "Volg je bestelling",
       "info": "Informatie",
       "search": "Zoeken",
       "account": "Mijn account",
@@ -1197,22 +1197,22 @@
       "visual_detail_heading": "Ontworpen voor dagelijks douchecomfort",
       "visual_gallery_label": "Productdetail",
       "visual_comfort_heading": "Comfort in elk detail",
-      "visual_comfort_copy": "Bekijk de vorm, bediening en afwerking van dichtbij voordat u kiest.",
+      "visual_comfort_copy": "Bekijk de vorm, bediening en afwerking van dichtbij voordat je kiest.",
       "visual_finish_heading": "Een afwerking die rustig oogt",
       "visual_finish_copy": "De productfoto’s laten het materiaal en de vorm duidelijk zien, zonder afleiding.",
       "visual_everyday_heading": "Gemaakt voor dagelijks gebruik",
-      "visual_everyday_copy": "Een praktische handdouche die eenvoudig in uw bestaande doucheroutine past.",
+      "visual_everyday_copy": "Een praktische handdouche die eenvoudig in je bestaande doucheroutine past.",
       "visual_closeup_heading": "Bekijk elk detail",
       "visual_closeup_copy": "Gebruik de productbeelden om aansluiting, formaat en afwerking goed te beoordelen.",
       "finder": {
         "kicker": "KIES ZONDER TWIJFEL",
-        "heading": "Welke Besjaar douchekop past bij u?",
-        "copy": "Beantwoord drie korte vragen. We leggen uw voorkeuren naast de Besjaar-modellen en markeren de beste match.",
+        "heading": "Welke Besjaar douchekop past bij jou?",
+        "copy": "Beantwoord drie korte vragen. We leggen je voorkeuren naast de Besjaar-modellen en markeren de beste match.",
         "jump_to_models": "Bekijk modellen",
         "quiz_label": "Keuzehulp voor Besjaar douchekoppen",
-        "hose_question": "Wilt u een doucheslang erbij?",
-        "filter_question": "Wilt u een model met filter?",
-        "priority_question": "Wat vindt u belangrijker?",
+        "hose_question": "Wil je een doucheslang erbij?",
+        "filter_question": "Wil je een model met filter?",
+        "priority_question": "Wat vind jij belangrijker?",
         "any": "Maakt niet uit",
         "hose_yes": "Met slang",
         "hose_no": "Zonder slang",
@@ -1220,10 +1220,10 @@
         "filter_no": "Zonder filter",
         "priority_simple": "Eenvoud",
         "priority_versatile": "Meer standen",
-        "status_default": "Kies wat voor u belangrijk is. De beste match wordt automatisch gemarkeerd.",
+        "status_default": "Kies wat voor jou belangrijk is. De beste match wordt automatisch gemarkeerd.",
         "status_match_prefix": "Beste match: ",
         "reset": "Reset",
-        "current_model": "U bekijkt deze",
+        "current_model": "Je bekijkt deze",
         "best_match": "Beste match",
         "spray_fact": "{{ count }} sproeistanden",
         "with_hose": "Met slang",
@@ -1233,7 +1233,7 @@
         "view_current": "Terug naar boven",
         "view_model": "Bekijk model",
         "result_kicker": "UW BESJAAR MATCH",
-        "view_match": "Bekijk uw match"
+        "view_match": "Bekijk je match"
       },
       "recommendations": {
         "kicker": "EEN ANDERE ROUTE",
@@ -1301,7 +1301,7 @@
     },
     "shower_collection": {
       "eyebrow": "Douchekoppen",
-      "default_intro": "Vergelijk Besjaar-douchekoppen in één duidelijke collectie: handdouches, douchekoppen met filter, hoge druk douchekoppen en modellen met doucheslang. Bekijk sproeistanden, meegeleverde onderdelen, pasvorm en prijs voordat u kiest.",
+      "default_intro": "Vergelijk Besjaar-douchekoppen in één duidelijke collectie: handdouches, douchekoppen met filter, hoge druk douchekoppen en modellen met doucheslang. Bekijk sproeistanden, meegeleverde onderdelen, pasvorm en prijs voordat je kiest.",
       "shop_models": "Bekijk de modellen",
       "compare_models": "Modellen vergelijken",
       "collection_summary": "Besjaar-douchekopassortiment",
@@ -1335,10 +1335,10 @@
       "no_match_text": "Verwijder één of meer filters om het volledige douchekopassortiment opnieuw te zien.",
       "reset_filters": "Filters herstellen",
       "compare_kicker": "Duidelijk vergelijken",
-      "compare_title": "Vergelijk de modellen voordat u kiest.",
-      "compare_step_1": "Open twee of meer douchekoppen die u overweegt.",
+      "compare_title": "Vergelijk de modellen voordat je kiest.",
+      "compare_step_1": "Open twee of meer douchekoppen die je overweegt.",
       "compare_step_2": "Let op sproeistanden, meegeleverde onderdelen en pasvorm.",
-      "compare_step_3": "Kies het model dat het beste bij uw badkamer en voorkeuren past.",
+      "compare_step_3": "Kies het model dat het beste bij je badkamer en voorkeuren past.",
       "key_specs": "Belangrijkste douchespecificaties",
       "modes_short": "standen",
       "filter_short": "filter",
@@ -1368,8 +1368,8 @@
       "bol_proof_compact_copy": "Publieke marketplace-cijfers met een directe bronlink.",
       "bol_proof_stat_sales_short": "verkochte producten",
       "need_kicker": "KIES OP BEHOEFTE",
-      "need_heading": "Begin met wat voor u belangrijk is.",
-      "need_copy": "Verfijn de zichtbare Besjaar-modellen direct. Deze snelkeuzes gebruiken gecontroleerde productspecificaties en wijzigen uw Shopify-filters niet.",
+      "need_heading": "Begin met wat voor jou belangrijk is.",
+      "need_copy": "Verfijn de zichtbare Besjaar-modellen direct. Deze snelkeuzes gebruiken gecontroleerde productspecificaties en wijzigen je Shopify-filters niet.",
       "need_label": "Kies douchekoppen op behoefte",
       "need_all": "Alle modellen",
       "need_filter": "Met filter",
@@ -1377,7 +1377,7 @@
       "need_modes": "Meer sproeistanden",
       "need_simple": "Eenvoudige upgrade",
       "need_empty_title": "Geen zichtbaar model past bij deze keuze.",
-      "need_empty_copy": "Kies een andere snelkeuze of toon alle modellen. Uw Shopify-winkelfilters blijven ongewijzigd.",
+      "need_empty_copy": "Kies een andere snelkeuze of toon alle modellen. Je Shopify-winkelfilters blijven ongewijzigd.",
       "need_reset": "Toon alle modellen",
       "bol_proof_public": "publieke bron"
     },
@@ -1533,7 +1533,7 @@
     },
     "navigation": {
       "shop": "Assortiment",
-      "track_order": "Volg uw bestelling",
+      "track_order": "Volg je bestelling",
       "faq": "Veelgestelde vragen",
       "contact": "Contact",
       "about": "Over ons",
@@ -1655,25 +1655,25 @@
       },
       "models": {
         "kicker": "DOUCHEKOPPEN / BESJAAR",
-        "heading": "Douchekoppen. Kies wat bij u past.",
-        "copy": "Vergelijk het volledige Besjaar-assortiment op één plek. Let op douche-ervaring, meegeleverde onderdelen, aansluiting en het model dat u het prettigst vindt.",
-        "empty": "Selecteer uw douchekoppen in de thema-instellingen of voeg ze toe aan de douchekopcollectie.",
+        "heading": "Douchekoppen. Kies wat bij jou past.",
+        "copy": "Vergelijk het volledige Besjaar-assortiment op één plek. Let op douche-ervaring, meegeleverde onderdelen, aansluiting en het model dat jij het prettigst vindt.",
+        "empty": "Selecteer je douchekoppen in de thema-instellingen of voeg ze toe aan de douchekopcollectie.",
         "shop_all": "Bekijk alle douchekoppen"
       },
       "guide": {
         "kicker": "KIES MET DUIDELIJKHEID",
         "heading": "Wat telt bij het kiezen van een douchekop.",
-        "copy": "U hebt geen tientallen bijna gelijke producten nodig. Vergelijk de paar details die de douche-ervaring echt veranderen.",
+        "copy": "Je hebt geen tientallen bijna gelijke producten nodig. Vergelijk de paar details die de douche-ervaring echt veranderen.",
         "label": "KEUZEHULP DOUCHEKOP",
-        "title": "Kies uw model in vier controles",
+        "title": "Kies je model in vier controles",
         "one_title": "Douche-ervaring",
         "one_copy": "Vergelijk de gedocumenteerde sproeistanden en productbeelden om te zien hoe elk model water verdeelt.",
         "two_title": "Wat is inbegrepen",
         "two_copy": "Controleer of het exacte model een slang, filter of andere onderdelen bevat. De productpagina moet overeenkomen met wat in de doos zit.",
         "three_title": "Pasvorm & aansluiting",
-        "three_copy": "Vergelijk de gepubliceerde aansluiting en compatibiliteitsinformatie vóór het bestellen met uw huidige douche.",
+        "three_copy": "Vergelijk de gepubliceerde aansluiting en compatibiliteitsinformatie vóór het bestellen met je huidige douche.",
         "four_title": "Afwerking & onderhoud",
-        "four_copy": "Kies de afwerking en vorm die u mooi vindt en bekijk daarna het onderhoudsadvies voor het exacte model.",
+        "four_copy": "Kies de afwerking en vorm die jij mooi vindt en bekijk daarna het onderhoudsadvies voor het exacte model.",
         "cta": "Bekijk de douchekoppen",
         "compare_cta": "Bekijk de modellen"
       },
@@ -1716,11 +1716,11 @@
       "catalog": {
         "kicker": "HET BESJAAR ASSORTIMENT",
         "heading": "Alle douchekoppen en douchefilters",
-        "copy": "Vergelijk Besjaar-douchekoppen, handdouches, modellen met filter en douchekoppen met slang. Bekijk sproeistanden, aansluiting, meegeleverde onderdelen en afwerking voordat u kiest.",
+        "copy": "Vergelijk Besjaar-douchekoppen, handdouches, modellen met filter en douchekoppen met slang. Bekijk sproeistanden, aansluiting, meegeleverde onderdelen en afwerking voordat je kiest.",
         "collection_name": "Douchekoppen",
         "five_models": "Huidige collectie",
         "compare_cta": "Vergelijk de modellen",
-        "empty": "Selecteer uw douchekopcollectie in de thema-instellingen om het gerichte assortiment hier te tonen.",
+        "empty": "Selecteer je douchekopcollectie in de thema-instellingen om het gerichte assortiment hier te tonen.",
         "accessories_kicker": "DOUCHE-ACCESSOIRE",
         "accessories_heading": "Filters & accessoires",
         "filter_info_kicker": "OVER HET FILTER",
@@ -1733,7 +1733,7 @@
         "filter_point_three_title": "Voor modellen met filter",
         "filter_point_three_copy": "Geschikt voor compatibele Besjaar-douchekoppen die voor een filter zijn ontworpen.",
         "filter_replace_title": "Wanneer moet ik het vervangen?",
-        "filter_replace_copy": "Controleer het filter regelmatig. Vervang het wanneer het zichtbaar verkleurt of wanneer u merkt dat de waterdoorstroming afneemt."
+        "filter_replace_copy": "Controleer het filter regelmatig. Vervang het wanneer het zichtbaar verkleurt of wanneer je merkt dat de waterdoorstroming afneemt."
       },
       "meta": {
         "title": "Besjaar® Officiële Webshop | Douchekoppen & Douchefilters",
@@ -2029,45 +2029,45 @@
   },
   "gempages": {
     "Carousel": {
-      "no_slider": "No Slider"
+      "no_slider": "Geen slider"
     },
     "CarouselV3": {
-      "no_slider": "No Slider"
+      "no_slider": "Geen slider"
     },
     "Newsletter": {
-      "err_msg_default": "Can’t send email. Please try again later.",
-      "success_msg_default": "Thanks for subscribing"
+      "err_msg_default": "E-mail kon niet worden verzonden. Probeer het later opnieuw.",
+      "success_msg_default": "Bedankt voor je aanmelding"
     },
     "IconListV2": {
-      "icons_not_found": "Icons not found"
+      "icons_not_found": "Geen iconen gevonden"
     },
     "IconList": {
-      "icons_not_found": "Icons not found"
+      "icons_not_found": "Geen iconen gevonden"
     },
     "IconListHoz": {
-      "icons_not_found": "Icons not found"
+      "icons_not_found": "Geen iconen gevonden"
     },
     "Product": {
-      "product_not_found": "Product not found"
+      "product_not_found": "Product niet gevonden"
     },
     "ProductList": {
-      "product_not_found": "Product Not Found!",
-      "no_products_found": "No products found!",
-      "no_related_products": "No related products!"
+      "product_not_found": "Product niet gevonden!",
+      "no_products_found": "Geen producten gevonden!",
+      "no_related_products": "Geen gerelateerde producten!"
     },
     "ProductListV3": {
-      "product_not_found": "Product Not Found!",
-      "no_products_found": "No products found!",
-      "no_related_products": "No related products!"
+      "product_not_found": "Product niet gevonden!",
+      "no_products_found": "Geen producten gevonden!",
+      "no_related_products": "Geen gerelateerde producten!"
     },
     "ProductTitle": {
-      "product_not_found": "Product Not Found"
+      "product_not_found": "Product niet gevonden"
     },
     "ProductVariants": {
-      "please_select": "Please select an option"
+      "please_select": "Kies een optie"
     },
     "StockCounter": {
-      "let_buy_now": "<mark>HURRY!</mark> LET BUY NOW"
+      "let_buy_now": "<mark>SNEL!</mark> BESTEL NU"
     },
     "Breadcrumb": {
       "home": "Home"
