@@ -1,0 +1,286 @@
+{%- comment -%}Shared SEO head: merchant SEO fields first unless the explicit homepage override is enabled. Canonical and hreflang remain Shopify-owned.{%- endcomment -%}
+{% capture besjaar_ui_localized_browser_title %}
+      {% case request.page_type %}
+        {% when 'product' %}{% render 'localized-product-title', product: product %}
+        {% when 'collection' %}{% render 'localized-collection-title', collection: collection %}
+        {% when 'page' %}{% render 'localized-page-title', page: page %}
+        {% else %}{{ page_title | default: 'Besjaar' }}
+      {% endcase %}
+    {% endcapture %}
+    
+    {% capture besjaar_ui_home_description %}{% render 'besjaar-home-description' %}{% endcapture %}
+    {% assign besjaar_ui_home_description = besjaar_ui_home_description | strip %}
+    {% liquid
+      assign besjaar_ui_browser_title = page_title | default: besjaar_ui_localized_browser_title | strip | default: 'Besjaar'
+      assign besjaar_ui_default_resource_title = blank
+      case request.page_type
+        when 'product'
+          assign besjaar_ui_default_resource_title = product.title
+        when 'collection'
+          assign besjaar_ui_default_resource_title = collection.title
+        when 'page'
+          assign besjaar_ui_default_resource_title = page.title
+      endcase
+      assign besjaar_ui_localized_browser_title_clean = besjaar_ui_localized_browser_title | strip
+      if besjaar_ui_default_resource_title != blank and page_title == besjaar_ui_default_resource_title and besjaar_ui_localized_browser_title_clean != blank
+        assign besjaar_ui_browser_title = besjaar_ui_localized_browser_title_clean
+      endif
+      assign besjaar_ui_browser_title = besjaar_ui_browser_title | replace: 'Beshear', 'Besjaar' | replace: 'beshear', 'Besjaar' | replace: 'BESHEAR', 'BESJAAR'
+      if request.page_type == 'blog' and page_title == blog.title
+        assign besjaar_ui_blog_seo_title = 'besjaar_ui.blog.seo_title' | t
+        unless besjaar_ui_blog_seo_title contains 'Translation missing'
+          assign besjaar_ui_browser_title = besjaar_ui_blog_seo_title
+        endunless
+      endif
+      if request.page_type == 'collection' and collection.handle == 'besjaar'
+        if page_title == blank or page_title == 'Besjaar'
+          assign besjaar_ui_browser_title = 'besjaar_ui.shower_store.catalog.collection_name' | t
+        endif
+      endif
+
+      assign besjaar_ui_lang = request.locale.iso_code | split: '-' | first | downcase
+      case besjaar_ui_lang
+        when 'en'
+          assign besjaar_ui_home_title = 'Besjaar | Showerheads & Shower Filters'
+        when 'de'
+          assign besjaar_ui_home_title = 'Besjaar | Duschköpfe & Duschfilter'
+        when 'fr'
+          assign besjaar_ui_home_title = 'Besjaar | Pommeaux & Filtres de Douche'
+        when 'es'
+          assign besjaar_ui_home_title = 'Besjaar | Alcachofas y filtros de ducha'
+        else
+          assign besjaar_ui_home_title = 'Besjaar | Douchekoppen & Douchefilters'
+      endcase
+      if request.page_type == 'index'
+        assign besjaar_ui_merchant_home_title = page_title | strip
+        if besjaar_ui_merchant_home_title == blank or besjaar_ui_merchant_home_title == shop.name
+          assign besjaar_ui_browser_title = besjaar_ui_home_title
+        else
+          assign besjaar_ui_browser_title = besjaar_ui_merchant_home_title
+        endif
+      endif
+      assign besjaar_ui_browser_title_downcase = besjaar_ui_browser_title | downcase
+
+      assign besjaar_ui_meta_description = page_description | strip_html | strip
+      comment
+        2026-09-22: when a blog, collection or page has no search engine listing
+        description, Shopify's page_description falls back to the store
+        description from Online Store > Preferences. That text is not about the
+        page, so it is treated as blank here and the page-type defaults below
+        take over. The homepage keeps its own override further down.
+      endcomment
+      if request.page_type != 'index' and besjaar_ui_meta_description != blank
+        assign besjaar_ui_shop_description = shop.description | strip_html | strip
+        if besjaar_ui_meta_description == besjaar_ui_shop_description
+          assign besjaar_ui_meta_description = ''
+        endif
+      endif
+      assign besjaar_ui_is_faq_page = false
+      if request.page_type == 'page'
+        if page.handle == settings.faq_page.handle or page.handle == 'faq' or page.handle == 'faqs' or page.handle == 'veelgestelde-vragen' or page.handle == 'frequently-asked-questions'
+          assign besjaar_ui_is_faq_page = true
+        endif
+      endif
+      if besjaar_ui_meta_description == blank and request.page_type == 'collection' and collection.description != blank
+        assign besjaar_ui_meta_description = collection.description | strip_html | strip | truncate: 155
+      endif
+      assign besjaar_ui_is_focus_collection = false
+      if request.page_type == 'collection'
+        if settings.shower_collection != blank and collection.id == settings.shower_collection.id
+          assign besjaar_ui_is_focus_collection = true
+        elsif collection.handle == 'badkamer-douche' or collection.handle == 'douchekoppen' or collection.handle == 'showerheads' or collection.handle == 'douche' or collection.handle == 'shower'
+          assign besjaar_ui_is_focus_collection = true
+        endif
+      endif
+      if request.page_type == 'index'
+        if besjaar_ui_meta_description == blank
+          assign besjaar_ui_meta_description = besjaar_ui_home_description
+        endif
+      elsif besjaar_ui_meta_description == blank and besjaar_ui_is_focus_collection
+        assign besjaar_ui_meta_description = 'besjaar_ui.seo_keywords.collection_meta_description' | t
+      elsif besjaar_ui_meta_description == blank and besjaar_ui_is_faq_page
+        assign besjaar_ui_meta_description = 'besjaar_ui.seo_keywords.faq_meta_description' | t
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'page'
+        assign besjaar_ui_page_handle = page.handle | downcase
+        if besjaar_ui_page_handle == 'reviews' or besjaar_ui_page_handle == 'klantbeoordelingen' or besjaar_ui_page_handle == 'beoordelingen' or besjaar_ui_page_handle == 'customer-reviews'
+          assign besjaar_ui_meta_description = 'besjaar_seo.reviews_description' | t
+        elsif besjaar_ui_page_handle == 'over-ons' or besjaar_ui_page_handle == 'overons' or besjaar_ui_page_handle == 'about-us' or besjaar_ui_page_handle == 'about'
+          case besjaar_ui_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Learn about Besjaar, our focused range of showerheads, shower filters and accessories, and how we support customers before and after purchase.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Erfahre mehr über Besjaar, unser fokussiertes Sortiment an Duschköpfen, Duschfiltern und Zubehör sowie unseren Kundenservice vor und nach dem Kauf.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Découvrez Besjaar, notre gamme ciblée de pommeaux, filtres de douche et accessoires, ainsi que notre accompagnement avant et après l’achat.'
+            when 'es'
+              assign besjaar_ui_meta_description = 'Descubre Besjaar, nuestra gama específica de alcachofas, filtros de ducha y accesorios, y nuestro asesoramiento antes y después de la compra.'
+            else
+              assign besjaar_ui_meta_description = 'Ontdek Besjaar, ons gerichte assortiment douchekoppen, douchefilters en accessoires, en hoe we klanten vóór en na aankoop ondersteunen.'
+          endcase
+        elsif besjaar_ui_page_handle == 'contact' or besjaar_ui_page_handle == 'contact-us' or besjaar_ui_page_handle == 'contacteer-ons' or besjaar_ui_page_handle == 'klantenservice'
+          case besjaar_ui_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Contact Besjaar for product advice, compatibility questions, orders, delivery, returns or support with your showerhead or shower filter.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Kontaktiere Besjaar bei Fragen zu Produkten, Kompatibilität, Bestellungen, Lieferung, Rückgabe oder Support zu Duschkopf und Duschfilter.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Contactez Besjaar pour des conseils produit, la compatibilité, les commandes, la livraison, les retours ou l’assistance.'
+            when 'es'
+              assign besjaar_ui_meta_description = 'Contacta con Besjaar para asesoramiento sobre productos, compatibilidad, pedidos, envíos, devoluciones o asistencia.'
+            else
+              assign besjaar_ui_meta_description = 'Neem contact op met Besjaar voor productadvies, compatibiliteit, bestellingen, levering, retouren of support bij douchekoppen en douchefilters.'
+          endcase
+        elsif besjaar_ui_page_handle == 'zakelijk' or besjaar_ui_page_handle == 'business' or besjaar_ui_page_handle == 'business-orders'
+          case besjaar_ui_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Business orders from Besjaar: contact us about volume purchasing, professional use, product selection, delivery and account questions.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar für Geschäftskunden: Informationen zu größeren Bestellungen, professioneller Nutzung, Produktauswahl, Lieferung und Support.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Commandes professionnelles Besjaar : achats en volume, sélection de produits, livraison et accompagnement pour les entreprises.'
+            when 'es'
+              assign besjaar_ui_meta_description = 'Pedidos para empresas de Besjaar: compras por volumen, selección de productos, envío y asesoramiento para empresas.'
+            else
+              assign besjaar_ui_meta_description = 'Zakelijk bestellen bij Besjaar: neem contact op over grotere aantallen, professionele toepassingen, productkeuze, levering en support.'
+          endcase
+        endif
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'product' and product.description != blank
+        assign besjaar_ui_meta_description = product.description | strip_html | strip | truncate: 155
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'collection'
+        assign besjaar_ui_collection_identity = collection.title | append: ' ' | append: collection.handle | downcase
+        if besjaar_ui_collection_identity contains 'filter'
+          case besjaar_ui_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Shop Besjaar replacement shower filters and compatible filter accessories. Check product fit, replacement guidance and availability before ordering.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar Ersatz-Duschfilter und kompatibles Filterzubehör kaufen. Passform, Wechselhinweise und Verfügbarkeit vor der Bestellung prüfen.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Achetez les filtres de remplacement Besjaar et accessoires compatibles. Vérifiez la compatibilité, le remplacement et la disponibilité.'
+            when 'es'
+              assign besjaar_ui_meta_description = 'Compra los filtros de recambio Besjaar y accesorios compatibles. Comprueba la compatibilidad, la sustitución y la disponibilidad.'
+            else
+              assign besjaar_ui_meta_description = 'Shop Besjaar vervangingsfilters en compatibele filteraccessoires. Controleer pasvorm, vervangingsadvies en beschikbaarheid vóór bestellen.'
+          endcase
+        elsif collection.handle == 'all'
+          case besjaar_ui_lang
+            when 'en'
+              assign besjaar_ui_meta_description = 'Shop Besjaar showerheads, shower filters and compatible bathroom accessories. Compare models, spray modes, filter options and availability online.'
+            when 'de'
+              assign besjaar_ui_meta_description = 'Besjaar Duschköpfe, Duschfilter und passendes Badzubehör entdecken. Modelle, Strahlarten, Filteroptionen und Verfügbarkeit online vergleichen.'
+            when 'fr'
+              assign besjaar_ui_meta_description = 'Découvrez les pommeaux, filtres de douche et accessoires Besjaar. Comparez les modèles, jets, options de filtre et disponibilités en ligne.'
+            when 'es'
+              assign besjaar_ui_meta_description = 'Descubre las alcachofas, filtros de ducha y accesorios Besjaar. Compara modelos, modos de chorro, opciones de filtro y disponibilidad online.'
+            else
+              assign besjaar_ui_meta_description = 'Shop Besjaar douchekoppen, douchefilters en passende badkameraccessoires. Vergelijk modellen, straalstanden, filteropties en beschikbaarheid online.'
+          endcase
+        elsif collection.description != blank
+          capture besjaar_ui_localized_collection_description
+            render 'localized-collection-description', collection: collection
+          endcapture
+          assign besjaar_ui_meta_description = besjaar_ui_localized_collection_description | strip_html | strip | truncate: 155
+        else
+          capture besjaar_ui_collection_fallback_description
+            case besjaar_ui_lang
+              when 'en'
+                echo 'Shop ' | append: collection.title | append: ' from Besjaar. Compare product features, compatibility, pricing and availability before ordering online.'
+              when 'de'
+                echo collection.title | append: ' von Besjaar entdecken. Produkteigenschaften, Kompatibilität, Preise und Verfügbarkeit vor der Bestellung vergleichen.'
+              when 'fr'
+                echo 'Découvrez ' | append: collection.title | append: ' chez Besjaar. Comparez les caractéristiques, la compatibilité, les prix et les disponibilités avant de commander.'
+              when 'es'
+                echo 'Descubre ' | append: collection.title | append: ' en Besjaar. Compara características, compatibilidad, precios y disponibilidad antes de hacer tu pedido.'
+              else
+                echo 'Shop ' | append: collection.title | append: ' van Besjaar. Vergelijk productkenmerken, compatibiliteit, prijzen en beschikbaarheid vóór je online bestelt.'
+            endcase
+          endcapture
+          assign besjaar_ui_meta_description = besjaar_ui_collection_fallback_description | strip | truncate: 155
+        endif
+      endif
+      if besjaar_ui_meta_description == blank and request.page_type == 'page' and page.content != blank
+        assign besjaar_ui_meta_description = page.content | strip_html | strip | truncate: 155
+      elsif besjaar_ui_meta_description == blank and request.page_type == 'article' and article.excerpt_or_content != blank
+        assign besjaar_ui_meta_description = article.excerpt_or_content | strip_html | strip | truncate: 155
+      endif
+      if besjaar_ui_meta_description == blank and request.page_type == 'blog'
+        assign besjaar_ui_blog_seo_description = 'besjaar_ui.blog.seo_description' | t
+        unless besjaar_ui_blog_seo_description contains 'Translation missing'
+          assign besjaar_ui_meta_description = besjaar_ui_blog_seo_description
+        endunless
+      endif
+      if besjaar_ui_meta_description == blank
+        case besjaar_ui_lang
+          when 'en'
+            assign besjaar_ui_meta_description = 'Besjaar showerheads, shower filters and replacement parts. Compare models, spray modes and compatibility, then order online.'
+          when 'de'
+            assign besjaar_ui_meta_description = 'Besjaar Duschköpfe, Duschfilter und Ersatzteile. Modelle, Strahlarten und Kompatibilität vergleichen und online bestellen.'
+          when 'fr'
+            assign besjaar_ui_meta_description = 'Pommeaux, filtres de douche et pièces de rechange Besjaar. Comparez les modèles, les jets et la compatibilité, puis commandez en ligne.'
+          when 'es'
+            assign besjaar_ui_meta_description = 'Alcachofas, filtros de ducha y recambios Besjaar. Compara modelos, modos de chorro y compatibilidad, y haz tu pedido online.'
+          else
+            assign besjaar_ui_meta_description = 'Besjaar douchekoppen, douchefilters en vervangingsonderdelen. Vergelijk modellen, sproeistanden en compatibiliteit en bestel online.'
+        endcase
+      endif
+    %}
+    
+    {% if request.page_type == 'page' %}
+      {% assign besjaar_ui_use_priority_page_seo_title = false %}
+      {% if page_title == blank or page_title == page.title %}
+        {% assign besjaar_ui_use_priority_page_seo_title = true %}
+      {% endif %}
+      {% if besjaar_ui_use_priority_page_seo_title %}
+        {% capture besjaar_ui_priority_page_seo_title %}{% render 'besjaar-priority-page-seo-title', page: page %}{% endcapture %}
+        {% assign besjaar_ui_priority_page_seo_title = besjaar_ui_priority_page_seo_title | strip %}
+        {% if besjaar_ui_priority_page_seo_title != blank %}
+          {% assign besjaar_ui_browser_title = besjaar_ui_priority_page_seo_title %}
+          {% assign besjaar_ui_browser_title_downcase = besjaar_ui_browser_title | downcase %}
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {%- comment -%}Approved NL/EN homepage copy, editable in Theme Settings > Homepage SEO.{%- endcomment -%}
+    {% if request.page_type == 'index' and settings.homepage_seo_override %}
+      {% liquid
+        assign homepage_override_title = blank
+        assign homepage_override_description = blank
+        case besjaar_ui_lang
+          when 'nl'
+            assign homepage_override_title = settings.homepage_seo_title_nl | strip
+            assign homepage_override_description = settings.homepage_seo_description_nl | strip_html | strip
+          when 'en'
+            assign homepage_override_title = settings.homepage_seo_title_en | strip
+            assign homepage_override_description = settings.homepage_seo_description_en | strip_html | strip
+        endcase
+        if homepage_override_title != blank
+          assign besjaar_ui_browser_title = homepage_override_title
+        endif
+        if homepage_override_description != blank
+          assign besjaar_ui_meta_description = homepage_override_description
+        endif
+      %}
+    {% endif %}
+    {% capture besjaar_ui_document_title %}
+      {{- besjaar_ui_browser_title -}}
+      {%- unless request.page_type == 'index' -%}
+        {%- if current_tags != blank %} – {{ current_tags | join: ', ' }}{% endif -%}
+        {%- if current_page > 1 %} – {{ 'besjaar_ui.page.page_number' | t: number: current_page }}{% endif -%}
+        {%- unless besjaar_ui_browser_title_downcase contains 'besjaar' %} | Besjaar{% endunless -%}
+      {%- endunless -%}
+    {% endcapture %}
+    {% assign besjaar_ui_browser_title = besjaar_ui_document_title | strip %}
+    <title translate="no">{{ besjaar_ui_browser_title | escape_once }}</title>
+    <meta name="application-name" content="Besjaar">
+
+    {% if besjaar_ui_meta_description != blank %}<meta name="description" content="{{ besjaar_ui_meta_description | escape }}">{% endif %}
+    {% render 'meta-tags', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: besjaar_ui_meta_description %}
+    {% render 'structured-data', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: besjaar_ui_meta_description %}
+    {%- if request.page_type == 'product' -%}
+      <script>
+        /* The theme owns Product JSON-LD (snippets/structured-data.liquid): Shopify's
+           serializer plus one aggregateRating from the reviews metafields. This guard
+           keeps Judge.me from adding a second Product/AggregateRating node even if its
+           "Google rich snippets" app setting is ever switched back on. */
+        window.judgemeOpts = window.judgemeOpts || {};
+        window.judgemeOpts.jldDisable = true;
+      </script>
+    {%- endif -%}

@@ -1,0 +1,451 @@
+{%- comment -%}
+  Besjaar 2026-09-22 (SEO: product-faq-missing-on-product-template)
+  "Veelgestelde vragen" panel for the product-page accordion. Every answer is
+  derived from product data (spray modes, filter / hose state via the shower-*
+  snippets) and theme settings (return window, warranty, free-shipping
+  threshold); nothing is hard-coded per product handle. Shower family only.
+  No FAQPage JSON-LD on purpose: Google shows no FAQ rich results for shops.
+  Usage: {% render 'besjaar-product-faq', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign bpf_product = product
+  capture bpf_capture
+    render 'product-family', product: bpf_product
+  endcapture
+  assign bpf_family = bpf_capture | strip
+-%}
+{%- if bpf_family == 'shower' -%}
+  {%- liquid
+    assign bpf_locale = request.locale.iso_code | split: '-' | first | downcase
+    assign bpf_returns_days = settings.return_window_days | default: 30
+    assign bpf_warranty_months = settings.warranty_months | default: 0
+    capture bpf_threshold_cents
+      render 'besjaar-shipping-zone', field: 'threshold_cents'
+    endcapture
+    assign bpf_threshold_cents = bpf_threshold_cents | strip | plus: 0
+    assign bpf_threshold_money = bpf_threshold_cents | money_without_trailing_zeros
+
+    case bpf_locale
+      when 'en'
+        assign bpf_label = 'Frequently asked questions'
+        assign bpf_q_fit = 'Does this shower head fit my shower hose?'
+        assign bpf_a_fit_filter = 'Yes. This model has a universal G½" connection and hand-tightens onto a standard shower hose, no tools needed.'
+        assign bpf_a_fit_other = 'Yes, in almost every case: you hand-tighten the shower head onto your existing standard shower hose, no tools needed.'
+        assign bpf_a_fit_contact_prefix = 'Not sure about your connection? Send us a photo via the '
+        assign bpf_a_fit_contact_link = 'contact page'
+        assign bpf_guide_link = 'Read: replace a shower head in 5 minutes'
+        assign bpf_q_modes = 'How many spray modes does this model have?'
+        assign bpf_a_modes_prefix = 'This model has '
+        assign bpf_a_modes_suffix = ' spray modes'
+        assign bpf_a_modes_10 = ': eight wellness modes and two PowerWash jets'
+        assign bpf_a_modes_3 = ': rain, massage and power'
+        assign bpf_q_water = 'How much water does this shower head use?'
+        assign bpf_q_water_filter = 'How does this shower head save water?'
+        assign bpf_a_water_3 = 'A maximum of 8 litres per minute. The shower head mixes air into the water, so the spray feels full at a lower flow.'
+        assign bpf_a_water_filter = 'The pause button stops the spray temporarily, for example while you soap up, without the temperature jumping. That saves up to 30% water and energy.'
+        assign bpf_q_filter = 'Is there a filter inside?'
+        assign bpf_a_filter_yes = 'Yes. This model has a replaceable 8-stage filter cartridge that captures limescale, chlorine and impurities. A cartridge lasts 3 to 5 months; the refill set contains two cartridges.'
+        assign bpf_a_filter_yes_link = 'View the refill set'
+        assign bpf_a_filter_no_prefix = 'No, this model has no filter. If you want filtered water against limescale and chlorine, choose the '
+        assign bpf_a_filter_no_name = 'Besjaar Shower Head with Filter'
+        assign bpf_q_hose = 'Is a hose included?'
+        assign bpf_a_hose_yes = 'Yes, a flexible 1.5 metre shower hose with seals.'
+        assign bpf_a_hose_no = 'No. You use your existing shower hose; the shower head fits a standard connection.'
+        assign bpf_q_pressure = 'Does the shower head work with low water pressure?'
+        assign bpf_a_pressure = 'Yes. Air injection gives a full, powerful spray, even with low water pressure.'
+        assign bpf_q_refill_fit = 'Which shower head does this refill set fit?'
+        assign bpf_a_refill_fit = 'The Besjaar Shower Head with Filter (10 spray modes), with or without hose. The cartridges do not fit the 3-mode models or other shower heads.'
+        assign bpf_a_refill_fit_links = 'View:'
+        assign bpf_q_refill_interval = 'How often do I replace the filter?'
+        assign bpf_a_refill_interval = 'Every 3 to 5 months, depending on how often you shower and how hard your water is. Two cartridges last up to ten months.'
+        assign bpf_q_refill_swap = 'How do I change the filter?'
+        assign bpf_a_refill_swap = 'Without tools: detach the hose, take the old cartridge out, put the new one in.'
+        assign bpf_q_returns = 'Can I return it?'
+        assign bpf_a_returns_prefix = 'Yes, within '
+        assign bpf_a_returns_suffix = ' days of delivery, unused and in the original packaging.'
+        assign bpf_q_warranty = 'What warranty do I get?'
+        assign bpf_a_warranty_suffix = ' months of warranty, on top of your statutory consumer rights.'
+        assign bpf_q_shipping = 'What does shipping cost?'
+        assign bpf_a_shipping_prefix = 'Free shipping from '
+        assign bpf_a_shipping_suffix = '; below that, shipping costs apply.'
+        assign bpf_a_shipping_link = 'View the shipping policy'
+      when 'de'
+        assign bpf_label = 'Häufige Fragen'
+        assign bpf_q_fit = 'Passt dieser Duschkopf auf meinen Duschschlauch?'
+        assign bpf_a_fit_filter = 'Ja. Dieses Modell hat einen universellen G½"-Anschluss und wird ohne Werkzeug handfest auf einen Standard-Duschschlauch gedreht.'
+        assign bpf_a_fit_other = 'Ja, in fast allen Fällen: Du drehst den Duschkopf ohne Werkzeug handfest auf deinen vorhandenen Standard-Duschschlauch.'
+        assign bpf_a_fit_contact_prefix = 'Unsicher, ob es passt? Schick uns ein Foto über die '
+        assign bpf_a_fit_contact_link = 'Kontaktseite'
+        assign bpf_guide_link = 'Lesen: Duschkopf in 5 Minuten wechseln'
+        assign bpf_q_modes = 'Wie viele Strahlarten hat dieses Modell?'
+        assign bpf_a_modes_prefix = 'Dieses Modell hat '
+        assign bpf_a_modes_suffix = ' Strahlarten'
+        assign bpf_a_modes_10 = ': acht Wellness-Strahlarten und zwei PowerWash-Jets'
+        assign bpf_a_modes_3 = ': Regen, Massage und Power'
+        assign bpf_q_water = 'Wie viel Wasser verbraucht dieser Duschkopf?'
+        assign bpf_q_water_filter = 'Wie spart dieser Duschkopf Wasser?'
+        assign bpf_a_water_3 = 'Maximal 8 Liter pro Minute. Der Duschkopf mischt Luft ins Wasser, sodass sich der Strahl bei geringerem Verbrauch voll anfühlt.'
+        assign bpf_a_water_filter = 'Mit der Pausentaste stoppst du den Strahl vorübergehend, zum Beispiel beim Einseifen, ohne dass die Temperatur springt. Das spart bis zu 30% Wasser und Energie.'
+        assign bpf_q_filter = 'Ist ein Filter eingebaut?'
+        assign bpf_a_filter_yes = 'Ja. Dieses Modell hat eine austauschbare 8-stufige Filterkartusche, die Kalk, Chlor und Verunreinigungen zurückhält. Eine Kartusche hält 3 bis 5 Monate; das Nachfüllset enthält zwei Kartuschen.'
+        assign bpf_a_filter_yes_link = 'Zum Nachfüllset'
+        assign bpf_a_filter_no_prefix = 'Nein, dieses Modell hat keinen Filter. Möchtest du gefiltertes Wasser gegen Kalk und Chlor, wähle den '
+        assign bpf_a_filter_no_name = 'Besjaar Duschkopf mit Filter'
+        assign bpf_q_hose = 'Ist ein Schlauch dabei?'
+        assign bpf_a_hose_yes = 'Ja, ein flexibler Duschschlauch von 1,5 Metern mit Dichtungen.'
+        assign bpf_a_hose_no = 'Nein. Du nutzt deinen vorhandenen Duschschlauch; der Duschkopf passt auf einen Standardanschluss.'
+        assign bpf_q_pressure = 'Funktioniert der Duschkopf auch bei niedrigem Wasserdruck?'
+        assign bpf_a_pressure = 'Ja. Die Luftinjektion sorgt für einen vollen, kräftigen Strahl, auch bei niedrigem Wasserdruck.'
+        assign bpf_q_refill_fit = 'Auf welchen Duschkopf passt dieses Nachfüllset?'
+        assign bpf_a_refill_fit = 'Auf den Besjaar Duschkopf mit Filter (10 Strahlarten), mit oder ohne Schlauch. Die Kartuschen passen nicht auf die 3-Strahl-Modelle oder andere Duschköpfe.'
+        assign bpf_a_refill_fit_links = 'Ansehen:'
+        assign bpf_q_refill_interval = 'Wie oft wechsle ich den Filter?'
+        assign bpf_a_refill_interval = 'Alle 3 bis 5 Monate, je nachdem, wie oft du duschst und wie hart dein Wasser ist. Mit zwei Kartuschen kommst du bis zu zehn Monate weit.'
+        assign bpf_q_refill_swap = 'Wie wechsle ich den Filter?'
+        assign bpf_a_refill_swap = 'Ohne Werkzeug: Schlauch lösen, alte Kartusche heraus, neue hinein.'
+        assign bpf_q_returns = 'Kann ich zurückschicken?'
+        assign bpf_a_returns_prefix = 'Ja, innerhalb von '
+        assign bpf_a_returns_suffix = ' Tagen nach Lieferung, unbenutzt und in der Originalverpackung.'
+        assign bpf_q_warranty = 'Wie viel Garantie bekomme ich?'
+        assign bpf_a_warranty_suffix = ' Monate Garantie, zusätzlich zu deinen gesetzlichen Verbraucherrechten.'
+        assign bpf_q_shipping = 'Was kostet der Versand?'
+        assign bpf_a_shipping_prefix = 'Kostenloser Versand ab '
+        assign bpf_a_shipping_suffix = '; darunter fallen Versandkosten an.'
+        assign bpf_a_shipping_link = 'Versandbedingungen ansehen'
+      when 'fr'
+        assign bpf_label = 'Questions fréquentes'
+        assign bpf_q_fit = 'Ce pommeau est-il compatible avec mon flexible de douche ?'
+        assign bpf_a_fit_filter = 'Oui. Ce modèle a un raccord universel G½" et se visse à la main sur un flexible de douche standard, sans outil.'
+        assign bpf_a_fit_other = 'Oui, dans la quasi-totalité des cas : vous vissez le pommeau à la main sur votre flexible de douche standard actuel, sans outil.'
+        assign bpf_a_fit_contact_prefix = 'Un doute sur votre raccord ? Envoyez-nous une photo via la '
+        assign bpf_a_fit_contact_link = 'page de contact'
+        assign bpf_guide_link = 'À lire : remplacer un pommeau de douche en 5 minutes'
+        assign bpf_q_modes = 'Combien de types de jet ce modèle a-t-il ?'
+        assign bpf_a_modes_prefix = 'Ce modèle a '
+        assign bpf_a_modes_suffix = ' types de jet'
+        assign bpf_a_modes_10 = ' : huit jets bien-être et deux jets PowerWash'
+        assign bpf_a_modes_3 = ' : pluie, massage et puissant'
+        assign bpf_q_water = 'Quelle quantité d’eau ce pommeau consomme-t-il ?'
+        assign bpf_q_water_filter = 'Comment ce pommeau économise-t-il l’eau ?'
+        assign bpf_a_water_3 = 'Au maximum 8 litres par minute. Le pommeau mélange de l’air à l’eau, pour un jet qui reste plein avec un débit plus faible.'
+        assign bpf_a_water_filter = 'Le bouton pause interrompt le jet temporairement, par exemple pendant que vous vous savonnez, sans variation de température. Cela économise jusqu’à 30% d’eau et d’énergie.'
+        assign bpf_q_filter = 'Y a-t-il un filtre intégré ?'
+        assign bpf_a_filter_yes = 'Oui. Ce modèle a une cartouche filtrante 8 étapes remplaçable qui retient le calcaire, le chlore et les impuretés. Une cartouche dure 3 à 5 mois ; le kit de recharge en contient deux.'
+        assign bpf_a_filter_yes_link = 'Voir le kit de recharge'
+        assign bpf_a_filter_no_prefix = 'Non, ce modèle n’a pas de filtre. Pour une eau filtrée contre le calcaire et le chlore, choisissez le '
+        assign bpf_a_filter_no_name = 'Pommeau de douche Besjaar avec filtre'
+        assign bpf_q_hose = 'Un flexible est-il fourni ?'
+        assign bpf_a_hose_yes = 'Oui, un flexible de douche souple de 1,5 mètre avec joints.'
+        assign bpf_a_hose_no = 'Non. Vous utilisez votre flexible actuel ; le pommeau se monte sur un raccord standard.'
+        assign bpf_q_pressure = 'Le pommeau fonctionne-t-il aussi avec une faible pression d’eau ?'
+        assign bpf_a_pressure = 'Oui. L’injection d’air donne un jet plein et puissant, même avec une faible pression d’eau.'
+        assign bpf_q_refill_fit = 'Sur quel pommeau ce kit de recharge se monte-t-il ?'
+        assign bpf_a_refill_fit = 'Sur le pommeau de douche Besjaar avec filtre (10 types de jet), avec ou sans flexible. Les cartouches ne conviennent pas aux modèles à 3 jets ni aux autres pommeaux.'
+        assign bpf_a_refill_fit_links = 'Voir :'
+        assign bpf_q_refill_interval = 'À quelle fréquence remplacer le filtre ?'
+        assign bpf_a_refill_interval = 'Tous les 3 à 5 mois, selon la fréquence de vos douches et la dureté de l’eau. Deux cartouches durent jusqu’à dix mois.'
+        assign bpf_q_refill_swap = 'Comment changer le filtre ?'
+        assign bpf_a_refill_swap = 'Sans outil : détachez le flexible, retirez l’ancienne cartouche, insérez la nouvelle.'
+        assign bpf_q_returns = 'Puis-je retourner le produit ?'
+        assign bpf_a_returns_prefix = 'Oui, dans les '
+        assign bpf_a_returns_suffix = ' jours suivant la livraison, non utilisé et dans son emballage d’origine.'
+        assign bpf_q_warranty = 'Quelle garantie ai-je ?'
+        assign bpf_a_warranty_suffix = ' mois de garantie, en plus de vos droits légaux de consommateur.'
+        assign bpf_q_shipping = 'Combien coûte la livraison ?'
+        assign bpf_a_shipping_prefix = 'Livraison gratuite à partir de '
+        assign bpf_a_shipping_suffix = ' ; en dessous, des frais de port s’appliquent.'
+        assign bpf_a_shipping_link = 'Voir la politique de livraison'
+      when 'es'
+        assign bpf_label = 'Preguntas frecuentes'
+        assign bpf_q_fit = '¿Esta alcachofa encaja en mi manguera de ducha?'
+        assign bpf_a_fit_filter = 'Sí. Este modelo tiene una conexión universal G½" y se enrosca a mano en una manguera de ducha estándar, sin herramientas.'
+        assign bpf_a_fit_other = 'Sí, en prácticamente todos los casos: enroscas la alcachofa a mano en tu manguera de ducha estándar actual, sin herramientas.'
+        assign bpf_a_fit_contact_prefix = '¿Dudas sobre tu conexión? Envíanos una foto a través de la '
+        assign bpf_a_fit_contact_link = 'página de contacto'
+        assign bpf_guide_link = 'Lee también: cambiar una alcachofa de ducha en 5 minutos'
+        assign bpf_q_modes = '¿Cuántos modos de chorro tiene este modelo?'
+        assign bpf_a_modes_prefix = 'Este modelo tiene '
+        assign bpf_a_modes_suffix = ' modos de chorro'
+        assign bpf_a_modes_10 = ': ocho chorros de bienestar y dos chorros PowerWash'
+        assign bpf_a_modes_3 = ': lluvia, masaje y potente'
+        assign bpf_q_water = '¿Cuánta agua consume esta alcachofa?'
+        assign bpf_q_water_filter = '¿Cómo ahorra agua esta alcachofa?'
+        assign bpf_a_water_3 = 'Como máximo 8 litros por minuto. La alcachofa mezcla aire con el agua, para un chorro que sigue siendo pleno con menos caudal.'
+        assign bpf_a_water_filter = 'El botón de pausa detiene el chorro temporalmente, por ejemplo mientras te enjabonas, sin cambios de temperatura. Así ahorras hasta un 30% de agua y energía.'
+        assign bpf_q_filter = '¿Tiene un filtro integrado?'
+        assign bpf_a_filter_yes = 'Sí. Este modelo tiene un cartucho de filtro reemplazable de 8 etapas que retiene cal, cloro e impurezas. Un cartucho dura de 3 a 5 meses; el kit de recambio incluye dos.'
+        assign bpf_a_filter_yes_link = 'Ver el kit de recambio'
+        assign bpf_a_filter_no_prefix = 'No, este modelo no tiene filtro. Para agua filtrada contra la cal y el cloro, elige la '
+        assign bpf_a_filter_no_name = 'alcachofa de ducha Besjaar con filtro'
+        assign bpf_q_hose = '¿Incluye manguera?'
+        assign bpf_a_hose_yes = 'Sí, una manguera de ducha flexible de 1,5 metros con juntas.'
+        assign bpf_a_hose_no = 'No. Usas tu manguera actual; la alcachofa se monta en una conexión estándar.'
+        assign bpf_q_pressure = '¿Funciona la alcachofa también con poca presión de agua?'
+        assign bpf_a_pressure = 'Sí. La inyección de aire da un chorro pleno y potente, incluso con poca presión de agua.'
+        assign bpf_q_refill_fit = '¿En qué alcachofa encaja este kit de recambio?'
+        assign bpf_a_refill_fit = 'En la alcachofa de ducha Besjaar con filtro (10 modos de chorro), con o sin manguera. Los cartuchos no sirven para los modelos de 3 modos ni para otras alcachofas.'
+        assign bpf_a_refill_fit_links = 'Ver:'
+        assign bpf_q_refill_interval = '¿Cada cuánto debo cambiar el filtro?'
+        assign bpf_a_refill_interval = 'Cada 3 a 5 meses, según la frecuencia con la que te duchas y la dureza del agua. Dos cartuchos duran hasta diez meses.'
+        assign bpf_q_refill_swap = '¿Cómo se cambia el filtro?'
+        assign bpf_a_refill_swap = 'Sin herramientas: suelta la manguera, saca el cartucho viejo e inserta el nuevo.'
+        assign bpf_q_returns = '¿Puedo devolver el producto?'
+        assign bpf_a_returns_prefix = 'Sí, en un plazo de '
+        assign bpf_a_returns_suffix = ' días desde la entrega, sin usar y en su embalaje original.'
+        assign bpf_q_warranty = '¿Qué garantía tengo?'
+        assign bpf_a_warranty_suffix = ' meses de garantía, además de tus derechos legales como consumidor.'
+        assign bpf_q_shipping = '¿Cuánto cuesta el envío?'
+        assign bpf_a_shipping_prefix = 'Envío gratis a partir de '
+        assign bpf_a_shipping_suffix = '; por debajo de ese importe se aplican gastos de envío.'
+        assign bpf_a_shipping_link = 'Ver la política de envíos'
+      else
+        assign bpf_label = 'Veelgestelde vragen'
+        assign bpf_q_fit = 'Past deze douchekop op mijn doucheslang?'
+        assign bpf_a_fit_filter = 'Ja. Dit model heeft een universele G½"-aansluiting en draai je handvast op een standaard doucheslang, zonder gereedschap.'
+        assign bpf_a_fit_other = 'Ja, in vrijwel alle gevallen: je draait de douchekop handvast op je huidige standaard doucheslang, zonder gereedschap.'
+        assign bpf_a_fit_contact_prefix = 'Twijfel je over je aansluiting? Stuur ons een foto via de '
+        assign bpf_a_fit_contact_link = 'contactpagina'
+        assign bpf_guide_link = 'Lees: douchekop vervangen in 5 minuten'
+        assign bpf_q_modes = 'Hoeveel sproeistanden heeft dit model?'
+        assign bpf_a_modes_prefix = 'Dit model heeft '
+        assign bpf_a_modes_suffix = ' sproeistanden'
+        assign bpf_a_modes_10 = ': acht wellness-standen en twee PowerWash-jets'
+        assign bpf_a_modes_3 = ': regen, massage en power'
+        assign bpf_q_water = 'Hoeveel water verbruikt deze douchekop?'
+        assign bpf_q_water_filter = 'Hoe bespaar ik water met deze douchekop?'
+        assign bpf_a_water_3 = 'Maximaal 8 liter per minuut. De douchekop mengt lucht door het water, zodat de straal vol aanvoelt bij een lager verbruik.'
+        assign bpf_a_water_filter = 'Met de pauzeknop zet je de straal tijdelijk stil, bijvoorbeeld tijdens het inzepen, zonder dat de temperatuur verspringt. Dat scheelt tot 30% water en energie.'
+        assign bpf_q_filter = 'Zit er een filter in?'
+        assign bpf_a_filter_yes = 'Ja. Dit model heeft een vervangbare 8-traps filtercartridge die kalk, chloor en onzuiverheden afvangt. Een cartridge gaat 3 tot 5 maanden mee; de navulset bevat twee cartridges.'
+        assign bpf_a_filter_yes_link = 'Bekijk de navulset'
+        assign bpf_a_filter_no_prefix = 'Nee, dit model heeft geen filter. Wil je gefilterd water tegen kalk en chloor, kies dan de '
+        assign bpf_a_filter_no_name = 'Besjaar Douchekop met Filter'
+        assign bpf_q_hose = 'Wordt er een slang meegeleverd?'
+        assign bpf_a_hose_yes = 'Ja, een flexibele doucheslang van 1,5 meter met afdichtingen.'
+        assign bpf_a_hose_no = 'Nee. Je gebruikt je huidige doucheslang; de douchekop past op een standaard aansluiting.'
+        assign bpf_q_pressure = 'Werkt de douchekop ook bij lage waterdruk?'
+        assign bpf_a_pressure = 'Ja. Air-injectie geeft een volle, krachtige straal, ook bij lage waterdruk.'
+        assign bpf_q_refill_fit = 'Op welke douchekop past deze navulset?'
+        assign bpf_a_refill_fit = 'Op de Besjaar Douchekop met Filter (10 sproeistanden), met of zonder slang. De cartridges passen niet op de 3-standen modellen of andere douchekoppen.'
+        assign bpf_a_refill_fit_links = 'Bekijk:'
+        assign bpf_q_refill_interval = 'Hoe vaak vervang ik het filter?'
+        assign bpf_a_refill_interval = 'Elke 3 tot 5 maanden, afhankelijk van hoe vaak je doucht en hoe hard je water is. Met twee cartridges kom je tot tien maanden.'
+        assign bpf_q_refill_swap = 'Hoe wissel ik het filter?'
+        assign bpf_a_refill_swap = 'Zonder gereedschap: slang los, oude cartridge eruit, nieuwe erin.'
+        assign bpf_q_returns = 'Kan ik retourneren?'
+        assign bpf_a_returns_prefix = 'Ja, binnen '
+        assign bpf_a_returns_suffix = ' dagen na levering, ongebruikt en in de originele verpakking.'
+        assign bpf_q_warranty = 'Hoeveel garantie krijg ik?'
+        assign bpf_a_warranty_suffix = ' maanden garantie, naast je wettelijke rechten als consument.'
+        assign bpf_q_shipping = 'Wat kost verzending?'
+        assign bpf_a_shipping_prefix = 'Gratis verzending vanaf '
+        assign bpf_a_shipping_suffix = '; daaronder betaal je verzendkosten.'
+        assign bpf_a_shipping_link = 'Bekijk het verzendbeleid'
+    endcase
+
+    capture bpf_capture
+      render 'is-shower-head', product: bpf_product
+    endcapture
+    assign bpf_is_head = bpf_capture | strip
+    capture bpf_capture
+      render 'shower-filter-state', product: bpf_product
+    endcapture
+    assign bpf_filter = bpf_capture | strip
+    capture bpf_capture
+      render 'shower-hose-state', product: bpf_product
+    endcapture
+    assign bpf_hose = bpf_capture | strip
+    capture bpf_capture
+      render 'shower-spray-modes', product: bpf_product
+    endcapture
+    assign bpf_modes = bpf_capture | strip
+
+    comment
+      Contact page (settings.contact_page, fallback pages['contact-us']),
+      installation guide (Dutch only), shipping policy.
+    endcomment
+    assign bpf_contact_page = settings.contact_page
+    if bpf_contact_page == blank
+      assign bpf_contact_page = pages['contact-us']
+    endif
+    assign bpf_contact_url = ''
+    if bpf_contact_page != blank
+      capture bpf_contact_url
+        render 'localized-internal-url', url: bpf_contact_page.url
+      endcapture
+      assign bpf_contact_url = bpf_contact_url | strip
+    endif
+    assign bpf_guide_url = ''
+    assign bpf_guide = articles['gids/douchekop-vervangen-in-5-minuten']
+    if bpf_guide != blank and bpf_guide.url != blank
+      capture bpf_guide_url
+        render 'localized-internal-url', url: bpf_guide.url
+      endcapture
+      assign bpf_guide_url = bpf_guide_url | strip
+    endif
+    assign bpf_shipping_url = ''
+    if shop.shipping_policy != blank and shop.shipping_policy.url != blank
+      capture bpf_shipping_url
+        render 'localized-internal-url', url: shop.shipping_policy.url
+      endcapture
+      assign bpf_shipping_url = bpf_shipping_url | strip
+    endif
+
+    comment
+      Refill set = first non-head product of the first collection whose
+      handle contains 'filter'. Filtered alternative = a shower head with a
+      filter from the primary showerheads collection (same hose state first).
+    endcomment
+    assign bpf_refill_found = false
+    for bpf_collection in collections
+      assign bpf_collection_handle = bpf_collection.handle | downcase
+      if bpf_collection_handle contains 'filter'
+        for bpf_candidate in bpf_collection.products limit: 12
+          if bpf_candidate.id == bpf_product.id
+            continue
+          endif
+          capture bpf_capture
+            render 'is-shower-head', product: bpf_candidate
+          endcapture
+          assign bpf_candidate_head = bpf_capture | strip
+          if bpf_candidate_head != 'true'
+            assign bpf_refill = bpf_candidate
+            assign bpf_refill_found = true
+            break
+          endif
+        endfor
+        break
+      endif
+    endfor
+
+    assign bpf_head_collection = settings.shower_collection
+    if bpf_head_collection == blank
+      assign bpf_head_collection = collections['badkamer-douche']
+    endif
+    if bpf_head_collection == blank
+      assign bpf_head_collection = collections['douchekoppen']
+    endif
+    if bpf_head_collection == blank
+      assign bpf_head_collection = collections['showerheads']
+    endif
+    if bpf_head_collection == blank
+      assign bpf_head_collection = collections['douche']
+    endif
+    if bpf_head_collection == blank
+      assign bpf_head_collection = collections['shower']
+    endif
+    if bpf_head_collection == blank
+      assign bpf_head_collection = bpf_product.collections.first
+    endif
+    assign bpf_filtered_alt_found = false
+    assign bpf_filtered_alt_same_hose = false
+    if bpf_is_head == 'true' and bpf_filter != 'true' and bpf_head_collection != blank
+      for bpf_candidate in bpf_head_collection.products limit: 24
+        if bpf_candidate.id == bpf_product.id
+          continue
+        endif
+        capture bpf_capture
+          render 'is-shower-head', product: bpf_candidate
+        endcapture
+        assign bpf_candidate_head = bpf_capture | strip
+        if bpf_candidate_head != 'true'
+          continue
+        endif
+        capture bpf_capture
+          render 'shower-filter-state', product: bpf_candidate
+        endcapture
+        assign bpf_candidate_filter = bpf_capture | strip
+        if bpf_candidate_filter != 'true'
+          continue
+        endif
+        capture bpf_capture
+          render 'shower-hose-state', product: bpf_candidate
+        endcapture
+        assign bpf_candidate_hose = bpf_capture | strip
+        if bpf_filtered_alt_found == false
+          assign bpf_filtered_alt = bpf_candidate
+          assign bpf_filtered_alt_found = true
+          if bpf_candidate_hose == bpf_hose
+            assign bpf_filtered_alt_same_hose = true
+          endif
+        elsif bpf_filtered_alt_same_hose == false and bpf_candidate_hose == bpf_hose
+          assign bpf_filtered_alt = bpf_candidate
+          assign bpf_filtered_alt_same_hose = true
+        endif
+      endfor
+    endif
+  -%}
+  <details data-besjaar-product-faq>
+    <summary>{{ bpf_label }}</summary>
+    <div>
+      {%- if bpf_is_head == 'true' -%}
+        <p><strong>{{ bpf_q_fit }}</strong><br>
+          {%- if bpf_filter == 'true' -%}
+            {{ bpf_a_fit_filter }}
+          {%- else -%}
+            {{ bpf_a_fit_other }}
+            {%- if bpf_contact_url != blank %} {{ bpf_a_fit_contact_prefix }}<a href="{{ bpf_contact_url }}">{{ bpf_a_fit_contact_link }}</a>.{%- endif -%}
+          {%- endif -%}
+          {%- if bpf_guide_url != blank %} <a href="{{ bpf_guide_url }}">{{ bpf_guide_link }}</a>{%- endif -%}
+        </p>
+        {%- if bpf_modes != blank -%}
+          <p><strong>{{ bpf_q_modes }}</strong><br>{{ bpf_a_modes_prefix }}{{ bpf_modes }}{{ bpf_a_modes_suffix }}{% if bpf_modes == '10' %}{{ bpf_a_modes_10 }}{% elsif bpf_modes == '3' %}{{ bpf_a_modes_3 }}{% endif %}.</p>
+        {%- endif -%}
+        {%- if bpf_filter == 'true' -%}
+          <p><strong>{{ bpf_q_water_filter }}</strong><br>{{ bpf_a_water_filter }}</p>
+        {%- elsif bpf_modes == '3' -%}
+          <p><strong>{{ bpf_q_water }}</strong><br>{{ bpf_a_water_3 }}</p>
+        {%- endif -%}
+        <p><strong>{{ bpf_q_filter }}</strong><br>
+          {%- if bpf_filter == 'true' -%}
+            {{ bpf_a_filter_yes }}
+            {%- if bpf_refill_found %} <a href="{% render 'localized-internal-url', url: bpf_refill.url %}">{{ bpf_a_filter_yes_link }}</a>{%- endif -%}
+          {%- else -%}
+            {{ bpf_a_filter_no_prefix }}
+            {%- if bpf_filtered_alt_found -%}
+              {%- capture bpf_title -%}{% render 'localized-product-title', product: bpf_filtered_alt %}{%- endcapture -%}
+              <a href="{% render 'localized-internal-url', url: bpf_filtered_alt.url %}">{{ bpf_title | strip | replace: '&amp;', '&' | escape_once }}</a>
+            {%- else -%}
+              {{ bpf_a_filter_no_name }}
+            {%- endif -%}.
+          {%- endif -%}
+        </p>
+        <p><strong>{{ bpf_q_hose }}</strong><br>{% if bpf_hose == 'true' %}{{ bpf_a_hose_yes }}{% else %}{{ bpf_a_hose_no }}{% endif %}</p>
+        {%- if bpf_filter == 'true' -%}
+          <p><strong>{{ bpf_q_pressure }}</strong><br>{{ bpf_a_pressure }}</p>
+        {%- endif -%}
+      {%- else -%}
+        <p><strong>{{ bpf_q_refill_fit }}</strong><br>{{ bpf_a_refill_fit }}
+          {%- if bpf_head_collection != blank -%}
+            {%- capture bpf_fit_links -%}
+              {%- assign bpf_fit_count = 0 -%}
+              {%- for bpf_candidate in bpf_head_collection.products limit: 24 -%}
+                {%- if bpf_fit_count >= 4 or bpf_candidate.id == bpf_product.id -%}{%- continue -%}{%- endif -%}
+                {%- capture bpf_capture -%}{% render 'is-shower-head', product: bpf_candidate %}{%- endcapture -%}
+                {%- assign bpf_candidate_head = bpf_capture | strip -%}
+                {%- capture bpf_capture -%}{% render 'shower-filter-state', product: bpf_candidate %}{%- endcapture -%}
+                {%- assign bpf_candidate_filter = bpf_capture | strip -%}
+                {%- if bpf_candidate_head == 'true' and bpf_candidate_filter == 'true' -%}
+                  {%- assign bpf_fit_count = bpf_fit_count | plus: 1 -%}
+                  {%- capture bpf_title -%}{% render 'localized-product-title', product: bpf_candidate %}{%- endcapture -%}
+                  {%- if bpf_fit_count > 1 %} · {% endif -%}
+                  <a href="{% render 'localized-internal-url', url: bpf_candidate.url %}">{{ bpf_title | strip | replace: '&amp;', '&' | escape_once }}</a>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if bpf_fit_links contains '<a ' %} {{ bpf_a_refill_fit_links }} {{ bpf_fit_links }}{%- endif -%}
+          {%- endif -%}
+        </p>
+        <p><strong>{{ bpf_q_refill_interval }}</strong><br>{{ bpf_a_refill_interval }}</p>
+        <p><strong>{{ bpf_q_refill_swap }}</strong><br>{{ bpf_a_refill_swap }}</p>
+      {%- endif -%}
+      <p><strong>{{ bpf_q_returns }}</strong><br>{{ bpf_a_returns_prefix }}{{ bpf_returns_days }}{{ bpf_a_returns_suffix }}</p>
+      {%- if bpf_warranty_months > 0 -%}
+        <p><strong>{{ bpf_q_warranty }}</strong><br>{{ bpf_warranty_months }}{{ bpf_a_warranty_suffix }}</p>
+      {%- endif -%}
+      <p><strong>{{ bpf_q_shipping }}</strong><br>{{ bpf_a_shipping_prefix }}{{ bpf_threshold_money }}{{ bpf_a_shipping_suffix }}
+        {%- if bpf_shipping_url != blank %} <a href="{{ bpf_shipping_url }}">{{ bpf_a_shipping_link }}</a>{%- endif -%}
+      </p>
+    </div>
+  </details>
+{%- endif -%}

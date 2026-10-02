@@ -72,6 +72,14 @@
                 else
                   assign v_feature_alt = 'Pommeau de douche Besjaar avec un jet d’eau plein et puissant'
                 endif
+              when 'es'
+                if i == 1
+                  assign v_feature_alt = 'Primer plano de las boquillas de silicona de una alcachofa de ducha Besjaar'
+                elsif i == 2
+                  assign v_feature_alt = 'Cabezal de la alcachofa de ducha Besjaar con sus distintas zonas de chorro'
+                else
+                  assign v_feature_alt = 'Alcachofa de ducha Besjaar con un chorro de agua pleno y potente'
+                endif
               else
                 if i == 1
                   assign v_feature_alt = 'Close-up van de siliconen sproeiers op de sproeikop van een Besjaar douchekop'
@@ -139,4 +147,3 @@
   "presets": [{"name": "Premium feature story"}]
 }
 {% endschema %}
-

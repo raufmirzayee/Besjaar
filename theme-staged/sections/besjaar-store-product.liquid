@@ -205,6 +205,11 @@
       assign ui_increase = 'Augmenter la quantité'
       assign ui_quantity = 'Quantité'
       assign ui_shortcut_reviews = 'Lire les avis'
+    when 'es'
+      assign ui_decrease = 'Reducir cantidad'
+      assign ui_increase = 'Aumentar cantidad'
+      assign ui_quantity = 'Cantidad'
+      assign ui_shortcut_reviews = 'Leer opiniones'
   endcase
   capture localized_product_title_capture
     render 'localized-product-title', product: product
@@ -274,6 +279,24 @@
       assign ui_swipe = 'Balayez pour voir plus de photos'
       assign ui_secure = 'Paiement sécurisé'
       assign ui_lede = 'Une douchette Besjaar haut de gamme conçue pour un jet puissant et confortable au quotidien. Compatible avec un raccord standard ½″, simple à utiliser et facile à intégrer dans la salle de bains.'
+    when 'es'
+      assign ui_rating = 'opiniones'
+      assign ui_in_stock = 'En stock'
+      assign ui_sold_out = 'Agotado'
+      assign ui_low_stock = 'Stock limitado'
+      assign ui_option = 'Elige la versión'
+      assign ui_add = 'Añadir al carrito'
+      assign ui_incl_vat = 'IVA incluido'
+      assign ui_save = 'Ahorra'
+      assign ui_desc = 'Descripción'
+      assign ui_install = 'Instalación'
+      assign ui_install_body = 'Desenrosca la ducha de mano antigua y enrosca Besjaar a mano en una manguera de ducha estándar. No se necesitan herramientas especiales.'
+      assign ui_care = 'Compatibilidad y cuidado'
+      assign ui_care_body = 'Consulta las especificaciones del modelo para el filtro, la manguera y los modos de chorro. Aclara regularmente la cara de la alcachofa y seca el acabado con un paño suave.'
+      assign ui_gallery = 'Foto del producto'
+      assign ui_swipe = 'Desliza para ver más fotos'
+      assign ui_secure = 'Pago seguro'
+      assign ui_lede = 'Una ducha de mano Besjaar premium diseñada para un chorro potente y cómodo cada día. Compatible con una conexión estándar de ½″, fácil de usar y de integrar en tu baño.'
     else
       assign ui_rating = 'reviews'
       assign ui_in_stock = 'In stock'
@@ -414,7 +437,7 @@
     assign bj_package = product.metafields.custom.package_contents.value | default: ''
   endif
   assign bj_decimal_comma = false
-  if product_copy_locale == 'nl' or product_copy_locale == 'de' or product_copy_locale == 'fr'
+  if product_copy_locale == 'nl' or product_copy_locale == 'de' or product_copy_locale == 'fr' or product_copy_locale == 'es'
     assign bj_decimal_comma = true
   endif
   assign bj_hose_m = ''
@@ -451,6 +474,10 @@
     when 'fr'
       assign bj_label_water = 'Consommation d’eau'
       assign bj_label_model = 'Numéro de modèle'
+      assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
+    when 'es'
+      assign bj_label_water = 'Consumo de agua'
+      assign bj_label_model = 'Número de modelo'
       assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
     else
       assign bj_label_water = 'Water use'
@@ -775,6 +802,10 @@
                 assign sw_label = 'Version'
                 assign sw_without = 'Sans flexible'
                 assign sw_with = 'Avec flexible'
+              when 'es'
+                assign sw_label = 'Versión'
+                assign sw_without = 'Sin manguera'
+                assign sw_with = 'Con manguera'
               when 'en'
                 assign sw_label = 'Version'
                 assign sw_without = 'Without hose'
@@ -895,6 +926,11 @@
               assign bj_ship_fallback = 'Commandé avant 16h, expédié le jour même'
               assign bj_free_now = 'Livraison gratuite'
               assign bj_free_from = 'Livraison gratuite dès'
+            when 'es'
+              assign bj_ship_prefix = 'Enviado el'
+              assign bj_ship_fallback = 'Pedido antes de las 16 h, enviado el mismo día'
+              assign bj_free_now = 'Envío gratis'
+              assign bj_free_from = 'Envío gratis desde'
             when 'en'
               assign bj_ship_prefix = 'Ships by'
               assign bj_ship_fallback = 'Order before 16:00, ships today'
@@ -948,6 +984,12 @@
                   assign bj_q_share = 'donnent 5 étoiles'
                   assign bj_q_prev = 'Avis précédent'
                   assign bj_q_next = 'Avis suivant'
+                when 'es'
+                  assign bj_q_title = 'Lo que dicen nuestros clientes'
+                  assign bj_q_all = 'Todas las opiniones'
+                  assign bj_q_share = 'dan 5 estrellas'
+                  assign bj_q_prev = 'Opinión anterior'
+                  assign bj_q_next = 'Opinión siguiente'
                 when 'en'
                   assign bj_q_title = 'What customers say'
                   assign bj_q_all = 'All reviews'

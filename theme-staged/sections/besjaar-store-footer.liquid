@@ -62,6 +62,8 @@
       assign footer_b2b_label = 'Geschäftskunden'
     when 'fr'
       assign footer_b2b_label = 'Commandes professionnelles'
+    when 'es'
+      assign footer_b2b_label = 'Pedidos para empresas'
     else
       assign footer_b2b_label = 'Zakelijk bestellen'
   endcase
@@ -83,6 +85,10 @@
       assign footer_reviews_label = 'Avis clients'
       assign footer_legal_brand_of = 'Besjaar est une marque de'
       assign footer_legal_vat_label = 'TVA'
+    when 'es'
+      assign footer_reviews_label = 'Opiniones de clientes'
+      assign footer_legal_brand_of = 'Besjaar es una marca de'
+      assign footer_legal_vat_label = 'IVA'
     else
       assign footer_reviews_label = 'Klantbeoordelingen'
       assign footer_legal_brand_of = 'Besjaar is een merk van'
@@ -225,6 +231,13 @@
       assign ft_service = 'Service client'
       assign ft_contact_cta = 'Nous contacter'
       assign ft_guides = 'Guides'
+    when 'es'
+      assign ft_brand_text = 'Alcachofas de ducha con o sin filtro, filtros de recambio y kits completos. Precios justos, envío rápido.'
+      assign ft_shop = 'Tienda'
+      assign ft_help = 'Ayuda e información'
+      assign ft_service = 'Atención al cliente'
+      assign ft_contact_cta = 'Contáctanos'
+      assign ft_guides = 'Guías'
     else
       assign ft_brand_text = section.settings.brand_text | default: 'Douchekoppen met en zonder filter, navulfilters en complete sets. Eerlijk geprijsd en snel in huis.'
       assign ft_shop = 'Winkel'

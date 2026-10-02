@@ -248,6 +248,9 @@
           when 'fr'
             assign bja_dispatch = 'Commandé avant ' | append: bja_cutoff | append: 'h, expédié le jour même'
             assign bja_returns = 'Retours sous ' | append: settings.return_window_days | append: ' jours'
+          when 'es'
+            assign bja_dispatch = 'Pedido antes de las ' | append: bja_cutoff | append: ' h, enviado el mismo día'
+            assign bja_returns = 'Devoluciones en ' | append: settings.return_window_days | append: ' días'
           when 'en'
             assign bja_dispatch = 'Order before ' | append: bja_cutoff | append: ':00, ships today'
             assign bja_returns = settings.return_window_days | append: '-day returns'
@@ -409,6 +412,18 @@
                               assign besjaar_ui_mega_meta_label = 'Kit complet'
                             else
                               assign besjaar_ui_mega_meta_label = 'Pommeau de douche'
+                            endif
+                          elsif request.locale.iso_code == 'es'
+                            if besjaar_ui_mega_is_refill
+                              assign besjaar_ui_mega_meta_label = 'Kit de recambio'
+                            elsif besjaar_ui_mega_is_filter_product
+                              assign besjaar_ui_mega_meta_label = 'Filtro de ducha'
+                            elsif besjaar_ui_mega_identity contains 'filt'
+                              assign besjaar_ui_mega_meta_label = 'Con filtro'
+                            elsif besjaar_ui_mega_identity contains 'manguera' or besjaar_ui_mega_identity contains 'slang' or besjaar_ui_mega_identity contains 'hose'
+                              assign besjaar_ui_mega_meta_label = 'Set completo'
+                            else
+                              assign besjaar_ui_mega_meta_label = 'Alcachofa de ducha'
                             endif
                           else
                             if besjaar_ui_mega_is_refill
@@ -818,6 +833,17 @@
           assign bjcd_tax_link = 'livraison'
           assign bjcd_tax_b = ' calculées au paiement.'
           assign bjcd_remove = 'Retirer le code'
+        when 'es'
+          assign bjcd_code = 'Código de descuento'
+          assign bjcd_apply = 'Aplicar'
+          assign bjcd_note = 'Añadir una nota al pedido'
+          assign bjcd_note_ph = 'Por ejemplo, instrucciones de entrega'
+          assign bjcd_trust = 'Pago seguro · devoluciones en ' | append: settings.return_window_days | append: ' días'
+          assign bjcd_total = 'Total'
+          assign bjcd_tax_a = 'IVA incluido. Los descuentos y el '
+          assign bjcd_tax_link = 'envío'
+          assign bjcd_tax_b = ' se calculan al pagar.'
+          assign bjcd_remove = 'Quitar el código'
         when 'en'
           assign bjcd_code = 'Discount code'
           assign bjcd_apply = 'Apply'

@@ -33,6 +33,7 @@
   const isNl=locale.startsWith('nl');
   const isDe=locale.startsWith('de');
   const isFr=locale.startsWith('fr');
+  const isEs=locale.startsWith('es');
   /* Besjaar 11.6: de/fr shoppers previously fell into the Dutch→English table and
      saw English titles in cart upsells / quick-add; mirror the word maps that
      snippets/localized-product-title.liquid applies server-side. */
@@ -75,6 +76,20 @@
         ['Zwart','Noir'],['zwart','noir'],['Black','Noir'],['black','noir'],
         ['Wit','Blanc'],['wit','blanc'],['White','Blanc'],['white','blanc']
       ];
+    }else if(isEs){
+      pairs=[
+        ['Douchekop','Alcachofa de ducha'],['douchekop','alcachofa de ducha'],['Shower Head','Alcachofa de ducha'],['shower head','alcachofa de ducha'],['Showerhead','Alcachofa de ducha'],['showerhead','alcachofa de ducha'],
+        ['Handdouche','Ducha de mano'],['handdouche','ducha de mano'],['Hand Shower','Ducha de mano'],
+        ['Hoge Druk','Alta presión'],['hoge druk','alta presión'],['High Pressure','Alta presión'],['high pressure','alta presión'],
+        ['Waterbesparende','Ahorradora de agua'],['waterbesparende','ahorradora de agua'],['Water-Saving','Ahorradora de agua'],['water-saving','ahorradora de agua'],
+        ['Sproeistanden','Modos de chorro'],['sproeistanden','modos de chorro'],['Spray Modes','Modos de chorro'],['spray modes','modos de chorro'],
+        ['Met Slang','Con manguera'],['met slang','con manguera'],['With Hose','Con manguera'],['with hose','con manguera'],
+        ['Met Filter','Con filtro'],['met filter','con filtro'],['With Filter','Con filtro'],['with filter','con filtro'],
+        ['Chroom','Cromo'],['chroom','cromo'],['Chrome','Cromo'],['chrome','cromo'],
+        ['Zilver','Plata'],['zilver','plata'],['Silver','Plata'],['silver','plata'],
+        ['Zwart','Negro'],['zwart','negro'],['Black','Negro'],['black','negro'],
+        ['Wit','Blanco'],['wit','blanco'],['White','Blanco'],['white','blanco']
+      ];
     }else{
       pairs=[
         ['Douchekop','Shower Head'],['douchekop','shower head'],['Handdouche','Hand Shower'],['handdouche','hand shower'],
@@ -100,6 +115,7 @@
       if(isNl)return 'Besjaar douchekoppen';
       if(isDe)return 'Besjaar Duschköpfe';
       if(isFr)return 'Pommeaux de douche Besjaar';
+      if(isEs)return 'Alcachofas de ducha Besjaar';
       return 'Besjaar showerheads';
     }
     return translateCatalogTitle(value);
@@ -264,13 +280,13 @@
     const picks=(useAddons?addonPool:cartRangeProducts().filter(item=>item?.variantId&&!inCart.has(String(item.id)))).slice(0,6);
     if(!picks.length)return;
     target.hidden=false;
-    const heading=useAddons?(i18n.cartAddonHeading||(isNl?'Maak je set compleet':'Complete your setup')):(i18n.cartRecommendationHeading||(isNl?'Misschien ook interessant':'You may also like'));
-    const copy=useAddons?(i18n.cartAddonCopy||(isNl?'Handige accessoires voor je Besjaar douchekop.':'Useful accessories for your Besjaar showerhead.')):(i18n.cartRecommendationCopy||(isNl?'Andere producten uit het Besjaar douche-assortiment.':'Other products from the Besjaar shower range.'));
+    const heading=useAddons?(i18n.cartAddonHeading||(isNl?'Maak je set compleet':isEs?'Completa tu set':'Complete your setup')):(i18n.cartRecommendationHeading||(isNl?'Misschien ook interessant':isEs?'También te puede interesar':'You may also like'));
+    const copy=useAddons?(i18n.cartAddonCopy||(isNl?'Handige accessoires voor je Besjaar douchekop.':isEs?'Accesorios útiles para tu alcachofa de ducha Besjaar.':'Useful accessories for your Besjaar showerhead.')):(i18n.cartRecommendationCopy||(isNl?'Andere producten uit het Besjaar douche-assortiment.':isEs?'Otros productos de la gama de ducha Besjaar.':'Other products from the Besjaar shower range.'));
     const isOpen=true;
-    const collapseText=isNl?'Verbergen':'Hide';
-    const expandText=isNl?'Openen':'Show';
-    const collapseLabel=isNl?'Aanbevelingen verbergen':'Hide recommendations';
-    const expandLabel=isNl?'Aanbevelingen openen':'Show recommendations';
+    const collapseText=isNl?'Verbergen':isEs?'Ocultar':'Hide';
+    const expandText=isNl?'Openen':isEs?'Mostrar':'Show';
+    const collapseLabel=isNl?'Aanbevelingen verbergen':isEs?'Ocultar recomendaciones':'Hide recommendations';
+    const expandLabel=isNl?'Aanbevelingen openen':isEs?'Mostrar recomendaciones':'Show recommendations';
     target.innerHTML=`<div class="besjaar-ui-cart-upsell">
       <div class="besjaar-ui-cart-upsell__header">
         <div class="besjaar-ui-cart-upsell__label"><span>${escapeHtml(heading)}</span><small>${escapeHtml(copy)}</small></div>
