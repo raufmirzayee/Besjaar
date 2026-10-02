@@ -174,7 +174,17 @@
   %}
   {% unless besjaar_ui_og_locale_alt == besjaar_ui_og_locale %}<meta property="og:locale:alternate" content="{{ besjaar_ui_og_locale_alt }}">{% endunless %}
 {% endfor %}
-<meta property="og:url" content="{{ canonical_url | escape }}">
+{%- liquid
+  comment
+    2026-10-02: same primary-domain canonical as layout/theme.liquid, so shares
+    from www.slimhome.nl / www.bestezaklampen.nl credit www.besjaar.eu.
+  endcomment
+  assign besjaar_ui_og_url = canonical_url
+  if request.origin != shop.url
+    assign besjaar_ui_og_url = canonical_url | replace_first: request.origin, shop.url
+  endif
+-%}
+<meta property="og:url" content="{{ besjaar_ui_og_url | escape }}">
 <meta property="og:title" content="{{ besjaar_ui_meta_title | escape }}">
 <meta property="og:type" content="{{ besjaar_ui_og_type }}">
 {% if besjaar_ui_social_description != blank %}<meta property="og:description" content="{{ besjaar_ui_social_description | escape }}">{% endif %}

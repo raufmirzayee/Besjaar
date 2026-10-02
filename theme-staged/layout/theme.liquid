@@ -4,6 +4,7 @@
 <!doctype html>
 <html class="no-js" lang="{{ request.locale.iso_code }}">
   <head>
+    <script>!function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("init",{pixelId:"5PVp34ZNVNVgx7pCJc9xqJ",debug:true});</script>
     <meta name="google-site-verification" content="ET57Ssi2w5bkFfwg4r7who5Vc9EHNf3lUAmXMDQYKHI" />
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -50,7 +51,21 @@
         --bj-radius-media:{{ settings.media_radius | default: 20 }}px;
       }
     </style>
-    {% unless request.page_type == '404' %}<link rel="canonical" href="{{ canonical_url | escape }}">{% endunless %}
+    {%- comment -%}
+      2026-10-02: this store also answers on www.slimhome.nl, www.bestezaklampen.nl
+      and the myshopify domain, each with the full catalogue. Shopify's
+      canonical_url uses whichever host served the request, so every copy
+      called itself the original and Google indexed the older domains instead
+      of www.besjaar.eu. Point the canonical at the primary domain (shop.url);
+      on www.besjaar.eu itself nothing changes.
+    {%- endcomment -%}
+    {%- liquid
+      assign bj_canonical_url = canonical_url
+      if request.origin != shop.url
+        assign bj_canonical_url = canonical_url | replace_first: request.origin, shop.url
+      endif
+    -%}
+    {% unless request.page_type == '404' %}<link rel="canonical" href="{{ bj_canonical_url | escape }}">{% endunless %}
     {% if request.page_type == 'index' %}
       {%- comment -%}Besjaar SEO 2026-09-11: preload the asset the home page hero actually renders (sections/besjaar-store-hero.liquid). The previous preload pointed at besjaar-premium-hero-pressure-v3.webp, which the home page never requests — it cost an unused ~77 KB download and left the real LCP image unprioritised. No srcset here for the same reason the hero section gives: Shopify's CDN does not generate size variants for theme assets.{%- endcomment -%}
       <link rel="preload" as="image" href="{{ 'besjaar-hero-premium-spa.webp' | asset_url }}" fetchpriority="high">
