@@ -153,7 +153,7 @@
         "type": "text",
         "id": "bol_brand_url",
         "label": "Bol.com brand page URL",
-        "default": "https://www.bol.com/nl/nl/b/besjaar/603580876/",
+        "default": "https://www.bol.com/nl/nl/b/besjaar/604080876/",
         "info": "Used in Organization structured data (sameAs). Leave empty to omit."
       },
       {
