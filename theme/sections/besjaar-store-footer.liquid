@@ -384,7 +384,6 @@
         {% if shop.terms_of_service != blank %}<li><a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'besjaar_store.footer.terms' | t }}</a></li>{% endif %}
         <li><a href="{{ footer_refund_url }}">{{ 'besjaar_ui.delivery.returns_policy' | t }}</a></li>
         {% if shop.shipping_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ 'besjaar_ui.delivery.shipping_policy' | t }}</a></li>{% endif %}
-        {% if settings.show_cookie_preferences %}{% unless request.design_mode or request.visual_preview_mode %}<li><button class="besjaar-consent-footer-link" type="button" data-besjaar-ui-privacy-open aria-label="{{ 'besjaar_ui.consent.manage' | t | escape }}">{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>{% endunless %}{% endif %}
       </ul>
     </div>
     {% if footer_legal_line != blank %}<p class="bj-foot__legal">{{ footer_legal_line | escape }}</p>{% endif %}

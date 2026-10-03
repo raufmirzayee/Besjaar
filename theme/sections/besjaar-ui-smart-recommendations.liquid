@@ -143,7 +143,6 @@
               <p class="besjaar-ui-kicker">{{ recommendation_kicker }}</p>
               <h2>{{ recommendation_heading }}</h2>
               {% if recommendation_copy != blank %}<p>{{ recommendation_copy }}</p>{% endif %}
-              {% if besjaar_ui_source_is_head == 'true' and recommendation_context == 'product' %}<a class="besjaar-ui-recommendations__finder-link" href="#besjaar-model-finder">{{ 'besjaar_ui.shower.recommendations.finder_link' | t }} →</a>{% endif %}
             </div>
             {% if section.settings.show_data_badge and recommendations.performed? and recommendations.products_count > 0 %}<span class="besjaar-ui-recommendations__badge">{{ recommendation_badge }}</span>{% endif %}
           </div>

@@ -106,7 +106,6 @@
         "announcement_discount_code": "",
         "announcement_start_at": "",
         "announcement_end_at": "",
-        "announcement_show_countdown": false,
         "mega_featured_product": "",
         "use_shopify_account_component": true,
         "customer_account_menu": "customer-account-main-menu"

@@ -1051,13 +1051,6 @@
           {%- endif -%}
         {%- endif -%}
 
-        {% if template.suffix == 'shower' %}
-          <a class="besjaar-ui-product-model-finder-link" href="#besjaar-model-finder">
-            <span aria-hidden="true">⌁</span>
-            <span><strong>{{ 'besjaar_ui.product.fbesjaar_store_model_title' | t }}</strong><small>{{ 'besjaar_ui.product.fbesjaar_store_model_copy' | t }}</small></span>
-            <i aria-hidden="true">→</i>
-          </a>
-        {% endif %}
 
         {%- if section.settings.show_compare and product_is_shower_head == 'true' -%}
           {%- liquid
@@ -1355,15 +1348,6 @@
         nextUrl.searchParams.set('variant', option.value);
         window.history.replaceState({}, '', nextUrl.toString());
       } catch (error) {}
-      /* Besjaar 11.6: keep the back-in-stock module and the Q&A form in sync
-         with the selected variant — the restock form must appear for sold-out
-         variants and always submit the variant the shopper is looking at. */
-      document.querySelectorAll('[data-restock-section]').forEach(function (restockSection) {
-        restockSection.hidden = available;
-      });
-      document.querySelectorAll('[data-restock-variant], [data-qa-variant]').forEach(function (variantField) {
-        variantField.value = option.value;
-      });
       document.dispatchEvent(new CustomEvent('besjaar_ui:variant-change', { detail: { id: option.value, variantId: option.value, available: available, price: Number(option.dataset.priceCents || 0) } }));
     });
   }

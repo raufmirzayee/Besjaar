@@ -269,7 +269,6 @@
         <span class="bj-ann__item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h11a5 5 0 0 1 0 10H9"/><path d="m8 6-4 4 4 4"/></svg>{{ bja_returns }}</span>
       </a>
       {% if section.settings.announcement_discount_code != blank %}<button type="button" data-promo-copy="{{ section.settings.announcement_discount_code | escape }}"><span>{{ 'besjaar_ui.campaign.code' | t }}</span> <strong>{{ section.settings.announcement_discount_code | escape }}</strong></button>{% endif %}
-      {% if settings.enable_campaign_countdowns and section.settings.announcement_show_countdown and section.settings.announcement_end_at != blank %}<span class="besjaar-ui-announcement__countdown" data-campaign-countdown data-end="{{ section.settings.announcement_end_at | escape }}"><span>{{ 'besjaar_ui.campaign.ends_in' | t }}</span> <strong data-campaign-countdown-value>—</strong></span>{% endif %}
     </div>
   </div>
 {% endif %}
@@ -944,7 +943,6 @@
     {"type":"text","id":"announcement_discount_code","label":"Optional real discount code","info":"Only enter a code that already exists in Shopify."},
     {"type":"text","id":"announcement_start_at","label":"Campaign start (ISO 8601)"},
     {"type":"text","id":"announcement_end_at","label":"Campaign end (ISO 8601)"},
-    {"type":"checkbox","id":"announcement_show_countdown","label":"Countdown when end is set","default":false},
     {"type":"image_picker","id":"logo","label":"Logo"},
     {"type":"product","id":"mega_featured_product","label":"Mega menu featured product","info":"Optional. Leave blank for the compact catalog-only menu."},
     {"type":"checkbox","id":"use_shopify_account_component","label":"Use modern Shopify customer account component","default":true},
