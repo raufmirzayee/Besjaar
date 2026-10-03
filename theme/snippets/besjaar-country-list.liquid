@@ -1,0 +1,22 @@
+{%- comment -%}
+  Turns a comma-separated list of two-letter country codes ("NL, be;DE") into
+  a JSON array body: "NL","BE","DE" — capped at 50 entries (Google's limit for
+  applicableCountry / addressCountry). Outputs nothing for an empty list.
+  Usage: {% render 'besjaar-country-list', codes: settings.policy_countries %}
+{%- endcomment -%}
+{%- liquid
+  assign bcl_codes = codes | default: '' | upcase | replace: ' ', '' | replace: ';', ',' | split: ','
+  assign bcl_out = ''
+  assign bcl_count = 0
+  for bcl_code in bcl_codes
+    if bcl_code.size != 2 or bcl_count >= 50
+      continue
+    endif
+    if bcl_out != blank
+      assign bcl_out = bcl_out | append: ','
+    endif
+    assign bcl_out = bcl_out | append: '"' | append: bcl_code | append: '"'
+    assign bcl_count = bcl_count | plus: 1
+  endfor
+  echo bcl_out
+-%}

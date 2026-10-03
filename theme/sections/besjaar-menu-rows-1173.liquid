@@ -1,0 +1,34 @@
+{%- comment -%}
+  Besjaar 11.7.3 — mobile menu category rows.
+
+  The two collection links under CATEGORIEEN rendered as bordered pill cards
+  (besjaar-mobile-corrections.css gives them a border, a radius and a tinted
+  background) while every sibling row in the same list — Keuzehulp, Over ons,
+  Reviews, FAQ — is a plain full-width link with a hairline under it. Same
+  list, two different controls, which is what the difference looked like.
+
+  They now use the sibling treatment. Carried as a header-group section rather
+  than an asset because a section renders in the body, after every stylesheet
+  in the head, so it lands on top of the pill rules without an !important war
+  or a load-order change.
+  2026-09-13 consolidation: this section's <style> block was extracted during
+  the CSS bundling pass. The rules above are now served from
+  assets/besjaar-seo-carriers-late.css, loaded by besjaar-desktop-fixes-1170.
+  Editing this file changes nothing — edit the bundle instead. The section is
+  kept so existing header-group settings stay valid.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Besjaar menu rows",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.7.3: makes the two category links in the mobile menu match the other menu rows instead of rendering as bordered cards. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

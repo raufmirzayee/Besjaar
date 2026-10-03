@@ -1,0 +1,1482 @@
+{{ 'besjaar-product-detail.css' | asset_url | stylesheet_tag: preload: true }}
+{%- comment -%}
+  Besjaar 2026-09-29 (CRO: product page): the facts a shopper needs before
+  the buy button now come from product data instead of the collapsed
+  description. custom.highlights (list), custom.package_contents,
+  custom.diameter_mm, custom.hose_length_cm, custom.material,
+  custom.connection_size, custom.water_use, custom.model_number,
+  custom.filter_type, custom.filter_replacement_interval and
+  custom.compatibility were transcribed from the merchant's own product
+  descriptions; nothing is generated. Dutch-only text fields are shown on the
+  Dutch storefront; other locales get the language-neutral chips and numbers.
+  A "compare the models" block lists the shower heads of the main collection
+  with spray modes, filter, hose and price so the €19,99–€34,99 ladder is
+  visible on every model page.
+{%- endcomment -%}
+<style>
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating{display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px;width:max-content;max-width:100%;margin:0 0 10px;color:#1C2326;text-decoration:none;font-size:.9rem;font-weight:500;line-height:1.2}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating__sep{color:#1C2326}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating:hover .bj-pd-rating__count{text-decoration:underline;text-underline-offset:3px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-stars{position:relative;display:inline-block;color:#E4E1DB;font-size:1.15rem;line-height:1;letter-spacing:2px;white-space:nowrap}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-stars i{position:absolute;left:0;top:0;overflow:hidden;color:#E0A526;font-style:normal;white-space:nowrap}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating--judgeme{margin:0 0 10px!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__title{font-weight:700!important;letter-spacing:-.035em!important;color:#1C2326!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:16px!important}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price{justify-content:flex-start!important;padding-top:0!important;border-top:0!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price>div{display:flex;align-items:baseline;gap:8px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price .besjaar-store-premium-pd__price{color:#1C2326;font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price .bj-price__was{color:#5B6668;font-size:1.05rem;font-weight:500}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:6px;color:#fff;font-size:.78rem;font-weight:800;line-height:1;white-space:nowrap}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge--dark{background:#1C2326}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge--green{background:#1F5F52}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price__vat{color:#8A9194;font-size:.68rem}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0 0;padding:0;list-style:none;max-width:580px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{display:flex;align-items:center;gap:11px;min-height:64px;margin:0;padding:10px 14px;border-radius:12px;background:#F5F2EC}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;color:#2B3437}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon svg{width:24px;height:24px;stroke-width:1.6}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{color:#1C2326;font-size:.8rem;font-weight:700;line-height:1.3}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__label{margin:20px 0 10px;color:#1C2326;font-size:.9rem;font-weight:700}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__label span{font-weight:400}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pills{display:flex;flex-wrap:wrap;gap:10px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill{min-height:52px;padding:0 26px;border:1px solid #1C2326;border-radius:999px;background:#fff;color:#1C2326;font:inherit;font-size:.9rem;cursor:pointer}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill[aria-pressed="true"]{background:#1C2326;color:#fff}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pill.is-unavailable{opacity:.45;text-decoration:line-through}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;max-width:520px;margin-bottom:4px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{display:flex;align-items:center;gap:10px;min-width:0;min-height:58px;padding:6px 14px 6px 7px;text-decoration:none;transition:background .15s ease,border-color .15s ease}
+  body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill{border-color:#D6D1C7}
+  body[data-page-type="product"] .besjaar-store-premium-pd a.bj-pd-switch__pill:hover{border-color:#1C2326}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill[aria-current="true"]{background:#1C2326;border-color:#1C2326;color:#fff}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex:0 0 42px;width:42px;height:42px;border-radius:50%;background:#fff;object-fit:contain;padding:2px;border:1px solid #E4E1DB}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__label{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{overflow:hidden;font-size:.86rem;font-weight:650;white-space:nowrap;text-overflow:ellipsis}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{margin-top:2px;font-size:.74rem;opacity:.72;white-space:nowrap}
+  @media(max-width:420px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch{gap:8px!important}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__pill{min-height:54px;gap:8px;padding:5px 10px 5px 5px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__img{flex-basis:36px;width:36px;height:36px}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__text{font-size:.8rem}body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-switch__price{font-size:.7rem}}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;margin-top:14px;padding:12px 18px;border-radius:999px;background:#F5F2EC;color:#1C2326;font-size:.8rem;line-height:1.3}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when{display:inline-flex;align-items:center;gap:9px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__when strong{font-weight:750}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__dot{flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:#22a447;box-shadow:0 0 0 3px rgba(34,164,71,.15)}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship__free b{margin-right:6px;font-size:.72rem;font-weight:800;letter-spacing:.04em}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-assure{margin:10px 0 0;color:#5B6668;font-size:.72rem;text-align:center}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes{margin-top:22px;padding:16px 0 4px;border-top:1px solid #E4E1DB}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__nav{display:flex;gap:6px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__nav[hidden]{display:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__arrow{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid #D6D1C7;border-radius:50%;background:#fff;color:#1C2326;cursor:pointer;transition:background .15s ease,opacity .15s ease}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__arrow:hover:not(:disabled){background:#1C2326;color:#fff;border-color:#1C2326}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__arrow:disabled{opacity:.35;cursor:default}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__arrow svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row{scroll-behavior:smooth;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  /* 2026-09-29 fix: the review slider's cards made the product column wider than the phone screen (grid items default to min-width:auto, so the column grew to fit all cards). Columns may now shrink; the slider scrolls inside them. */
+  html body[data-page-type="product"] .besjaar-store-premium-pd__grid>*,
+  html body[data-page-type="product"] .besjaar-store-premium-pd__summary,
+  html body[data-page-type="product"] .besjaar-store-premium-pd__gallery,
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes{min-width:0!important;max-width:100%}
+  @media(max-width:980px){html body[data-page-type="product"] .besjaar-store-premium-pd__grid{grid-template-columns:minmax(0,1fr)!important}}
+  /* Gold review stars everywhere on the product page: rating line, quote cards, the reviews section's meter and Judge.me's own stars. */
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-stars i,
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote .bj-pd-quote__stars,
+  html body[data-page-type="product"] .besjaar-ui-rating-meter__fill,
+  html body[data-page-type="product"] .besjaar-ui-review-stars,
+  html body[data-page-type="product"] .jdgm-star,
+  html body[data-page-type="product"] .jdgm-star.jdgm--on,
+  html body[data-page-type="product"] .jdgm-star.jdgm--half{color:#E0A526!important;-webkit-text-fill-color:#E0A526!important}
+  html body[data-page-type="product"] .jdgm-star.jdgm--off{color:#E4E1DB!important;-webkit-text-fill-color:#E4E1DB!important}
+  /* The reviews section below had an older amber (#E0A526) star rule with higher specificity; the section's id wins over it. */
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star,
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star::before,
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star.jdgm--on,
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star.jdgm--half,
+  html body[data-page-type="product"] #besjaar-ui-reviews .besjaar-ui-rating-meter__fill,
+  html body[data-page-type="product"] #besjaar-ui-reviews .besjaar-ui-review-stars__fill,
+  html body[data-page-type="product"] #besjaar-store-reviews .bj-proof__stars,
+  html body[data-page-type="product"] .besjaar-store-reviews .bj-proof__stars{color:#E0A526!important;-webkit-text-fill-color:#E0A526!important}
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star.jdgm--off,
+  html body[data-page-type="product"] #besjaar-ui-reviews .jdgm-star.jdgm--off::before,
+  html body[data-page-type="product"] #besjaar-ui-reviews .besjaar-ui-rating-meter__base{color:#E4E1DB!important;-webkit-text-fill-color:#E4E1DB!important}
+  html body[data-page-type="product"] #besjaar-ui-reviews{--rv-star:#E0A526;--jdgm-star-color:#E0A526}
+  html body[data-page-type="product"] .besjaar-ui-rating-meter__base{color:#E4E1DB!important;-webkit-text-fill-color:#E4E1DB!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head strong{color:#1C2326;font-size:.92rem;font-weight:750}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__head span{color:#1F5F52;font-size:.74rem;font-weight:700}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row{display:grid;grid-auto-flow:column;grid-auto-columns:82%;min-width:0;max-width:100%;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row::-webkit-scrollbar{display:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote{display:flex;flex-direction:column;gap:8px;margin:0;padding:14px 16px;border:1px solid #E4E1DB;border-radius:14px;background:#fff;scroll-snap-align:start}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote__stars{color:#E0A526;font-size:.82rem;letter-spacing:1.5px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote blockquote{margin:0;color:#2B3437;font-size:.82rem;line-height:1.5}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quote figcaption{margin-top:auto;color:#5B6668;font-size:.72rem;font-weight:700}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__all{display:inline-block;margin-top:8px;color:#1F5F52;font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{position:absolute;z-index:3;right:14px;bottom:14px;padding:5px 10px;border-radius:999px;background:rgba(17,22,28,.72);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.04em;pointer-events:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd__swipe{display:none!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details{margin-top:24px!important;border-top:1px solid #E4E1DB!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details summary{padding:18px 2px!important;color:#1C2326!important;font-size:.86rem!important;font-weight:750!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details summary::after{display:grid!important;place-items:center!important;width:26px!important;height:26px!important;border:1px solid #D6D1C7!important;border-radius:50%!important;color:#1C2326!important;font-size:1rem!important;line-height:1!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details details[open] summary::after{background:#1C2326!important;border-color:#1C2326!important;color:#fff!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__details details>div{font-size:.84rem!important;color:#5B6668!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd__thumb[aria-current="true"]{border-color:#1C2326!important;box-shadow:0 0 0 1px #1C2326 inset}
+  @media(max-width:760px){
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky{grid-template-columns:44px minmax(0,1fr) auto!important;padding:8px 8px 8px 8px!important;border-radius:16px!important}
+    body[data-page-type="product"] .bj-pd-sticky__img{width:44px;height:44px;border-radius:10px;background:#F5F2EC;object-fit:contain}
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky-add{background:#1C2326!important;border-color:#1C2326!important;min-height:44px!important;padding:0 18px!important;font-size:.74rem!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd__sticky-copy span{color:#1C2326!important;font-size:.8rem!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__row{grid-auto-columns:82%}
+    html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__nav{display:none!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{right:12px;bottom:12px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating{font-size:.84rem;margin-bottom:8px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price .besjaar-store-premium-pd__price{font-size:1.55rem}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{gap:7px;margin-top:14px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{min-height:58px;gap:9px;padding:9px 10px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon,body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon svg{flex-basis:20px;width:20px;height:20px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{font-size:.72rem}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship{border-radius:16px;padding:11px 14px;font-size:.76rem}
+    body[data-page-type="product"] .besjaar-store-premium-pd__description-group .besjaar-store-premium-pd__lede{font-size:.86rem!important;line-height:1.55!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd__purchase{grid-template-columns:100px minmax(0,1fr)!important;gap:8px!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd__qty{width:100px!important;grid-template-columns:30px 40px 30px!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd__qty button{width:30px!important}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-add{padding:0 12px!important;font-size:.8rem!important;gap:8px!important}
+    body[data-page-type="product"] .besjaar-to-top{display:none!important}
+  }
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare{margin-top:18px;padding:14px 14px 6px;border:1px solid #E4E1DB;border-radius:14px;background:#fff}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__title{margin:0 0 4px;color:#1C2326;font-size:.82rem;font-weight:780}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:10px 8px;margin:0 -8px;border-top:1px solid #E4E1DB;border-radius:10px;color:inherit;text-decoration:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row:first-of-type{border-top:0}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row:hover{background:#FAF8F4}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row.is-current{background:#E6F0EC;border-top-color:transparent}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__row.is-current + .bj-pd-compare__row{border-top-color:transparent}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__name{display:block;color:#1C2326;font-size:.78rem;font-weight:720;line-height:1.3}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__name em{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#1F5F52;color:#fff;font-size:.56rem;font-style:normal;font-weight:800;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__chips{display:flex;flex-wrap:wrap;gap:4px 10px;color:#5B6668;font-size:.66rem;font-weight:600;line-height:1.3}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__chips span+span::before{content:"\00b7";margin-right:10px;color:#C9C3B8}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare__price{grid-row:1 / span 2;align-self:center;color:#1F5F52;font-size:.86rem;font-weight:820;white-space:nowrap}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec{display:grid;margin:0;padding:0}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec>div{display:grid;grid-template-columns:minmax(120px,42%) minmax(0,1fr);gap:12px;padding:8px 0;border-bottom:1px solid #E4E1DB;font-size:.78rem;line-height:1.45}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec>div:last-child{border-bottom:0}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec span{color:#5B6668}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-spec strong{color:#2B3437;font-weight:650}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-box{margin:0;padding-left:18px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-box li{margin:0 0 5px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-add{justify-content:center!important;gap:10px!important;font-size:.84rem!important;letter-spacing:.01em!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-add__icon{flex:0 0 18px;width:18px;height:18px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant{display:grid;gap:8px;margin-top:10px;text-align:center}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant:empty{display:none}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button{width:100%}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__button{width:100%!important;min-height:54px!important;border-radius:999px!important;font-size:.84rem!important;font-weight:800!important;box-shadow:none!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__button--unbranded{background:#1F5F52!important;color:#fff!important}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-instant .shopify-payment-button__more-options{display:block!important;margin-top:4px!important;color:#2B3437!important;font-size:.74rem!important;font-weight:600!important;text-decoration:underline!important;text-underline-offset:3px!important}
+  @media(max-width:430px){body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-compare{padding:12px 12px 4px}}
+</style>
+
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign selected_media = current_variant.featured_media | default: product.featured_media
+  assign selected_image = selected_media.preview_image | default: product.featured_media.preview_image
+  assign form_id = 'BesjaarProductForm-' | append: section.id
+  capture shipping_threshold_cents
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  assign shipping_threshold_cents = shipping_threshold_cents | strip | plus: 0
+  assign shipping_threshold_money = shipping_threshold_cents | money_without_trailing_zeros
+  assign returns_days = settings.return_window_days | default: 30
+  assign warranty_months = settings.warranty_months | default: 12
+  assign ui_shipping = 'besjaar_ui.product.free_shipping_from' | t: amount: shipping_threshold_money
+  assign ui_returns = 'besjaar_ui.product.returns_days' | t: days: returns_days
+  assign ui_warranty = 'besjaar_ui.product.warranty_months_dynamic' | t: months: warranty_months
+  capture focused_collection_url
+    render 'shower-store-url'
+  endcapture
+  assign focused_collection_url = focused_collection_url | strip
+  assign ui_decrease = 'Decrease quantity'
+  assign ui_increase = 'Increase quantity'
+  assign ui_quantity = 'Quantity'
+  assign ui_shortcut_reviews = 'Read Reviews'
+  assign product_copy_locale = request.locale.iso_code | split: '-' | first | downcase
+  case product_copy_locale
+    when 'nl'
+      assign ui_decrease = 'Aantal verlagen'
+      assign ui_increase = 'Aantal verhogen'
+      assign ui_quantity = 'Aantal'
+      assign ui_shortcut_reviews = 'Lees reviews'
+    when 'de'
+      assign ui_decrease = 'Menge verringern'
+      assign ui_increase = 'Menge erhöhen'
+      assign ui_quantity = 'Menge'
+      assign ui_shortcut_reviews = 'Bewertungen lesen'
+    when 'fr'
+      assign ui_decrease = 'Réduire la quantité'
+      assign ui_increase = 'Augmenter la quantité'
+      assign ui_quantity = 'Quantité'
+      assign ui_shortcut_reviews = 'Lire les avis'
+    when 'es'
+      assign ui_decrease = 'Reducir cantidad'
+      assign ui_increase = 'Aumentar cantidad'
+      assign ui_quantity = 'Cantidad'
+      assign ui_shortcut_reviews = 'Leer opiniones'
+  endcase
+  capture localized_product_title_capture
+    render 'localized-product-title', product: product
+  endcapture
+  assign display_title = localized_product_title_capture | strip
+  if display_title == blank
+    assign display_title = product.title
+  endif
+  assign first_collection = product.collections.first
+  assign locale = request.locale.iso_code | split: '-' | first | downcase
+  assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  assign connection_size = product.metafields.custom.connection_size.value | default: '½″'
+
+  case locale
+    when 'nl'
+      assign ui_rating = 'beoordelingen'
+      assign ui_in_stock = 'Op voorraad'
+      assign ui_sold_out = 'Uitverkocht'
+      assign ui_low_stock = 'Beperkte voorraad'
+      assign ui_option = 'Kies uitvoering'
+      assign ui_add = 'In winkelwagen'
+      assign ui_incl_vat = 'incl. btw'
+      assign ui_save = 'Bespaar'
+      assign ui_desc = 'Omschrijving'
+      assign ui_install = 'Installatie'
+      assign ui_install_body = 'Schroef de oude handdouche los en draai de Besjaar handvast op een standaard doucheslang. Geen speciaal gereedschap nodig.'
+      assign ui_care = 'Pasvorm & onderhoud'
+      assign ui_care_body = 'Controleer de modelspecificaties voor filter, slang en sproeistanden. Spoel het douchevlak regelmatig schoon en droog de afwerking met een zachte doek.'
+      assign ui_gallery = 'Productfoto'
+      assign ui_swipe = 'Veeg om meer foto’s te bekijken'
+      assign ui_secure = 'Veilig afrekenen'
+      assign ui_lede = 'Een premium Besjaar handdouche voor een krachtige, comfortabele dagelijkse douche. Ontworpen voor een standaard ½″ aansluiting, eenvoudige bediening en een verzorgde badkamerlook.'
+    when 'de'
+      assign ui_rating = 'Bewertungen'
+      assign ui_in_stock = 'Auf Lager'
+      assign ui_sold_out = 'Ausverkauft'
+      assign ui_low_stock = 'Nur wenige verfügbar'
+      assign ui_option = 'Ausführung wählen'
+      assign ui_add = 'In den Warenkorb'
+      assign ui_incl_vat = 'inkl. MwSt.'
+      assign ui_save = 'Spare'
+      assign ui_desc = 'Beschreibung'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Alten Handbrausekopf abschrauben und Besjaar handfest auf einen Standard-Duschschlauch drehen. Kein Spezialwerkzeug erforderlich.'
+      assign ui_care = 'Passform & Pflege'
+      assign ui_care_body = 'Modellspezifische Angaben zu Filter, Schlauch und Strahlarten findest du in den Spezifikationen. Brausefläche regelmäßig abspülen und die Oberfläche mit einem weichen Tuch trocknen.'
+      assign ui_gallery = 'Produktbild'
+      assign ui_swipe = 'Wischen, um weitere Bilder anzusehen'
+      assign ui_secure = 'Sicher bezahlen'
+      assign ui_lede = 'Eine hochwertige Besjaar Handbrause für einen kräftigen, angenehmen Duschstrahl im Alltag. Für Standard-½″-Anschlüsse, einfache Bedienung und ein klares Badezimmerdesign.'
+    when 'fr'
+      assign ui_rating = 'avis'
+      assign ui_in_stock = 'En stock'
+      assign ui_sold_out = 'Épuisé'
+      assign ui_low_stock = 'Stock limité'
+      assign ui_option = 'Choisir la version'
+      assign ui_add = 'Ajouter au panier'
+      assign ui_incl_vat = 'TVA incluse'
+      assign ui_save = 'Économisez'
+      assign ui_desc = 'Description'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Dévissez l’ancienne douchette puis vissez Besjaar à la main sur un flexible de douche standard. Aucun outil spécial n’est nécessaire.'
+      assign ui_care = 'Compatibilité & entretien'
+      assign ui_care_body = 'Consultez les spécifications du modèle pour le filtre, le flexible et les modes de jet. Rincez régulièrement la face du pommeau et séchez la finition avec un chiffon doux.'
+      assign ui_gallery = 'Photo produit'
+      assign ui_swipe = 'Balayez pour voir plus de photos'
+      assign ui_secure = 'Paiement sécurisé'
+      assign ui_lede = 'Une douchette Besjaar haut de gamme conçue pour un jet puissant et confortable au quotidien. Compatible avec un raccord standard ½″, simple à utiliser et facile à intégrer dans la salle de bains.'
+    when 'es'
+      assign ui_rating = 'opiniones'
+      assign ui_in_stock = 'En stock'
+      assign ui_sold_out = 'Agotado'
+      assign ui_low_stock = 'Stock limitado'
+      assign ui_option = 'Elige la versión'
+      assign ui_add = 'Añadir al carrito'
+      assign ui_incl_vat = 'IVA incluido'
+      assign ui_save = 'Ahorra'
+      assign ui_desc = 'Descripción'
+      assign ui_install = 'Instalación'
+      assign ui_install_body = 'Desenrosca la ducha de mano antigua y enrosca Besjaar a mano en una manguera de ducha estándar. No se necesitan herramientas especiales.'
+      assign ui_care = 'Compatibilidad y cuidado'
+      assign ui_care_body = 'Consulta las especificaciones del modelo para el filtro, la manguera y los modos de chorro. Aclara regularmente la cara de la alcachofa y seca el acabado con un paño suave.'
+      assign ui_gallery = 'Foto del producto'
+      assign ui_swipe = 'Desliza para ver más fotos'
+      assign ui_secure = 'Pago seguro'
+      assign ui_lede = 'Una ducha de mano Besjaar premium diseñada para un chorro potente y cómodo cada día. Compatible con una conexión estándar de ½″, fácil de usar y de integrar en tu baño.'
+    else
+      assign ui_rating = 'reviews'
+      assign ui_in_stock = 'In stock'
+      assign ui_sold_out = 'Sold out'
+      assign ui_low_stock = 'Limited stock'
+      assign ui_option = 'Choose an option'
+      assign ui_add = 'Add to cart'
+      assign ui_incl_vat = 'VAT included'
+      assign ui_save = 'Save'
+      assign ui_desc = 'Description'
+      assign ui_install = 'Installation'
+      assign ui_install_body = 'Unscrew your existing hand shower and hand-tighten Besjaar onto a standard shower hose. No special tools required.'
+      assign ui_care = 'Fit & care'
+      assign ui_care_body = 'Check the model specifications for filter, hose and spray-mode details. Rinse the shower face regularly and dry the finish with a soft cloth.'
+      assign ui_gallery = 'Product image'
+      assign ui_swipe = 'Swipe to explore more images'
+      assign ui_secure = 'Secure checkout'
+      assign ui_lede = 'A premium Besjaar hand shower designed for a strong, comfortable everyday shower. Made for a standard ½″ connection, simple operation and a clean modern bathroom setup.'
+  endcase
+
+  capture product_is_shower_head
+    render 'is-shower-head', product: product
+  endcapture
+  assign product_is_shower_head = product_is_shower_head | strip
+  if product_is_shower_head != 'true'
+    assign ui_lede = 'besjaar_seo.product.accessory_intro' | t
+    assign ui_install_body = 'besjaar_seo.product.accessory_installation' | t
+    assign ui_care_body = 'besjaar_seo.product.accessory_care' | t
+  endif
+  comment
+    Besjaar 2026-09-22 (SEO: product-lede-identical-and-description-collapsed):
+    shower-family products take their lede from the merchant's own description
+    instead of the generic sentence, so a model with its own description shows
+    its own copy above the buy box (and the EN storefront gets the translated
+    body). Models that share a description still share a lede until
+    custom.introduction is filled in Admin. The description opens with a short
+    display headline followed by the intro paragraph; a headline shorter than
+    80 characters is skipped in favour of that paragraph. Only 40-320 character
+    results are used, and a paragraph that claims to remove heavy metals is
+    never used (unsupported claim). custom.introduction still wins below.
+    Products without a description render exactly as before.
+  endcomment
+  capture product_family_capture
+    render 'product-family', product: product
+  endcapture
+  assign product_family = product_family_capture | strip
+  if product_family == 'shower' and product.description != blank
+    assign description_paragraphs = product.description | split: '</p>'
+    assign description_lede = description_paragraphs[0] | strip_html | strip
+    assign description_lede_size = description_lede | size
+    if description_lede_size < 80 and description_paragraphs.size > 1
+      assign description_second = description_paragraphs[1] | strip_html | strip
+      assign description_second_size = description_second | size
+      if description_second_size >= 40
+        assign description_lede = description_second
+        assign description_lede_size = description_second_size
+      endif
+    endif
+    assign description_lede_check = description_lede | downcase
+    if description_lede_check contains 'zware metalen' or description_lede_check contains 'heavy metals' or description_lede_check contains 'schwermetalle' or description_lede_check contains 'métaux lourds'
+      assign description_lede_size = 0
+    endif
+    if description_lede_size >= 40 and description_lede_size <= 320
+      assign ui_lede = description_lede | escape_once
+    endif
+  endif
+  comment
+    2026-09-29: the merchant's own opening line of the description (under 80
+    characters, e.g. "Gefilterd water. Volle druk. Tien standen.") is shown as
+    a headline above the lede instead of being skipped. custom.introduction
+    is Dutch copy, so it only replaces the lede on the Dutch storefront;
+    custom.introduction_en / _de / _fr do the same for the other languages.
+  endcomment
+  assign ui_headline = ''
+  if product_family == 'shower' and product.description != blank
+    assign headline_candidate = description_paragraphs[0] | strip_html | strip
+    assign headline_size = headline_candidate | size
+    assign headline_check = headline_candidate | downcase
+    if headline_size >= 10 and headline_size < 80 and headline_candidate != description_lede
+      unless headline_check contains 'zware metalen' or headline_check contains 'heavy metals'
+        assign ui_headline = headline_candidate | escape_once
+      endunless
+    endif
+  endif
+  assign introduction_key = 'introduction_' | append: product_copy_locale
+  if product.metafields.custom[introduction_key].value != blank
+    assign ui_lede = product.metafields.custom[introduction_key].value | escape | newline_to_br
+  elsif product_copy_locale == 'nl' and product.metafields.custom.introduction.value != blank
+    assign ui_lede = product.metafields.custom.introduction.value | escape | newline_to_br
+  endif
+
+  comment
+    Product facts for the highlights list, the specification panel and the
+    model comparison. Text metafields are Dutch and only shown on /nl; the
+    numeric facts and yes/no chips are shown in every language.
+  endcomment
+  capture bj_capture
+    render 'shower-spray-modes', product: product
+  endcapture
+  assign bj_modes = bj_capture | strip
+  capture bj_capture
+    render 'shower-filter-state', product: product
+  endcapture
+  assign bj_filter = bj_capture | strip
+  capture bj_capture
+    render 'shower-hose-state', product: product
+  endcapture
+  assign bj_hose = bj_capture | strip
+  assign bj_nl_copy = false
+  if product_copy_locale == 'nl'
+    assign bj_nl_copy = true
+  endif
+  assign bj_highlights = blank
+  if bj_nl_copy and product.metafields.custom.highlights.value != blank
+    assign bj_highlights = product.metafields.custom.highlights.value
+  endif
+  assign bj_best_for = ''
+  if bj_nl_copy and product.metafields.custom.best_for.value != blank
+    assign bj_best_for = product.metafields.custom.best_for.value
+  endif
+  assign bj_diameter_mm = product.metafields.custom.diameter_mm.value | default: 0 | plus: 0
+  assign bj_hose_cm = product.metafields.custom.hose_length_cm.value | default: 0 | plus: 0
+  assign bj_model = product.metafields.custom.model_number.value | default: ''
+  assign bj_material = ''
+  assign bj_connection = ''
+  assign bj_water = ''
+  assign bj_filter_type = ''
+  assign bj_filter_interval = ''
+  assign bj_compat = ''
+  assign bj_package = ''
+  if bj_nl_copy
+    assign bj_material = product.metafields.custom.material.value | default: ''
+    assign bj_connection = product.metafields.custom.connection_size.value | default: ''
+    assign bj_water = product.metafields.custom.water_use.value | default: ''
+    assign bj_filter_type = product.metafields.custom.filter_type.value | default: ''
+    assign bj_filter_interval = product.metafields.custom.filter_replacement_interval.value | default: ''
+    assign bj_compat = product.metafields.custom.compatibility.value | default: ''
+    assign bj_package = product.metafields.custom.package_contents.value | default: ''
+  endif
+  assign bj_decimal_comma = false
+  if product_copy_locale == 'nl' or product_copy_locale == 'de' or product_copy_locale == 'fr' or product_copy_locale == 'es'
+    assign bj_decimal_comma = true
+  endif
+  assign bj_hose_m = ''
+  if bj_hose_cm > 0
+    assign bj_hose_m = bj_hose_cm | divided_by: 100.0 | append: ''
+    if bj_hose_m contains '.0'
+      assign bj_hose_m = bj_hose_m | replace: '.0', ''
+    endif
+    if bj_decimal_comma
+      assign bj_hose_m = bj_hose_m | replace: '.', ','
+    endif
+    assign bj_hose_m = bj_hose_m | append: ' m'
+  endif
+  assign bj_diameter_cm = ''
+  if bj_diameter_mm > 0
+    assign bj_diameter_cm = bj_diameter_mm | divided_by: 10.0 | append: ''
+    if bj_diameter_cm contains '.0'
+      assign bj_diameter_cm = bj_diameter_cm | replace: '.0', ''
+    endif
+    if bj_decimal_comma
+      assign bj_diameter_cm = bj_diameter_cm | replace: '.', ','
+    endif
+    assign bj_diameter_cm = bj_diameter_cm | append: ' cm'
+  endif
+  case product_copy_locale
+    when 'nl'
+      assign bj_label_water = 'Waterverbruik'
+      assign bj_label_model = 'Modelnummer'
+      assign bj_compare_title = 'Welke Besjaar past bij jou?'
+    when 'de'
+      assign bj_label_water = 'Wasserverbrauch'
+      assign bj_label_model = 'Modellnummer'
+      assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
+    when 'fr'
+      assign bj_label_water = 'Consommation d’eau'
+      assign bj_label_model = 'Numéro de modèle'
+      assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
+    when 'es'
+      assign bj_label_water = 'Consumo de agua'
+      assign bj_label_model = 'Número de modelo'
+      assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
+    else
+      assign bj_label_water = 'Water use'
+      assign bj_label_model = 'Model number'
+      assign bj_compare_title = 'besjaar_ui.product.compare_heading' | t
+  endcase
+  assign bj_has_specs = false
+  if bj_modes != blank or bj_diameter_cm != '' or bj_hose_m != '' or bj_material != '' or bj_connection != '' or bj_water != '' or bj_model != '' or bj_filter_type != '' or bj_filter_interval != '' or bj_compat != '' or product_is_shower_head == 'true'
+    assign bj_has_specs = true
+  endif
+  if product.metafields.custom.installation.value != blank
+    assign ui_install_body = product.metafields.custom.installation.value | escape | newline_to_br
+  endif
+  if product.metafields.custom.care_instructions.value != blank
+    assign ui_care_body = product.metafields.custom.care_instructions.value | escape | newline_to_br
+  endif
+
+  assign inventory_qty = current_variant.inventory_quantity
+  assign show_low_stock = false
+  if current_variant.inventory_management and inventory_qty > 0 and inventory_qty <= 5
+    assign show_low_stock = true
+  endif
+
+  comment
+    Besjaar 11.74: the live automatic Shopify discount for this product. When
+    one is running, the price the shopper actually pays leads the buy box and
+    the undiscounted price is struck through beside it. A compare-at price is
+    suppressed in that case, so the row never shows three numbers.
+  endcomment
+  capture bjd_badge
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'badge'
+  endcapture
+  assign bjd_badge = bjd_badge | strip
+  capture bjd_now
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'price_now'
+  endcapture
+  assign bjd_now = bjd_now | strip
+  capture bjd_note
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'note'
+  endcapture
+  assign bjd_note = bjd_note | strip
+  comment
+    2026-09-22: plain discount data for the "recently viewed" strip, which is
+    rendered client-side from the visitor's browser storage and therefore has
+    no access to the discount mirror. It stores the discounted price, the
+    badge text and the discount's end time, and stops showing the discount by
+    itself once that time has passed.
+  endcomment
+  capture bjd_cents
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'cents'
+  endcapture
+  assign bjd_cents = bjd_cents | strip
+  capture bjd_ends
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'ends'
+  endcapture
+  assign bjd_ends = bjd_ends | strip
+  capture bjd_label
+    render 'besjaar-discount-badge', product: product, variant: current_variant, layout: 'label'
+  endcapture
+  assign bjd_label = bjd_label | strip
+
+  assign show_compare = false
+  if current_variant.compare_at_price > current_variant.price
+    assign show_compare = true
+  endif
+  if bjd_now != ''
+    assign show_compare = false
+  endif
+-%}
+
+<section class="besjaar-store besjaar-store-premium-pd" data-besjaar-product-section="{{ section.id }}" data-product-root{% if bjd_cents != '' %} data-discount-cents="{{ bjd_cents }}" data-discount-ends="{{ bjd_ends }}" data-discount-label="{{ bjd_label | escape }}"{% endif %} data-added-status="{{ 'besjaar_ui.cart.added' | t | escape }}" data-add-error="{{ 'besjaar_ui.cart.add_error' | t | escape }}" data-zoom-label="{{ 'besjaar_ui.product.zoom_image' | t | escape }}" data-close-zoom-label="{{ 'besjaar_ui.product.close_zoom' | t | escape }}" data-previous-image-label="{{ 'besjaar_ui.accessibility.previous_product_image' | t | escape }}" data-next-image-label="{{ 'besjaar_ui.accessibility.next_product_image' | t | escape }}" data-in-stock-label="{{ ui_in_stock | escape }}" data-low-stock-label="{{ ui_low_stock | escape }}" data-sold-out-label="{{ ui_sold_out | escape }}">
+  <div class="besjaar-store-shell">
+    {%- if section.settings.show_breadcrumbs -%}
+      <nav class="besjaar-store-premium-pd__crumb" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
+        <a href="{{ routes.root_url }}">{{ 'besjaar_ui.product.home' | t }}</a>
+        {% capture breadcrumb_handle %}{% render 'seo-product-collection', product: product %}{% endcapture %}
+        {% assign breadcrumb_handle = breadcrumb_handle | strip %}
+        {% assign breadcrumb_collection = collections[breadcrumb_handle] %}
+        {% if breadcrumb_collection != blank %}
+          <span aria-hidden="true">/</span>
+          <a href="{% render 'localized-internal-url', url: breadcrumb_collection.url %}">{% render 'localized-collection-title', collection: breadcrumb_collection %}</a>
+        {% endif %}
+      </nav>
+    {%- endif -%}
+
+    <div class="besjaar-store-premium-pd__grid">
+      <div class="besjaar-store-premium-pd__gallery">
+        {%- assign bj_img_total = 0 -%}
+        {%- for media in product.media limit: 10 -%}{%- if media.preview_image -%}{%- assign bj_img_total = bj_img_total | plus: 1 -%}{%- endif -%}{%- endfor -%}
+        <div class="besjaar-store-premium-pd__stage" id="BesjaarStage-{{ section.id }}">
+          {%- if bj_img_total > 1 -%}<span class="bj-pd-counter" data-bj-counter aria-hidden="true">1 / {{ bj_img_total }}</span>{%- endif -%}
+          {%- if selected_image -%}
+            <img
+              id="BesjaarMainImage-{{ section.id }}"
+              src="{{ selected_image | image_url: width: 1600 }}"
+              srcset="{{ selected_image | image_url: width: 700 }} 700w, {{ selected_image | image_url: width: 1100 }} 1100w, {{ selected_image | image_url: width: 1600 }} 1600w"
+              sizes="(max-width: 900px) 100vw, 56vw"
+              loading="eager" decoding="async" fetchpriority="high"
+              alt="{{ selected_image.alt | default: display_title | replace: '&amp;', '&' | escape_once }}"
+              width="{{ selected_image.width }}"
+              height="{{ selected_image.height }}">
+          {%- else -%}
+            <img id="BesjaarMainImage-{{ section.id }}" src="{{ 'besjaar-product-front-exact.webp' | asset_url }}" alt="{{ display_title | replace: '&amp;', '&' | escape_once }}" width="1254" height="1254" loading="eager" decoding="async" fetchpriority="high">
+          {%- endif -%}
+          {%- assign savings = current_variant.compare_at_price | minus: current_variant.price -%}
+          <span class="besjaar-store-premium-pd__sale" id="BesjaarSale-{{ section.id }}"{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}>{{ ui_save }} {{ savings | money }}</span>
+          {%- if section.settings.enable_image_zoom -%}
+            <button class="besjaar-store-premium-pd__zoom" type="button" data-product-zoom aria-label="{{ 'besjaar_ui.product.zoom_image' | t | escape }}" aria-haspopup="dialog">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5M10.5 7.5v6M7.5 10.5h6"></path></svg>
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- assign image_media_count = 0 -%}
+        {%- for media in product.media -%}{%- if media.preview_image -%}{%- assign image_media_count = image_media_count | plus: 1 -%}{%- endif -%}{%- endfor -%}
+        {%- if image_media_count > 1 -%}
+          <div class="besjaar-store-premium-pd__thumbs" id="BesjaarThumbs-{{ section.id }}" aria-label="{{ ui_gallery }}">
+            {%- assign thumb_index = 0 -%}
+            {%- for media in product.media limit: 10 -%}
+              {%- if media.preview_image -%}
+                {%- assign thumb_index = thumb_index | plus: 1 -%}
+                <button
+                  type="button"
+                  class="besjaar-store-premium-pd__thumb"
+                  aria-current="{% if media.id == selected_media.id or selected_media == blank and thumb_index == 1 %}true{% else %}false{% endif %}"
+                  data-src="{{ media.preview_image | image_url: width: 1600 }}"
+                  data-src-small="{{ media.preview_image | image_url: width: 700 }}"
+                  data-alt="{{ media.preview_image.alt | default: display_title | escape }}"
+                  data-media-id="{{ media.id }}"
+                  aria-label="{{ ui_gallery }} {{ thumb_index }}">
+                  <img src="{{ media.preview_image | image_url: width: 220 }}" alt="{{ media.preview_image.alt | default: display_title | replace: '&amp;', '&' | escape_once }}" width="110" height="110" loading="lazy" decoding="async">
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <p class="besjaar-store-premium-pd__swipe">{{ ui_swipe }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="besjaar-store-premium-pd__summary">
+        {%- comment -%}
+          2026-09-29 buy box, in the order of the owner's reference:
+          rating · title · price with badges · 4 benefit tiles · variant
+          pills · quantity + add to cart · wallet button · shipping pill.
+          Every number is real: the rating and count come from Judge.me
+          (reviews.rating / reviews.rating_count), the tiles from
+          custom.highlights, the badges from a live discount or compare-at
+          price and from the filter/hose metafields, the ship date from the
+          theme's own cut-off setting (order before 16:00 on a working day =
+          shipped the same day), the free-shipping line from the shipping
+          zone snippet that mirrors Settings > Shipping.
+        {%- endcomment -%}
+        {%- assign bj_rating_num = rating | plus: 0.0 -%}
+        {%- assign bj_rating_count_num = rating_count | plus: 0 -%}
+        {%- if bj_rating_num > 0 and bj_rating_count_num > 0 -%}
+          {%- assign bj_rating_pct = bj_rating_num | times: 20.0 | round: 1 | at_most: 100 -%}
+          {%- assign bj_rating_text = bj_rating_num | round: 1 | append: '' -%}
+          {%- if bj_decimal_comma -%}{%- assign bj_rating_text = bj_rating_text | replace: '.', ',' -%}{%- endif -%}
+          <a class="bj-pd-rating" href="#besjaar-ui-reviews" aria-label="{{ 'besjaar_ui.reviews.rating_accessible' | t: rating: bj_rating_text, max: 5, count: bj_rating_count_num | escape }}">
+            <span class="bj-pd-stars" aria-hidden="true">★★★★★<i style="width:{{ bj_rating_pct }}%">★★★★★</i></span>
+            <span>{{ bj_rating_text }}</span><span class="bj-pd-rating__sep" aria-hidden="true">|</span><span class="bj-pd-rating__count">{{ bj_rating_count_num }} {{ ui_rating }}</span>
+          </a>
+        {%- elsif product.metafields.judgeme.badge != blank -%}
+          <a class="besjaar-store-premium-pd__rating besjaar-store-premium-pd__rating--judgeme bj-pd-rating--judgeme" href="#besjaar-ui-reviews" aria-label="{{ ui_shortcut_reviews | escape }}">
+            <span class="jdgm-widget jdgm-preview-badge" data-id="{{ product.id }}" data-auto-install="false">{{ product.metafields.judgeme.badge }}</span>
+          </a>
+        {%- endif -%}
+
+        <h1 class="besjaar-store-premium-pd__title">{{ display_title | replace: '&amp;', '&' | escape_once }}</h1>
+
+        {%- liquid
+          assign bj_badge_dark = ''
+          if bjd_badge != ''
+            assign bj_badge_dark = bjd_badge
+          elsif show_compare
+            capture bj_badge_dark
+              render 'besjaar-compare-sale', product: product, variant: current_variant, layout: 'badge'
+            endcapture
+            assign bj_badge_dark = bj_badge_dark | strip
+          endif
+          assign bj_badge_green = ''
+          if product_is_shower_head == 'true'
+            if bj_filter == 'true'
+              assign bj_badge_green = 'besjaar_ui.product.shower_filter_chip' | t
+            elsif bj_hose == 'true'
+              assign bj_badge_green = 'besjaar_ui.product.shower_hose_chip' | t
+            endif
+          endif
+        -%}
+        <div class="besjaar-store-premium-pd__price-row bj-pd-price">
+          <div>
+            <span class="besjaar-ui-visually-hidden" data-sale-price-prefix{% unless current_variant.compare_at_price > current_variant.price %} hidden{% endunless %}>{{ 'besjaar_ui.product.sale_price' | t }} </span>
+            <span class="besjaar-store-premium-pd__price{% if bjd_now != '' or show_compare %} is-bj-discounted{% endif %}" id="BesjaarPrice-{{ section.id }}">{% if bjd_now != '' %}{{ bjd_now }}{% else %}{{ current_variant.price | money }}{% endif %}</span>
+            <s class="bj-price__was" data-bj-price-was{% if bjd_now == '' and show_compare == false %} hidden{% endif %}><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><span data-bj-was-value>{% if bjd_now != '' %}{{ current_variant.price | money }}{% else %}{{ current_variant.compare_at_price | money }}{% endif %}</span></s>
+          </div>
+          {%- if bj_badge_dark != '' -%}<span class="bj-pd-badge bj-pd-badge--dark">{{ bj_badge_dark }}</span>{%- endif -%}
+          {%- if bj_badge_green != '' -%}<span class="bj-pd-badge bj-pd-badge--green">{{ bj_badge_green }}</span>{%- endif -%}
+          <small class="bj-pd-price__vat">{{ ui_incl_vat }}</small>
+          <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}" hidden><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
+        </div>
+        {{ bjd_note }}
+
+        <div class="besjaar-store-premium-pd__description-group">
+          {%- if section.settings.show_intro -%}<div class="besjaar-store-premium-pd__lede">{{ ui_lede }}</div>{%- endif -%}
+          {%- if section.settings.show_highlights -%}
+            {%- capture bj_icon_waves -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 9c2.2 0 2.2-1.6 4.5-1.6S9.8 9 12 9s2.2-1.6 4.5-1.6S18.8 9 21 9M3 15c2.2 0 2.2-1.6 4.5-1.6s2.3 1.6 4.5 1.6 2.2-1.6 4.5-1.6 2.3 1.6 4.5 1.6"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_drop -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11Z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_leaf -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19c3-4 6-7 10-9"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_shield -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_sparkle -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M11 4l1.6 4.4L17 10l-4.4 1.6L11 16l-1.6-4.4L5 10l4.4-1.6zM18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_bolt -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M13 3L5 13h6l-1 8 9-11h-6z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_wrench -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5a4 4 0 0 0 4.9 4.9L21 12l-9 9-2-2 5-5-2.4-2.4a4 4 0 0 1-5.1-5.1L10 9l3-3z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_hose -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M4 6h5a3 3 0 0 1 3 3v6a3 3 0 0 0 3 3h5"/><path d="M4 4v4M20 16v4"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_heart -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z"/></svg>{%- endcapture -%}
+            {%- capture bj_icon_clock -%}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>{%- endcapture -%}
+            {%- assign bj_grid_items = blank -%}
+            {%- if bj_highlights != blank -%}
+              {%- assign bj_grid_items = bj_highlights -%}
+            {%- elsif product_family == 'shower' and product_is_shower_head == 'true' -%}
+              {%- capture bj_auto_items -%}
+                {%- if bj_modes != blank -%}{{ 'besjaar_ui.product.shower_modes_chip' | t: count: bj_modes }}|{%- endif -%}
+                {%- if bj_filter == 'true' -%}{{ 'besjaar_ui.product.shower_filter_chip' | t }}{%- else -%}{{ 'besjaar_ui.product.shower_filter_none_chip' | t }}{%- endif -%}|
+                {%- if bj_hose == 'true' -%}{{ 'besjaar_ui.product.shower_hose_chip' | t }}{% if bj_hose_m != '' %} ({{ bj_hose_m }}){% endif %}{%- else -%}{{ 'besjaar_ui.product.shower_hose_none_chip' | t }}{%- endif -%}|
+                {%- if bj_diameter_cm != '' -%}{{ 'besjaar_ui.product.shower_diameter' | t }}: Ø {{ bj_diameter_cm }}|{%- endif -%}
+              {%- endcapture -%}
+              {%- assign bj_grid_items = bj_auto_items | strip | split: '|' -%}
+            {%- endif -%}
+            {%- if bj_grid_items != blank -%}
+              <ul class="bj-pd-tiles">
+                {%- assign bj_tile_count = 0 -%}
+                {%- for bj_item in bj_grid_items -%}
+                  {%- if bj_tile_count >= 4 -%}{%- break -%}{%- endif -%}
+                  {%- assign bj_item_text = bj_item | strip -%}
+                  {%- if bj_item_text == '' -%}{%- continue -%}{%- endif -%}
+                  {%- assign bj_tile_count = bj_tile_count | plus: 1 -%}
+                  {%- assign bj_item_lc = bj_item_text | downcase -%}
+                  {%- if bj_item_lc contains 'filter' or bj_item_lc contains 'filtr' or bj_item_lc contains 'cartridge' -%}
+                    {%- assign bj_icon = bj_icon_drop -%}
+                  {%- elsif bj_item_lc contains 'standen' or bj_item_lc contains 'modes' or bj_item_lc contains 'strahl' or bj_item_lc contains 'jet' -%}
+                    {%- assign bj_icon = bj_icon_waves -%}
+                  {%- elsif bj_item_lc contains 'slang' or bj_item_lc contains 'hose' or bj_item_lc contains 'schlauch' or bj_item_lc contains 'flexible' -%}
+                    {%- assign bj_icon = bj_icon_hose -%}
+                  {%- elsif bj_item_lc contains 'kalk' or bj_item_lc contains 'sproeier' or bj_item_lc contains 'limescale' -%}
+                    {%- assign bj_icon = bj_icon_sparkle -%}
+                  {%- elsif bj_item_lc contains 'druk' or bj_item_lc contains 'boost' or bj_item_lc contains 'pressure' -%}
+                    {%- assign bj_icon = bj_icon_bolt -%}
+                  {%- elsif bj_item_lc contains 'pauze' or bj_item_lc contains 'water' or bj_item_lc contains 'l/min' or bj_item_lc contains 'energie' -%}
+                    {%- assign bj_icon = bj_icon_leaf -%}
+                  {%- elsif bj_item_lc contains 'gereedschap' or bj_item_lc contains 'monteer' or bj_item_lc contains 'handvast' or bj_item_lc contains 'wissel' or bj_item_lc contains 'tool' -%}
+                    {%- assign bj_icon = bj_icon_wrench -%}
+                  {%- elsif bj_item_lc contains 'maanden' or bj_item_lc contains 'months' or bj_item_lc contains 'monate' or bj_item_lc contains 'mois' -%}
+                    {%- assign bj_icon = bj_icon_clock -%}
+                  {%- elsif bj_item_lc contains 'chroom' or bj_item_lc contains 'kop' or bj_item_lc contains 'cm' -%}
+                    {%- assign bj_icon = bj_icon_shield -%}
+                  {%- else -%}
+                    {%- assign bj_icon = bj_icon_heart -%}
+                  {%- endif -%}
+                  <li><span class="bj-pd-tiles__icon">{{ bj_icon }}</span><span class="bj-pd-tiles__text">{{ bj_item_text | escape }}</span></li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+
+        {%- comment -%}
+          2026-09-29: "Uitvoering" switch between the same shower head with and
+          without hose. The sibling is found in the shower-head collection by
+          product data (same spray modes, same filter, other hose state), so
+          no handles are hard-coded. Clicking the other pill opens that
+          product, so photos, price, reviews and details all belong to it.
+        {%- endcomment -%}
+        {%- if section.settings.show_hose_switch and product_is_shower_head == 'true' -%}
+          {%- liquid
+            assign sw_collection = settings.shower_collection
+            if sw_collection == blank
+              assign sw_collection = collections['showerhead']
+            endif
+            if sw_collection == blank
+              assign sw_collection = product.collections.first
+            endif
+            assign sw_found = false
+            if sw_collection != blank
+              for sw_p in sw_collection.products limit: 24
+                if sw_p.id == product.id
+                  continue
+                endif
+                unless sw_p.available
+                  continue
+                endunless
+                capture sw_c
+                  render 'is-shower-head', product: sw_p
+                endcapture
+                assign sw_head = sw_c | strip
+                if sw_head != 'true'
+                  continue
+                endif
+                capture sw_c
+                  render 'shower-spray-modes', product: sw_p
+                endcapture
+                assign sw_modes = sw_c | strip
+                capture sw_c
+                  render 'shower-filter-state', product: sw_p
+                endcapture
+                assign sw_filter = sw_c | strip
+                capture sw_c
+                  render 'shower-hose-state', product: sw_p
+                endcapture
+                assign sw_hose = sw_c | strip
+                if sw_modes == bj_modes and sw_filter == bj_filter and sw_hose != bj_hose
+                  assign sw_sibling = sw_p
+                  assign sw_found = true
+                  break
+                endif
+              endfor
+            endif
+            case product_copy_locale
+              when 'de'
+                assign sw_label = 'Ausführung'
+                assign sw_without = 'Ohne Schlauch'
+                assign sw_with = 'Mit Schlauch'
+              when 'fr'
+                assign sw_label = 'Version'
+                assign sw_without = 'Sans flexible'
+                assign sw_with = 'Avec flexible'
+              when 'es'
+                assign sw_label = 'Versión'
+                assign sw_without = 'Sin manguera'
+                assign sw_with = 'Con manguera'
+              when 'en'
+                assign sw_label = 'Version'
+                assign sw_without = 'Without hose'
+                assign sw_with = 'With hose'
+              else
+                assign sw_label = 'Uitvoering'
+                assign sw_without = 'Zonder slang'
+                assign sw_with = 'Met slang'
+            endcase
+          -%}
+          {%- if sw_found -%}
+            {%- liquid
+              if bj_hose == 'true'
+                assign sw_current_label = sw_with
+                assign sw_without_product = sw_sibling
+                assign sw_with_product = product
+              else
+                assign sw_current_label = sw_without
+                assign sw_without_product = product
+                assign sw_with_product = sw_sibling
+              endif
+            -%}
+            <p class="bj-pd-variant__label">{{ sw_label }}: <span>{{ sw_current_label }}</span></p>
+            <div class="bj-pd-variant__pills bj-pd-switch" role="group" aria-label="{{ sw_label | escape }}">
+              {%- for sw_item in (1..2) -%}
+                {%- if sw_item == 1 -%}
+                  {%- assign sw_prod = sw_without_product -%}{%- assign sw_text = sw_without -%}
+                {%- else -%}
+                  {%- assign sw_prod = sw_with_product -%}{%- assign sw_text = sw_with -%}
+                {%- endif -%}
+                {%- assign sw_variant = sw_prod.selected_or_first_available_variant -%}
+                {%- capture sw_price -%}{% render 'besjaar-discount-badge', product: sw_prod, variant: sw_variant, layout: 'price_now' %}{%- endcapture -%}
+                {%- assign sw_price = sw_price | strip -%}
+                {%- if sw_price == '' -%}{%- assign sw_price = sw_variant.price | money -%}{%- endif -%}
+                {%- capture sw_inner -%}
+                  {%- if sw_prod.featured_image -%}<img class="bj-pd-switch__img" src="{{ sw_prod.featured_image | image_url: width: 96 }}" alt="" width="28" height="28" loading="lazy" decoding="async">{%- endif -%}
+                  <span class="bj-pd-switch__label"><span class="bj-pd-switch__text">{{ sw_text }}</span><span class="bj-pd-switch__price">{{ sw_price }}</span></span>
+                {%- endcapture -%}
+                {%- if sw_prod.id == product.id -%}
+                  <span class="bj-pd-variant__pill bj-pd-switch__pill" aria-current="true">{{ sw_inner }}</span>
+                {%- else -%}
+                  {%- capture sw_url -%}{% render 'localized-internal-url', url: sw_prod.url %}{%- endcapture -%}
+                  <a class="bj-pd-variant__pill bj-pd-switch__pill" href="{{ sw_url | strip }}">{{ sw_inner }}</a>
+                  <link rel="prefetch" href="{{ sw_url | strip }}">
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- form 'product', product, id: form_id, class: 'besjaar-store-premium-pd__form', novalidate: 'novalidate', data-ajax-product-form: '', data-product-form: '' -%}
+          {%- if product.variants.size > 1 -%}
+            {%- assign bj_option_name = product.options.first | default: ui_option -%}
+            <p class="bj-pd-variant__label">{{ bj_option_name | escape }}: <span data-bj-variant-name>{{ current_variant.title | escape }}</span></p>
+            <div class="bj-pd-variant__pills" role="group" aria-label="{{ bj_option_name | escape }}">
+              {%- for variant in product.variants -%}
+                <button type="button" class="bj-pd-variant__pill{% unless variant.available %} is-unavailable{% endunless %}" data-bj-variant="{{ variant.id }}" data-bj-variant-title="{{ variant.title | escape }}" aria-pressed="{% if variant.id == current_variant.id %}true{% else %}false{% endif %}">{{ variant.title | escape }}</button>
+              {%- endfor -%}
+            </div>
+            <div class="besjaar-store-premium-pd__select-wrap besjaar-ui-visually-hidden" aria-hidden="true">
+              <select id="BesjaarVariant-{{ section.id }}" class="besjaar-store-premium-pd__select" name="id" data-variant-id tabindex="-1">
+                {%- for variant in product.variants -%}
+                  {%- assign variant_savings = variant.compare_at_price | minus: variant.price -%}
+                  {%- assign variant_media = variant.featured_media.preview_image -%}
+                  {%- capture variant_discount_price -%}{% render 'besjaar-discount-badge', product: product, variant: variant, layout: 'price_now' %}{%- endcapture -%}
+                  {%- assign variant_discount_price = variant_discount_price | strip -%}
+                  <option value="{{ variant.id }}" data-price="{{ variant.price | money | escape }}" data-price-cents="{{ variant.price }}" data-discount-price="{{ variant_discount_price | escape }}" data-compare-price="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | escape }}{% endif %}" data-savings="{% if variant.compare_at_price > variant.price %}{{ variant_savings | money | escape }}{% endif %}" data-available="{{ variant.available }}" data-inventory-quantity="{{ variant.inventory_quantity | default: 0 }}" data-inventory-managed="{% if variant.inventory_management %}true{% else %}false{% endif %}"{% if variant_media %} data-image="{{ variant_media | image_url: width: 1600 }}" data-image-small="{{ variant_media | image_url: width: 700 }}" data-image-alt="{{ variant_media.alt | default: display_title | escape }}" data-media-id="{{ variant.featured_media.id }}"{% endif %} {% if variant.id == current_variant.id %}selected{% endif %}>
+                    {{ variant.title | escape }} — {{ variant.price | money }}{% unless variant.available %} — {{ ui_sold_out }}{% endunless %}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- else -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+          {%- endif -%}
+
+          <div class="besjaar-store-premium-pd__purchase">
+            <div class="besjaar-store-premium-pd__qty" data-besjaar-qty>
+              <button type="button" data-step="-1" aria-label="{{ ui_decrease | escape }}">−</button>
+              <input type="number" name="quantity" value="1" min="1" inputmode="numeric" enterkeyhint="done" aria-label="{{ ui_quantity | escape }}" data-product-quantity>
+              <button type="button" data-step="1" aria-label="{{ ui_increase | escape }}">+</button>
+            </div>
+            <button id="BesjaarMainAdd-{{ section.id }}" type="submit" class="besjaar-store-premium-pd__add bj-pd-add" data-product-submit data-variant-available="{% if current_variant.available %}true{% else %}false{% endif %}" {% unless current_variant.available %}disabled{% endunless %}>
+              <svg class="bj-pd-add__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Zm3 0V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              <span data-add-label>{% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}</span>
+            </button>
+          </div>
+
+          {%- comment -%}
+            2026-09-29: dynamic checkout buttons back under "In winkelwagen" on
+            request: Shopify renders the shopper's accelerated wallet (Shop Pay,
+            PayPal, Apple Pay or Google Pay) plus the "More payment options"
+            link. Which wallets appear is set in Settings > Payments.
+          {%- endcomment -%}
+          <div class="besjaar-store-premium-pd__instant bj-pd-instant">
+            {{ form | payment_button }}
+          </div>
+        {%- endform -%}
+        <div class="besjaar-ui-product-form-status" role="status" aria-live="polite" aria-atomic="true" data-product-form-status></div>
+
+        {%- liquid
+          capture bj_ship_zone
+            render 'besjaar-shipping-zone', field: 'zone'
+          endcapture
+          assign bj_ship_zone = bj_ship_zone | strip
+          capture bj_ship_country
+            render 'besjaar-shipping-zone', field: 'country_code'
+          endcapture
+          assign bj_ship_country = bj_ship_country | strip
+          case product_copy_locale
+            when 'de'
+              assign bj_ship_prefix = 'Versand am'
+              assign bj_ship_fallback = 'Vor 16:00 bestellt, heute versendet'
+              assign bj_free_now = 'Kostenloser Versand'
+              assign bj_free_from = 'Kostenloser Versand ab'
+            when 'fr'
+              assign bj_ship_prefix = 'Expédié le'
+              assign bj_ship_fallback = 'Commandé avant 16h, expédié le jour même'
+              assign bj_free_now = 'Livraison gratuite'
+              assign bj_free_from = 'Livraison gratuite dès'
+            when 'es'
+              assign bj_ship_prefix = 'Enviado el'
+              assign bj_ship_fallback = 'Pedido antes de las 16 h, enviado el mismo día'
+              assign bj_free_now = 'Envío gratis'
+              assign bj_free_from = 'Envío gratis desde'
+            when 'en'
+              assign bj_ship_prefix = 'Ships by'
+              assign bj_ship_fallback = 'Order before 16:00, ships today'
+              assign bj_free_now = 'Free shipping'
+              assign bj_free_from = 'Free shipping from'
+            else
+              assign bj_ship_prefix = 'Verzonden op'
+              assign bj_ship_fallback = 'Voor 16:00 besteld, vandaag verzonden'
+              assign bj_free_now = 'Gratis verzending'
+              assign bj_free_from = 'Gratis verzending vanaf'
+          endcase
+          assign bj_cutoff = settings.order_cutoff_hour | default: 16
+          assign bj_ship_fallback = bj_ship_fallback | replace: '16', bj_cutoff
+          assign bj_free_text = ''
+          if bj_ship_zone != '' and shipping_threshold_cents > 0
+            if current_variant.price >= shipping_threshold_cents
+              assign bj_free_text = bj_free_now
+            else
+              assign bj_free_text = bj_free_from | append: ' ' | append: shipping_threshold_money
+            endif
+          endif
+        -%}
+        <div class="bj-pd-ship" data-bj-ship data-cutoff="{{ bj_cutoff }}" data-processing="{{ settings.processing_business_days | default: 0 }}" data-locale="{{ request.locale.iso_code | escape }}">
+          <span class="bj-pd-ship__when"><i class="bj-pd-ship__dot" aria-hidden="true"></i><span data-bj-ship-text>{{ bj_ship_fallback }}</span></span>
+          {%- if bj_free_text != '' -%}<span class="bj-pd-ship__free"><b>{{ bj_ship_country }}</b> {{ bj_free_text }}</span>{%- endif -%}
+        </div>
+        <template data-bj-ship-template>{{ bj_ship_prefix }} <strong></strong></template>
+        <p class="bj-pd-assure">{{ ui_returns }} · {{ ui_warranty }} · {{ ui_secure }}</p>
+
+        {%- comment -%}
+          2026-09-29: "Wat klanten zeggen" – up to ten real five-star review
+          texts for this product, read from Judge.me's own server-rendered
+          review HTML (judgeme.review_widget_ssr_html). Reviews shorter than
+          30 characters are skipped; the texts are shown as written, with the
+          reviewer's name. The 5-star share comes from the same data.
+        {%- endcomment -%}
+        {%- if section.settings.show_quotes -%}
+          {%- assign bj_ssr = product.metafields.judgeme.review_widget_ssr_html.value | default: '' -%}
+          {%- if bj_ssr contains 'jdgm-rev__body' -%}
+            {%- liquid
+              case product_copy_locale
+                when 'de'
+                  assign bj_q_title = 'Das sagen Kunden'
+                  assign bj_q_all = 'Alle Bewertungen'
+                  assign bj_q_share = 'vergeben 5 Sterne'
+                  assign bj_q_prev = 'Vorherige Bewertung'
+                  assign bj_q_next = 'Nächste Bewertung'
+                when 'fr'
+                  assign bj_q_title = 'Ce qu’en disent nos clients'
+                  assign bj_q_all = 'Tous les avis'
+                  assign bj_q_share = 'donnent 5 étoiles'
+                  assign bj_q_prev = 'Avis précédent'
+                  assign bj_q_next = 'Avis suivant'
+                when 'es'
+                  assign bj_q_title = 'Lo que dicen nuestros clientes'
+                  assign bj_q_all = 'Todas las opiniones'
+                  assign bj_q_share = 'dan 5 estrellas'
+                  assign bj_q_prev = 'Opinión anterior'
+                  assign bj_q_next = 'Opinión siguiente'
+                when 'en'
+                  assign bj_q_title = 'What customers say'
+                  assign bj_q_all = 'All reviews'
+                  assign bj_q_share = 'give 5 stars'
+                  assign bj_q_prev = 'Previous review'
+                  assign bj_q_next = 'Next review'
+                else
+                  assign bj_q_title = 'Wat klanten zeggen'
+                  assign bj_q_all = 'Alle beoordelingen'
+                  assign bj_q_share = 'geeft 5 sterren'
+                  assign bj_q_prev = 'Vorige review'
+                  assign bj_q_next = 'Volgende review'
+              endcase
+              assign bj_five_share = ''
+              if bj_ssr contains '5 stars: '
+                assign bj_five_tmp = bj_ssr | split: '5 stars: '
+                assign bj_five_tmp = bj_five_tmp[1] | split: '(' 
+                assign bj_five_tmp = bj_five_tmp[1] | split: '%'
+                assign bj_five_share = bj_five_tmp[0] | strip
+              endif
+              assign bj_rev_chunks = bj_ssr | split: "<div class='jdgm-rev jdgm-divider-top'"
+            -%}
+            {%- capture bj_quote_cards -%}
+              {%- assign bj_q_count = 0 -%}
+              {%- for bj_chunk in bj_rev_chunks offset: 1 -%}
+                {%- if bj_q_count >= 10 -%}{%- break -%}{%- endif -%}
+                {%- assign bj_q_score = bj_chunk | split: "data-score='" -%}
+                {%- assign bj_q_score = bj_q_score[1] | split: "'" | first -%}
+                {%- if bj_q_score != '5' -%}{%- continue -%}{%- endif -%}
+                {%- assign bj_q_body = bj_chunk | split: "jdgm-rev__body'>" -%}
+                {%- assign bj_q_body = bj_q_body[1] | split: '</div>' | first | replace: '<br />', ' ' | strip_html | strip_newlines | strip -%}
+                {%- if bj_q_body.size < 30 -%}{%- continue -%}{%- endif -%}
+                {%- assign bj_q_author = bj_chunk | split: "jdgm-rev__author'>" -%}
+                {%- assign bj_q_author = bj_q_author[1] | split: '<' | first | strip -%}
+                {%- assign bj_q_count = bj_q_count | plus: 1 -%}
+                <figure class="bj-pd-quote">
+                  <span class="bj-pd-quote__stars" aria-label="5/5">★★★★★</span>
+                  <blockquote>“{{ bj_q_body | truncate: 150 | escape_once }}”</blockquote>
+                  {%- if bj_q_author != '' -%}<figcaption>{{ bj_q_author | escape_once }}</figcaption>{%- endif -%}
+                </figure>
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if bj_quote_cards contains 'bj-pd-quote' -%}
+              <section class="bj-pd-quotes" aria-label="{{ bj_q_title | escape }}">
+                <div class="bj-pd-quotes__head">
+                  <div class="bj-pd-quotes__heading">
+                    <strong>{{ bj_q_title }}</strong>
+                    {%- if bj_five_share != '' -%}<span>{{ bj_five_share }}% {{ bj_q_share }}</span>{%- endif -%}
+                  </div>
+                  <div class="bj-pd-quotes__nav" data-bj-quotes-nav hidden>
+                    <button type="button" class="bj-pd-quotes__arrow" data-bj-quotes-prev aria-label="{{ bj_q_prev | escape }}" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+                    <button type="button" class="bj-pd-quotes__arrow" data-bj-quotes-next aria-label="{{ bj_q_next | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+                  </div>
+                </div>
+                <div class="bj-pd-quotes__row" data-bj-quotes-row tabindex="0">{{ bj_quote_cards }}</div>
+                <a class="bj-pd-quotes__all" href="#besjaar-ui-reviews">{{ bj_q_all }}{% if bj_rating_count_num > 0 %} ({{ bj_rating_count_num }}){% endif %} →</a>
+              </section>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+
+        {% if template.suffix == 'shower' %}
+          <a class="besjaar-ui-product-model-finder-link" href="#besjaar-model-finder">
+            <span aria-hidden="true">⌁</span>
+            <span><strong>{{ 'besjaar_ui.product.fbesjaar_store_model_title' | t }}</strong><small>{{ 'besjaar_ui.product.fbesjaar_store_model_copy' | t }}</small></span>
+            <i aria-hidden="true">→</i>
+          </a>
+        {% endif %}
+
+        {%- if section.settings.show_compare and product_is_shower_head == 'true' -%}
+          {%- liquid
+            assign cmp_collection = settings.shower_collection
+            if cmp_collection == blank
+              assign cmp_collection = collections['showerhead']
+            endif
+            if cmp_collection == blank
+              assign cmp_collection = collections['douchekoppen']
+            endif
+            if cmp_collection == blank
+              assign cmp_collection = product.collections.first
+            endif
+          -%}
+          {%- if cmp_collection != blank -%}
+            {%- capture cmp_rows -%}
+              {%- for cmp_p in cmp_collection.products limit: 12 -%}
+                {%- unless cmp_p.available -%}{%- continue -%}{%- endunless -%}
+                {%- capture cmp_head -%}{% render 'is-shower-head', product: cmp_p %}{%- endcapture -%}
+                {%- assign cmp_head = cmp_head | strip -%}
+                {%- if cmp_head != 'true' -%}{%- continue -%}{%- endif -%}
+                {%- capture cmp_modes -%}{% render 'shower-spray-modes', product: cmp_p %}{%- endcapture -%}
+                {%- assign cmp_modes = cmp_modes | strip -%}
+                {%- capture cmp_filter -%}{% render 'shower-filter-state', product: cmp_p %}{%- endcapture -%}
+                {%- assign cmp_filter = cmp_filter | strip -%}
+                {%- capture cmp_hose -%}{% render 'shower-hose-state', product: cmp_p %}{%- endcapture -%}
+                {%- assign cmp_hose = cmp_hose | strip -%}
+                {%- capture cmp_title -%}{% render 'localized-product-title', product: cmp_p %}{%- endcapture -%}
+                {%- assign cmp_title = cmp_title | strip | replace: '&amp;', '&' -%}
+                {%- if cmp_title == blank -%}{%- assign cmp_title = cmp_p.title -%}{%- endif -%}
+                {%- capture cmp_url -%}{% render 'localized-internal-url', url: cmp_p.url %}{%- endcapture -%}
+                {%- assign cmp_variant = cmp_p.selected_or_first_available_variant -%}
+                {%- capture cmp_price -%}{% render 'besjaar-discount-badge', product: cmp_p, variant: cmp_variant, layout: 'price_now' %}{%- endcapture -%}
+                {%- assign cmp_price = cmp_price | strip -%}
+                {%- if cmp_price == '' -%}{%- assign cmp_price = cmp_variant.price | money -%}{%- endif -%}
+                <a class="bj-pd-compare__row{% if cmp_p.id == product.id %} is-current{% endif %}" href="{{ cmp_url | strip }}"{% if cmp_p.id == product.id %} aria-current="page"{% endif %}>
+                  <span class="bj-pd-compare__name">{{ cmp_title | escape_once }}{% if cmp_p.id == product.id %} <em>{{ 'besjaar_ui.product.compare_current' | t }}</em>{% endif %}</span>
+                  <strong class="bj-pd-compare__price">{{ cmp_price }}</strong>
+                  <span class="bj-pd-compare__chips">{% if cmp_modes != blank %}<span>{{ 'besjaar_ui.product.shower_modes_chip' | t: count: cmp_modes }}</span>{% endif %}<span>{% if cmp_filter == 'true' %}{{ 'besjaar_ui.product.shower_filter_chip' | t }}{% else %}{{ 'besjaar_ui.product.shower_filter_none_chip' | t }}{% endif %}</span><span>{% if cmp_hose == 'true' %}{{ 'besjaar_ui.product.shower_hose_chip' | t }}{% else %}{{ 'besjaar_ui.product.shower_hose_none_chip' | t }}{% endif %}</span></span>
+                </a>
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- assign cmp_row_count = cmp_rows | split: 'bj-pd-compare__row' | size | minus: 1 -%}
+            {%- if cmp_row_count > 1 -%}
+              <div class="bj-pd-compare" id="besjaar-compare-models">
+                <p class="bj-pd-compare__title">{{ bj_compare_title }}</p>
+                {{ cmp_rows }}
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endif -%}
+
+        <div class="besjaar-store-premium-pd__details" id="besjaar-product-details">
+          {%- comment -%}Besjaar 2026-09-12: every product detail panel starts collapsed so the buy box stays close to the top of the page. Panel content is still server-rendered in the initial HTML, so search engines read it whether or not a visitor opens the panel.{%- endcomment -%}
+          <details>
+            <summary>{{ ui_desc }}</summary>
+            <div>{{ product.description }}</div>
+          </details>
+          {%- if section.settings.show_specs and product_family == 'shower' and bj_has_specs -%}
+            <details id="besjaar-product-specs-{{ section.id }}">
+              <summary>{{ 'besjaar_ui.product.specifications' | t }}</summary>
+              <div>
+                <div class="bj-pd-spec">
+                  {%- if bj_model != '' -%}<div><span>{{ bj_label_model }}</span><strong>{{ bj_model | escape }}</strong></div>{%- endif -%}
+                  {%- if bj_modes != blank -%}<div><span>{{ 'besjaar_ui.product.shower_spray_modes' | t }}</span><strong>{{ bj_modes }}</strong></div>{%- endif -%}
+                  {%- if product_is_shower_head == 'true' -%}
+                    <div><span>{{ 'besjaar_ui.product.shower_filter' | t }}</span><strong>{% if bj_filter == 'true' %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>
+                  {%- endif -%}
+                  {%- if bj_filter_type != '' -%}<div><span>{{ 'besjaar_ui.product.shower_filter_type' | t }}</span><strong>{{ bj_filter_type | escape }}</strong></div>{%- endif -%}
+                  {%- if bj_filter_interval != '' -%}<div><span>{{ 'besjaar_ui.product.shower_filter_replacement' | t }}</span><strong>{{ bj_filter_interval | escape }}</strong></div>{%- endif -%}
+                  {%- if product_is_shower_head == 'true' -%}
+                    <div><span>{{ 'besjaar_ui.product.shower_hose' | t }}</span><strong>{% if bj_hose == 'true' %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}</strong></div>
+                  {%- endif -%}
+                  {%- if bj_hose_m != '' -%}<div><span>{{ 'besjaar_ui.product.shower_hose_length' | t }}</span><strong>{{ bj_hose_m }}</strong></div>{%- endif -%}
+                  {%- if bj_water != '' -%}<div><span>{{ bj_label_water }}</span><strong>{{ bj_water | escape }}</strong></div>{%- endif -%}
+                  {%- if bj_diameter_cm != '' -%}<div><span>{{ 'besjaar_ui.product.shower_diameter' | t }}</span><strong>Ø {{ bj_diameter_cm }}</strong></div>{%- endif -%}
+                  {%- if bj_material != '' -%}<div><span>{{ 'besjaar_ui.product.shower_material' | t }}</span><strong>{{ bj_material | escape }}</strong></div>{%- endif -%}
+                  {%- if bj_connection != '' -%}<div><span>{{ 'besjaar_ui.product.shower_connection' | t }}</span><strong>{{ bj_connection | escape }}</strong></div>{%- endif -%}
+                  {%- if bj_compat != '' -%}<div><span>{{ 'besjaar_ui.product.shower_compatibility' | t }}</span><strong>{{ bj_compat | escape }}</strong></div>{%- endif -%}
+                  {%- if warranty_months > 0 -%}<div><span>{{ 'besjaar_ui.product.spec_warranty' | t }}</span><strong>{{ 'besjaar_ui.product.shower_months' | t: count: warranty_months }}</strong></div>{%- endif -%}
+                </div>
+              </div>
+            </details>
+          {%- endif -%}
+          {%- if section.settings.show_specs and bj_package != '' -%}
+            {%- assign bj_box_lines = bj_package | strip | newline_to_br | split: '<br />' -%}
+            <details>
+              <summary>{{ 'besjaar_ui.product.box_contents' | t }}</summary>
+              <div>
+                <ul class="bj-pd-box">
+                  {%- for bj_line in bj_box_lines -%}
+                    {%- assign bj_line_clean = bj_line | strip_html | strip -%}
+                    {%- if bj_line_clean != '' -%}<li>{{ bj_line_clean | escape }}</li>{%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              </div>
+            </details>
+          {%- endif -%}
+          <details id="besjaar-product-installation-{{ section.id }}">
+            <summary>{{ ui_install }}</summary>
+            <div><p>{{ ui_install_body }}</p></div>
+          </details>
+          <details>
+            <summary>{{ ui_care }}</summary>
+            <div><p>{{ ui_care_body }}</p></div>
+          </details>
+          {%- comment -%}Besjaar 2026-09-22: dynamic cross-links inside the shower family (refill set, filter collection, with/without hose sibling). Renders nothing outside the family.{%- endcomment -%}
+          {%- render 'besjaar-product-related', product: product -%}
+          {%- for block in section.blocks -%}
+            <details {{ block.shopify_attributes }}>
+              <summary>{{ block.settings.title | escape }}</summary>
+              <div>{% if block.settings.use_description %}{{ product.description }}{% else %}{{ block.settings.body }}{% endif %}</div>
+            </details>
+          {%- endfor -%}
+          {%- comment -%}Besjaar 2026-09-22: data-driven product FAQ (fit, spray modes, water use, filter, hose, returns, warranty, shipping) as the last panel. Server-rendered, no FAQPage JSON-LD.{%- endcomment -%}
+          {%- render 'besjaar-product-faq', product: product -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="besjaar-store-premium-pd__sticky" id="BesjaarSticky-{{ section.id }}" aria-hidden="true">
+    {%- if selected_image -%}<img class="bj-pd-sticky__img" src="{{ selected_image | image_url: width: 120 }}" alt="" width="44" height="44" loading="lazy" decoding="async">{%- endif -%}
+    <div class="besjaar-store-premium-pd__sticky-copy">
+      <strong>{{ display_title | replace: '&amp;', '&' | escape_once }}</strong>
+      <span id="BesjaarStickyPrice-{{ section.id }}">{% if bjd_now != '' %}{{ bjd_now }}{% else %}{{ current_variant.price | money }}{% endif %}</span>
+    </div>
+    <button type="submit" form="{{ form_id }}" class="besjaar-store-premium-pd__sticky-add" data-sticky-submit tabindex="-1" {% unless current_variant.available %}disabled{% endunless %}>
+      {% if current_variant.available %}{{ ui_add }}{% else %}{{ ui_sold_out }}{% endif %}
+    </button>
+  </div>
+</section>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-besjaar-product-section="{{ section.id }}"]');
+  if (!root) return;
+  var mainImage = document.getElementById('BesjaarMainImage-{{ section.id }}');
+  var thumbs = document.getElementById('BesjaarThumbs-{{ section.id }}');
+  if (thumbs && mainImage) {
+    var thumbButtons = Array.prototype.slice.call(thumbs.querySelectorAll('.besjaar-store-premium-pd__thumb'));
+    var showThumb = function (btn) {
+      if (!btn) return;
+      mainImage.src = btn.dataset.src;
+      mainImage.srcset = btn.dataset.srcSmall + ' 700w, ' + btn.dataset.src + ' 1600w';
+      mainImage.alt = btn.dataset.alt || '';
+      thumbButtons.forEach(function (item) {
+        item.setAttribute('aria-current', item === btn ? 'true' : 'false');
+      });
+      var bjCounter = root.querySelector('[data-bj-counter]');
+      if (bjCounter) bjCounter.textContent = (thumbButtons.indexOf(btn) + 1) + ' / ' + thumbButtons.length;
+      try {
+        var besjaarReduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        btn.scrollIntoView({ behavior: besjaarReduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
+      } catch (e) {}
+    };
+    var moveGallery = function (direction) {
+      if (!thumbButtons.length) return;
+      var current = thumbButtons.findIndex(function (item) { return item.getAttribute('aria-current') === 'true'; });
+      if (current < 0) current = 0;
+      var next = (current + direction + thumbButtons.length) % thumbButtons.length;
+      showThumb(thumbButtons[next]);
+    };
+    thumbs.addEventListener('click', function (event) {
+      var btn = event.target.closest('.besjaar-store-premium-pd__thumb');
+      if (!btn) return;
+      showThumb(btn);
+    });
+    thumbs.addEventListener('keydown', function (event) {
+      var btn = event.target.closest('.besjaar-store-premium-pd__thumb');
+      if (!btn) return;
+      var current = thumbButtons.indexOf(btn);
+      var next = current;
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % thumbButtons.length;
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + thumbButtons.length) % thumbButtons.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = thumbButtons.length - 1;
+      else return;
+      event.preventDefault();
+      showThumb(thumbButtons[next]);
+      thumbButtons[next].focus();
+    });
+
+    var stage = document.getElementById('BesjaarStage-{{ section.id }}');
+    if (stage && thumbButtons.length > 1) {
+      var startX = 0;
+      var startY = 0;
+      var pointerId = null;
+      stage.addEventListener('pointerdown', function (event) {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        pointerId = event.pointerId;
+        startX = event.clientX;
+        startY = event.clientY;
+        stage.classList.add('is-dragging');
+        try { stage.setPointerCapture(pointerId); } catch (e) {}
+      });
+      stage.addEventListener('pointerup', function (event) {
+        if (pointerId !== null && event.pointerId !== pointerId) return;
+        var dx = event.clientX - startX;
+        var dy = event.clientY - startY;
+        stage.classList.remove('is-dragging');
+        pointerId = null;
+        if (Math.abs(dx) >= 44 && Math.abs(dx) > Math.abs(dy) * 1.15) moveGallery(dx < 0 ? 1 : -1);
+      });
+      stage.addEventListener('pointercancel', function () {
+        stage.classList.remove('is-dragging');
+        pointerId = null;
+      });
+    }
+  }
+
+  root.querySelectorAll('[data-besjaar-qty]').forEach(function (qty) {
+    qty.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-step]');
+      if (!button) return;
+      var input = qty.querySelector('input');
+      var next = (parseInt(input.value, 10) || 1) + parseInt(button.dataset.step, 10);
+      input.value = Math.max(next, parseInt(input.min, 10) || 1);
+    });
+  });
+
+  var variantSelect = document.getElementById('BesjaarVariant-{{ section.id }}');
+  var price = document.getElementById('BesjaarPrice-{{ section.id }}');
+  var stickyPrice = document.getElementById('BesjaarStickyPrice-{{ section.id }}');
+  var comparePrice = document.getElementById('BesjaarCompare-{{ section.id }}');
+  var sale = document.getElementById('BesjaarSale-{{ section.id }}');
+  var stock = root.querySelector('[data-product-stock]');
+  var stockLabel = root.querySelector('[data-product-stock-label]');
+  var mainAdd = document.getElementById('BesjaarMainAdd-{{ section.id }}');
+  var sticky = document.getElementById('BesjaarSticky-{{ section.id }}');
+  var stickyAdd = sticky ? sticky.querySelector('.besjaar-store-premium-pd__sticky-add') : null;
+  var addLabel = {{ ui_add | json }};
+  var soldOutLabel = {{ ui_sold_out | json }};
+  if (variantSelect) {
+    variantSelect.addEventListener('change', function () {
+      var option = variantSelect.options[variantSelect.selectedIndex];
+      var available = option.dataset.available === 'true';
+      var inventory = parseInt(option.dataset.inventoryQuantity || '0', 10);
+      var lowStock = available && option.dataset.inventoryManaged === 'true' && inventory > 0 && inventory <= 5;
+      /* Besjaar 11.74: an automatic Shopify discount makes the discounted
+         figure the price on show, per variant, pre-rendered server side. */
+      var discountPrice = option.dataset.discountPrice || '';
+      /* 2026-09-27: a compare-at sale shows the same way: sale price in red,
+         the earlier price struck through right beside it. */
+      var compareSale = discountPrice ? '' : (option.dataset.comparePrice || '');
+      if (price) {
+        price.textContent = discountPrice || option.dataset.price;
+        price.classList.toggle('is-bj-discounted', Boolean(discountPrice || compareSale));
+      }
+      if (stickyPrice) stickyPrice.textContent = discountPrice || option.dataset.price;
+      var bjWas = root.querySelector('[data-bj-price-was]');
+      if (bjWas) {
+        bjWas.hidden = !(discountPrice || compareSale);
+        var bjWasValue = bjWas.querySelector('[data-bj-was-value]');
+        if (bjWasValue) bjWasValue.textContent = discountPrice ? option.dataset.price : compareSale;
+      }
+      if (comparePrice) {
+        var compareValue = comparePrice.querySelector('[data-compare-value]');
+        (compareValue || comparePrice).textContent = option.dataset.comparePrice || '';
+        comparePrice.hidden = true;
+      }
+      root.querySelectorAll('[data-sale-price-prefix]').forEach(function (salePrefix) {
+        salePrefix.hidden = !option.dataset.comparePrice;
+      });
+      if (sale) {
+        sale.textContent = option.dataset.savings ? {{ ui_save | append: ' ' | json }} + option.dataset.savings : '';
+        sale.hidden = !option.dataset.savings;
+      }
+      if (stock) {
+        stock.classList.toggle('is-low', lowStock);
+        stock.classList.toggle('is-out', !available);
+      }
+      if (stockLabel) stockLabel.textContent = available ? (lowStock ? root.dataset.lowStockLabel : root.dataset.inStockLabel) : root.dataset.soldOutLabel;
+      if (mainAdd) {
+        mainAdd.disabled = !available;
+        mainAdd.dataset.variantAvailable = available ? 'true' : 'false';
+        var currentMainAddLabel = mainAdd.querySelector('[data-add-label]') || mainAdd.querySelector('span:first-child');
+        if (currentMainAddLabel) currentMainAddLabel.textContent = available ? addLabel : soldOutLabel;
+      }
+      if (stickyAdd) {
+        stickyAdd.disabled = !available;
+        stickyAdd.textContent = available ? addLabel : soldOutLabel;
+      }
+      if (mainImage && option.dataset.image) {
+        mainImage.src = option.dataset.image;
+        mainImage.srcset = option.dataset.imageSmall + ' 700w, ' + option.dataset.image + ' 1600w';
+        mainImage.alt = option.dataset.imageAlt || mainImage.alt;
+        if (thumbs && option.dataset.mediaId) {
+          var matchingThumb = thumbs.querySelector('[data-media-id="' + option.dataset.mediaId + '"]');
+          if (matchingThumb) showThumb(matchingThumb);
+        }
+      }
+      try {
+        var nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('variant', option.value);
+        window.history.replaceState({}, '', nextUrl.toString());
+      } catch (error) {}
+      /* Besjaar 11.6: keep the back-in-stock module and the Q&A form in sync
+         with the selected variant — the restock form must appear for sold-out
+         variants and always submit the variant the shopper is looking at. */
+      document.querySelectorAll('[data-restock-section]').forEach(function (restockSection) {
+        restockSection.hidden = available;
+      });
+      document.querySelectorAll('[data-restock-variant], [data-qa-variant]').forEach(function (variantField) {
+        variantField.value = option.value;
+      });
+      document.dispatchEvent(new CustomEvent('besjaar_ui:variant-change', { detail: { id: option.value, variantId: option.value, available: available, price: Number(option.dataset.priceCents || 0) } }));
+    });
+  }
+
+  /* 2026-09-29: review quotes slider – swipe on touch, arrows to step one card. */
+  (function () {
+    var row = root.querySelector('[data-bj-quotes-row]');
+    var nav = root.querySelector('[data-bj-quotes-nav]');
+    if (!row || !nav) return;
+    var prev = nav.querySelector('[data-bj-quotes-prev]');
+    var next = nav.querySelector('[data-bj-quotes-next]');
+    var step = function () {
+      var card = row.querySelector('.bj-pd-quote');
+      if (!card) return row.clientWidth;
+      var gap = parseFloat(getComputedStyle(row).columnGap || getComputedStyle(row).gap || '10') || 10;
+      return card.getBoundingClientRect().width + gap;
+    };
+    var update = function () {
+      var max = row.scrollWidth - row.clientWidth - 2;
+      nav.hidden = max <= 0;
+      prev.disabled = row.scrollLeft <= 2;
+      next.disabled = row.scrollLeft >= max;
+    };
+    prev.addEventListener('click', function () { row.scrollBy({ left: -step(), behavior: 'smooth' }); });
+    next.addEventListener('click', function () { row.scrollBy({ left: step(), behavior: 'smooth' }); });
+    row.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); row.scrollBy({ left: step(), behavior: 'smooth' }); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); row.scrollBy({ left: -step(), behavior: 'smooth' }); }
+    });
+    row.addEventListener('scroll', function () { window.requestAnimationFrame(update); }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  })();
+
+  /* 2026-09-29: variant pills drive the (visually hidden) variant select. */
+  root.querySelectorAll('[data-bj-variant]').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      if (!variantSelect) return;
+      variantSelect.value = pill.dataset.bjVariant;
+      variantSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      root.querySelectorAll('[data-bj-variant]').forEach(function (other) {
+        other.setAttribute('aria-pressed', other === pill ? 'true' : 'false');
+      });
+      var nameEl = root.querySelector('[data-bj-variant-name]');
+      if (nameEl) nameEl.textContent = pill.dataset.bjVariantTitle || '';
+    });
+  });
+
+  /* 2026-09-29: ship date from the theme's cut-off (Amsterdam time): before
+     the cut-off on a working day ships today, otherwise the next working day,
+     plus the configured processing days. Weekends are skipped. */
+  (function () {
+    var ship = root.querySelector('[data-bj-ship]');
+    var tpl = root.querySelector('[data-bj-ship-template]');
+    if (!ship || !tpl || !window.Intl) return;
+    try {
+      var parts = {};
+      new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', hourCycle: 'h23' })
+        .formatToParts(new Date()).forEach(function (p) { parts[p.type] = p.value; });
+      var d = new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day, 12));
+      var isWeekend = function (x) { var w = x.getUTCDay(); return w === 0 || w === 6; };
+      var nextWorkday = function (x) { do { x.setUTCDate(x.getUTCDate() + 1); } while (isWeekend(x)); };
+      var cutoff = parseInt(ship.dataset.cutoff || '16', 10);
+      if (isWeekend(d) || +parts.hour >= cutoff) nextWorkday(d);
+      for (var i = 0, n = parseInt(ship.dataset.processing || '0', 10); i < n; i++) nextWorkday(d);
+      var label = new Intl.DateTimeFormat(ship.dataset.locale || 'nl', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(d);
+      var target = ship.querySelector('[data-bj-ship-text]');
+      var frag = tpl.content.cloneNode(true);
+      frag.querySelector('strong').textContent = label;
+      target.textContent = '';
+      target.appendChild(frag);
+    } catch (e) {}
+  })();
+
+  if (sticky && mainAdd && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      var show = !entries[0].isIntersecting && window.scrollY > 180;
+      sticky.classList.toggle('is-visible', show);
+      sticky.setAttribute('aria-hidden', show ? 'false' : 'true');
+      if (stickyAdd) stickyAdd.tabIndex = show ? 0 : -1;
+    }, { threshold: 0.2 });
+    observer.observe(mainAdd);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Besjaar premium product",
+  "settings": [
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "checkbox", "id": "enable_image_zoom", "label": "Enable product image zoom", "default": true },
+    { "type": "header", "content": "Product facts (2026-09-29)" },
+    { "type": "checkbox", "id": "show_intro", "label": "Show the intro paragraph under the title", "info": "Off by default; the full text is in the Description panel.", "default": false },
+    { "type": "checkbox", "id": "show_highlights", "label": "Show 4 benefit tiles under the price", "info": "Reads product metafield custom.highlights (first 4 lines) on /nl; other languages show spray modes, filter, hose and diameter.", "default": true },
+    { "type": "checkbox", "id": "show_specs", "label": "Show Specifications and In the box panels", "info": "Built from product metafields (custom.diameter_mm, hose_length_cm, material, connection_size, water_use, model_number, filter_type, filter_replacement_interval, compatibility, package_contents).", "default": true },
+    { "type": "checkbox", "id": "show_hose_switch", "label": "Show \"Uitvoering: Zonder slang / Met slang\" switch", "info": "Links the same shower head with and without hose (found by spray modes and filter).", "default": true },
+    { "type": "checkbox", "id": "show_quotes", "label": "Show \"What customers say\" review quotes", "info": "Up to ten real five-star review texts from Judge.me for this product, as a swipeable slider with arrows.", "default": true },
+    { "type": "checkbox", "id": "show_compare", "label": "Show \"Which Besjaar fits you\" model comparison", "info": "Lists the available shower heads of the main collection with spray modes, filter, hose and price.", "default": false }
+  ],
+  "blocks": [
+    {
+      "type": "accordion",
+      "name": "Extra accordion",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "More information" },
+        { "type": "checkbox", "id": "use_description", "label": "Use product description", "default": false },
+        { "type": "richtext", "id": "body", "label": "Content", "default": "<p>Add additional product information here.</p>" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{ "name": "Besjaar premium product" }]
+}
+{% endschema %}
+

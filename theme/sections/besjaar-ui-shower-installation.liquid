@@ -1,0 +1,229 @@
+{% liquid
+  assign connection = product.metafields.custom.connection_size.value | default: ''
+  assign install_time = product.metafields.custom.installation_time_min.value | default: ''
+
+  assign installation_image = product.metafields.custom.shower_installation_image.value
+  if installation_image == blank
+    assign installation_image = section.settings.installation_image
+  endif
+
+  assign step_1_image = product.metafields.custom.installation_step_1_image.value
+  if step_1_image == blank
+    assign step_1_image = section.settings.step_1_image
+  endif
+  assign step_2_image = product.metafields.custom.installation_step_2_image.value
+  if step_2_image == blank
+    assign step_2_image = section.settings.step_2_image
+  endif
+  assign step_3_image = product.metafields.custom.installation_step_3_image.value
+  if step_3_image == blank
+    assign step_3_image = section.settings.step_3_image
+  endif
+
+  assign step_1_alt = step_1_image.alt
+  if step_1_alt == blank
+    assign step_1_alt = 'besjaar_ui.shower.step1_title' | t
+  endif
+  assign step_2_alt = step_2_image.alt
+  if step_2_alt == blank
+    assign step_2_alt = 'besjaar_ui.shower.step2_title' | t
+  endif
+  assign step_3_alt = step_3_image.alt
+  if step_3_alt == blank
+    assign step_3_alt = 'besjaar_ui.shower.step3_title' | t
+  endif
+
+  assign compatibility = ''
+  if product.metafields.custom.compatibility_note != blank
+    assign compatibility = product.metafields.custom.compatibility_note.value
+  elsif product.metafields.custom.compatibility != blank
+    assign compatibility = product.metafields.custom.compatibility.value
+  endif
+
+  assign tools_note = ''
+  if product.metafields.custom.installation_tools_note != blank
+    assign tools_note = product.metafields.custom.installation_tools_note.value
+  elsif product.metafields.custom.installation_tools != blank
+    assign tools_note = product.metafields.custom.installation_tools.value
+  endif
+
+  assign hose_defined = false
+  assign hose_included = false
+  if product.metafields.custom.hose_included != blank
+    assign hose_defined = true
+    assign hose_included = product.metafields.custom.hose_included.value
+  else
+    capture hose_capture
+      render 'shower-hose-state', product: product
+    endcapture
+    assign hose_capture = hose_capture | strip
+    if hose_capture == 'true'
+      assign hose_defined = true
+      assign hose_included = true
+    endif
+  endif
+  assign hose_length = product.metafields.custom.hose_length_cm.value | default: ''
+
+  capture besjaar_ui_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip
+
+  assign has_verified_fit_data = false
+  if connection != blank or compatibility != blank or install_time != blank or hose_defined or tools_note != blank
+    assign has_verified_fit_data = true
+  endif
+
+  assign should_render = false
+  if besjaar_ui_is_focus == 'true'
+    if section.settings.show_general_steps or has_verified_fit_data or installation_image != blank or step_1_image != blank or step_2_image != blank or step_3_image != blank
+      assign should_render = true
+    endif
+  endif
+%}
+
+{% if should_render %}
+<section class="besjaar-ui-shower-section besjaar-ui-shower-installation besjaar-ui-shower-installation--v2" id="besjaar-ui-product-installation" data-reveal>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-install-v2__header">
+      <div class="besjaar-ui-install-v2__intro">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower.install_eyebrow' | t }}</p>
+        <h2>{{ 'besjaar_ui.shower.install_heading' | t }}</h2>
+        <p>{{ 'besjaar_ui.shower.install_copy' | t }}</p>
+        <div class="besjaar-ui-install-v2__badge-row" aria-label="{{ 'besjaar_ui.shower.install_summary_label' | t | escape }}">
+          <span class="besjaar-ui-install-v2__badge">{{ 'besjaar_ui.shower.install_typical_badge' | t }}</span>
+          {% if install_time != blank %}<span class="besjaar-ui-install-v2__badge besjaar-ui-install-v2__badge--accent">{{ 'besjaar_ui.shower.install_time_title' | t: count: install_time }}</span>{% endif %}
+        </div>
+      </div>
+
+      {% if has_verified_fit_data %}
+        <div class="besjaar-ui-install-v2__facts" aria-label="{{ 'besjaar_ui.shower.install_verified_facts' | t | escape }}">
+          <p class="besjaar-ui-install-v2__facts-title">{{ 'besjaar_ui.shower.install_verified_facts' | t }}</p>
+          <div class="besjaar-ui-install-v2__fact-grid">
+            {% if connection != blank %}
+              <div class="besjaar-ui-install-v2__fact"><span>{{ 'besjaar_ui.product.shower_connection' | t }}</span><strong>{{ connection }}</strong></div>
+            {% endif %}
+            {% if install_time != blank %}
+              <div class="besjaar-ui-install-v2__fact"><span>{{ 'besjaar_ui.product.shower_installation' | t }}</span><strong>{{ 'besjaar_ui.product.shower_minutes' | t: count: install_time }}</strong></div>
+            {% endif %}
+            {% if hose_defined %}
+              <div class="besjaar-ui-install-v2__fact"><span>{{ 'besjaar_ui.product.shower_hose' | t }}</span><strong>{% if hose_included %}{{ 'besjaar_ui.common.included' | t }}{% else %}{{ 'besjaar_ui.common.no' | t }}{% endif %}{% if hose_included and hose_length != blank %} · {{ hose_length }} cm{% endif %}</strong></div>
+            {% endif %}
+            {% if tools_note != blank %}
+              <div class="besjaar-ui-install-v2__fact besjaar-ui-install-v2__fact--wide"><span>{{ 'besjaar_ui.shower.install_tools_label' | t }}</span><strong>{{ tools_note }}</strong></div>
+            {% endif %}
+          </div>
+          {% if compatibility != blank %}
+            <div class="besjaar-ui-install-v2__compatibility"><strong>{{ 'besjaar_ui.shower.compatibility_note_title' | t }}</strong><p>{{ compatibility | newline_to_br }}</p></div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if installation_image != blank %}
+      {% assign installation_alt = installation_image.alt | default: product.title %}
+      <figure class="besjaar-ui-install-v2__hero">
+        {{ installation_image | image_url: width: 1800 | image_tag: loading: 'lazy', widths: '640, 900, 1200, 1500, 1800', sizes: '(min-width: 1000px) 92vw, 100vw', alt: installation_alt }}
+        <figcaption>{{ 'besjaar_ui.shower.visual_installation_caption' | t }}</figcaption>
+      </figure>
+    {% endif %}
+
+    <div class="besjaar-ui-install-v2__steps-head">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower.install_steps_eyebrow' | t }}</p>
+        <h3>{{ 'besjaar_ui.shower.install_steps_heading' | t }}</h3>
+      </div>
+      <p>{{ 'besjaar_ui.shower.install_steps_intro' | t }}</p>
+    </div>
+
+    <div class="besjaar-ui-install-v2__steps" aria-label="{{ 'besjaar_ui.shower.install_steps_label' | t | escape }}">
+      <article class="besjaar-ui-install-v2__step">
+        <div class="besjaar-ui-install-v2__step-media">
+          {% if step_1_image != blank %}
+            {{ step_1_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '280, 420, 560, 720', sizes: '(min-width: 900px) 30vw, 100vw', alt: step_1_alt }}
+          {% else %}
+            <div class="besjaar-ui-install-v2__step-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img"><path d="M18 18h28M21 23h22M24 28h16M31 29v21M25 50h14"/><path d="M18 14c0 4 3 7 7 7h14c4 0 7-3 7-7"/><path d="M14 42c5-4 10-6 17-6M50 42c-5-4-10-6-17-6"/></svg>
+            </div>
+          {% endif %}
+          <span class="besjaar-ui-install-v2__number">01</span>
+        </div>
+        <div class="besjaar-ui-install-v2__step-copy"><strong>{{ 'besjaar_ui.shower.step1_title' | t }}</strong><p>{{ 'besjaar_ui.shower.step1_copy' | t }}</p></div>
+      </article>
+
+      <article class="besjaar-ui-install-v2__step">
+        <div class="besjaar-ui-install-v2__step-media">
+          {% if step_2_image != blank %}
+            {{ step_2_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '280, 420, 560, 720', sizes: '(min-width: 900px) 30vw, 100vw', alt: step_2_alt }}
+          {% else %}
+            <div class="besjaar-ui-install-v2__step-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img"><path d="M24 10h16v15H24zM28 25v29h8V25"/><path d="M18 18h6M40 18h6"/><path d="M18 36c4-4 8-6 14-6s10 2 14 6"/><path d="M20 42h24"/></svg>
+            </div>
+          {% endif %}
+          <span class="besjaar-ui-install-v2__number">02</span>
+        </div>
+        <div class="besjaar-ui-install-v2__step-copy"><strong>{{ 'besjaar_ui.shower.step2_title' | t }}</strong><p>{{ 'besjaar_ui.shower.step2_copy' | t }}</p></div>
+      </article>
+
+      <article class="besjaar-ui-install-v2__step">
+        <div class="besjaar-ui-install-v2__step-media">
+          {% if step_3_image != blank %}
+            {{ step_3_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '280, 420, 560, 720', sizes: '(min-width: 900px) 30vw, 100vw', alt: step_3_alt }}
+          {% else %}
+            <div class="besjaar-ui-install-v2__step-icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" role="img"><path d="M20 15h24v10H20zM32 25v9"/><path d="M24 38c0-5 3-9 8-13 5 4 8 8 8 13a8 8 0 1 1-16 0z"/><path d="M16 50h32"/></svg>
+            </div>
+          {% endif %}
+          <span class="besjaar-ui-install-v2__number">03</span>
+        </div>
+        <div class="besjaar-ui-install-v2__step-copy"><strong>{{ 'besjaar_ui.shower.step3_title' | t }}</strong><p>{{ 'besjaar_ui.shower.step3_copy' | t }}</p></div>
+      </article>
+    </div>
+
+    <div class="besjaar-ui-install-v2__footer-note">
+      <span aria-hidden="true">i</span>
+      <p>{{ 'besjaar_ui.shower.install_disclaimer' | t }}</p>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shower installation",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_general_steps",
+      "label": "Show general 3-step guide",
+      "default": true,
+      "info": "Exact connection, hose, tools and installation-time facts are shown only when product metafields provide them."
+    },
+    {
+      "type": "image_picker",
+      "id": "installation_image",
+      "label": "Installation overview image"
+    },
+    {
+      "type": "header",
+      "content": "Optional step images"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_1_image",
+      "label": "Step 1 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_2_image",
+      "label": "Step 2 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "step_3_image",
+      "label": "Step 3 image"
+    }
+  ],
+  "presets": [{"name":"Shower installation"}]
+}
+{% endschema %}

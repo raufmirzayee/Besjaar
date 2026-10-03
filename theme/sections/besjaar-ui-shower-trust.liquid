@@ -1,0 +1,65 @@
+{% unless request.page_type == 'product' %}{{ 'besjaar-ui-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endunless %}
+{% liquid
+  assign connection = product.metafields.custom.connection_size.value | default: '' | strip
+  assign compatibility_note = ''
+  if product.metafields.custom.compatibility_note != blank
+    assign compatibility_note = product.metafields.custom.compatibility_note.value
+  endif
+  assign has_compatibility = false
+  if connection != blank or compatibility_note != blank or product.metafields.custom.compatible_hoses != blank or product.metafields.custom.compatible_filters != blank or product.metafields.custom.compatible_accessories != blank
+    assign has_compatibility = true
+  endif
+  assign support_page = settings.account_support_page
+  capture besjaar_ui_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip
+%}
+{% if besjaar_ui_is_focus == 'true' %}
+<section class="besjaar-ui-section besjaar-ui-shower-trust besjaar-ui-shower-trust-education" id="besjaar-ui-product-fit-proof" data-reveal>
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-shower-trust__head">
+      <div><p class="besjaar-ui-kicker"><span translate="no">Besjaar</span> · {{ 'besjaar_ui.shower_trust.eyebrow' | t }}</p><h2>{{ 'besjaar_ui.shower_trust.heading' | t }}</h2></div>
+      <p>{{ 'besjaar_ui.shower_trust.copy' | t }}</p>
+    </header>
+
+    <div class="besjaar-ui-shower-trust__grid besjaar-ui-shower-trust__grid--focused">
+      <article class="besjaar-ui-shower-trust-card">
+        <span class="besjaar-ui-shower-trust-card__icon" aria-hidden="true">✓</span>
+        <div><h3>{{ 'besjaar_ui.shower_trust.verified_heading' | t }}</h3><p>{{ 'besjaar_ui.shower_trust.verified_copy' | t }}</p></div>
+      </article>
+
+      {% if has_compatibility %}
+        <article class="besjaar-ui-shower-trust-card">
+          <span class="besjaar-ui-shower-trust-card__icon" aria-hidden="true">⌁</span>
+          <div><h3>{{ 'besjaar_ui.shower_trust.fit_heading' | t }}</h3><p>{{ 'besjaar_ui.shower_trust.fit_known_copy' | t }}</p></div>
+        </article>
+      {% endif %}
+
+      {% if section.settings.show_support_card %}
+        <article class="besjaar-ui-shower-trust-card">
+          <span class="besjaar-ui-shower-trust-card__icon" aria-hidden="true">?</span>
+          <div><h3>{{ 'besjaar_ui.shower_trust.support_heading' | t }}</h3><p>{{ 'besjaar_ui.shower_trust.support_copy' | t }}{% if support_page != blank %} <a href="{% render 'localized-internal-url', url: support_page.url %}">{{ 'besjaar_ui.shower_trust.contact_support' | t }}</a>{% endif %}</p></div>
+        </article>
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_claim_standard %}
+      <div class="besjaar-ui-shower-trust__standard">
+        <span aria-hidden="true">i</span>
+        <div><strong>{{ 'besjaar_ui.shower_trust.standard_heading' | t }}</strong><p>{{ 'besjaar_ui.shower_trust.standard_copy' | t }}</p></div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Shower trust standard",
+  "settings":[
+    {"type":"checkbox","id":"show_support_card","label":"Show support card","default":true},
+    {"type":"checkbox","id":"show_claim_standard","label":"Show verified-claims standard","default":true}
+  ],
+  "presets":[{"name":"Shower trust standard"}]
+}
+{% endschema %}

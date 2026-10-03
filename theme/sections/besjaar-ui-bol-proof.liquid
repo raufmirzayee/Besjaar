@@ -1,0 +1,42 @@
+{{ 'besjaar-ui-bol-proof.css' | asset_url | stylesheet_tag }}
+
+<section class="besjaar-ui-home-bol-proof besjaar-ui-home-bol-proof--compact" aria-labelledby="BesjaarUIHomeBolProofTitle-{{ section.id }}" data-reveal>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-home-bol-proof__surface">
+      <div class="besjaar-ui-home-bol-proof__intro">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_collection.bol_proof_kicker' | t }}</p>
+        <h2 id="BesjaarUIHomeBolProofTitle-{{ section.id }}">{{ 'besjaar_ui.shower_collection.bol_proof_heading' | t }}</h2>
+        <p class="besjaar-ui-home-bol-proof__intro-short">{{ 'besjaar_ui.shower_collection.bol_proof_compact_copy' | t }}</p>
+      </div>
+
+      <div class="besjaar-ui-home-bol-proof__compact-panel">
+        <div class="besjaar-ui-home-bol-proof__compact-brand">
+          <span class="besjaar-ui-home-bol-proof__brand" aria-label="bol.com">bol.</span>
+          <div class="besjaar-ui-home-bol-proof__stars" aria-label="{{ section.settings.bol_rating }} out of 5">★★★★★</div>
+        </div>
+        <div class="besjaar-ui-home-bol-proof__compact-stat"><strong>{{ section.settings.bol_rating }}/5</strong><span>{{ 'besjaar_ui.shower_collection.bol_proof_stat_rating' | t }}</span></div>
+        <div class="besjaar-ui-home-bol-proof__compact-stat"><strong>{{ section.settings.bol_review_count }}</strong><span>{{ 'besjaar_ui.shower_collection.bol_proof_stat_reviews' | t }}</span></div>
+        <div class="besjaar-ui-home-bol-proof__compact-stat"><strong>{{ section.settings.bol_sold_last_month }}</strong><span>{{ 'besjaar_ui.shower_collection.bol_proof_stat_sales_short' | t }}</span></div>
+        {% if section.settings.bol_link != blank %}
+          <a class="besjaar-ui-home-bol-proof__compact-link" href="{{ section.settings.bol_link }}" target="_blank" rel="noopener noreferrer">{{ 'besjaar_ui.shower_collection.bol_proof_view' | t }} →<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+        {% endif %}
+      </div>
+
+      <p class="besjaar-ui-home-bol-proof__note">{{ 'besjaar_ui.shower_collection.bol_proof_note' | t }}</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "bol.com social proof",
+  "settings": [
+    {"type": "text", "id": "bol_rating", "label": "bol.com product rating", "default": "4.7"},
+    {"type": "text", "id": "bol_review_count", "label": "bol.com review count", "default": "340+"},
+    {"type": "text", "id": "bol_sold_last_month", "label": "Public sales / customer figure", "default": "20,000+"},
+    {"type": "url", "id": "bol_link", "label": "bol.com proof / product link"},
+    {"type": "paragraph", "content": "Keep these figures aligned with current public bol.com data. The values are editable because ratings and sales figures change over time."}
+  ],
+  "presets": [{"name": "bol.com social proof"}]
+}
+{% endschema %}

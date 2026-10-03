@@ -1,0 +1,33 @@
+<section class="besjaar-ui-section besjaar-ui-auth-page besjaar-ui-auth-v41 besjaar-ui-auth-v41--register">
+  <div class="besjaar-ui-shell besjaar-ui-auth-v41__shell">
+    <div class="besjaar-ui-auth-v41__intro">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.customer_space' | t }}</p>
+        <h1>{{ 'besjaar_ui.account.create_title_v41' | t }}</h1>
+        <p>{{ 'besjaar_ui.account.create_copy_v41' | t }}</p>
+      </div>
+      <div class="besjaar-ui-auth-v41__benefits">
+        <div><span aria-hidden="true">01</span><strong>{{ 'besjaar_ui.account.orders_tracking' | t }}</strong><p>{{ 'besjaar_ui.account.orders_tracking_copy' | t }}</p></div>
+        <div><span aria-hidden="true">02</span><strong>{{ 'besjaar_ui.account.delivery_details' | t }}</strong><p>{{ 'besjaar_ui.account.delivery_details_copy' | t }}</p></div>
+      </div>
+    </div>
+
+    <div class="besjaar-ui-auth-v41__card">
+      <div class="besjaar-ui-auth-v41__card-head"><span>{{ 'besjaar_ui.account.create' | t }}</span><h2>{{ 'besjaar_ui.account.join_besjaar' | t }}</h2><p>{{ 'besjaar_ui.account.create_copy' | t }}</p></div>
+      {% form 'create_customer' %}
+        <div class="besjaar-ui-auth-fields">
+          <div class="besjaar-ui-form-grid besjaar-ui-form-grid--2"><div><label class="besjaar-ui-label" for="RegisterFirstName">{{ 'besjaar_ui.account.first_name' | t }}</label><input class="besjaar-ui-input" id="RegisterFirstName" type="text" name="customer[first_name]" autocomplete="given-name"></div><div><label class="besjaar-ui-label" for="RegisterLastName">{{ 'besjaar_ui.account.last_name' | t }}</label><input class="besjaar-ui-input" id="RegisterLastName" type="text" name="customer[last_name]" autocomplete="family-name"></div></div>
+          <div><label class="besjaar-ui-label" for="RegisterEmail">Email</label><input class="besjaar-ui-input" id="RegisterEmail" type="email" name="customer[email]" autocomplete="email" required></div>
+          <div><label class="besjaar-ui-label" for="RegisterPassword">{{ 'besjaar_ui.account.password' | t }}</label><input class="besjaar-ui-input" id="RegisterPassword" type="password" name="customer[password]" autocomplete="new-password" required></div>
+          <button class="besjaar-ui-button besjaar-ui-button--primary besjaar-ui-auth-v41__submit" type="submit">{{ 'besjaar_ui.account.create' | t }}</button>
+        </div>
+        {% if form.errors %}<div class="besjaar-ui-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+      {% endform %}
+      <div class="besjaar-ui-auth-v41__join"><span>{{ 'besjaar_ui.account.already_member' | t }}</span><a href="{{ routes.account_login_url }}">{{ 'besjaar_ui.account.login' | t }} →</a></div>
+      <p class="besjaar-ui-auth-v41__guest">{{ 'besjaar_ui.account.guest_checkout_note' | t }}</p>
+    </div>
+  </div>
+</section>
+{% schema %}
+{"name":"Register","settings":[]}
+{% endschema %}

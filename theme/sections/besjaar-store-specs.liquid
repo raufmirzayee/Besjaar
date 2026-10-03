@@ -1,0 +1,74 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign v_kicker = 'besjaar_store.specs.kicker' | t
+    assign v_heading = 'besjaar_store.specs.heading' | t
+    assign v_text = 'besjaar_store.specs.text' | t
+    assign v_tag = 'besjaar_store.specs.tag' | t
+    assign v_footnote = 'besjaar_store.specs.footnote' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_heading = section.settings.heading
+    assign v_text = section.settings.text
+    assign v_tag = section.settings.tag
+    assign v_footnote = section.settings.footnote
+  endif
+%}
+<section class="besjaar-store besjaar-store-specs" id="besjaar-store-specs">
+  <div class="besjaar-store-shell besjaar-store-specs__inner">
+    <div class="besjaar-store-specs__head">
+      <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
+      <h2 class="besjaar-store-h2">{{ v_heading | escape }}</h2>
+      <p class="besjaar-store-specs__intro">{{ v_text | escape }}</p>
+    </div>
+
+    {% if section.settings.use_localized_copy %}
+      <div class="besjaar-store-specs__stats">
+        <div><strong>{{ 'besjaar_store.specs.r4v' | t }}</strong><span>{{ 'besjaar_store.specs.r4l' | t }}</span></div>
+        <div><strong>{{ 'besjaar_store.specs.r3v' | t }}</strong><span>{{ 'besjaar_store.specs.r3l' | t }}</span></div>
+        <div><strong>{{ 'besjaar_store.specs.r6v' | t }}</strong><span>{{ 'besjaar_store.specs.r6l' | t }}</span></div>
+        <div><strong>{{ 'besjaar_store.specs.r5v' | t | split: ',' | first }}</strong><span>{{ 'besjaar_store.specs.r5l' | t }}</span></div>
+      </div>
+      <div class="besjaar-store-specs__lower">
+        <span class="besjaar-store-tag">{{ v_tag | escape }}</span>
+        <div class="besjaar-store-specs__table-wrap">
+          <table class="besjaar-store-table"><tbody>
+            {% for i in (1..8) %}
+              {% assign lkey = 'besjaar_store.specs.r' | append: i | append: 'l' %}
+              {% assign vkey = 'besjaar_store.specs.r' | append: i | append: 'v' %}
+              <tr><td>{{ lkey | t }}</td><td>{{ vkey | t }}</td></tr>
+            {% endfor %}
+          </tbody></table>
+          <p class="besjaar-store-note">{{ v_footnote | escape }}</p>
+        </div>
+      </div>
+    {% else %}
+      <div class="besjaar-store-specs__table-wrap">
+        <table class="besjaar-store-table"><tbody>
+          {% for block in section.blocks %}<tr {{ block.shopify_attributes }}><td>{{ block.settings.label | escape }}</td><td>{{ block.settings.value | escape }}</td></tr>{% endfor %}
+        </tbody></table>
+        <p class="besjaar-store-note">{{ v_footnote | escape }}</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Premium specifications",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "ENGINEERED TO PERFORM"},
+    {"type": "text", "id": "heading", "label": "Heading", "default": "One showerhead. Everyday upgrade."},
+    {"type": "textarea", "id": "text", "label": "Tekst", "default": "The details that matter, without the technical clutter."},
+    {"type": "text", "id": "tag", "label": "Tag", "default": "NO PLUMBER NEEDED"},
+    {"type": "text", "id": "footnote", "label": "Voetnoot", "default": "*See the individual product page for model-specific details."}
+  ],
+  "blocks": [
+    {"type": "row", "name": "Spec-regel", "settings": [
+      {"type": "text", "id": "label", "label": "Label", "default": "Model"},
+      {"type": "text", "id": "value", "label": "Waarde", "default": "Besjaar hand shower"},
+      {"type": "checkbox", "id": "accent", "label": "Accentkleur", "default": false}
+    ]}
+  ],
+  "presets": [{"name": "Premium specifications"}]
+}
+{% endschema %}

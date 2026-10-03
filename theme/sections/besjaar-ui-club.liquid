@@ -1,0 +1,93 @@
+{% liquid
+  assign besjaar_ui_club_enabled = settings.enable_besjaar_club
+  if request.page_type == 'index' and settings.show_club_home_section == false
+    assign besjaar_ui_club_enabled = false
+  endif
+  assign club_target = routes.account_login_url
+  if customer
+    assign club_target = routes.account_url
+  endif
+  if settings.club_page != blank
+    assign club_target = settings.club_page.url
+  endif
+  assign club_name = settings.club_name | default: 'Besjaar Club'
+%}
+{% if besjaar_ui_club_enabled %}
+<section class="besjaar-ui-section besjaar-ui-club" data-besjaar-ui-club>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-club__surface">
+      <div class="besjaar-ui-club__intro">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.club.kicker' | t }}</p>
+        {% if customer %}
+          {% assign besjaar_ui_club_customer_name = customer.first_name | default: customer.email %}
+          <span class="besjaar-ui-club__status"><i></i>{{ 'besjaar_ui.club.signed_in' | t }}</span>
+          <h2>{{ 'besjaar_ui.club.welcome' | t: name: besjaar_ui_club_customer_name }}</h2>
+          <p>{{ 'besjaar_ui.club.member_copy' | t }}</p>
+        {% else %}
+          <span class="besjaar-ui-club__status besjaar-ui-club__status--guest"><i></i>{{ 'besjaar_ui.club.optional' | t }}</span>
+          <h2>{{ club_name | escape }}</h2>
+          <p>{{ 'besjaar_ui.club.guest_copy' | t }}</p>
+        {% endif %}
+        <div class="besjaar-ui-club__actions">
+          <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ club_target }}"{% unless customer %} rel="nofollow"{% endunless %}>
+            {% if customer %}{{ 'besjaar_ui.club.open_club' | t }}{% else %}{{ 'besjaar_ui.club.join_sign_in' | t }}{% endif %}
+          </a>
+          {% if settings.club_referral_page != blank %}<a class="besjaar-ui-button besjaar-ui-button--ghost" href="{% render 'localized-internal-url', url: settings.club_referral_page.url %}">{{ 'besjaar_ui.club.referrals' | t }}</a>{% endif %}
+        </div>
+        <small class="besjaar-ui-club__fineprint">{{ 'besjaar_ui.club.no_fake_points' | t }}</small>
+      </div>
+
+      <div class="besjaar-ui-club__benefits">
+        {% assign benefit_count = 0 %}
+        {% for block in section.blocks %}
+          {% if block.type == 'benefit' %}
+            {% assign benefit_count = benefit_count | plus: 1 %}
+            <article class="besjaar-ui-club-benefit" {{ block.shopify_attributes }}>
+              <span class="besjaar-ui-club-benefit__index">0{{ benefit_count }}</span>
+              <div class="besjaar-ui-club-benefit__icon" aria-hidden="true">{{ block.settings.icon | escape }}</div>
+              {% if section.settings.use_localized_copy %}
+                {% case benefit_count %}
+                  {% when 1 %}<h3>{{ 'besjaar_ui.club.benefit_1_title' | t }}</h3><p>{{ 'besjaar_ui.club.benefit_1_copy' | t }}</p>
+                  {% when 2 %}<h3>{{ 'besjaar_ui.club.benefit_2_title' | t }}</h3><p>{{ 'besjaar_ui.club.benefit_2_copy' | t }}</p>
+                  {% else %}<h3>{{ 'besjaar_ui.club.benefit_3_title' | t }}</h3><p>{{ 'besjaar_ui.club.benefit_3_copy' | t }}</p>
+                {% endcase %}
+              {% else %}
+                <h3>{{ block.settings.title | escape }}</h3>
+                <p>{{ block.settings.text | escape }}</p>
+              {% endif %}
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {% assign has_app_block = false %}
+    {% for block in section.blocks %}{% if block.type == '@app' %}{% assign has_app_block = true %}{% endif %}{% endfor %}
+    {% if has_app_block %}
+      <div class="besjaar-ui-club__apps besjaar-ui-app-surface">
+        <div class="besjaar-ui-section-head besjaar-ui-section-head--compact"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.club.live_kicker' | t }}</p><h2>{{ 'besjaar_ui.club.rewards_dashboard' | t }}</h2></div></div>
+        {% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Besjaar Club",
+  "settings":[{"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized benefit copy (EN / NL / DE / FR)","default":true}],
+  "blocks":[
+    {"type":"benefit","name":"Club benefit","settings":[
+      {"type":"text","id":"icon","label":"Icon / short mark","default":"✓"},
+      {"type":"text","id":"title","label":"Title","default":"Member account"},
+      {"type":"textarea","id":"text","label":"Text","default":"Keep orders, saved shopping and account details together."}
+    ]},
+    {"type":"@app"}
+  ],
+  "presets":[{"name":"Besjaar Club","blocks":[
+    {"type":"benefit","settings":{"icon":"◎","title":"Member hub","text":"Keep orders, profile details and saved shopping together."}},
+    {"type":"benefit","settings":{"icon":"◇","title":"Rewards ready","text":"Connect a loyalty app to surface real points, rewards or tiers here."}},
+    {"type":"benefit","settings":{"icon":"↗","title":"Referral ready","text":"Link a real referral program when you are ready to reward recommendations."}}
+  ]}]
+}
+{% endschema %}

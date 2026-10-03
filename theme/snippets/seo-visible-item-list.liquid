@@ -1,0 +1,15 @@
+{%- comment -%}Call inside the same pagination scope as the visible grid. Links only, no unrelated Offer data.{%- endcomment -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": {{ canonical_url | append: '#products-' | append: list_key | json }},
+  "itemListElement": [
+    {%- for item_product in products limit: limit_count -%}
+      {% capture item_name %}{% render 'localized-product-title', product: item_product %}{% endcapture %}
+      {% capture item_path %}{% render 'localized-internal-url', url: item_product.url %}{% endcapture %}
+      {"@type":"ListItem","position":{{ forloop.index | plus: offset | json }},"name":{{ item_name | strip | json }},"url":{{ shop.url | append: item_path | strip | json }}}{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>

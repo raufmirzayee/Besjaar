@@ -1,0 +1,115 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "order": [
+    "main",
+    "reviews",
+    "recently_viewed",
+    "proof",
+    "cta"
+  ],
+  "sections": {
+    "cta": {
+      "settings": {
+        "heading": "Upgrade the shower you use every day.",
+        "kicker": "BESJAAR® SHOWERHEADS",
+        "primary_label": "SHOP SHOWERHEADS",
+        "primary_link": "",
+        "secondary_label": "EXPLORE THE DETAILS",
+        "use_localized_copy": true
+      },
+      "type": "besjaar-store-cta"
+    },
+    "main": {
+      "settings": {
+        "enable_image_zoom": true,
+        "show_breadcrumbs": true,
+        "show_compare": false,
+        "show_highlights": true,
+        "show_hose_switch": true,
+        "show_intro": false,
+        "show_quotes": true,
+        "show_specs": true
+      },
+      "type": "besjaar-store-product"
+    },
+    "proof": {
+      "settings": {
+        "heading": "Publieke klantsignalen, mét bron.",
+        "kicker": "PUBLIEK MARKETPLACE-BEWIJS",
+        "rating": "4.7/5",
+        "rating_label": "Beoordeling",
+        "reviews_count": "391",
+        "reviews_label": "Openbare reviews",
+        "show_sold": false,
+        "sold_count": "100+",
+        "sold_label": "Verkocht vorige maand",
+        "source_link": "Bekijk op bol.com",
+        "source_note": "Publieke marketplace-cijfers met een directe bronlink.",
+        "source_url": "https://www.bol.com/nl/nl/b/besjaar/603580876/",
+        "use_localized_copy": true
+      },
+      "type": "besjaar-store-reviews"
+    },
+    "recently_viewed": {
+      "settings": {},
+      "type": "besjaar-recently-viewed"
+    },
+    "reviews": {
+      "block_order": [
+        "judge_me_reviews_cards_carousel_xmiDyi"
+      ],
+      "blocks": {
+        "judge_me_reviews_cards_carousel_xmiDyi": {
+          "settings": {
+            "arrows_color": "#000000",
+            "arrows_position": "sides",
+            "card_color": "#F9F9F9",
+            "corner_styling": "soft",
+            "display_order": "media_first",
+            "filter_custom_tags": "",
+            "filter_featured": false,
+            "filter_pinned": false,
+            "header_text": "Customers are saying",
+            "header_text_color": "#000000",
+            "hide_arrows_mobile": true,
+            "image_ratio": "1",
+            "max_reviews": 20,
+            "max_width": 1100,
+            "no_image_fallback": "review_text_only",
+            "products": [],
+            "rating_display": "default",
+            "review_length": "medium",
+            "reviews_selection": "all",
+            "reviews_shown": 4,
+            "show_average_rating": true,
+            "show_product_name": true,
+            "show_review_media": true,
+            "show_reviewer_name": true,
+            "show_sample_reviews": true,
+            "star_rating": "all",
+            "stars_color": "",
+            "text_color": "#000000",
+            "text_size": "medium",
+            "transition_speed": 5
+          },
+          "type": "shopify://apps/judge-me-reviews/blocks/cards_carousel/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8"
+        }
+      },
+      "settings": {
+        "enable_legacy_judgeme_widget": false,
+        "show_intro": true,
+        "show_native_summary": true,
+        "show_review_form": true
+      },
+      "type": "besjaar-ui-reviews"
+    }
+  }
+}

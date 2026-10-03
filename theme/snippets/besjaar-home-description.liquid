@@ -1,0 +1,16 @@
+{%- comment -%}Localized homepage fallback. Shopify Preferences description takes priority.{%- endcomment -%}
+{%- liquid
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      echo 'Besjaar, your trusted companion for a better shower. Discover showerheads, shower filters and refills in our official store.'
+    when 'de'
+      echo 'Entdecke Besjaar Duschköpfe, Duschfilter und Ersatzfilter. Vergleiche Modelle, Strahlarten und Kompatibilität im offiziellen Besjaar Shop.'
+    when 'fr'
+      echo 'Découvrez les pommeaux, filtres de douche et recharges Besjaar. Comparez les modèles, jets et compatibilités dans la boutique officielle.'
+    when 'es'
+      echo 'Besjaar, tu aliado de confianza para una ducha mejor. Descubre alcachofas de ducha, filtros de ducha y recambios en nuestra tienda oficial.'
+    else
+      echo 'Besjaar, jouw vertrouwde partner voor een betere douche. Ontdek douchekoppen, douchefilters en navulsets in onze officiële webshop.'
+  endcase
+-%}

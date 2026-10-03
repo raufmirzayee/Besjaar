@@ -1,0 +1,144 @@
+/* ------------------------------------------------------------------
+   Besjaar — Shopify discount visibility (2026-09-21)
+
+   Styles for snippets/besjaar-discount-badge.liquid. Loaded once per page
+   by sections/besjaar-discount-1174.liquid (header group).
+
+   The discount badge deliberately reuses each card's own badge element, so
+   position, size and shape stay exactly as the theme already draws them —
+   only the colour changes. Every rule below is scoped with the theme's own
+   badge class plus .bj-discount-badge, so it outranks the base badge styling
+   without needing !important.
+   ------------------------------------------------------------------ */
+
+:root {
+  /* Sale red, chosen to sit next to the store's navy without clashing. */
+  --bj-sale: #d32f2f;
+  --bj-sale-ink: #b3261e;
+}
+
+/* ---------- the "-20%" badge, in the theme's own badge slot ---------- */
+
+.besjaar-ui-product-card__badge.bj-discount-badge,
+.besjaar-collection-badge.bj-discount-badge,
+.besjaar-shop-card__badge.bj-discount-badge,
+.bp-model-card__badge.bj-discount-badge,
+.besjaar-ui-shower-card__badge.bj-discount-badge {
+  background: var(--bj-sale);
+  border-color: var(--bj-sale);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Some card badges draw a dot/rule through a child <i>; keep it on-colour. */
+.besjaar-ui-product-card__badge.bj-discount-badge i {
+  background: currentColor;
+}
+
+/* ---------- price: discounted first, original struck through ---------- */
+
+.bj-price__now {
+  color: var(--bj-sale);
+  font-weight: 700;
+}
+
+.bj-price__was {
+  color: var(--besjaar-ui-muted, #61798e);
+  font-weight: 500;
+  text-decoration: line-through;
+  /* Slightly smaller than the live price wherever the card sets no size. */
+  font-size: 0.92em;
+}
+
+/* Cards put the two prices on one line with a small gap. */
+.besjaar-ui-price .bj-price__was,
+.besjaar-collection-product-card__price .bj-price__was,
+.besjaar-shop-card__price .bj-price__was,
+.bp-model-card__price .bj-price__was,
+.besjaar-ui-shower-card__price .bj-price__was {
+  margin-inline-start: 6px;
+}
+
+/* ---------- product page ---------- */
+
+/* The buy box price element keeps its own size and weight; only the colour
+   changes, so the discounted figure reads as the price you pay. */
+.besjaar-store-premium-pd__price.is-bj-discounted {
+  color: var(--bj-sale);
+}
+
+.besjaar-store-premium-pd__price-row .bj-price__was {
+  font-size: 1rem;
+  margin-inline-start: 8px;
+}
+
+.besjaar-store-premium-pd__topline .bj-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--bj-sale);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.bj-discount-note {
+  margin: 6px 0 0;
+  color: var(--besjaar-ui-muted, #61798e);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.bj-discount-note::before {
+  content: "✓";
+  margin-inline-end: 5px;
+  color: var(--bj-sale);
+  font-weight: 700;
+}
+
+/* ---------- cart savings ---------- */
+
+/* "Je bespaart € 8,74" in the cart drawer and on the cart page. This is
+   Shopify's own cart.total_discount, not the mirror — the theme's JS fills
+   [data-cart-drawer-discount] and [data-cart-page-savings] from the live cart.
+   It states a saving, so it takes the store's success green (the same
+   --bc40-success the free-shipping row uses) instead of the muted grey of the
+   labels around it. 5.58:1 on white, so it still passes AA.
+
+   !important because assets/besjaar-cart-polish-1140.css sets the colours in
+   this part of the drawer with !important; matching that is the only way to
+   win the cascade here, and it is the convention that layer already uses. */
+[data-cart-drawer-discount],
+[data-cart-page-savings],
+[data-cart-page-savings-amount] {
+  color: var(--bc40-success, #35735d) !important;
+  font-weight: 700 !important;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 760px) {
+  .bj-price__was {
+    font-size: 0.88em;
+  }
+
+  .besjaar-store-premium-pd__price-row .bj-price__was {
+    font-size: 0.95rem;
+  }
+
+  .bj-discount-note {
+    font-size: 12px;
+  }
+}
+
+@media print {
+  .bj-price__now,
+  .besjaar-store-premium-pd__price.is-bj-discounted {
+    color: #000;
+  }
+}

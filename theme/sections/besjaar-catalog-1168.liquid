@@ -1,0 +1,66 @@
+{%- comment -%}
+  Besjaar 11.6.8 — catalogue page, collection cards and the product buy box.
+
+  Catalogue (templates/list-collections, section main-list-collections):
+  - The hero block (kicker, "One collection. Showerheads.", copy) stays in
+    the DOM as the page's h1 but is visually hidden.
+  - The "01 / Shower Heads / 4 products" bar becomes the title row.
+  - Product cards: product floats on an ice tile (white image backgrounds
+    multiplied away), small navy badge, two-line title, spec chips, price,
+    stock dot, full-width pill button. Brand/identity row removed.
+  - Accessories block and the filter explainer restyled to the same system.
+
+  Product page (section besjaar-store-product):
+  - Smaller, sharper title; brand kicker in blue; stock as a soft green pill.
+  - Judge.me badge hidden while a product has zero reviews.
+  - Buy card: price row without the stray hairline, quantity stepper and
+    Add-to-cart in one row, rounded payment button, trust tiles, model
+    finder row and accordion typography aligned to the token system.
+
+  Temporary carrier like the other besjaar-* sections; fold into
+  sections/main-list-collections.liquid, snippets/product-card.liquid and
+  assets/besjaar-product-detail.css during the consolidation.
+{%- endcomment -%}
+
+<script>
+(function () {
+  'use strict';
+  if (document.body.getAttribute('data-page-type') !== 'product') return;
+  var tidyJudgeme = function () {
+    Array.prototype.forEach.call(document.querySelectorAll('.besjaar-store-premium-pd__rating--judgeme'), function (link) {
+      var badge = link.querySelector('.jdgm-prev-badge');
+      var count = badge ? parseInt(badge.getAttribute('data-number-of-reviews') || '', 10) : NaN;
+      var text = (link.textContent || '').trim().toLowerCase();
+      var empty = (badge && count === 0) || /^(no reviews|geen reviews|nog geen reviews|keine bewertungen|aucun avis)/.test(text);
+      link.classList.toggle('is-empty', !!empty);
+    });
+  };
+  var run = function () {
+    tidyJudgeme();
+    if ('MutationObserver' in window) {
+      var observer = new MutationObserver(tidyJudgeme);
+      Array.prototype.forEach.call(document.querySelectorAll('.besjaar-store-premium-pd__rating--judgeme'), function (link) {
+        observer.observe(link, { childList: true, subtree: true, attributes: true });
+      });
+    }
+    window.setTimeout(tidyJudgeme, 1500);
+    window.setTimeout(tidyJudgeme, 4000);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar catalogue polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8: catalogue page without the hero headline, title row from the catalogue bar, modern product cards on catalogue and collection pages, restyled accessories and filter explainer, and the product buy box (compact title, stock pill, stepper beside Add to cart, empty review badge hidden). Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

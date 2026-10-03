@@ -1,0 +1,51 @@
+{%- comment -%}
+  Besjaar — compare-at sale display (2026-09-27)
+
+  Shows a compare-at-price sale in exactly the same style as an automatic
+  Shopify discount (snippets/besjaar-discount-badge.liquid): the same badge
+  slot and colours, the sale price in sale red and the earlier price struck
+  through. Cards call it only when no automatic discount applies, so an
+  automatic discount always wins.
+
+  Here the reduced price IS the product price (variant.price), and
+  compare_at_price is the earlier normal price. That is also what Google
+  Merchant Center receives as price / sale price, so shop and Google match.
+  Nothing here says "applied at checkout", because nothing is.
+
+  PARAMETERS
+    product  (required) the product to evaluate
+    variant  (optional) the variant whose prices are used; defaults to
+             product.selected_or_first_available_variant
+    layout   'badge' — badge text, e.g. "36% KORTING"
+             'price' — sale price + original struck through, for a card price element
+
+  Renders nothing when the product has no compare-at price above its price.
+{%- endcomment -%}
+
+{%- liquid
+  assign bcs_variant = variant
+  unless bcs_variant
+    assign bcs_variant = product.selected_or_first_available_variant
+  endunless
+  assign bcs_price = bcs_variant.price
+  assign bcs_was = bcs_variant.compare_at_price | default: 0
+  assign bcs_pct = 0
+  if bcs_was > bcs_price and bcs_price > 0
+    comment
+      Integer cents, so this rounds DOWN: the badge never claims more than the
+      real saving (€39,99 → €25,49 is 36.26%, shown as 36%).
+    endcomment
+    assign bcs_pct = bcs_was | minus: bcs_price | times: 100 | divided_by: bcs_was
+  endif
+-%}
+
+{%- if bcs_pct > 0 -%}
+  {%- case layout -%}
+    {%- when 'price' -%}
+      <span class="bj-price__now">{{ bcs_price | money }}</span>
+      <s class="bj-price__was"><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span>{{ bcs_was | money }}</s>
+    {%- else -%}
+      {%- comment -%}Same wording as the other sale badges in the shop ("15% KORTING"), in every language.{%- endcomment -%}
+      {{- bcs_pct }}% KORTING
+  {%- endcase -%}
+{%- endif -%}

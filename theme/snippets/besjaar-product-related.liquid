@@ -1,0 +1,250 @@
+{%- comment -%}
+  Besjaar 2026-09-22 (SEO: filter-products-not-linked-to-navulset-or-filter-collection)
+  "Bijpassende producten" panel for the product-page accordion. Cross-links the
+  shower family dynamically, without hard-coded handles:
+    - shower head with filter  -> refill filter set + the filter collection
+    - shower head without filter -> the filtered alternative
+    - every shower head -> the same model with / without hose
+    - refill set (not a head) -> the shower heads with a filter it fits
+  Renders nothing outside the shower family or when nothing resolves.
+  Usage: {% render 'besjaar-product-related', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign bpr_product = product
+  capture bpr_capture
+    render 'product-family', product: bpr_product
+  endcapture
+  assign bpr_family = bpr_capture | strip
+-%}
+{%- if bpr_family == 'shower' -%}
+  {%- liquid
+    assign bpr_locale = request.locale.iso_code | split: '-' | first | downcase
+    case bpr_locale
+      when 'en'
+        assign bpr_label = 'Related products'
+        assign bpr_text_refill = 'Replacement filters:'
+        assign bpr_text_collection = 'Collection:'
+        assign bpr_text_filtered = 'Prefer filtered water?'
+        assign bpr_text_unfiltered = 'Prefer no filter?'
+        assign bpr_text_with_hose = 'Same shower head with hose:'
+        assign bpr_text_without_hose = 'Same shower head without hose:'
+        assign bpr_text_fits = 'Fits:'
+      when 'de'
+        assign bpr_label = 'Passende Produkte'
+        assign bpr_text_refill = 'Ersatzfilter:'
+        assign bpr_text_collection = 'Kategorie:'
+        assign bpr_text_filtered = 'Lieber gefiltertes Wasser?'
+        assign bpr_text_unfiltered = 'Lieber ohne Filter?'
+        assign bpr_text_with_hose = 'Gleicher Duschkopf mit Schlauch:'
+        assign bpr_text_without_hose = 'Gleicher Duschkopf ohne Schlauch:'
+        assign bpr_text_fits = 'Passend für:'
+      when 'fr'
+        assign bpr_label = 'Produits associés'
+        assign bpr_text_refill = 'Filtres de rechange :'
+        assign bpr_text_collection = 'Collection :'
+        assign bpr_text_filtered = 'Vous préférez une eau filtrée ?'
+        assign bpr_text_unfiltered = 'Vous préférez sans filtre ?'
+        assign bpr_text_with_hose = 'Même pommeau avec flexible :'
+        assign bpr_text_without_hose = 'Même pommeau sans flexible :'
+        assign bpr_text_fits = 'Compatible avec :'
+      when 'es'
+        assign bpr_label = 'Productos relacionados'
+        assign bpr_text_refill = 'Filtros de recambio:'
+        assign bpr_text_collection = 'Colección:'
+        assign bpr_text_filtered = '¿Prefieres agua filtrada?'
+        assign bpr_text_unfiltered = '¿Prefieres sin filtro?'
+        assign bpr_text_with_hose = 'La misma alcachofa con manguera:'
+        assign bpr_text_without_hose = 'La misma alcachofa sin manguera:'
+        assign bpr_text_fits = 'Compatible con:'
+      else
+        assign bpr_label = 'Bijpassende producten'
+        assign bpr_text_refill = 'Vervangfilters:'
+        assign bpr_text_collection = 'Collectie:'
+        assign bpr_text_filtered = 'Liever gefilterd water?'
+        assign bpr_text_unfiltered = 'Liever zonder filter?'
+        assign bpr_text_with_hose = 'Zelfde douchekop met slang:'
+        assign bpr_text_without_hose = 'Zelfde douchekop zonder slang:'
+        assign bpr_text_fits = 'Past op:'
+    endcase
+
+    capture bpr_capture
+      render 'is-shower-head', product: bpr_product
+    endcapture
+    assign bpr_is_head = bpr_capture | strip
+    capture bpr_capture
+      render 'shower-filter-state', product: bpr_product
+    endcapture
+    assign bpr_filter = bpr_capture | strip
+    capture bpr_capture
+      render 'shower-hose-state', product: bpr_product
+    endcapture
+    assign bpr_hose = bpr_capture | strip
+    capture bpr_capture
+      render 'shower-spray-modes', product: bpr_product
+    endcapture
+    assign bpr_modes = bpr_capture | strip
+
+    comment
+      Filter collection = first collection whose handle contains 'filter'.
+      Refill product = its first product that is not a shower head.
+    endcomment
+    assign bpr_filter_collection_found = false
+    for bpr_collection in collections
+      assign bpr_collection_handle = bpr_collection.handle | downcase
+      if bpr_collection_handle contains 'filter'
+        assign bpr_filter_collection = bpr_collection
+        assign bpr_filter_collection_found = true
+        break
+      endif
+    endfor
+    assign bpr_refill_found = false
+    if bpr_filter_collection_found
+      for bpr_candidate in bpr_filter_collection.products limit: 12
+        if bpr_candidate.id == bpr_product.id
+          continue
+        endif
+        capture bpr_capture
+          render 'is-shower-head', product: bpr_candidate
+        endcapture
+        assign bpr_candidate_head = bpr_capture | strip
+        if bpr_candidate_head != 'true'
+          assign bpr_refill = bpr_candidate
+          assign bpr_refill_found = true
+          break
+        endif
+      endfor
+    endif
+
+    comment
+      Sibling shower heads come from the primary showerheads collection, with
+      the same fallbacks as snippets/shower-store-url.liquid.
+    endcomment
+    assign bpr_head_collection = settings.shower_collection
+    if bpr_head_collection == blank
+      assign bpr_head_collection = collections['badkamer-douche']
+    endif
+    if bpr_head_collection == blank
+      assign bpr_head_collection = collections['douchekoppen']
+    endif
+    if bpr_head_collection == blank
+      assign bpr_head_collection = collections['showerheads']
+    endif
+    if bpr_head_collection == blank
+      assign bpr_head_collection = collections['douche']
+    endif
+    if bpr_head_collection == blank
+      assign bpr_head_collection = collections['shower']
+    endif
+    if bpr_head_collection == blank
+      assign bpr_head_collection = bpr_product.collections.first
+    endif
+
+    assign bpr_hose_sibling_found = false
+    assign bpr_filtered_alt_found = false
+    assign bpr_filtered_alt_same_hose = false
+    assign bpr_unfiltered_alt_found = false
+    assign bpr_unfiltered_alt_same_hose = false
+    if bpr_is_head == 'true' and bpr_head_collection != blank
+      for bpr_candidate in bpr_head_collection.products limit: 24
+        if bpr_candidate.id == bpr_product.id
+          continue
+        endif
+        capture bpr_capture
+          render 'is-shower-head', product: bpr_candidate
+        endcapture
+        assign bpr_candidate_head = bpr_capture | strip
+        if bpr_candidate_head != 'true'
+          continue
+        endif
+        capture bpr_capture
+          render 'shower-filter-state', product: bpr_candidate
+        endcapture
+        assign bpr_candidate_filter = bpr_capture | strip
+        capture bpr_capture
+          render 'shower-hose-state', product: bpr_candidate
+        endcapture
+        assign bpr_candidate_hose = bpr_capture | strip
+        capture bpr_capture
+          render 'shower-spray-modes', product: bpr_candidate
+        endcapture
+        assign bpr_candidate_modes = bpr_capture | strip
+
+        if bpr_hose_sibling_found == false
+          if bpr_candidate_modes == bpr_modes and bpr_candidate_filter == bpr_filter and bpr_candidate_hose != bpr_hose
+            assign bpr_hose_sibling = bpr_candidate
+            assign bpr_hose_sibling_found = true
+          endif
+        endif
+        if bpr_filter != 'true' and bpr_candidate_filter == 'true'
+          if bpr_filtered_alt_found == false
+            assign bpr_filtered_alt = bpr_candidate
+            assign bpr_filtered_alt_found = true
+            if bpr_candidate_hose == bpr_hose
+              assign bpr_filtered_alt_same_hose = true
+            endif
+          elsif bpr_filtered_alt_same_hose == false and bpr_candidate_hose == bpr_hose
+            assign bpr_filtered_alt = bpr_candidate
+            assign bpr_filtered_alt_same_hose = true
+          endif
+        endif
+        if bpr_filter == 'true' and bpr_candidate_filter != 'true'
+          if bpr_unfiltered_alt_found == false
+            assign bpr_unfiltered_alt = bpr_candidate
+            assign bpr_unfiltered_alt_found = true
+            if bpr_candidate_hose == bpr_hose
+              assign bpr_unfiltered_alt_same_hose = true
+            endif
+          elsif bpr_unfiltered_alt_same_hose == false and bpr_candidate_hose == bpr_hose
+            assign bpr_unfiltered_alt = bpr_candidate
+            assign bpr_unfiltered_alt_same_hose = true
+          endif
+        endif
+      endfor
+    endif
+  -%}
+  {%- capture bpr_items -%}
+    {%- if bpr_is_head == 'true' -%}
+      {%- if bpr_filter == 'true' -%}
+        {%- if bpr_refill_found -%}
+          {%- capture bpr_title -%}{% render 'localized-product-title', product: bpr_refill %}{%- endcapture -%}
+          <li>{{ bpr_text_refill }} <a href="{% render 'localized-internal-url', url: bpr_refill.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+        {%- endif -%}
+        {%- if bpr_filter_collection_found -%}
+          {%- capture bpr_title -%}{% render 'localized-collection-title', collection: bpr_filter_collection %}{%- endcapture -%}
+          <li>{{ bpr_text_collection }} <a href="{% render 'localized-internal-url', url: bpr_filter_collection.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+        {%- endif -%}
+      {%- elsif bpr_filtered_alt_found -%}
+        {%- capture bpr_title -%}{% render 'localized-product-title', product: bpr_filtered_alt %}{%- endcapture -%}
+        <li>{{ bpr_text_filtered }} <a href="{% render 'localized-internal-url', url: bpr_filtered_alt.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+      {%- endif -%}
+      {%- if bpr_hose_sibling_found -%}
+        {%- capture bpr_title -%}{% render 'localized-product-title', product: bpr_hose_sibling %}{%- endcapture -%}
+        <li>{% if bpr_hose == 'true' %}{{ bpr_text_without_hose }}{% else %}{{ bpr_text_with_hose }}{% endif %} <a href="{% render 'localized-internal-url', url: bpr_hose_sibling.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+      {%- endif -%}
+      {%- if bpr_filter == 'true' and bpr_unfiltered_alt_found -%}
+        {%- capture bpr_title -%}{% render 'localized-product-title', product: bpr_unfiltered_alt %}{%- endcapture -%}
+        <li>{{ bpr_text_unfiltered }} <a href="{% render 'localized-internal-url', url: bpr_unfiltered_alt.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+      {%- endif -%}
+    {%- elsif bpr_head_collection != blank -%}
+      {%- assign bpr_fit_count = 0 -%}
+      {%- for bpr_candidate in bpr_head_collection.products limit: 24 -%}
+        {%- if bpr_fit_count >= 4 or bpr_candidate.id == bpr_product.id -%}{%- continue -%}{%- endif -%}
+        {%- capture bpr_capture -%}{% render 'is-shower-head', product: bpr_candidate %}{%- endcapture -%}
+        {%- assign bpr_candidate_head = bpr_capture | strip -%}
+        {%- capture bpr_capture -%}{% render 'shower-filter-state', product: bpr_candidate %}{%- endcapture -%}
+        {%- assign bpr_candidate_filter = bpr_capture | strip -%}
+        {%- if bpr_candidate_head == 'true' and bpr_candidate_filter == 'true' -%}
+          {%- assign bpr_fit_count = bpr_fit_count | plus: 1 -%}
+          {%- capture bpr_title -%}{% render 'localized-product-title', product: bpr_candidate %}{%- endcapture -%}
+          <li>{{ bpr_text_fits }} <a href="{% render 'localized-internal-url', url: bpr_candidate.url %}">{{ bpr_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- if bpr_items contains '<li>' -%}
+    <details data-besjaar-product-related>
+      <summary>{{ bpr_label }}</summary>
+      <div><ul>{{ bpr_items }}</ul></div>
+    </details>
+  {%- endif -%}
+{%- endif -%}

@@ -1,0 +1,127 @@
+{% unless request.page_type == 'product' %}{{ 'besjaar-ui-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endunless %}
+{% liquid
+  assign shower_family = product.metafields.custom.shower_family.value | default: '' | downcase | strip
+  assign spray_modes = product.metafields.custom.spray_modes.value | default: ''
+  if spray_modes == blank
+    capture spray_modes_capture
+      render 'shower-spray-modes', product: product
+    endcapture
+    assign spray_modes = spray_modes_capture | strip
+  endif
+  assign connection = product.metafields.custom.connection_size.value | default: '' | strip
+  assign package_contents = product.metafields.custom.package_contents.value | default: ''
+  assign warranty = product.metafields.custom.warranty_months.value | default: 0
+  assign replacement = product.metafields.custom.filter_replacement_interval.value | default: '' | strip
+  assign compatibility = ''
+  if product.metafields.custom.compatibility_note != blank
+    assign compatibility = product.metafields.custom.compatibility_note.value
+  endif
+  assign filter_defined = false
+  assign filter_included = false
+  if product.metafields.custom.filter_included != blank
+    assign filter_defined = true
+    assign filter_included = product.metafields.custom.filter_included.value
+  else
+    capture filter_capture
+      render 'shower-filter-state', product: product
+    endcapture
+    assign filter_capture = filter_capture | strip
+    if filter_capture == 'true'
+      assign filter_defined = true
+      assign filter_included = true
+    endif
+  endif
+  assign hose_defined = false
+  assign hose_included = false
+  if product.metafields.custom.hose_included != blank
+    assign hose_defined = true
+    assign hose_included = product.metafields.custom.hose_included.value
+  else
+    capture hose_capture
+      render 'shower-hose-state', product: product
+    endcapture
+    assign hose_capture = hose_capture | strip
+    if hose_capture == 'true'
+      assign hose_defined = true
+      assign hose_included = true
+    endif
+  endif
+  assign dynamic_count = 0
+  if spray_modes != blank
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if filter_defined
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if hose_defined
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if connection != blank or compatibility != blank
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if package_contents != blank
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if warranty > 0
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  if replacement != blank
+    assign dynamic_count = dynamic_count | plus: 1
+  endif
+  assign merchant_count = 0
+  assign app_count = 0
+  for block in section.blocks
+    if block.type == 'faq' and block.settings.question != blank and block.settings.answer != blank
+      assign merchant_count = merchant_count | plus: 1
+    elsif block.type == '@app'
+      assign app_count = app_count | plus: 1
+    endif
+  endfor
+  capture besjaar_ui_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip
+%}
+{% liquid
+  assign should_render = false
+  if besjaar_ui_is_focus == 'true'
+    if dynamic_count > 0 or merchant_count > 0 or request.design_mode
+      assign should_render = true
+    endif
+  endif
+%}
+{% if should_render %}
+<section class="besjaar-ui-section besjaar-ui-shower-faq besjaar-ui-shower-trust-education" id="besjaar-ui-product-faq" data-reveal>
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-shower-faq__head">
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_faq.eyebrow' | t }}</p><h2>{{ 'besjaar_ui.shower_faq.heading' | t }}</h2></div>
+      <p>{{ 'besjaar_ui.shower_faq.copy' | t }}</p>
+    </header>
+
+    <div class="besjaar-ui-shower-faq__list">
+      {% if spray_modes != blank %}<details class="besjaar-ui-shower-faq__item" open><summary><span>{{ 'besjaar_ui.shower_faq.q_modes' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{{ 'besjaar_ui.shower_faq.a_modes' | t: count: spray_modes }}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if filter_defined %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_filter' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{% if filter_included %}{{ 'besjaar_ui.shower_faq.a_filter_yes' | t }}{% else %}{{ 'besjaar_ui.shower_faq.a_filter_no' | t }}{% endif %}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if hose_defined %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_hose' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{% if hose_included %}{{ 'besjaar_ui.shower_faq.a_hose_yes' | t }}{% else %}{{ 'besjaar_ui.shower_faq.a_hose_no' | t }}{% endif %}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if connection != blank or compatibility != blank %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_fit' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer">{% if compatibility != blank %}<p>{{ compatibility }}</p>{% elsif connection != blank %}<p>{{ 'besjaar_ui.shower_faq.a_fit_connection' | t: connection: connection }}</p>{% endif %}<span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if package_contents != blank %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_box' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{{ package_contents | newline_to_br }}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if warranty > 0 %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_warranty' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{{ 'besjaar_ui.shower_faq.a_warranty' | t: count: warranty }}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% if replacement != blank %}<details class="besjaar-ui-shower-faq__item"><summary><span>{{ 'besjaar_ui.shower_faq.q_replacement' | t }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><p>{{ 'besjaar_ui.shower_faq.a_replacement' | t: interval: replacement }}</p><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.verified_product_data' | t }}</span></div></details>{% endif %}
+      {% for block in section.blocks %}{% if block.type == 'faq' and block.settings.question != blank and block.settings.answer != blank %}<details class="besjaar-ui-shower-faq__item" {{ block.shopify_attributes }}><summary><span>{{ block.settings.question }}</span><i>+</i></summary><div class="besjaar-ui-shower-faq__answer"><div>{{ block.settings.answer }}</div><span class="besjaar-ui-shower-faq__source">{{ 'besjaar_ui.shower_faq.merchant_answer' | t }}</span></div></details>{% endif %}{% endfor %}
+    </div>
+
+    {% if app_count > 0 %}<div class="besjaar-ui-shower-faq__apps">{% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}</div>{% endif %}
+    {% if request.design_mode and dynamic_count == 0 and merchant_count == 0 %}<div class="besjaar-ui-editor-note"><strong>{{ 'besjaar_ui.shower_faq.editor_heading' | t }}</strong><p>{{ 'besjaar_ui.shower_faq.editor_copy' | t }}</p></div>{% endif %}
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Shower FAQ",
+  "settings":[],
+  "blocks":[
+    {"type":"faq","name":"Manual verified FAQ","settings":[{"type":"text","id":"question","label":"Question"},{"type":"richtext","id":"answer","label":"Answer"}]},
+    {"type":"@app"}
+  ],
+  "presets":[{"name":"Shower FAQ"}]
+}
+{% endschema %}

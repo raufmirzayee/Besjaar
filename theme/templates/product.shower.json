@@ -1,0 +1,94 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "besjaar-store-product",
+      "settings": {
+        "show_breadcrumbs": true
+      }
+    },
+    "shower_installation": {
+      "type": "besjaar-ui-shower-installation",
+      "settings": {}
+    },
+    "shower_specs": {
+      "type": "besjaar-ui-shower-specifications",
+      "settings": {}
+    },
+    "restock": {
+      "type": "besjaar-ui-restock",
+      "settings": {
+        "show_builtin_request": true,
+        "show_alternatives_link": true,
+        "hide_builtin_when_app": true
+      }
+    },
+    "reviews": {
+      "type": "besjaar-ui-reviews",
+      "settings": {
+        "show_intro": false,
+        "show_native_summary": true,
+        "show_review_form": false,
+        "enable_legacy_judgeme_widget": false
+      }
+    },
+    "model_finder": {
+      "type": "besjaar-ui-shower-model-finder",
+      "settings": {}
+    },
+    "smart_recommendations": {
+      "type": "besjaar-ui-smart-recommendations",
+      "settings": {
+        "products_to_show": 4,
+        "use_localized_copy": true,
+        "context": "product",
+        "layout": "grid",
+        "show_data_badge": false
+      }
+    },
+    "shower_faq": {
+      "type": "besjaar-ui-shower-faq",
+      "settings": {}
+    },
+    "bundle": {
+      "type": "besjaar-ui-shower-bundle",
+      "settings": {}
+    },
+    "product_360": {
+      "type": "besjaar-ui-product-360",
+      "settings": {
+        "drag_sensitivity": 7,
+        "autoplay": false,
+        "show_autoplay_control": true,
+        "autoplay_speed": 110,
+        "use_bundled_frames": true,
+        "bundled_product_handle": "besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver"
+      }
+    },
+    "recently_viewed": {
+      "type": "besjaar-recently-viewed",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "shower_specs",
+    "shower_installation",
+    "reviews",
+    "shower_faq",
+    "model_finder",
+    "smart_recommendations",
+    "recently_viewed",
+    "product_360",
+    "bundle",
+    "restock"
+  ]
+}

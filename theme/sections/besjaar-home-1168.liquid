@@ -1,0 +1,55 @@
+{%- comment -%}
+  Besjaar 11.6.9 — home page shapes (the colour rhythm lives in the runtime
+  section; this layer is about radius, chips, type, spacing and the image
+  card).
+
+  - Kickers become small pills; section titles get a tighter, larger scale.
+  - Hero: one filled button plus a text link, the image in a 22px card with
+    a soft shadow (square on phones, photo cropped towards the showerhead;
+    natural proportions on wider screens), the review count floated over
+    the image as a dark chip (moved there by the script below), the feature
+    pill moved to the top.
+  - Range: header row with the "all models" link on the right (below the
+    title on phones); cards in the catalogue style — product on an ice
+    tile, navy badge, spec chips, price, stock dot, outlined button (button
+    rules stay in the runtime section). Section spacing pulled in: the
+    older layers reserved room for hairlines that no longer exist.
+  - Scene: inset with rounded corners on phones, quote larger and white.
+  - Features: 18px cards, pill kickers.
+  - Reviews: navy rating card with gold stars and a big number.
+
+  Temporary carrier; fold into the home CSS during consolidation.
+{%- endcomment -%}
+
+<script>
+(function () {
+  'use strict';
+  if (document.body.getAttribute('data-page-type') !== 'index') return;
+  var run = function () {
+    var hero = document.querySelector('.besjaar-store-hero--premium-exact');
+    if (!hero || hero.getAttribute('data-bj-hero') === '1') return;
+    var proof = hero.querySelector('.besjaar-store-hero__customer-proof');
+    var visual = hero.querySelector('.besjaar-store-hero__visual');
+    if (!proof || !visual) return;
+    hero.setAttribute('data-bj-hero', '1');
+    visual.appendChild(proof);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  document.addEventListener('shopify:section:load', run);
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar home polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.9: home page shapes — pill kickers, tighter titles and spacing, hero image card with the review chip floated over it, catalogue-style range cards, inset scene, 18px feature cards and a navy rating card. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

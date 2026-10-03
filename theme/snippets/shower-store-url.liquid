@@ -1,0 +1,23 @@
+{%- liquid
+  assign focused_collection = settings.shower_collection
+  if focused_collection == blank
+    assign focused_collection = collections['badkamer-douche']
+  endif
+  if focused_collection == blank
+    assign focused_collection = collections['douchekoppen']
+  endif
+  if focused_collection == blank
+    assign focused_collection = collections['showerheads']
+  endif
+  if focused_collection == blank
+    assign focused_collection = collections['douche']
+  endif
+  if focused_collection == blank
+    assign focused_collection = collections['shower']
+  endif
+
+  assign focused_url = routes.all_products_collection_url | default: '/collections/all'
+  if focused_collection != blank
+    assign focused_url = focused_collection.url
+  endif
+-%}{% render 'localized-internal-url', url: focused_url %}

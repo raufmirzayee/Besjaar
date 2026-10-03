@@ -1,0 +1,547 @@
+{%- comment -%}
+  Entity graph owned by the theme.
+
+  Product pages (2026-09-22): Shopify's native `product | structured_data`
+  serializer still owns the Product/ProductGroup node (name, brand, image,
+  offers, price, availability). The theme merges exactly ONE aggregateRating
+  into that same node, read from Shopify's standard review metafields
+  reviews.rating / reviews.rating_count, which Judge.me keeps in sync with the
+  reviews it renders on the page. Judge.me's own JSON-LD and microdata stay
+  disabled (app settings disable_json_ld / remove_microdata_snippet and the
+  jldDisable guard in seo-head.liquid), so there is a single source of rating
+  data and the historic Search Console error "Review has multiple aggregate
+  ratings" cannot recur. A GTIN is added only when the variant barcode passes
+  the GS1 check digit (snippets/seo-gtin.liquid) and the node is a single
+  Product (a ProductGroup carries identifiers on its variants instead).
+  Nothing is fabricated: no rating without reviews, no policies, no social
+  profiles that are not configured.
+{%- endcomment -%}
+{%- liquid
+  assign sd_org_id = shop.url | append: '#organization'
+  assign sd_brand_id = shop.url | append: '#brand'
+  assign sd_website_id = shop.url | append: '#website'
+  assign sd_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  assign sd_product_hidden = false
+  if request.page_type == 'product' and product != blank
+    assign sd_hidden_value = product.metafields.seo.hidden.value
+    if sd_hidden_value == 1 or sd_hidden_value == '1' or sd_hidden_value == true
+      assign sd_product_hidden = true
+    endif
+  endif
+
+  assign sd_fallback_image_url = blank
+  if settings.social_share_image != blank
+    assign sd_fallback_image_url = settings.social_share_image | image_url: width: 1200 | prepend: 'https:'
+  else
+    assign sd_fallback_image_url = 'besjaar-social-share.png' | asset_url | prepend: 'https:'
+  endif
+  assign sd_fallback_image_url = sd_fallback_image_url | replace: 'https:https:', 'https:'
+-%}
+
+
+{%- liquid
+  assign sd_support_email = settings.support_email
+  assign sd_support_phone = settings.support_phone | default: '' | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')', '' | strip
+  assign sd_org_legal_name = settings.company_legal_name | default: '' | strip
+  assign sd_org_logo = shop.brand.logo
+  assign sd_org_description = 'besjaar_ui.shower_store.schema.organization_description' | t
+
+  assign sd_social_keys = 'social_instagram,social_facebook,social_tiktok,social_youtube,bol_brand_url' | split: ','
+  assign sd_first_social = true
+  capture sd_org_same_as
+    for sd_social_key in sd_social_keys
+      assign sd_profile = settings[sd_social_key] | strip
+      assign sd_profile_prefix = sd_profile | slice: 0, 8
+      if sd_profile_prefix == 'https://'
+        unless sd_first_social
+          echo ','
+        endunless
+        echo sd_profile | json
+        assign sd_first_social = false
+      endif
+    endfor
+  endcapture
+  if sd_org_logo != blank
+    assign sd_logo_url = sd_org_logo | image_url: width: 600
+  else
+    assign sd_logo_url = 'besjaar-leaf-logo.webp' | asset_url
+  endif
+  assign sd_logo_url = sd_logo_url | prepend: 'https:' | replace: 'https:https:', 'https:'
+
+-%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": {{ sd_org_id | json }},
+        "name": "Besjaar",
+        "url": {{ shop.url | json }},
+        {% if sd_org_legal_name != blank %}"legalName": {{ sd_org_legal_name | json }},{% endif %}
+        "description": {{ sd_org_description | json }},
+        {% if shop.address.city != blank and shop.address.address1 != blank %}"address": {"@type": "PostalAddress", "streetAddress": {{ shop.address.address1 | json }}, "postalCode": {{ shop.address.zip | json }}, "addressLocality": {{ shop.address.city | json }}, "addressCountry": {{ shop.address.country_code | json }}},{% endif %}
+        "brand": {"@id": {{ sd_brand_id | json }}},
+        "knowsAbout": [
+          {{ 'besjaar_ui.shower_store.schema.topic_showerheads' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_filtered' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_hoses' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_spray_modes' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_fit' | t | json }},
+          {{ 'besjaar_ui.shower_store.schema.topic_care' | t | json }}
+        ],
+        {% if sd_org_same_as != blank %}"sameAs": [{{ sd_org_same_as | strip }}],{% endif %}
+        "logo": {"@type": "ImageObject", "@id": {{ shop.url | append: '#logo' | json }}, "url": {{ sd_logo_url | json }}, "contentUrl": {{ sd_logo_url | json }}, "caption": "Besjaar"},
+        "image": {{ sd_fallback_image_url | json }}{% if sd_support_email != blank or sd_support_phone != blank %},
+        "contactPoint": {"@type": "ContactPoint", "contactType": "customer service"{% if sd_support_email != blank %}, "email": {{ sd_support_email | json }}{% endif %}{% if sd_support_phone != blank %}, "telephone": {{ sd_support_phone | json }}{% endif %}, "availableLanguage": [{% for sd_language in localization.available_languages %}{{ sd_language.iso_code | json }}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% endif %}
+      },
+      {
+        "@type": "Brand",
+        "@id": {{ sd_brand_id | json }},
+        "name": "Besjaar",
+        "url": {{ shop.url | json }},
+        {% if sd_org_same_as != blank %}"sameAs": [{{ sd_org_same_as | strip }}],{% endif %}
+        "logo": {{ sd_logo_url | json }}
+      },
+      {
+        "@type": "WebSite",
+        "@id": {{ sd_website_id | json }},
+        "name": "Besjaar",
+        "alternateName": "besjaar.eu",
+        "url": {{ shop.url | json }},
+        "description": {{ 'besjaar_ui.shower_store.meta.description' | t | json }},
+        "publisher": {"@id": {{ sd_org_id | json }}},
+        "inLanguage": [{% for sd_language in localization.available_languages %}{{ sd_language.iso_code | json }}{% unless forloop.last %},{% endunless %}{% endfor %}]
+      }
+    ]
+  }
+</script>
+
+
+{% if request.page_type == 'product' and product != blank and sd_product_hidden == false %}
+  {%- liquid
+    comment
+      Shopify serialises the Product/ProductGroup node. The theme appends one
+      aggregateRating (and, for a single Product, a validated gtin) INSIDE that
+      same JSON object, so the page never carries two Product entities and
+      never two aggregateRating values. The rating comes from Shopify's
+      standard review metafields, which Judge.me writes from the reviews it
+      renders in the review widget on this page.
+    endcomment
+    capture sd_product_json
+      echo product | structured_data
+    endcapture
+    assign sd_product_json = sd_product_json | strip
+
+    assign sd_product_type = 'Product'
+    if sd_product_json contains '"@type":"ProductGroup"' or sd_product_json contains '"@type": "ProductGroup"'
+      assign sd_product_type = 'ProductGroup'
+    endif
+
+    assign sd_product_id = product.url | split: '?' | first | append: '#product'
+    assign sd_id_parts = sd_product_json | split: '"@id":'
+    if sd_id_parts.size > 1
+      assign sd_id_quoted = sd_id_parts[1] | strip | split: '"'
+      if sd_id_quoted.size > 1 and sd_id_quoted[1] != blank
+        assign sd_product_id = sd_id_quoted[1] | replace: '\/', '/'
+      endif
+    endif
+
+    assign sd_rating_meta = product.metafields.reviews.rating
+    assign sd_rating_count_meta = product.metafields.reviews.rating_count
+    assign sd_rating_value = 0
+    assign sd_rating_count = 0
+    assign sd_rating_best = 5
+    assign sd_rating_worst = 1
+    if sd_rating_meta != blank and sd_rating_meta.value.rating != blank
+      assign sd_rating_value = sd_rating_meta.value.rating | plus: 0.0
+      if sd_rating_meta.value.scale_max != blank
+        assign sd_rating_best = sd_rating_meta.value.scale_max | plus: 0
+      endif
+      if sd_rating_meta.value.scale_min != blank
+        assign sd_rating_worst = sd_rating_meta.value.scale_min | plus: 0
+      endif
+    endif
+    if sd_rating_count_meta != blank
+      assign sd_rating_count = sd_rating_count_meta.value | default: sd_rating_count_meta | plus: 0
+    endif
+    assign sd_emit_rating = false
+    if sd_rating_value > 0 and sd_rating_count > 0
+      assign sd_emit_rating = true
+    endif
+
+    assign sd_gtin_fragment = ''
+    if sd_product_type == 'Product'
+      capture sd_gtin_capture
+        render 'seo-gtin', barcode: product.selected_or_first_available_variant.barcode
+      endcapture
+      assign sd_gtin_capture = sd_gtin_capture | strip
+      if sd_gtin_capture != blank
+        assign sd_gtin_capture_size = sd_gtin_capture | size | minus: 1
+        assign sd_gtin_fragment = sd_gtin_capture | slice: 0, sd_gtin_capture_size | prepend: ','
+      endif
+    endif
+
+    comment
+      2026-09-22: every Offer inside Shopify's node gets the store's shipping
+      and return terms (Google merchant listing attributes). Values come from
+      theme settings (Delivery & trust) and Shopify policies only: the rate is
+      0 when the product's lowest price reaches the free-shipping threshold,
+      otherwise the standard rate setting (omitted when that is 0); delivery
+      countries are the markets the store ships to; the return window is the
+      returns setting and links to the refund policy. Nothing is invented.
+    endcomment
+    assign sd_offer_extra = ''
+    comment
+      2026-09-23: one OfferShippingDetails per shipping zone (zone 1 = home
+      zone from policy_countries, zone 2 = ship_zone2_*), each with its own
+      countries, rate (0 when the product alone clears that zone's free-
+      shipping threshold) and transit time. Mirrors Settings > Shipping.
+      Country lists are capped at 50 entries (Google's limit).
+    endcomment
+    capture sd_ship_countries
+      render 'besjaar-country-list', codes: settings.policy_countries
+    endcapture
+    assign sd_ship_countries = sd_ship_countries | strip
+    if sd_ship_countries == blank
+      assign sd_ship_countries = shop.address.country_code | default: 'NL' | json
+    endif
+    capture sd_zone2_countries
+      render 'besjaar-country-list', codes: settings.ship_zone2_countries
+    endcapture
+    assign sd_zone2_countries = sd_zone2_countries | strip
+    assign sd_handling_max = settings.processing_business_days | default: 0
+    assign sd_ship_items = ''
+    if shop.currency == 'EUR'
+      for sd_zone in (1..2)
+        if sd_zone == 1
+          assign sd_z_threshold = settings.free_shipping_threshold | default: 0 | times: 100
+          assign sd_z_exact = settings.free_shipping_threshold_exact | default: '' | strip | replace: ',', '.'
+          if sd_z_exact != blank
+            assign sd_z_threshold = sd_z_exact | times: 100 | round
+          endif
+          assign sd_z_rate = settings.standard_shipping_rate | default: 0 | plus: 0.0
+          assign sd_z_countries = sd_ship_countries
+          assign sd_z_tmin = settings.transit_min_business_days | default: 1
+          assign sd_z_tmax = settings.transit_max_business_days | default: sd_z_tmin
+        else
+          assign sd_z_threshold = settings.ship_zone2_threshold | default: 0 | times: 100
+          assign sd_z_rate = settings.ship_zone2_rate | default: 0 | plus: 0.0
+          assign sd_z_countries = sd_zone2_countries
+          assign sd_z_tmin = settings.ship_zone2_transit_min | default: 1
+          assign sd_z_tmax = settings.ship_zone2_transit_max | default: sd_z_tmin
+        endif
+        if sd_z_countries == blank
+          continue
+        endif
+        assign sd_z_tmax = sd_z_tmax | at_least: sd_z_tmin
+        assign sd_z_value = ''
+        if sd_z_threshold > 0 and product.price_min >= sd_z_threshold
+          assign sd_z_value = '0'
+        elsif sd_z_rate > 0
+          assign sd_z_value = sd_z_rate | append: ''
+        endif
+        if sd_z_value == blank
+          continue
+        endif
+        capture sd_z_item
+          echo '{"@type":"OfferShippingDetails","shippingRate":{"@type":"MonetaryAmount","value":'
+          echo sd_z_value
+          echo ',"currency":"EUR"},"shippingDestination":{"@type":"DefinedRegion","addressCountry":['
+          echo sd_z_countries
+          echo ']},"deliveryTime":{"@type":"ShippingDeliveryTime","handlingTime":{"@type":"QuantitativeValue","minValue":0,"maxValue":'
+          echo sd_handling_max
+          echo ',"unitCode":"DAY"},"transitTime":{"@type":"QuantitativeValue","minValue":'
+          echo sd_z_tmin
+          echo ',"maxValue":'
+          echo sd_z_tmax
+          echo ',"unitCode":"DAY"}}}'
+        endcapture
+        if sd_ship_items != blank
+          assign sd_ship_items = sd_ship_items | append: ','
+        endif
+        assign sd_ship_items = sd_ship_items | append: sd_z_item
+      endfor
+    endif
+    if sd_ship_items != blank
+      assign sd_offer_extra = '"shippingDetails":[' | append: sd_ship_items | append: ']'
+    endif
+    assign sd_return_days = settings.return_window_days | default: 0
+    if sd_return_days > 0
+      capture sd_offer_returns
+        echo '"hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy","applicableCountry":['
+        echo sd_ship_countries
+        echo '],"returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow","merchantReturnDays":'
+        echo sd_return_days
+        echo ',"returnMethod":"https://schema.org/ReturnByMail"'
+        if shop.refund_policy != blank and shop.refund_policy.url != blank
+          assign sd_refund_url = shop.refund_policy.url
+          assign sd_refund_prefix = sd_refund_url | slice: 0, 1
+          if sd_refund_prefix == '/'
+            assign sd_refund_url = shop.url | append: sd_refund_url
+          endif
+          echo ',"merchantReturnLink":'
+          echo sd_refund_url | json
+        endif
+        echo '}'
+      endcapture
+      if sd_offer_extra != blank
+        assign sd_offer_extra = sd_offer_extra | append: ','
+      endif
+      assign sd_offer_extra = sd_offer_extra | append: sd_offer_returns
+    endif
+    if sd_offer_extra != blank
+      assign sd_offer_token = '"@type":"Offer",' | append: sd_offer_extra | append: ','
+      assign sd_product_json = sd_product_json | replace: '"@type":"Offer",', sd_offer_token
+    endif
+
+    assign sd_json_last = sd_product_json | slice: -1, 1
+    if sd_json_last == '}'
+      assign sd_json_size = sd_product_json | size | minus: 1
+      capture sd_product_extra
+        echo sd_gtin_fragment
+        if sd_emit_rating
+          echo ',"aggregateRating":{"@type":"AggregateRating","ratingValue":'
+          echo sd_rating_value | round: 2 | json
+          echo ',"bestRating":'
+          echo sd_rating_best | json
+          echo ',"worstRating":'
+          echo sd_rating_worst | json
+          echo ',"ratingCount":'
+          echo sd_rating_count | json
+          echo ',"reviewCount":'
+          echo sd_rating_count | json
+          echo '}'
+        endif
+      endcapture
+      assign sd_product_extra = sd_product_extra | strip
+      if sd_product_extra != blank
+        assign sd_product_json = sd_product_json | slice: 0, sd_json_size | append: sd_product_extra | append: '}'
+      endif
+    endif
+  -%}
+  <script type="application/ld+json">{{ sd_product_json }}</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": {{ canonical_url | append: '#webpage' | json }},
+      "url": {{ canonical_url | json }},
+      "name": {{ besjaar_ui_browser_title | json }},
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "mainEntity": {"@id": {{ sd_product_id | json }}},
+      "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }}
+    }
+  </script>
+{% endif %}
+
+
+{% if request.page_type == 'article' and article != blank %}
+  {%- liquid
+    assign sd_article_image = sd_fallback_image_url
+    if article.image != blank
+      assign sd_article_image = article.image | image_url: width: 1600 | prepend: 'https:'
+    endif
+    assign sd_article_description = article.excerpt_or_content | strip_html | strip | truncate: 300
+    assign sd_article_author = article.author | strip
+  -%}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": {{ canonical_url | append: '#article' | json }},
+      "headline": {{ article.title | strip | truncate: 110 | json }},
+      "name": {{ article.title | strip | json }},
+      "url": {{ canonical_url | json }},
+      "mainEntityOfPage": {"@type": "WebPage", "@id": {{ canonical_url | json }}},
+      {% if sd_article_description != blank %}"description": {{ sd_article_description | json }},{% endif %}
+      "image": [{{ sd_article_image | json }}],
+      "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+      "dateModified": {{ article.updated_at | default: article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+      "author": {% if sd_article_author != blank and sd_article_author != 'Besjaar' %}{"@type": "Person", "name": {{ sd_article_author | json }}}{% else %}{"@id": {{ sd_org_id | json }}}{% endif %},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "isPartOf": {"@type": "Blog", "@id": {{ shop.url | append: blog.url | append: '#blog' | json }}, "name": {{ blog.title | json }}},
+      {% if blog.title != blank %}"articleSection": {{ blog.title | json }},{% endif %}
+      {% if article.tags.size > 0 %}"keywords": [{% for sd_tag in article.tags %}{{ sd_tag | json }}{% unless forloop.last %},{% endunless %}{% endfor %}],{% endif %}
+      "inLanguage": {{ request.locale.iso_code | json }},
+      "about": {"@id": {{ sd_org_id | json }}}
+    }
+  </script>
+{% elsif request.page_type == 'blog' and blog != blank %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "@id": {{ shop.url | append: blog.url | append: '#blog' | json }},
+      "name": {{ blog.title | json }},
+      "url": {{ canonical_url | json }},
+      "description": {{ besjaar_ui_meta_description | strip | json }},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }}{% if blog.articles.size > 0 %},
+      "blogPost": [{% for sd_post in blog.articles limit: 20 %}{% capture sd_post_path %}{% render 'localized-internal-url', url: sd_post.url %}{% endcapture %}{
+        "@type": "BlogPosting",
+        "headline": {{ sd_post.title | strip | truncate: 110 | json }},
+        "url": {{ shop.url | append: sd_post_path | strip | json }},
+        "datePublished": {{ sd_post.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }}{% if sd_post.excerpt_or_content != blank %},
+        "description": {{ sd_post.excerpt_or_content | strip_html | strip | truncate: 200 | json }}{% endif %}
+      }{% unless forloop.last %},{% endunless %}{% endfor %}]{% endif %}
+    }
+  </script>
+{% endif %}
+
+
+{% if request.page_type == 'index' %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": {{ canonical_url | append: '#webpage' | json }},
+      "url": {{ canonical_url | json }},
+      "name": {{ besjaar_ui_browser_title | strip | json }},
+      "description": {{ besjaar_ui_meta_description | strip | json }},
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "about": {"@id": {{ sd_org_id | json }}},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "mainEntity": {"@id": {{ sd_org_id | json }}},
+      "primaryImageOfPage": {"@type": "ImageObject", "url": {{ sd_fallback_image_url | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }}
+    }
+  </script>
+{% endif %}
+
+
+{% if request.page_type == 'page' and page != blank %}
+  {%- liquid
+    assign sd_page_handle = page.handle | downcase | strip
+
+    assign sd_page_type = 'WebPage'
+    assign sd_emit_page_node = true
+    if template.suffix == 'faq'
+      assign sd_emit_page_node = false
+    elsif sd_page_handle == 'over-ons' or sd_page_handle == 'overons' or sd_page_handle == 'about-us' or sd_page_handle == 'about'
+      assign sd_page_type = 'AboutPage'
+    elsif sd_page_handle == 'contact' or sd_page_handle == 'contact-us' or sd_page_handle == 'contacteer-ons' or sd_page_handle == 'klantenservice'
+      assign sd_page_type = 'ContactPage'
+    endif
+  -%}
+  {% if sd_emit_page_node %}
+    {% capture sd_page_title %}{% render 'localized-page-title', page: page %}{% endcapture %}
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": {{ sd_page_type | json }},
+        "@id": {{ canonical_url | append: '#webpage' | json }},
+        "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
+        "url": {{ canonical_url | json }},
+        "name": {{ sd_page_title | strip | default: page.title | json }},
+        {% if besjaar_ui_meta_description != blank %}"description": {{ besjaar_ui_meta_description | strip | json }},{% endif %}
+        "isPartOf": {"@id": {{ sd_website_id | json }}},
+        "about": {"@id": {{ sd_org_id | json }}},
+        "publisher": {"@id": {{ sd_org_id | json }}},
+        {% if page.published_at != blank %}"datePublished": {{ page.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},{% endif %}
+        "inLanguage": {{ request.locale.iso_code | json }}
+      }
+    </script>
+  {% endif %}
+{% endif %}
+
+
+{% if request.page_type == 'product' or request.page_type == 'collection' or request.page_type == 'article' or request.page_type == 'blog' or request.page_type == 'page' %}
+  {% capture sd_crumb_product_title %}{% if product != blank %}{% render 'localized-product-title', product: product %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_page_title %}{% if page != blank %}{% render 'localized-page-title', page: page %}{% endif %}{% endcapture %}
+  {% assign sd_crumb_collection = collection %}
+  {% if request.page_type == 'product' %}
+    {% capture sd_crumb_collection_handle %}{% render 'seo-product-collection', product: product %}{% endcapture %}
+    {% assign sd_crumb_collection_handle = sd_crumb_collection_handle | strip %}
+    {% assign sd_crumb_collection = collections[sd_crumb_collection_handle] %}
+  {% endif %}
+  {% capture sd_crumb_collection_title %}{% if sd_crumb_collection != blank %}{% render 'localized-collection-title', collection: sd_crumb_collection %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_collection_path %}{% if sd_crumb_collection != blank %}{% render 'localized-internal-url', url: sd_crumb_collection.url %}{% endif %}{% endcapture %}
+  {% capture sd_crumb_blog_path %}{% if blog != blank %}{% render 'localized-internal-url', url: blog.url %}{% endif %}{% endcapture %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": {{ canonical_url | append: '#breadcrumb' | json }},
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ 'besjaar_ui.product.home' | t | json }},
+          "item": {{ shop.url | append: routes.root_url | json }}
+        }{% if request.page_type == 'product' and sd_crumb_collection != blank %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_collection_title | strip | default: sd_crumb_collection.title | json }},
+          "item": {{ shop.url | append: sd_crumb_collection_path | strip | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'product' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'collection' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_collection_title | strip | default: collection.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'article' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ blog.title | json }},
+          "item": {{ shop.url | append: sd_crumb_blog_path | strip | json }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ article.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'blog' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ blog.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% elsif request.page_type == 'page' %},
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ sd_crumb_page_title | strip | default: page.title | json }},
+          "item": {{ canonical_url | json }}
+        }{% endif %}
+      ]
+    }
+  </script>
+{% endif %}
+
+
+{% if request.page_type == 'collection' and collection != blank %}
+  {% capture sd_collection_title %}{% render 'localized-collection-title', collection: collection %}{% endcapture %}
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": {{ canonical_url | append: '#collectionpage' | json }},
+      "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
+      "url": {{ canonical_url | json }},
+      "name": {{ sd_collection_title | strip | default: collection.title | json }},
+      {% if besjaar_ui_meta_description != blank %}"description": {{ besjaar_ui_meta_description | json }},{% endif %}
+      "isPartOf": {"@id": {{ sd_website_id | json }}},
+      "publisher": {"@id": {{ sd_org_id | json }}},
+      "inLanguage": {{ request.locale.iso_code | json }}
+    }
+  </script>
+{% endif %}

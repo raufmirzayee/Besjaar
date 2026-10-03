@@ -1,0 +1,14 @@
+<section class="besjaar-ui-marquee" aria-label="{{ 'besjaar_ui.marquee.label' | t | escape }}">
+  <div class="besjaar-ui-marquee__track">
+    {% for repeat in (1..2) %}
+      {% for block in section.blocks %}<span class="besjaar-ui-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>{% endfor %}
+    {% endfor %}
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Moving highlights",
+  "blocks":[{"type":"item","name":"Item","settings":[{"type":"text","id":"text","label":"Text","default":"FIVE SHOWERHEADS"}]}],
+  "presets":[{"name":"Moving highlights","blocks":[{"type":"item"},{"type":"item"},{"type":"item"},{"type":"item"}]}]
+}
+{% endschema %}

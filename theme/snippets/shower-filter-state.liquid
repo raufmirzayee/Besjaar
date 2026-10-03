@@ -1,0 +1,14 @@
+{%- liquid
+  assign besjaar_ui_item = product
+  assign besjaar_ui_filter = false
+  if besjaar_ui_item != blank
+    if besjaar_ui_item.metafields.custom.filter_included != blank
+      assign besjaar_ui_filter = besjaar_ui_item.metafields.custom.filter_included.value
+    else
+      assign besjaar_ui_title = besjaar_ui_item.title | downcase
+      if besjaar_ui_title contains 'met filter' or besjaar_ui_title contains 'with filter' or besjaar_ui_title contains 'filtered shower'
+        assign besjaar_ui_filter = true
+      endif
+    endif
+  endif
+-%}{{- besjaar_ui_filter -}}

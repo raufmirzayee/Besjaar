@@ -1,0 +1,254 @@
+{% liquid
+  assign has_tracking = false
+  assign primary_tracking_url = blank
+  assign primary_tracking_number = blank
+  assign primary_tracking_company = blank
+  assign shipment_count = order.fulfillments.size
+
+  for fulfillment in order.fulfillments
+    if fulfillment.tracking_url != blank or fulfillment.tracking_number != blank
+      assign has_tracking = true
+      if primary_tracking_url == blank and fulfillment.tracking_url != blank
+        assign primary_tracking_url = fulfillment.tracking_url
+      endif
+      if primary_tracking_number == blank and fulfillment.tracking_number != blank
+        assign primary_tracking_number = fulfillment.tracking_number
+      endif
+      if primary_tracking_company == blank and fulfillment.tracking_company != blank
+        assign primary_tracking_company = fulfillment.tracking_company
+      endif
+    endif
+  endfor
+
+  assign returns_url = blank
+  if shop.refund_policy != blank
+    capture returns_url
+      render 'localized-internal-url', url: shop.refund_policy.url
+    endcapture
+    assign returns_url = returns_url | strip
+  elsif settings.returns_info_page != blank
+    capture returns_url
+      render 'localized-internal-url', url: settings.returns_info_page.url
+    endcapture
+    assign returns_url = returns_url | strip
+  endif
+
+  assign journey_stage = 2
+  if shipment_count > 0
+    assign journey_stage = 3
+  endif
+  if has_tracking
+    assign journey_stage = 4
+  endif
+%}
+
+<section class="besjaar-ui-section besjaar-ui-order-page besjaar-ui-account-v41 besjaar-ui-order-v412">
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-order-v412__hero">
+      <div class="besjaar-ui-order-v412__hero-main">
+        <a class="besjaar-ui-order-v412__back" href="{{ routes.account_url }}#orders">← {{ 'besjaar_ui.account.back_to_orders' | t }}</a>
+        <div class="besjaar-ui-order-v412__state-row">
+          {% if order.cancelled_at != blank %}
+            <span class="besjaar-ui-order-v412__state is-cancelled"><i aria-hidden="true"></i>{{ 'besjaar_ui.account.order_cancelled' | t }}</span>
+          {% elsif has_tracking %}
+            <span class="besjaar-ui-order-v412__state is-moving"><i aria-hidden="true"></i>{{ 'besjaar_ui.account.order_on_the_way' | t }}</span>
+          {% elsif shipment_count > 0 %}
+            <span class="besjaar-ui-order-v412__state is-ready"><i aria-hidden="true"></i>{{ 'besjaar_ui.account.order_fulfilled' | t }}</span>
+          {% else %}
+            <span class="besjaar-ui-order-v412__state is-processing"><i aria-hidden="true"></i>{{ 'besjaar_ui.account.order_processing' | t }}</span>
+          {% endif %}
+          <span class="besjaar-ui-order-v412__date">{{ order.created_at | date: '%d.%m.%Y' }}</span>
+        </div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.order_journey' | t }}</p>
+        <h1>{{ order.name }}</h1>
+        {% if order.cancelled_at != blank %}
+          <p>{{ 'besjaar_ui.account.order_cancelled_copy' | t }}</p>
+        {% elsif has_tracking %}
+          <p>{{ 'besjaar_ui.account.order_tracking_ready_copy' | t }}</p>
+        {% elsif shipment_count > 0 %}
+          <p>{{ 'besjaar_ui.account.order_fulfilled_copy' | t }}</p>
+        {% else %}
+          <p>{{ 'besjaar_ui.account.order_processing_copy' | t }}</p>
+        {% endif %}
+      </div>
+      <div class="besjaar-ui-order-v412__hero-meta">
+        <span>{{ 'besjaar_ui.account.order_total' | t }}</span>
+        <strong>{{ order.total_price | money }}</strong>
+        <small>{{ 'besjaar_ui.account.items_count' | t: count: order.line_items.size }}</small>
+        {% if primary_tracking_url != blank %}
+          <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ primary_tracking_url }}" target="_blank" rel="noopener">{{ 'besjaar_ui.account.track_package' | t }} →<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+        {% endif %}
+      </div>
+    </header>
+
+    {% render 'besjaar-ui-account-nav', active: 'orders' %}
+
+    {% if order.cancelled_at != blank %}
+      <section class="besjaar-ui-order-v412__cancelled" aria-label="{{ 'besjaar_ui.account.order_cancelled' | t }}">
+        <span class="besjaar-ui-order-v412__cancelled-icon" aria-hidden="true">×</span>
+        <div>
+          <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.order_update' | t }}</p>
+          <h2>{{ 'besjaar_ui.account.order_cancelled' | t }}</h2>
+          <p>{{ 'besjaar_ui.account.order_cancelled_on' | t }} {{ order.cancelled_at | date: '%d.%m.%Y' }}.</p>
+        </div>
+      </section>
+    {% else %}
+      <section class="besjaar-ui-order-v412__journey" aria-labelledby="delivery-journey-heading">
+        <div class="besjaar-ui-order-v412__section-head">
+          <div>
+            <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.delivery_progress' | t }}</p>
+            <h2 id="delivery-journey-heading">{{ 'besjaar_ui.account.where_order_stands' | t }}</h2>
+          </div>
+          {% if primary_tracking_company != blank %}<span>{{ primary_tracking_company | escape }}</span>{% endif %}
+        </div>
+
+        <ol class="besjaar-ui-order-v412__steps">
+          <li class="is-done">
+            <span class="besjaar-ui-order-v412__step-marker"><b>✓</b></span>
+            <div><strong>{{ 'besjaar_ui.account.step_order_received' | t }}</strong><p>{{ 'besjaar_ui.account.step_order_received_copy' | t }}</p></div>
+          </li>
+          <li class="{% if journey_stage > 2 %}is-done{% else %}is-current{% endif %}">
+            <span class="besjaar-ui-order-v412__step-marker"><b>{% if journey_stage > 2 %}✓{% else %}2{% endif %}</b></span>
+            <div><strong>{{ 'besjaar_ui.account.step_preparing' | t }}</strong><p>{{ 'besjaar_ui.account.step_preparing_copy' | t }}</p></div>
+          </li>
+          <li class="{% if journey_stage > 3 %}is-done{% elsif journey_stage == 3 %}is-current{% else %}is-upcoming{% endif %}">
+            <span class="besjaar-ui-order-v412__step-marker"><b>{% if journey_stage > 3 %}✓{% else %}3{% endif %}</b></span>
+            <div><strong>{{ 'besjaar_ui.account.step_shipment_created' | t }}</strong><p>{{ 'besjaar_ui.account.step_shipment_created_copy' | t }}</p></div>
+          </li>
+          <li class="{% if journey_stage == 4 %}is-current{% else %}is-upcoming{% endif %}">
+            <span class="besjaar-ui-order-v412__step-marker"><b>4</b></span>
+            <div><strong>{{ 'besjaar_ui.account.step_live_tracking' | t }}</strong><p>{{ 'besjaar_ui.account.step_live_tracking_copy' | t }}</p></div>
+          </li>
+        </ol>
+      </section>
+    {% endif %}
+
+    <div class="besjaar-ui-order-v412__status-strip">
+      <div><span>{{ 'besjaar_ui.account.payment_status' | t }}</span><strong>{{ order.financial_status_label }}</strong></div>
+      <div><span>{{ 'besjaar_ui.account.fulfillment_status' | t }}</span><strong>{{ order.fulfillment_status_label | default: '—' }}</strong></div>
+      <div><span>{{ 'besjaar_ui.account.shipments' | t }}</span><strong>{{ shipment_count }}</strong></div>
+      <div><span>{{ 'besjaar_ui.account.items' | t }}</span><strong>{{ order.line_items.size }}</strong></div>
+    </div>
+
+    <section class="besjaar-ui-order-v412__shipment-section" aria-labelledby="shipment-heading">
+      <div class="besjaar-ui-order-v412__section-head">
+        <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.delivery' | t }}</p><h2 id="shipment-heading">{{ 'besjaar_ui.account.shipment_details' | t }}</h2></div>
+        {% if primary_tracking_url != blank %}<a class="besjaar-ui-mini-link" href="{{ primary_tracking_url }}" target="_blank" rel="noopener">{{ 'besjaar_ui.account.open_carrier_tracking' | t }} →<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>{% endif %}
+      </div>
+
+      {% if shipment_count > 0 %}
+        <div class="besjaar-ui-order-v412__shipments">
+          {% for fulfillment in order.fulfillments %}
+            <article class="besjaar-ui-order-v412__shipment-card">
+              <div class="besjaar-ui-order-v412__shipment-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h11v11H3z"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg>
+              </div>
+              <div class="besjaar-ui-order-v412__shipment-main">
+                <span>{{ 'besjaar_ui.account.shipment_number' | t: count: forloop.index }}</span>
+                <h3>{% if fulfillment.tracking_company != blank %}{{ fulfillment.tracking_company | escape }}{% else %}{{ 'besjaar_ui.account.carrier' | t }}{% endif %}</h3>
+                <p>{{ 'besjaar_ui.account.shipment_created_on' | t }} {{ fulfillment.created_at | date: '%d.%m.%Y' }}</p>
+              </div>
+              <dl class="besjaar-ui-order-v412__shipment-meta">
+                <div><dt>{{ 'besjaar_ui.account.tracking_number' | t }}</dt><dd>{% if fulfillment.tracking_number != blank %}{{ fulfillment.tracking_number | escape }}{% else %}{{ 'besjaar_ui.account.not_available_yet' | t }}{% endif %}</dd></div>
+              </dl>
+              {% if fulfillment.tracking_url != blank %}
+                <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ fulfillment.tracking_url }}" target="_blank" rel="noopener">{{ 'besjaar_ui.account.track_package' | t }} →<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+              {% else %}
+                <span class="besjaar-ui-order-v412__tracking-pending">{{ 'besjaar_ui.account.tracking_pending' | t }}</span>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="besjaar-ui-order-v412__shipment-empty">
+          <span class="besjaar-ui-order-v412__shipment-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M6 4h12l2 4v10H4V8z"/><path d="M9 12h6"/></svg>
+          </span>
+          <div><h3>{{ 'besjaar_ui.account.tracking_not_ready_title' | t }}</h3><p>{{ 'besjaar_ui.account.tracking_not_ready_copy' | t }}</p></div>
+        </div>
+      {% endif %}
+    </section>
+
+    <div class="besjaar-ui-order-v412__layout">
+      <section class="besjaar-ui-order-v412__items" aria-labelledby="order-items-heading">
+        <div class="besjaar-ui-order-v412__section-head">
+          <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.your_items' | t }}</p><h2 id="order-items-heading">{{ 'besjaar_ui.account.items_in_order' | t }}</h2></div>
+          <span>{{ 'besjaar_ui.account.items_count' | t: count: order.line_items.size }}</span>
+        </div>
+        <div class="besjaar-ui-order-v412__item-list">
+          {% for line_item in order.line_items %}
+            <article class="besjaar-ui-order-v412__item">
+              {% if line_item.url != blank %}<a class="besjaar-ui-order-v412__item-media" href="{% render 'localized-internal-url', url: line_item.url %}">{% else %}<div class="besjaar-ui-order-v412__item-media">{% endif %}
+                {% if line_item.image %}{{ line_item.image | image_url: width: 420 | image_tag: loading: 'lazy', widths: '160,240,320,420', alt: line_item.title }}{% else %}<span aria-hidden="true">B</span>{% endif %}
+              {% if line_item.url != blank %}</a>{% else %}</div>{% endif %}
+              <div class="besjaar-ui-order-v412__item-info">
+                <div class="besjaar-ui-order-v412__item-eyebrow"><span>{{ 'besjaar_ui.account.quantity' | t: count: line_item.quantity }}</span>{% if line_item.sku != blank %}<span>SKU {{ line_item.sku | escape }}</span>{% endif %}</div>
+                <h3>{% if line_item.url != blank %}<a href="{% render 'localized-internal-url', url: line_item.url %}">{% if line_item.product != blank %}{% render 'localized-product-title', product: line_item.product %}{% else %}{{ line_item.title }}{% endif %}</a>{% else %}{% if line_item.product != blank %}{% render 'localized-product-title', product: line_item.product %}{% else %}{{ line_item.title }}{% endif %}{% endif %}</h3>
+                {% unless line_item.variant.title == 'Default Title' %}<p>{{ line_item.variant.title }}</p>{% endunless %}
+                {% if line_item.selling_plan_allocation %}<p class="besjaar-ui-selling-plan-line">{{ line_item.selling_plan_allocation.selling_plan.name | escape }}</p>{% endif %}
+                {% for property in line_item.properties %}
+                  {% assign property_first = property.first | slice: 0 %}
+                  {% unless property.last == blank or property_first == '_' %}<p class="besjaar-ui-line-property"><span>{{ property.first | escape }}:</span> {{ property.last | escape }}</p>{% endunless %}
+                {% endfor %}
+                {% if line_item.url != blank %}<a class="besjaar-ui-mini-link" href="{% render 'localized-internal-url', url: line_item.url %}">{{ 'besjaar_ui.account.view_product' | t }} →</a>{% endif %}
+              </div>
+              <div class="besjaar-ui-order-v412__item-price"><span>{{ 'besjaar_ui.account.line_total' | t }}</span><strong>{{ line_item.final_line_price | money }}</strong>{% if line_item.unit_price_measurement %}<small class="besjaar-ui-unit-price">{{ line_item.unit_price | money | unit_price_with_measurement: line_item.unit_price_measurement }}</small>{% endif %}</div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <aside class="besjaar-ui-order-v412__summary">
+        <div class="besjaar-ui-order-v412__summary-head">
+          <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.order_summary' | t }}</p>
+          <h2>{{ order.name }}</h2>
+          <span>{{ order.created_at | date: '%d.%m.%Y' }}</span>
+        </div>
+        <div class="besjaar-ui-order-v412__summary-row"><span>{{ 'besjaar_ui.account.subtotal' | t }}</span><strong>{{ order.line_items_subtotal_price | money }}</strong></div>
+        {% if order.total_discounts > 0 %}<div class="besjaar-ui-order-v412__summary-row is-saving"><span>{{ 'besjaar_ui.account.discounts' | t }}</span><strong>-{{ order.total_discounts | money }}</strong></div>{% endif %}
+        {% for shipping_method in order.shipping_methods %}<div class="besjaar-ui-order-v412__summary-row"><span>{% if shipping_method.title != blank %}{{ shipping_method.title }}{% else %}{{ 'besjaar_ui.account.shipping' | t }}{% endif %}</span><strong>{{ shipping_method.price | money }}</strong></div>{% endfor %}
+        {% for tax_line in order.tax_lines %}<div class="besjaar-ui-order-v412__summary-row"><span>{{ tax_line.title }}</span><strong>{{ tax_line.price | money }}</strong></div>{% endfor %}
+        <div class="besjaar-ui-order-v412__summary-total"><span>{{ 'besjaar_ui.account.total' | t }}</span><strong>{{ order.total_price | money }}</strong></div>
+        <div class="besjaar-ui-order-v412__payment-note"><span>{{ 'besjaar_ui.account.payment_status' | t }}</span><strong>{{ order.financial_status_label }}</strong></div>
+      </aside>
+    </div>
+
+    <section class="besjaar-ui-order-v412__delivery-info" aria-labelledby="delivery-information-heading">
+      <div class="besjaar-ui-order-v412__section-head"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.order_details' | t }}</p><h2 id="delivery-information-heading">{{ 'besjaar_ui.account.delivery_information' | t }}</h2></div></div>
+      <div class="besjaar-ui-order-v412__detail-grid">
+        {% if order.shipping_address %}
+          <article class="besjaar-ui-order-v412__detail-card">
+            <span class="besjaar-ui-order-v412__detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg></span>
+            <div><span>{{ 'besjaar_ui.account.delivery_address' | t }}</span><h3>{{ order.shipping_address.first_name | escape }} {{ order.shipping_address.last_name | escape }}</h3><div>{{ order.shipping_address | format_address }}</div></div>
+          </article>
+        {% endif %}
+        {% if order.billing_address %}
+          <article class="besjaar-ui-order-v412__detail-card">
+            <span class="besjaar-ui-order-v412__detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>
+            <div><span>{{ 'besjaar_ui.account.billing_address' | t }}</span><h3>{{ order.billing_address.first_name | escape }} {{ order.billing_address.last_name | escape }}</h3><div>{{ order.billing_address | format_address }}</div></div>
+          </article>
+        {% endif %}
+        {% if order.shipping_methods.size > 0 %}
+          <article class="besjaar-ui-order-v412__detail-card">
+            <span class="besjaar-ui-order-v412__detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="19" r="2"/></svg></span>
+            <div><span>{{ 'besjaar_ui.account.shipping_method' | t }}</span><h3>{{ order.shipping_methods.first.title | default: '—' }}</h3><p>{{ 'besjaar_ui.account.shipping_method_copy' | t }}</p></div>
+          </article>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="besjaar-ui-order-v412__help">
+      <div class="besjaar-ui-order-v412__help-main">
+        <span class="besjaar-ui-order-v412__help-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v12H8l-4 4V5Z"/><path d="M8 9h8M8 13h5"/></svg></span>
+        <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.need_help' | t }}</p><h2>{{ 'besjaar_ui.account.order_help_title' | t }}</h2><p>{{ 'besjaar_ui.account.order_help_copy_v412' | t: name: order.name }}</p></div>
+      </div>
+      <div class="besjaar-ui-order-v412__help-actions">
+        {% if settings.account_support_page != blank %}<a class="besjaar-ui-button besjaar-ui-button--primary" href="{% render 'localized-internal-url', url: settings.account_support_page.url %}">{{ 'besjaar_ui.account.contact_support' | t }}</a>{% endif %}
+        {% if returns_url != blank %}<a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ returns_url }}">{{ 'besjaar_ui.account.returns_policy' | t }}</a>{% endif %}
+      </div>
+    </section>
+  </div>
+</section>
+{% schema %}
+{"name":"Order","settings":[]}
+{% endschema %}

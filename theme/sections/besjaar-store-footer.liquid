@@ -1,0 +1,469 @@
+{% liquid
+  assign use_localized = section.settings.use_localized_copy
+  capture footer_free_shipping_cents
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  assign footer_free_shipping_cents = footer_free_shipping_cents | strip | plus: 0
+  assign footer_free_shipping_money = footer_free_shipping_cents | money_without_trailing_zeros
+  assign footer_filter_collection = blank
+  for footer_candidate_collection in collections
+    assign footer_collection_identity = footer_candidate_collection.title | append: ' ' | append: footer_candidate_collection.handle | downcase
+    if footer_collection_identity contains 'filter' or footer_collection_identity contains 'douchefilter'
+      assign footer_filter_collection = footer_candidate_collection
+      break
+    endif
+  endfor
+  assign footer_faq_page = settings.faq_page
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['faq']
+  endif
+  if footer_faq_page == blank
+    assign footer_faq_page = pages['veelgestelde-vragen']
+  endif
+  assign footer_contact_page = settings.contact_page
+  if footer_contact_page == blank
+    assign footer_contact_page = pages['contact']
+  endif
+  if footer_contact_page == blank
+    assign footer_contact_page = pages['contact-us']
+  endif
+  assign footer_about_page = pages['over-ons']
+  if footer_about_page == blank
+    assign footer_about_page = pages['overons']
+  endif
+  if footer_about_page == blank
+    assign footer_about_page = pages['about-us']
+  endif
+  if footer_about_page == blank
+    assign footer_about_page = pages['about']
+  endif
+  assign footer_tracking_page = settings.tracking_page
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['track-order']
+  endif
+  if footer_tracking_page == blank
+    assign footer_tracking_page = pages['order-tracking']
+  endif
+  assign footer_delivery_page = settings.delivery_info_page
+  if footer_delivery_page == blank
+    assign footer_delivery_page = settings.returns_info_page
+  endif
+  comment
+    Besjaar 11.6.18: the business page needs a real, crawlable link on every
+    page. Neither this footer nor the header reads Shopify's Main Menu, so a
+    menu entry surfaces nothing — the link belongs here in Liquid.
+  endcomment
+  assign footer_b2b_page = pages['zakelijk']
+  assign footer_lang = request.locale.iso_code | split: '-' | first | downcase
+  case footer_lang
+    when 'en'
+      assign footer_b2b_label = 'Business orders'
+    when 'de'
+      assign footer_b2b_label = 'Geschäftskunden'
+    when 'fr'
+      assign footer_b2b_label = 'Commandes professionnelles'
+    when 'es'
+      assign footer_b2b_label = 'Pedidos para empresas'
+    else
+      assign footer_b2b_label = 'Zakelijk bestellen'
+  endcase
+  comment
+    2026-09-22: company identity line (legal name, address, KVK, BTW) and a
+    link to the customer-reviews page. The reviews page is Dutch-only, so its
+    link is limited to the primary storefront language.
+  endcomment
+  case footer_lang
+    when 'en'
+      assign footer_reviews_label = 'Customer reviews'
+      assign footer_legal_brand_of = 'Besjaar is a brand of'
+      assign footer_legal_vat_label = 'VAT'
+    when 'de'
+      assign footer_reviews_label = 'Kundenbewertungen'
+      assign footer_legal_brand_of = 'Besjaar ist eine Marke von'
+      assign footer_legal_vat_label = 'USt-IdNr.'
+    when 'fr'
+      assign footer_reviews_label = 'Avis clients'
+      assign footer_legal_brand_of = 'Besjaar est une marque de'
+      assign footer_legal_vat_label = 'TVA'
+    when 'es'
+      assign footer_reviews_label = 'Opiniones de clientes'
+      assign footer_legal_brand_of = 'Besjaar es una marca de'
+      assign footer_legal_vat_label = 'IVA'
+    else
+      assign footer_reviews_label = 'Klantbeoordelingen'
+      assign footer_legal_brand_of = 'Besjaar is een merk van'
+      assign footer_legal_vat_label = 'BTW'
+  endcase
+  assign footer_reviews_page = blank
+  if localization.language.primary
+    assign footer_reviews_page = pages['reviews']
+  endif
+  capture footer_reviews_url
+    if footer_reviews_page != blank
+      render 'localized-internal-url', url: footer_reviews_page.url
+    endif
+  endcapture
+  assign footer_reviews_url = footer_reviews_url | strip
+  capture footer_legal_address
+    if shop.address.address1 != blank
+      echo shop.address.address1
+    endif
+    if shop.address.zip != blank or shop.address.city != blank
+      if shop.address.address1 != blank
+        echo ', '
+      endif
+      echo shop.address.zip | append: ' ' | append: shop.address.city | strip
+    endif
+  endcapture
+  assign footer_legal_address = footer_legal_address | strip
+  assign footer_legal_parts = ''
+  if settings.company_legal_name != blank
+    assign footer_legal_parts = footer_legal_parts | append: footer_legal_brand_of | append: ' ' | append: settings.company_legal_name | append: '|'
+  endif
+  if footer_legal_address != blank
+    assign footer_legal_parts = footer_legal_parts | append: footer_legal_address | append: '|'
+  endif
+  if settings.company_kvk != blank
+    assign footer_legal_parts = footer_legal_parts | append: 'KVK ' | append: settings.company_kvk | append: '|'
+  endif
+  if settings.company_vat != blank
+    assign footer_legal_parts = footer_legal_parts | append: footer_legal_vat_label | append: ' ' | append: settings.company_vat | append: '|'
+  endif
+  if settings.support_email != blank
+    assign footer_legal_parts = footer_legal_parts | append: settings.support_email | append: '|'
+  endif
+  assign footer_legal_line = footer_legal_parts | split: '|' | join: ' · ' | strip
+  capture footer_b2b_url
+    if footer_b2b_page != blank
+      render 'localized-internal-url', url: footer_b2b_page.url
+    else
+      render 'localized-internal-url', url: '/pages/zakelijk'
+    endif
+  endcapture
+  assign footer_b2b_url = footer_b2b_url | strip
+  capture footer_shop_url
+    render 'shower-store-url'
+  endcapture
+  assign footer_shop_url = footer_shop_url | strip
+  capture footer_filter_url
+    if footer_filter_collection != blank
+      render 'localized-internal-url', url: footer_filter_collection.url
+    else
+      echo footer_shop_url
+    endif
+  endcapture
+  assign footer_filter_url = footer_filter_url | strip
+  capture footer_shipping_url
+    if shop.shipping_policy != blank
+      render 'localized-internal-url', url: shop.shipping_policy.url
+    elsif footer_delivery_page != blank
+      render 'localized-internal-url', url: footer_delivery_page.url
+    else
+      echo footer_shop_url
+    endif
+  endcapture
+  capture footer_refund_url
+    if shop.refund_policy != blank
+      render 'localized-internal-url', url: shop.refund_policy.url
+    else
+      echo footer_shipping_url
+    endif
+  endcapture
+  assign footer_refund_url = footer_refund_url | strip
+  capture footer_faq_url
+    if footer_faq_page != blank
+      render 'localized-internal-url', url: footer_faq_page.url
+    else
+      render 'localized-internal-url', url: '/pages/faq'
+    endif
+  endcapture
+  capture footer_contact_url
+    if footer_contact_page != blank
+      render 'localized-internal-url', url: footer_contact_page.url
+    else
+      render 'localized-internal-url', url: '/pages/contact'
+    endif
+  endcapture
+  capture footer_about_url
+    if footer_about_page != blank
+      render 'localized-internal-url', url: footer_about_page.url
+    else
+      render 'localized-internal-url', url: '/pages/about-us'
+    endif
+  endcapture
+  assign footer_about_url = footer_about_url | strip
+  capture footer_track_url
+    if footer_tracking_page != blank
+      render 'localized-internal-url', url: footer_tracking_page.url
+    else
+      render 'localized-internal-url', url: '/apps/parcelpanel'
+    endif
+  endcapture
+%}
+{%- comment -%}
+  2026-09-30: footer laid out like the owner's Univex BV theme. Charcoal band
+  with cream text; a wide brand column (wordmark, short description,
+  newsletter pill) and three columns (Winkel · Hulp & info · Klantenservice)
+  that fold open on phones; bottom row with language/country and payment
+  icons, then © + policy links, then the legal line. All links and contact
+  details are the store's own (pages, policies, theme settings).
+{%- endcomment -%}
+{%- liquid
+  case footer_lang
+    when 'en'
+      assign ft_brand_text = 'Shower heads with and without filter, refill filters and complete sets. Fairly priced and delivered fast.'
+      assign ft_shop = 'Shop'
+      assign ft_help = 'Help & info'
+      assign ft_service = 'Customer service'
+      assign ft_contact_cta = 'Contact us'
+      assign ft_guides = 'Guides'
+    when 'de'
+      assign ft_brand_text = 'Duschköpfe mit und ohne Filter, Ersatzfilter und Komplettsets. Fair im Preis und schnell geliefert.'
+      assign ft_shop = 'Shop'
+      assign ft_help = 'Hilfe & Info'
+      assign ft_service = 'Kundenservice'
+      assign ft_contact_cta = 'Kontakt aufnehmen'
+      assign ft_guides = 'Ratgeber'
+    when 'fr'
+      assign ft_brand_text = 'Pommeaux de douche avec ou sans filtre, filtres de rechange et kits complets. Prix justes, livraison rapide.'
+      assign ft_shop = 'Boutique'
+      assign ft_help = 'Aide & infos'
+      assign ft_service = 'Service client'
+      assign ft_contact_cta = 'Nous contacter'
+      assign ft_guides = 'Guides'
+    when 'es'
+      assign ft_brand_text = 'Alcachofas de ducha con o sin filtro, filtros de recambio y kits completos. Precios justos, envío rápido.'
+      assign ft_shop = 'Tienda'
+      assign ft_help = 'Ayuda e información'
+      assign ft_service = 'Atención al cliente'
+      assign ft_contact_cta = 'Contáctanos'
+      assign ft_guides = 'Guías'
+    else
+      assign ft_brand_text = section.settings.brand_text | default: 'Douchekoppen met en zonder filter, navulfilters en complete sets. Eerlijk geprijsd en snel in huis.'
+      assign ft_shop = 'Winkel'
+      assign ft_help = 'Hulp & info'
+      assign ft_service = 'Klantenservice'
+      assign ft_contact_cta = 'Neem contact op'
+      assign ft_guides = 'Gidsen'
+  endcase
+  assign ft_hours = ''
+  if footer_lang == 'nl' or footer_lang == ''
+    assign ft_hours = section.settings.support_hours
+  endif
+  assign footer_guide_blog = blogs['gids']
+-%}
+<style>
+  .bj-foot{--ft-bg:#1C2326;--ft-fg:#F5F2EC;--ft-muted:rgba(245,242,236,.68);--ft-line:rgba(245,242,236,.14);background:var(--ft-bg);color:var(--ft-fg);font-size:15px;line-height:1.6}
+  .bj-foot a{color:inherit;text-decoration:none}
+  .bj-foot a:hover{text-decoration:underline;text-underline-offset:.2em}
+  .bj-foot__wrap{box-sizing:border-box;width:100%;max-width:calc(var(--besjaar-ui-width,1280px) + 64px);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .bj-foot__top{display:grid;gap:0;padding-top:48px;padding-bottom:32px}
+  .bj-foot__brand{padding-bottom:32px}
+  .bj-foot__wordmark{display:inline-block;margin-bottom:16px;color:var(--ft-fg);font-size:20px;font-weight:700;letter-spacing:.32em}
+  .bj-foot__text{max-width:420px;margin:0;color:var(--ft-muted)}
+  .bj-foot__nl{max-width:420px;margin-top:20px}
+  .bj-foot__nl-field{position:relative}
+  .bj-foot__nl input[type="email"]{box-sizing:border-box;width:100%;min-height:48px;padding:12px 60px 12px 18px;border:1px solid rgba(245,242,236,.28);border-radius:40px;background:transparent;color:var(--ft-fg);font:inherit;font-size:15px}
+  .bj-foot__nl input[type="email"]::placeholder{color:var(--ft-muted)}
+  .bj-foot__nl input[type="email"]:focus{outline:none;border-color:#8FD1BF;box-shadow:0 0 0 3px rgba(143,209,191,.2)}
+  .bj-foot__nl button{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;background:#F2C57C;color:#1C2326;cursor:pointer}
+  .bj-foot__nl button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .bj-foot__nl-note{margin:10px 0 0;color:var(--ft-muted);font-size:12.5px}
+  .bj-foot__nl-msg{margin:10px 0 0;font-size:13px}
+  .bj-foot__nl-msg--error{color:#F2A58E}
+  .bj-foot__col summary{display:flex;align-items:center;justify-content:space-between;padding:18px 0;cursor:pointer;list-style:none}
+  .bj-foot__col summary::-webkit-details-marker{display:none}
+  .bj-foot__col summary svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;transition:transform .2s ease}
+  .bj-foot__col[open] summary svg{transform:rotate(180deg)}
+  .bj-foot__heading{display:block;margin:0;color:var(--ft-fg);font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .bj-foot__links{margin:0;padding:0 0 18px;list-style:none}
+  .bj-foot__links li+li{margin-top:10px}
+  .bj-foot__links a,.bj-foot__links button{display:inline-block;min-height:24px;padding:2px 0;border:0;background:none;color:var(--ft-muted);font:inherit;cursor:pointer;text-align:left}
+  .bj-foot__links a:hover,.bj-foot__links button:hover{color:var(--ft-fg)}
+  .bj-foot__contact li{display:flex;align-items:center;gap:10px;color:var(--ft-muted)}
+  .bj-foot__contact li svg{flex:0 0 18px;width:18px;height:18px;fill:none;stroke:var(--ft-fg);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .bj-foot__cta{display:inline-flex!important;align-items:center;gap:6px;margin-top:6px;color:var(--ft-fg)!important;font-weight:700}
+  .bj-foot__cta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .2s ease}
+  .bj-foot__cta:hover svg{transform:translateX(3px)}
+  .bj-foot__bottom{position:relative;display:flex;flex-direction:column;gap:16px;padding-top:24px;padding-bottom:24px;color:var(--ft-muted);font-size:13px}
+  .bj-foot__bottom::before{content:"";position:absolute;top:0;left:16px;right:16px;border-top:1px solid var(--ft-line)}
+  .bj-foot__group{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px}
+  .bj-foot__policies{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;padding:0;list-style:none}
+  .bj-foot__policies button{padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+  .bj-foot__legal{flex-basis:100%;margin:0}
+  .bj-foot .besjaar-ui-payments{display:flex;flex-wrap:wrap;gap:6px}
+  .bj-foot .besjaar-ui-payments svg{width:38px;height:24px}
+  @media (max-width:749px){
+    .bj-foot__col{border-top:1px solid var(--ft-line)}
+    .bj-foot__col:last-child{border-bottom:1px solid var(--ft-line)}
+  }
+  @media (min-width:750px){
+    .bj-foot__top{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 32px;padding-top:64px;padding-bottom:48px}
+    .bj-foot__brand{padding-bottom:0}
+    .bj-foot__col summary{padding:0 0 16px;cursor:default;pointer-events:none}
+    .bj-foot__col summary svg{display:none}
+    .bj-foot__links{padding-bottom:0}
+    .bj-foot__bottom::before{left:32px;right:32px}
+    .bj-foot__wrap{padding-left:32px;padding-right:32px}
+  }
+  @media (min-width:990px){
+    .bj-foot__top{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .bj-foot__brand{grid-column:span 2}
+    .bj-foot__bottom{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  }
+</style>
+<footer class="bj-foot" role="contentinfo">
+  <div class="bj-foot__wrap bj-foot__top">
+    <div class="bj-foot__brand">
+      <a class="bj-foot__wordmark notranslate" translate="no" href="{{ routes.root_url }}">BESJAAR</a>
+      <p class="bj-foot__text">{{ ft_brand_text | escape }}</p>
+      <div class="bj-foot__nl">
+        {% form 'customer', class: 'bj-foot__nl-form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          {%- if form.posted_successfully? -%}
+            <p class="bj-foot__nl-msg" role="status">{{ 'besjaar_ui.home.newsletter_success' | t }}</p>
+          {%- else -%}
+            {%- if form.errors -%}<div class="bj-foot__nl-msg bj-foot__nl-msg--error" role="alert">{{ form.errors | default_errors }}</div>{%- endif -%}
+            <div class="bj-foot__nl-field">
+              <label class="besjaar-ui-visually-hidden" for="FooterEmail-{{ section.id }}">{{ 'besjaar_ui.home.newsletter_placeholder' | t }}</label>
+              <input id="FooterEmail-{{ section.id }}" type="email" name="contact[email]" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'besjaar_ui.home.newsletter_placeholder' | t }}" autocapitalize="off" autocomplete="email" required>
+              <button type="submit" aria-label="{{ 'besjaar_ui.home.newsletter_button' | t | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </div>
+          {%- endif -%}
+        {% endform %}
+        <p class="bj-foot__nl-note">{{ 'besjaar_ui.home.newsletter_note' | t }}</p>
+      </div>
+    </div>
+
+    <details class="bj-foot__col" open data-bj-foot-col>
+      <summary><span class="bj-foot__heading" role="heading" aria-level="2">{{ ft_shop }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <ul class="bj-foot__links" role="list">
+        <li><a href="{{ footer_shop_url }}">{{ 'besjaar_ui.footer.all_products' | t }}</a></li>
+        {%- if footer_filter_collection != blank -%}{%- capture footer_filter_title -%}{% render 'localized-collection-title', collection: footer_filter_collection %}{%- endcapture -%}{%- endif -%}
+        <li><a href="{{ footer_filter_url }}">{% if footer_filter_collection != blank %}{{ footer_filter_title | strip | replace: '&amp;', '&' | escape_once }}{% else %}{{ 'besjaar_ui.shower_collection.family_filter' | t }}{% endif %}</a></li>
+        <li><a href="{{ footer_b2b_url }}">{{ footer_b2b_label | escape }}</a></li>
+        <li><a href="{{ footer_about_url }}">{% render 'localized-page-title', page: footer_about_page, handle: 'about-us' %}</a></li>
+      </ul>
+    </details>
+
+    <details class="bj-foot__col" open data-bj-foot-col>
+      <summary><span class="bj-foot__heading" role="heading" aria-level="2">{{ ft_help }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <ul class="bj-foot__links" role="list">
+        <li><a href="{{ footer_faq_url | strip }}">{{ 'besjaar_store.footer.faq' | t }}</a></li>
+        {% if footer_reviews_url != blank %}<li><a href="{{ footer_reviews_url }}"{% if request.page_type == 'page' and page.handle == 'reviews' %} aria-current="page"{% endif %}>{{ footer_reviews_label | escape }}</a></li>{% endif %}
+        <li><a href="{{ footer_track_url | strip }}">{{ 'besjaar_store.footer.tracking' | t }}</a></li>
+        <li><a href="{{ footer_shipping_url | strip }}">{{ 'besjaar_store.footer.shipping_returns' | t }}</a></li>
+        {%- if footer_guide_blog != blank and footer_guide_blog.articles_count > 0 -%}<li><a href="{% render 'localized-internal-url', url: footer_guide_blog.url %}">{{ ft_guides }}</a></li>{%- endif -%}
+      </ul>
+    </details>
+
+    <details class="bj-foot__col" open data-bj-foot-col>
+      <summary><span class="bj-foot__heading" role="heading" aria-level="2">{{ ft_service }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <ul class="bj-foot__links bj-foot__contact" role="list">
+        {%- if settings.support_email != blank -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><a href="mailto:{{ settings.support_email | escape }}">{{ settings.support_email | escape }}</a></li>{%- endif -%}
+        {%- if settings.support_phone != blank -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><a href="tel:{{ settings.support_phone | remove: ' ' | escape }}">{{ settings.support_phone | escape }}</a></li>{%- endif -%}
+        {%- if ft_hours != blank -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>{{ ft_hours | escape }}</span></li>{%- endif -%}
+        <li><a class="bj-foot__cta" href="{{ footer_contact_url | strip }}">{{ ft_contact_cta }} <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></li>
+      </ul>
+    </details>
+  </div>
+
+  <div class="bj-foot__wrap bj-foot__bottom">
+    <div class="bj-foot__group">
+      {% if settings.show_footer_localization %}{% unless request.visual_preview_mode %}<div class="besjaar-ui-footer__localization">{% render 'besjaar-ui-localization', context: 'footer', section_id: section.id %}</div>{% endunless %}{% endif %}
+      {% if shop.enabled_payment_types.size > 0 %}
+        <div class="besjaar-ui-payments" aria-label="{{ 'besjaar_ui.footer.payments_label' | t | escape }}">
+          {% for type in shop.enabled_payment_types %}{{ type | payment_type_svg_tag }}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <div class="bj-foot__group">
+      <span>&copy; {{ 'now' | date: '%Y' }}, <a href="{{ routes.root_url }}">Besjaar</a></span>
+      <ul class="bj-foot__policies" role="list">
+        {% if shop.privacy_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_store.footer.privacy' | t }}</a></li>{% endif %}
+        {% if shop.terms_of_service != blank %}<li><a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'besjaar_store.footer.terms' | t }}</a></li>{% endif %}
+        <li><a href="{{ footer_refund_url }}">{{ 'besjaar_ui.delivery.returns_policy' | t }}</a></li>
+        {% if shop.shipping_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ 'besjaar_ui.delivery.shipping_policy' | t }}</a></li>{% endif %}
+        {% if settings.show_cookie_preferences %}{% unless request.design_mode or request.visual_preview_mode %}<li><button class="besjaar-consent-footer-link" type="button" data-besjaar-ui-privacy-open aria-label="{{ 'besjaar_ui.consent.manage' | t | escape }}">{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>{% endunless %}{% endif %}
+      </ul>
+    </div>
+    {% if footer_legal_line != blank %}<p class="bj-foot__legal">{{ footer_legal_line | escape }}</p>{% endif %}
+  </div>
+</footer>
+<script>
+  /* Link columns fold on phones (closed by default), stay open from 750px. */
+  (function () {
+    var cols = document.querySelectorAll('[data-bj-foot-col]');
+    var mq = window.matchMedia('(max-width: 749px)');
+    var sync = function () { cols.forEach(function (c) { c.open = !mq.matches; }); };
+    sync();
+    if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
+  })();
+</script>
+
+<dialog class="besjaar-store-shipping-dialog" data-shipping-returns-dialog aria-labelledby="ShippingReturnsTitle-{{ section.id }}">
+  <div class="besjaar-store-shipping-dialog__head">
+    <div>
+      <p class="besjaar-store-shipping-dialog__eyebrow">BESJAAR</p>
+      <h2 id="ShippingReturnsTitle-{{ section.id }}">{{ 'besjaar_store.footer.shipping_returns' | t }}</h2>
+    </div>
+    <button type="button" class="besjaar-store-shipping-dialog__close" data-shipping-returns-close aria-label="{{ 'besjaar_ui.accessibility.close' | t | escape }}">×</button>
+  </div>
+  <div class="besjaar-store-shipping-dialog__body">
+    <section>
+      <span class="besjaar-store-shipping-dialog__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 7h11v9H3zM14 10h3l4 4v2h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+      </span>
+      <div>
+        <h3>{{ 'besjaar_ui.delivery.estimate_title' | t }}</h3>
+        <p>{% if settings.show_delivery_estimates %}{{ 'besjaar_ui.delivery.estimate_fallback' | t: min: settings.transit_min_business_days, max: settings.transit_max_business_days }}. {% endif %}{{ 'besjaar_ui.delivery.checkout_confirmation' | t }}</p>
+        <a class="besjaar-store-shipping-dialog__policy-link" href="{{ footer_shipping_url | strip }}">{{ 'besjaar_store.footer.shipping_returns' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+    <section>
+      <span class="besjaar-store-shipping-dialog__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg>
+      </span>
+      <div>
+        <h3>{{ 'besjaar_ui.delivery.returns_title' | t }}</h3>
+        <p>{{ 'besjaar_ui.delivery.returns_value' | t: days: settings.return_window_days }}. {{ 'besjaar_ui.delivery.returns_note' | t }}</p>
+        <a class="besjaar-store-shipping-dialog__policy-link" href="{{ footer_refund_url }}">{{ 'besjaar_ui.delivery.returns_policy' | t }} <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  const section = document.currentScript?.previousElementSibling;
+  const dialog = section?.matches?.('[data-shipping-returns-dialog]') ? section : document.querySelector('[data-shipping-returns-dialog]');
+  if (!dialog) return;
+  const openers = document.querySelectorAll('[data-shipping-returns-open]');
+  const closer = dialog.querySelector('[data-shipping-returns-close]');
+  const open = () => {
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+    else dialog.setAttribute('open', '');
+  };
+  const close = () => {
+    if (typeof dialog.close === 'function') dialog.close();
+    else dialog.removeAttribute('open');
+  };
+  openers.forEach(button => button.addEventListener('click', open));
+  closer?.addEventListener('click', close);
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) close();
+  });
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar-style footer",
+  "settings": [
+    {"type":"checkbox","id":"use_localized_copy","label":"Use translated storefront copy (EN/NL/DE/FR)","default":true},
+    {"type":"text","id":"tagline","label":"Custom tagline","default":"A better shower, made simple."},
+    {"type":"textarea","id":"brand_text","label":"Brand text (NL)","default":"Douchekoppen met en zonder filter, navulfilters en complete sets. Eerlijk geprijsd en snel in huis."},
+    {"type":"text","id":"support_hours","label":"Opening hours (NL)","info":"Shown under Klantenservice. Leave empty to hide.","default":"Ma–vr 9:00–17:00"}
+  ],
+  "presets":[{"name":"Besjaar-style footer"}]
+}
+{% endschema %}
