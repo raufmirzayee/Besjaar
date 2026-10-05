@@ -5,6 +5,7 @@
 <html class="no-js" lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
+    {% render 'google-tag-manager', part: 'head' %}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#FFFFFF">
@@ -33,6 +34,7 @@
 
     {% render 'seo-head' %}
     {{ content_for_header }}
+    {% render 'google-tag-manager', part: 'consent' %}
 
     <style>
       :root {
@@ -450,6 +452,7 @@
     {% endunless %}
   </head>
   <body class="besjaar-ui-polish-v34 besjaar-ui-spatial-v4 besjaar-ui-launch-v7{% if settings.show_mobile_bottom_nav %} besjaar-has-mobile-nav{% endif %}{% if request.design_mode or request.visual_preview_mode %} besjaar-ui-editor-safe{% endif %}" data-page-type="{{ request.page_type | escape }}">
+    {% render 'google-tag-manager', part: 'body' %}
     <a class="besjaar-ui-skip" href="#MainContent">{{ 'besjaar_ui.accessibility.skip_to_content' | t }}</a>
     {% sections 'header-group' %}
     <main id="MainContent" role="main" tabindex="-1">
