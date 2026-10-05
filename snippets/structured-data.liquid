@@ -15,6 +15,11 @@
   Product (a ProductGroup carries identifiers on its variants instead).
   Nothing is fabricated: no rating without reviews, no policies, no social
   profiles that are not configured.
+
+  2026-10-05: the Organization url is the brand domain https://besjaar.eu.
+  WebSite and Brand keep shop.url (the primary domain, www.besjaar.eu),
+  because Google reads WebSite.url as the canonical home page for the site
+  name.
 {%- endcomment -%}
 {%- liquid
   assign sd_org_id = shop.url | append: '#organization'
@@ -78,7 +83,7 @@
         "@type": "Organization",
         "@id": {{ sd_org_id | json }},
         "name": "Besjaar",
-        "url": {{ shop.url | json }},
+        "url": "https://besjaar.eu",
         {% if sd_org_legal_name != blank %}"legalName": {{ sd_org_legal_name | json }},{% endif %}
         "description": {{ sd_org_description | json }},
         {% if shop.address.city != blank and shop.address.address1 != blank %}"address": {"@type": "PostalAddress", "streetAddress": {{ shop.address.address1 | json }}, "postalCode": {{ shop.address.zip | json }}, "addressLocality": {{ shop.address.city | json }}, "addressCountry": {{ shop.address.country_code | json }}},{% endif %}

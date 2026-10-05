@@ -97,6 +97,7 @@
       <link rel="apple-touch-icon" sizes="180x180" href="{{ 'besjaar-apple-touch-icon.png' | asset_url }}">
     {% endif %}
 
+    {%- comment -%}<title> (page_title), the meta description (page_description), the robots and Open Graph tags and the JSON-LD graph with the Besjaar Organization are output by snippets/seo-head.liquid.{%- endcomment -%}
     {% render 'seo-head' %}
     {{ content_for_header }}
 

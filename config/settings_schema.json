@@ -875,41 +875,5 @@
         "default": 10
       }
     ]
-  },
-  {
-    "name": "Homepage SEO",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "homepage_seo_override",
-        "label": "Use theme homepage SEO text",
-        "default": false,
-        "info": "When enabled, the Dutch and English fields below replace the homepage title and description from Shopify Preferences. Other pages are unaffected."
-      },
-      {
-        "type": "text",
-        "id": "homepage_seo_title_nl",
-        "label": "Dutch title",
-        "default": "Besjaar | Douchekoppen & Douchefilters"
-      },
-      {
-        "type": "textarea",
-        "id": "homepage_seo_description_nl",
-        "label": "Dutch description",
-        "default": "Besjaar, jouw vertrouwde partner voor een betere douche. Ontdek douchekoppen, douchefilters en navulsets in onze officiële webshop."
-      },
-      {
-        "type": "text",
-        "id": "homepage_seo_title_en",
-        "label": "English title",
-        "default": "Besjaar | Showerheads & Shower Filters"
-      },
-      {
-        "type": "textarea",
-        "id": "homepage_seo_description_en",
-        "label": "English description",
-        "default": "Besjaar, your trusted companion for a better shower. Discover showerheads, shower filters and refills in our official store."
-      }
-    ]
   }
 ]

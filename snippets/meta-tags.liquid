@@ -105,19 +105,11 @@
   endif
 
   comment
-    2026-09-22 (temporary): the reviews page exists only in Dutch. On a
-    non-primary storefront language (/en/) Shopify renders the Dutch text
-    under lang="en" with a self-canonical, which is duplicate content with
-    the wrong language signal. Keep that URL out of the index until the page
-    is translated in Translate & Adapt, then delete this block. (The Gids
-    blog and its articles were translated to English on 2026-09-22 and are
-    indexable again.)
+    2026-10-05: the temporary noindex on the reviews page for non-primary
+    languages is gone. Its condition was "until the page is translated in
+    Translate & Adapt"; the title, body and SEO fields are now translated for
+    en, de, fr and es, so /en|de|fr|es/pages/reviews are indexable again.
   endcomment
-  if localization.language.primary == false
-    if request.page_type == 'page' and page.handle == 'reviews'
-      assign besjaar_ui_noindex = true
-    endif
-  endif
 
   comment
     The native Shopify tracking page is also a customer utility page. It may
