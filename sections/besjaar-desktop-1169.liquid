@@ -1,0 +1,60 @@
+{%- comment -%}
+  Besjaar 11.6.10 — desktop pass (≥ 901px) plus the footer at every width.
+
+  Header: three balanced columns (wordmark / centred nav / actions), 72px
+  bar that compacts and gains a shadow once scrolled (class toggled by the
+  script below), nav links as soft pills, mega menu as a white sheet with
+  tile products and a featured card, "Meer" as a floating card. Actions:
+  hamburger hidden on desktop, search as a labelled pill (label read from
+  the button's aria-label, so it follows the storefront language), language
+  and account as matching pills, cart as the one filled navy button with a
+  white count badge.
+  Home: hero grid centred with the card on the right; four-up range; scene
+  inset with 28px corners; features three-up with image-on-top cards (no
+  card spans rows, media height follows the 4:3 ratio); reviews as two
+  columns with the navy rating card; CTA visual capped.
+  Product page: two-column grid, summary sticky. Catalogue: 3/4-up grid.
+  Footer (all widths): deep-navy sheet, assurance tiles, newsletter pill
+  form with a sky button, link columns (stacked on phones, two-up on
+  tablets, three-up on desktop), hairline bottom bar. Side padding is set
+  explicitly because the older layer declared it in one shorthand.
+
+  Mobile is deliberately untouched: everything except the footer and the
+  feature-kicker rule lives inside the min-width media query.
+
+  Temporary carrier; fold into the desktop CSS during consolidation.
+{%- endcomment -%}
+
+<script>
+(function () {
+  'use strict';
+  var header = document.querySelector('.besjaar-ui-header');
+  if (!header || header.getAttribute('data-bj-scroll') === '1') return;
+  header.setAttribute('data-bj-scroll', '1');
+  var ticking = false;
+  var update = function () {
+    ticking = false;
+    header.classList.toggle('is-scrolled', (window.scrollY || document.documentElement.scrollTop || 0) > 8);
+  };
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(update);
+  }, { passive: true });
+  update();
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar desktop polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.10: desktop header (three columns, labelled search pill, navy cart, scroll shadow), tile mega menu, wide layouts for hero, range, scene, features, reviews, product and catalogue pages, and the footer at every width. Keep in the header group after the home section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

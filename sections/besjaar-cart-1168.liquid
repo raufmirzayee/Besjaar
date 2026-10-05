@@ -1,0 +1,437 @@
+{%- comment -%}
+  Besjaar 11.6.8 — cart drawer.
+
+  1. The payment-logo row is dropped so the line items and the checkout
+     button get the space. Everything else in the drawer is the theme's
+     original design.
+  2. Resilience for cart updates ("Winkelwagen kon niet worden bijgewerkt"):
+     - cart writes (/cart/change.js, /cart/update.js, /cart/add.js,
+       /cart/clear.js) run one at a time, so a burst of +/− taps can no
+       longer overlap;
+     - a quantity update or cart read that fails on the network or with a
+       5xx is retried once after 450 ms before the theme shows its error.
+       add.js is never retried (a lost response could otherwise add twice);
+       4xx answers (e.g. stock limits) are passed through untouched.
+     This wraps window.fetch after the runtime section's wrapper, so the
+     one-round-trip optimisation there keeps working.
+
+  Temporary carrier; fold into assets/besjaar-ui-core.js during consolidation.
+{%- endcomment -%}
+
+<style>
+  /* 2026-09-30 cart drawer, a copy of the Univex cart (owner's reference):
+     "Maak je bestelling compleet" column on the left from 1100px (300px +
+     440px cart = 740px), one 440px column below that with the suggestions
+     as a swipe row, full width on phones. Cart: header with count, free-
+     shipping band, lines (88px tile, title, variant, line discount in red,
+     crossed-out + final price, quantity pill, bin), applied code chips,
+     discount code and note folds, total with currency, tax line, one
+     checkout button, "Veilig afrekenen · 30 dagen retour", payment icons.
+     Every rule is scoped to the drawer's id so it wins over the older layers. */
+  html body #BesjaarUICartDrawer{background:#fff!important;color:#1C2326!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head{grid-area:head!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:0!important;padding:14px 16px 14px 24px!important;border:0!important;border-bottom:1px solid #E4E1DB!important;background:#fff!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-kicker{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head h2{margin:0!important;color:#1C2326!important;font-size:20px!important;font-weight:500!important;letter-spacing:0!important;line-height:1.3!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-cart-drawer__count{display:inline!important;min-width:0!important;height:auto!important;padding:0!important;border:0!important;background:none!important;color:#5B6668!important;font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-cart-drawer__count::before{content:"("}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-cart-drawer__count::after{content:")"}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-drawer__close{flex:0 0 44px!important;width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent no-repeat center/22px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231C2326' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E")!important;color:transparent!important;font-size:0!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head .besjaar-ui-drawer__close:hover{background-color:rgba(28,35,38,.06)!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress{grid-area:ship!important;margin:0!important;padding:12px 24px 14px!important;border:0!important;border-radius:0!important;background:#F5F2EC!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__row{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;margin:0 0 8px!important;color:#1C2326!important;font-size:13.5px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__row::before{content:"";flex:0 0 20px;width:20px;height:20px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F5F52' stroke-width='1.8' stroke-linejoin='round'%3E%3Cpath d='M2 6h12v10H2zM14 10h4l3 3v3h-7z'/%3E%3Ccircle cx='6' cy='18' r='2'/%3E%3Ccircle cx='17' cy='18' r='2'/%3E%3C/svg%3E")}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__row strong{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__row span{color:#1C2326!important;font-weight:600!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__track{height:6px!important;border-radius:99px!important;background:rgba(28,35,38,.1)!important;overflow:hidden!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress .besjaar-ui-free-shipping__track i{background:#1F5F52!important;border-radius:99px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{min-height:0!important;padding:16px 24px!important;overflow-y:auto!important;overscroll-behavior:contain}
+  /* Lines */
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{display:grid!important;grid-template-columns:88px minmax(0,1fr) auto!important;grid-template-rows:auto auto!important;gap:4px 16px!important;margin:0!important;padding:16px 0!important;border:0!important;border-bottom:1px solid #E4E1DB!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line:first-child{padding-top:4px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line:last-child{border-bottom:0!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media{grid-column:1!important;grid-row:1 / 3!important;align-self:start!important;width:88px!important;height:88px!important;padding:4px!important;border:0!important;border-radius:10px!important;background:#F5F2EC!important;overflow:hidden!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media img{width:100%!important;height:100%!important;object-fit:contain!important;mix-blend-mode:multiply}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main{grid-column:2!important;grid-row:1!important;display:flex!important;flex-direction:column!important;gap:4px!important;min-width:0!important;padding:0!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{display:block!important;-webkit-line-clamp:unset!important;margin:0!important;color:#1C2326!important;font-family:var(--bj-font-body,inherit)!important;font-size:15px!important;font-weight:500!important;line-height:1.35!important;letter-spacing:0!important;text-transform:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main a:hover h3{text-decoration:underline}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__variant,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__properties,html body #BesjaarUICartDrawer .besjaar-ui-selling-plan-line{display:block!important;margin:0!important;padding:0!important;border:0!important;background:none!important;color:#5B6668!important;font-size:13px!important;line-height:1.45!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__variant span,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__properties span{display:block!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__variant b,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__properties b{font-weight:400!important}
+  html body #BesjaarUICartDrawer .bj-cd-line-disc{margin:0;padding:0;list-style:none;color:#B24530;font-size:13px;line-height:1.45}
+  html body #BesjaarUICartDrawer .bj-cd-line-disc li{display:flex;align-items:center;gap:5px}
+  html body #BesjaarUICartDrawer .bj-cd-line-disc svg{flex:0 0 14px;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-side{display:contents!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__prices{grid-column:3!important;grid-row:1!important;align-self:start!important;display:flex!important;flex-direction:column!important;align-items:flex-end!important;gap:0!important;margin:0!important;text-align:right!important;white-space:nowrap!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__prices strong{color:#1C2326!important;font-size:15px!important;font-weight:500!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__prices del{order:-1;color:#5B6668!important;font-size:13px!important;font-weight:400!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__prices em{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-line-quantity{grid-column:2!important;grid-row:2!important;justify-self:start!important;align-self:end!important;display:inline-grid!important;grid-template-columns:34px 34px 34px!important;align-items:center!important;height:36px!important;margin:6px 0 0!important;padding:0!important;border:1px solid rgba(28,35,38,.22)!important;border-radius:40px!important;background:#fff!important;overflow:hidden!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-line-quantity:focus-within{border-color:#1F5F52!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-line-quantity button{width:34px!important;height:34px!important;min-height:34px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:#1C2326!important;font-size:18px!important;font-weight:400!important;line-height:1!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-line-quantity button:hover{background:rgba(28,35,38,.06)!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-line-quantity span{text-align:center!important;color:#1C2326!important;font-size:15px!important;font-weight:500!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__remove{position:static!important;grid-column:2!important;grid-row:2!important;justify-self:start!important;align-self:end!important;width:36px!important;height:36px!important;min-height:36px!important;margin:6px 0 0 116px!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent no-repeat center/18px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6668' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3'/%3E%3C/svg%3E")!important;color:transparent!important;font-size:0!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__remove:hover{background-color:rgba(28,35,38,.06)!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main a,html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy a{text-decoration:none!important;color:inherit!important}
+  /* Footer */
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot{grid-area:foot!important;display:flex!important;flex-direction:column!important;gap:0!important;margin:0!important;padding:12px 24px 16px!important;border:0!important;border-top:1px solid #E4E1DB!important;background:#fff!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__discount{display:none!important}
+  html body #BesjaarUICartDrawer .bj-cd-codes{order:1;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px;padding:0;list-style:none}
+  html body #BesjaarUICartDrawer .bj-cd-codes[hidden]{display:none}
+  html body #BesjaarUICartDrawer .bj-cd-code{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 10px;border-radius:99px;background:rgba(31,95,82,.1);color:#1F5F52;font-size:13px;font-weight:700;letter-spacing:.02em}
+  html body #BesjaarUICartDrawer .bj-cd-code>svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+  html body #BesjaarUICartDrawer .bj-cd-code button{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;min-height:24px;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
+  html body #BesjaarUICartDrawer .bj-cd-code button:hover{background:rgba(31,95,82,.15)}
+  html body #BesjaarUICartDrawer .bj-cd-code button svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+  html body #BesjaarUICartDrawer .bj-cd-folds{order:2;display:flex;flex-direction:column;gap:2px;margin:0 0 12px}
+  html body #BesjaarUICartDrawer .bj-cd-fold{border-bottom:1px solid #E4E1DB}
+  html body #BesjaarUICartDrawer .bj-cd-fold summary{display:flex;align-items:center;gap:8px;padding:10px 0;list-style:none;cursor:pointer;color:#1C2326;font-size:14px;font-weight:500}
+  html body #BesjaarUICartDrawer .bj-cd-fold summary::-webkit-details-marker{display:none}
+  html body #BesjaarUICartDrawer .bj-cd-fold summary svg{flex:0 0 18px;width:18px;height:18px;fill:none;stroke:#1C2326;stroke-width:1.7;stroke-linejoin:round}
+  html body #BesjaarUICartDrawer .bj-cd-fold summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:1.7px solid #1C2326;border-bottom:1.7px solid #1C2326;transform:translateY(-2px) rotate(45deg);transition:transform .15s ease}
+  html body #BesjaarUICartDrawer .bj-cd-fold[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+  html body #BesjaarUICartDrawer .bj-cd-discount{display:flex;gap:8px;margin:4px 0 12px}
+  html body #BesjaarUICartDrawer .bj-cd-discount input,html body #BesjaarUICartDrawer .bj-cd-fold textarea{flex:1;min-width:0;min-height:44px;padding:8px 14px;border:1px solid rgba(28,35,38,.22);border-radius:10px;background:#fff;color:#1C2326;font:inherit;font-size:15px}
+  html body #BesjaarUICartDrawer .bj-cd-discount input:focus,html body #BesjaarUICartDrawer .bj-cd-fold textarea:focus{outline:none;border-color:#1F5F52;box-shadow:0 0 0 3px rgba(31,95,82,.15)}
+  html body #BesjaarUICartDrawer .bj-cd-fold textarea{display:block;width:100%;min-height:80px;margin:4px 0 12px;font-size:14px;resize:vertical}
+  html body #BesjaarUICartDrawer .bj-cd-discount button{flex:0 0 auto;min-height:44px;padding:0 20px;border:0;border-radius:40px;background:#1F5F52;color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+  html body #BesjaarUICartDrawer .bj-cd-discount button:hover{background:#174A40}
+  html body #BesjaarUICartDrawer .bj-cd-discount button[disabled]{opacity:.55;cursor:default}
+  html body #BesjaarUICartDrawer .bj-cd-msg{margin:-6px 0 10px;font-size:13px}
+  html body #BesjaarUICartDrawer .bj-cd-msg:empty{display:none}
+  html body #BesjaarUICartDrawer .bj-cd-msg.is-ok{color:#1F5F52}
+  html body #BesjaarUICartDrawer .bj-cd-msg.is-error{color:#B24530}
+  /* Subtotal / discount rows only for order-level discounts, as in the reference. */
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__summary{order:3!important;display:none!important;flex-direction:column!important;gap:6px!important;margin:0 0 8px!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer.bj-cd-order-disc .besjaar-ui-cart-drawer__summary{display:flex!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__summary-row{display:flex!important;justify-content:space-between!important;gap:10px!important;color:#1C2326!important;font-size:15px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__summary-row.is-discount{color:#B24530!important;font-size:14px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total{order:4!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:baseline!important;gap:12px 10px!important;margin:0!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total>span{display:contents!important;color:#1C2326!important;font-size:18px!important;font-weight:700!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total small{grid-column:1 / -1!important;grid-row:2!important;display:block!important;margin:0!important;color:#5B6668!important;font-size:13px!important;font-weight:400!important;line-height:1.5!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total small a{color:inherit!important;text-decoration:underline!important;text-underline-offset:2px}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total strong{grid-column:2!important;grid-row:1!important;color:#1C2326!important;font-size:18px!important;font-weight:700!important;white-space:nowrap!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total strong[data-cur]::after{content:" " attr(data-cur)}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions{order:5!important;display:block!important;margin:12px 0 0!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions>.besjaar-ui-button--ghost,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__continue{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions form{display:block!important;width:100%!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout]{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;min-height:56px!important;padding:0 24px!important;border:0!important;border-radius:40px!important;background:#1F5F52!important;color:#fff!important;font-size:17px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout]:hover{background:#174A40!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout] svg{width:18px!important;height:18px!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]{display:none!important}
+  html body #BesjaarUICartDrawer .bj-cd-trust{order:6;display:flex;align-items:center;justify-content:center;gap:6px;margin:12px 0;color:#5B6668;font-size:13px;text-align:center}
+  html body #BesjaarUICartDrawer .bj-cd-trust svg{flex:0 0 16px;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__benefits,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__secure,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__assurance,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot>.besjaar-ui-delivery-promise,html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot>.besjaar-ui-cart-account{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{order:7!important;display:flex!important;flex-wrap:wrap!important;justify-content:center!important;gap:6px!important;margin:0!important;padding:0!important;border:0!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments svg{width:38px!important;height:24px!important}
+  /* Suggestions: "Maak je bestelling compleet" */
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__upsell{display:block!important;position:static!important;inset:auto!important;width:auto!important;height:auto!important;max-height:none!important;min-height:min-content!important;margin:0!important;padding:16px 24px!important;overflow:visible!important;overflow-x:clip!important;border:0!important;border-top:1px solid #E4E1DB!important;border-radius:0!important;background:#fff!important;box-shadow:none!important;transform:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__upsell[hidden]{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell{display:block!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__header{display:block!important;margin:0 0 12px!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__label span{color:#1C2326!important;font-family:var(--bj-font-body,inherit)!important;font-size:14px!important;font-weight:700!important;letter-spacing:0!important;text-transform:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__label small,html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__toggle,html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__tab,html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__badge{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__body{display:block!important;max-height:none!important;overflow:visible!important;opacity:1!important;visibility:visible!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{display:flex!important;flex-direction:row!important;gap:12px!important;margin:0 -24px!important;padding:0 24px 4px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;scroll-padding-inline:24px;scrollbar-width:none}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail::-webkit-scrollbar{display:none}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product{flex:0 0 82%!important;display:grid!important;grid-template-columns:64px minmax(0,1fr) auto!important;grid-template-rows:auto!important;align-items:center!important;gap:12px!important;width:auto!important;min-width:0!important;min-height:0!important;margin:0!important;padding:10px!important;transform:none!important;border:1px solid #E4E1DB!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important;scroll-snap-align:start}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media{grid-column:1!important;grid-row:1!important;align-self:center!important;display:block!important;width:64px!important;height:64px!important;padding:3px!important;border-radius:8px!important;background:#F5F2EC!important;overflow:hidden!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media img{width:100%!important;height:100%!important;padding:0!important;border-radius:0!important;background:transparent!important;object-fit:contain!important;mix-blend-mode:multiply}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy{grid-column:2!important;grid-row:1!important;align-self:center!important;display:block!important;min-width:0!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy strong{display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important;margin:0 0 2px!important;color:#1C2326!important;font-size:13.5px!important;font-weight:500!important;line-height:1.3!important;white-space:normal!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy>span{display:block!important;margin:0!important;color:#1C2326!important;font-size:13px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy b{font-weight:500!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy s{margin-left:6px!important;color:#5B6668!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add{grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:center!important;display:grid!important;place-items:center!important;width:38px!important;height:38px!important;min-height:38px!important;padding:0!important;border:1px solid #E4E1DB!important;border-radius:50%!important;background:#fff!important;color:transparent!important;font-size:0!important;overflow:hidden!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add::before{content:"";width:18px;height:18px;background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231C2326' stroke-width='1.7' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E")}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__add:hover{background:rgba(28,35,38,.06)!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product:hover{transform:none!important;border-color:#E4E1DB!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy>span{display:flex!important;flex-wrap:wrap!important;align-items:baseline!important;gap:0 6px!important;font-size:13px!important;font-weight:400!important;color:#1C2326!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy s{margin-left:0!important;font-size:12px!important;font-weight:400!important}
+  /* Layouts. The cart column (.bj-cd-main: header, shipping bar, lines,
+     checkout block) scrolls as one; only the checkout button, carrying the
+     total, is pinned to its bottom, so at least two lines are always in view
+     on any screen. The footer is display:contents so its parts are items of
+     that column and the button can stick. The suggestions are the left
+     column from 1100px and a swipe row after the lines below that. */
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot:not([hidden]){display:contents!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot[hidden]{display:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__head{order:-5!important;position:sticky!important;top:0!important;z-index:6!important;flex:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress{order:-4!important;flex:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{order:-3!important;flex:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__upsell{order:-2!important;flex:none!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot>*{flex:none!important;margin-left:24px!important;margin-right:24px!important}
+  html body #BesjaarUICartDrawer .bj-cd-codes{margin-top:16px!important}
+  html body #BesjaarUICartDrawer .bj-cd-folds{margin-top:4px!important;margin-bottom:12px!important;padding-top:4px;border-top:1px solid #E4E1DB}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart__total{margin-bottom:4px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions{position:sticky!important;bottom:0!important;z-index:6!important;margin:8px 0 0!important;padding:12px 24px calc(12px + env(safe-area-inset-bottom))!important;background:#fff!important;box-shadow:0 -8px 18px -14px rgba(28,35,38,.45)!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]{display:inline!important;margin:0!important;padding:0!important;border:0!important;background:none!important;color:inherit!important;font-size:inherit!important;font-weight:700!important;opacity:1!important}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]::before{content:"·";margin:0 8px 0 2px;opacity:.7}
+  html body #BesjaarUICartDrawer [data-cart-drawer-checkout-total]::after{content:none!important}
+  html body #BesjaarUICartDrawer .bj-cd-trust{margin-top:12px!important}
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{margin-bottom:24px!important}
+  /* one column: the drawer scrolls, the wrapper dissolves */
+  html body #BesjaarUICartDrawer{display:flex!important;flex-direction:column!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+  html body #BesjaarUICartDrawer .bj-cd-main{display:contents}
+  html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{background:#fff!important;box-shadow:none!important}
+  html body #BesjaarUICartDrawer .bj-cd-main{background:#fff}
+  /* Spacer between the lines (and suggestions) and the checkout block: with a
+     short cart it pushes the checkout block to the bottom of the drawer, with a
+     long one it is 0 high. A display:contents parent still generates its
+     ::after, so this works in both layouts. */
+  html body #BesjaarUICartDrawer .bj-cd-main::after{content:""!important;display:block!important;order:0!important;flex:1 0 0!important;min-height:0!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;background:none!important}
+  html body #BesjaarUICartDrawer>.besjaar-ui-cart-drawer__upsell{border-top:1px solid #E4E1DB!important}
+  @media (min-width:761px){
+    html body #BesjaarUICartDrawer{width:min(440px,100vw)!important;max-width:440px!important}
+  }
+  /* two columns from 1100px: suggestions left, the cart column scrolls on its own */
+  @media (min-width:1100px){
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(.besjaar-ui-cart-drawer__foot[hidden])){display:grid!important;grid-template-columns:300px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:none!important;width:740px!important;max-width:calc(100vw - 24px)!important;overflow:hidden!important}
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(.besjaar-ui-cart-drawer__foot[hidden])) .bj-cd-main{grid-column:2!important;grid-row:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(.besjaar-ui-cart-drawer__foot[hidden]))>.besjaar-ui-cart-drawer__upsell{grid-column:1!important;grid-row:1!important;min-height:0!important;height:auto!important;padding:24px 20px!important;overflow-y:auto!important;border-top:0!important;border-right:1px solid #E4E1DB!important;background:#F5F2EC!important}
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(.besjaar-ui-cart-drawer__foot[hidden])) .besjaar-ui-cart-upsell__rail{flex-direction:column!important;margin:0!important;padding:0!important;overflow:visible!important}
+    html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])):not(:has(.besjaar-ui-cart-drawer__foot[hidden])) .besjaar-ui-cart-upsell__product{flex:0 0 auto!important;width:100%!important;box-sizing:border-box!important}
+  }
+  @media (max-width:760px){
+    html body #BesjaarUICartDrawer .besjaar-ui-drawer__head{padding:10px 8px 10px 16px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__shipping-progress{padding:10px 16px 12px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-drawer__body{padding:4px 16px 8px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__upsell{padding:14px 16px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line{grid-template-columns:80px minmax(0,1fr) auto!important;gap:4px 12px!important;padding:14px 0!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__media{width:80px!important;height:80px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{font-size:14px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{margin:0 -16px!important;padding:0 16px 4px!important;scroll-padding-inline:16px}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__foot>*{margin-left:16px!important;margin-right:16px!important}
+    html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__actions{padding:10px 16px calc(10px + env(safe-area-inset-bottom))!important}
+    html body #BesjaarUICartDrawer [data-cart-drawer-checkout]{min-height:52px!important;font-size:16px!important}
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  var previous = window.fetch;
+  if (typeof previous !== 'function' || window.__bjCartQueueInstalled) return;
+  window.__bjCartQueueInstalled = true;
+  var noop = function () {};
+  var queue = Promise.resolve();
+  var pathOf = function (input) {
+    try { return new URL(typeof input === 'string' ? input : ((input && input.url) || ''), window.location.href).pathname; } catch (e) { return ''; }
+  };
+  var wait = function (ms) { return new Promise(function (resolve) { window.setTimeout(resolve, ms); }); };
+  var attempt = function (args, retries) {
+    return previous.apply(window, args).then(function (response) {
+      if (response && response.status >= 500 && retries > 0) return wait(450).then(function () { return attempt(args, retries - 1); });
+      return response;
+    }, function (error) {
+      if (retries > 0) return wait(450).then(function () { return attempt(args, retries - 1); });
+      throw error;
+    });
+  };
+  /* Hand every cart state the theme reads or writes to the drawer script
+     below (line discounts, code chips), so it needs no request of its own. */
+  var tap = function (response) {
+    try {
+      if (response && response.ok) response.clone().json().then(function (cart) {
+        if (cart && cart.items) { window.__bjCart = cart; document.dispatchEvent(new CustomEvent('bj:cart', { detail: cart })); }
+      }, noop);
+    } catch (e) {}
+    return response;
+  };
+  window.fetch = function (input, init) {
+    var args = arguments;
+    var path = pathOf(input);
+    var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+    var retryable = typeof input === 'string';
+    if (method === 'POST' && /\/cart\/(change|update|add|clear)\.js$/.test(path)) {
+      var retries = retryable && /\/cart\/(change|update)\.js$/.test(path) ? 1 : 0;
+      var run = function () { return attempt(args, retries); };
+      var pending = queue.then(run, run);
+      queue = pending.then(noop, noop);
+      return /\/cart\/(change|update)\.js$/.test(path) ? pending.then(tap) : pending;
+    }
+    if (method === 'GET' && /\/cart\.js$/.test(path)) return attempt(args, retryable ? 1 : 0).then(tap);
+    return previous.apply(window, args);
+  };
+})();
+</script>
+<script>
+(function () {
+  /* 2026-09-30 cart drawer: discount code, order note and the heading of the
+     left column. Codes go to the cart with /cart/update.js (discount); the
+     drawer is then reopened so the theme repaints totals and lines. */
+  var start = function () {
+  var drawer = document.getElementById('BesjaarUICartDrawer');
+  if (!drawer || drawer.dataset.bjCdReady) return;
+  drawer.dataset.bjCdReady = '1';
+  var lang = (document.documentElement.lang || 'nl').slice(0, 2).toLowerCase();
+  var T = {
+    nl: { ok: 'Kortingscode %c toegepast.', bad: 'Code %c is niet geldig voor deze bestelling.', empty: 'Vul een kortingscode in.', err: 'Er ging iets mis. Probeer het opnieuw.', heading: 'Maak je bestelling compleet' },
+    en: { ok: 'Discount code %c applied.', bad: 'Code %c is not valid for this order.', empty: 'Enter a discount code.', err: 'Something went wrong. Please try again.', heading: 'Complete your order' },
+    de: { ok: 'Rabattcode %c angewendet.', bad: 'Code %c ist für diese Bestellung nicht gültig.', empty: 'Gib einen Rabattcode ein.', err: 'Etwas ist schiefgelaufen. Bitte versuche es erneut.', heading: 'Vervollständige deine Bestellung' },
+    fr: { ok: 'Code %c appliqué.', bad: 'Le code %c n’est pas valable pour cette commande.', empty: 'Saisissez un code de réduction.', err: 'Une erreur est survenue. Veuillez réessayer.', heading: 'Complétez votre commande' },
+    es: { ok: 'Código de descuento %c aplicado.', bad: 'El código %c no es válido para este pedido.', empty: 'Introduce un código de descuento.', err: 'Se ha producido un error. Inténtalo de nuevo.', heading: 'Completa tu pedido' }
+  }[lang] || null;
+  if (!T) T = { ok: 'Kortingscode %c toegepast.', bad: 'Code %c is niet geldig voor deze bestelling.', empty: 'Vul een kortingscode in.', err: 'Er ging iets mis. Probeer het opnieuw.', heading: 'Maak je bestelling compleet' };
+  var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+  var post = function (payload) {
+    return fetch(root + 'cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) })
+      .then(function (r) { if (!r.ok) throw new Error('cart_update'); return r.json(); });
+  };
+  var repaint = function () {
+    var opener = document.querySelector('[data-open-drawer="cart"]');
+    if (opener) opener.click();
+  };
+
+  var form = drawer.querySelector('[data-bj-cd-discount-form]');
+  var msg = drawer.querySelector('[data-bj-cd-discount-msg]');
+  var say = function (text, ok) { if (!msg) return; msg.textContent = text; msg.classList.toggle('is-ok', !!ok); msg.classList.toggle('is-error', !ok); };
+  if (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var input = form.querySelector('[data-bj-cd-discount-input]');
+      var button = form.querySelector('button');
+      var code = (input && input.value || '').trim();
+      if (!code) { say(T.empty, false); return; }
+      if (button) button.disabled = true;
+      fetch(root + 'cart.js', { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          var existing = (cart.discount_codes || []).filter(function (d) { return d.applicable; }).map(function (d) { return d.code; });
+          if (existing.map(function (c) { return c.toUpperCase(); }).indexOf(code.toUpperCase()) === -1) existing.push(code);
+          return post({ discount: existing.join(',') });
+        })
+        .then(function (cart) {
+          var hit = (cart.discount_codes || []).filter(function (d) { return String(d.code).toUpperCase() === code.toUpperCase(); })[0];
+          if (hit && hit.applicable) { say(T.ok.replace('%c', code.toUpperCase()), true); if (input) input.value = ''; repaint(); }
+          else { say(T.bad.replace('%c', code.toUpperCase()), false); }
+        })
+        .catch(function () { say(T.err, false); })
+        .then(function () { if (button) button.disabled = false; });
+    });
+  }
+
+  var note = drawer.querySelector('[data-bj-cd-note]');
+  if (note) {
+    var timer = null, last = note.value;
+    var save = function () { if (note.value === last) return; last = note.value; post({ note: note.value }).catch(function () {}); };
+    note.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(save, 700); });
+    note.addEventListener('blur', save);
+  }
+
+  /* Line discounts ("SHOP25 (−€2,49)" in red under the title), applied
+     code chips with a remove button, the currency after the total, and the
+     subtotal/discount rows only for order-level discounts. */
+  var tagIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg>';
+  var esc = function (v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var money = function (cents, cur) {
+    try { return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: cur || 'EUR' }).format((Number(cents) || 0) / 100).replace(/\s/g, ''); }
+    catch (e) { return (Number(cents) / 100).toFixed(2).replace('.', ','); }
+  };
+  var body = drawer.querySelector('[data-cart-drawer-body]');
+  var codesBox = drawer.querySelector('[data-bj-cd-codes]');
+  var decorating = false;
+  var decorate = function () {
+    var cart = window.__bjCart;
+    if (!cart || !cart.items || decorating) return;
+    decorating = true;
+    try {
+      var cur = cart.currency || 'EUR';
+      cart.items.forEach(function (item) {
+        var btn = body && Array.prototype.filter.call(body.querySelectorAll('[data-remove-line]'), function (b) { return b.getAttribute('data-remove-line') === item.key; })[0];
+        var line = btn && btn.closest('.besjaar-ui-cart-drawer__line');
+        var main = line && line.querySelector('.besjaar-ui-cart-drawer__line-main');
+        if (!main) return;
+        var allocs = (item.line_level_discount_allocations || []).filter(function (a) { return Number(a.amount) > 0; });
+        var html = allocs.map(function (a) { return '<li>' + tagIcon + '<span>' + esc((a.discount_application && a.discount_application.title) || '') + ' (\u2212' + money(a.amount, cur) + ')</span></li>'; }).join('');
+        var list = main.querySelector('.bj-cd-line-disc');
+        if (!html) { if (list) list.remove(); return; }
+        if (!list) { list = document.createElement('ul'); list.className = 'bj-cd-line-disc'; list.setAttribute('role', 'list'); main.appendChild(list); }
+        if (list.innerHTML !== html) list.innerHTML = html;
+      });
+      var codes = (cart.discount_codes || []).filter(function (d) { return d && d.applicable; }).map(function (d) { return String(d.code); });
+      if (codesBox) {
+        var label = codesBox.getAttribute('data-remove-label') || 'Remove';
+        var chips = codes.map(function (c) { return '<li class="bj-cd-code">' + tagIcon + '<span>' + esc(c.toUpperCase()) + '</span><button type="button" data-bj-cd-remove-code="' + esc(c) + '" aria-label="' + esc(label + ' ' + c.toUpperCase()) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></li>'; }).join('');
+        if (codesBox.innerHTML !== chips) codesBox.innerHTML = chips;
+        codesBox.hidden = !codes.length;
+      }
+      drawer.classList.toggle('bj-cd-order-disc', (cart.cart_level_discount_applications || []).some(function (d) { return Number(d.total_allocated_amount) > 0; }));
+      var total = drawer.querySelector('[data-cart-drawer-total]');
+      if (total && total.getAttribute('data-cur') !== cur) total.setAttribute('data-cur', cur);
+    } finally { decorating = false; }
+  };
+  document.addEventListener('bj:cart', function () { setTimeout(decorate, 0); });
+  if (body && 'MutationObserver' in window) new MutationObserver(function () { if (!decorating) decorate(); }).observe(body, { childList: true });
+  decorate();
+  if (codesBox) {
+    codesBox.addEventListener('click', function (event) {
+      var b = event.target.closest('[data-bj-cd-remove-code]');
+      if (!b) return;
+      var gone = String(b.getAttribute('data-bj-cd-remove-code')).toUpperCase();
+      b.disabled = true;
+      var keep = ((window.__bjCart && window.__bjCart.discount_codes) || []).filter(function (d) { return d.applicable && String(d.code).toUpperCase() !== gone; }).map(function (d) { return d.code; });
+      post({ discount: keep.join(',') }).then(repaint, function () { b.disabled = false; say(T.err, false); });
+    });
+  }
+
+  var upsell = drawer.querySelector('[data-cart-drawer-upsell]');
+  if (upsell && 'MutationObserver' in window) {
+    var rename = function () {
+      var label = upsell.querySelector('.besjaar-ui-cart-upsell__label span');
+      if (label && label.textContent !== T.heading) label.textContent = T.heading;
+    };
+    new MutationObserver(rename).observe(upsell, { childList: true, subtree: true });
+    rename();
+  }
+  };
+  /* This section is rendered before the header section that holds the
+     drawer, so wait for the document before looking for it. */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+{%- comment -%}
+  2026-09-29: one gold (#E0A526) for every review star on every page –
+  collection and search cards, product page, homepage, cart. Older theme rules
+  painted stars navy, amber (#D79545) or a darker gold, some with an id in the
+  selector. The two :not(#…) parts only raise specificity (no element has
+  those ids), so this rule wins over any of them.
+{%- endcomment -%}
+<style>
+  html body .jdgm-star:not(#bj-gold-a):not(#bj-gold-b),
+  html body .jdgm-star:not(#bj-gold-a):not(#bj-gold-b)::before,
+  html body .besjaar-ui-review-stars__fill:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-rating-meter__fill:not(#bj-gold-a):not(#bj-gold-b),
+  html body .bj-proof__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-store-rating-card__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-store-hero__customer-stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-home-bol-proof__stars:not(#bj-gold-a):not(#bj-gold-b),
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b){color:#E0A526!important;-webkit-text-fill-color:#E0A526!important}
+  /* Judge.me widgets that draw stars as SVG (e.g. the cart-drawer review widget): gold fill, empty stars grey. */
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b) svg,
+  html body [class*="jdgm"][class*="star"]:not([class*="off"]):not([class*="empty"]):not(#bj-gold-a):not(#bj-gold-b) svg *{fill:#E0A526!important}
+  html body [class*="jdgm"][class*="star"][class*="off"]:not(#bj-gold-a):not(#bj-gold-b),
+  html body [class*="jdgm"][class*="star"][class*="empty"]:not(#bj-gold-a):not(#bj-gold-b){color:#E4E1DB!important;-webkit-text-fill-color:#E4E1DB!important}
+  html body [class*="jdgm"][class*="star"][class*="off"]:not(#bj-gold-a):not(#bj-gold-b) svg *,
+  html body [class*="jdgm"][class*="star"][class*="empty"]:not(#bj-gold-a):not(#bj-gold-b) svg *{fill:#E4E1DB!important}
+  html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b),
+  html body .jdgm-star.jdgm--off:not(#bj-gold-a):not(#bj-gold-b)::before,
+  html body .besjaar-ui-review-stars__base:not(#bj-gold-a):not(#bj-gold-b),
+  html body .besjaar-ui-rating-meter__base:not(#bj-gold-a):not(#bj-gold-b){color:#E4E1DB!important;-webkit-text-fill-color:#E4E1DB!important}
+</style>
+{% schema %}
+{
+  "name": "Besjaar cart polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8 + 2026-09-30 (Univex cart: 440px, with a 300px suggestions column from 1100px): hides the payment-logo row in the cart drawer, queues cart updates so quick taps cannot overlap, and retries a failed quantity update once before the theme shows its error. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}
+

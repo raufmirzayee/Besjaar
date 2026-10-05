@@ -1,0 +1,157 @@
+{%- comment -%}
+  Besjaar v9 (2026-09-13) — guide hub strip.
+
+  Why this exists: the "Gids" blog is not reachable from the header or the
+  footer. Neither of those reads Shopify's Main Menu on this theme, so a menu
+  entry surfaces nothing, and the guide articles had no internal link anywhere
+  on the storefront. A crawler could only reach them through the XML sitemap,
+  which gives them no internal link signal and no topical connection to the
+  product and collection pages they support.
+
+  This strip renders nothing at all while the blog has no published posts, so
+  it is invisible today and becomes a site-wide link block the moment the
+  guides go live. It sits above the footer so it reads as the last content
+  band of the page rather than an appendix under it.
+{%- endcomment -%}
+{%- liquid
+  assign guide_blog = blogs[section.settings.blog_handle]
+  if guide_blog == blank
+    assign guide_blog = blogs['gids']
+  endif
+  if guide_blog == blank
+    assign guide_blog = blogs['news']
+  endif
+
+  assign guide_count = 0
+  if guide_blog != blank
+    assign guide_count = guide_blog.articles.size
+  endif
+
+  assign guide_lang = request.locale.iso_code | split: '-' | first | downcase
+  case guide_lang
+    when 'en'
+      assign guide_label = 'Shower guides'
+      assign guide_intro = 'Practical answers on limescale, filters, water saving and fitting.'
+      assign guide_all = 'All guides'
+      assign guide_cta_before = 'View'
+      assign guide_cta_after = 'guides'
+    when 'de'
+      assign guide_label = 'Dusch-Ratgeber'
+      assign guide_intro = 'Praktische Antworten zu Kalk, Filtern, Wassersparen und Montage.'
+      assign guide_all = 'Alle Ratgeber'
+      assign guide_cta_before = ''
+      assign guide_cta_after = 'Ratgeber ansehen'
+    when 'fr'
+      assign guide_label = 'Guides de douche'
+      assign guide_intro = 'Réponses pratiques sur le calcaire, les filtres, l’économie d’eau et le montage.'
+      assign guide_all = 'Tous les guides'
+      assign guide_cta_before = 'Voir'
+      assign guide_cta_after = 'guides'
+    when 'es'
+      assign guide_label = 'Guías de ducha'
+      assign guide_intro = 'Respuestas prácticas sobre cal, filtros, ahorro de agua e instalación.'
+      assign guide_all = 'Todas las guías'
+      assign guide_cta_before = 'Ver'
+      assign guide_cta_after = 'guías'
+    else
+      assign guide_label = 'Douchegidsen'
+      assign guide_intro = 'Praktische antwoorden over kalkaanslag, filters, waterbesparing en montage.'
+      assign guide_all = 'Alle gidsen'
+      assign guide_cta_before = 'Bekijk'
+      assign guide_cta_after = 'gidsen'
+  endcase
+
+  capture guide_blog_url
+    if guide_blog != blank
+      render 'localized-internal-url', url: guide_blog.url
+    endif
+  endcapture
+  assign guide_blog_url = guide_blog_url | strip
+
+  comment
+    2026-09-22: the guides exist only in Dutch, so the strip renders only on
+    the primary (nl) storefront, and never on utility pages (cart, 404,
+    search, gift card, password, customer account) where a content band is
+    noise. The empty-blog guard below still applies.
+  endcomment
+  comment
+    2026-09-22 (merchant request): the band renders on every language, not only
+    the primary one, and is collapsed by default (details/summary) because the
+    pages already carry a lot of information. Article titles show in the
+    language they are translated in (Translate & Adapt).
+  endcomment
+  assign guide_show = false
+  if guide_count > 0
+    assign guide_show = true
+  endif
+  assign guide_page_type = request.page_type | downcase
+  if guide_page_type == 'cart' or guide_page_type == '404' or guide_page_type == 'search' or guide_page_type == 'gift_card' or guide_page_type == 'password' or guide_page_type == 'blog' or guide_page_type == 'article' or guide_page_type contains 'customers'
+    assign guide_show = false
+  endif
+-%}
+{% if guide_show %}
+  {%- assign guide_shown = guide_count | at_most: section.settings.link_limit -%}
+  <style id="besjaar-seo-guides-{{ section.id }}">
+    .besjaar-seo-guides{background:var(--besjaar-ui-accent-warm,#EEF6FB);padding:28px 0 32px}
+    .besjaar-seo-guides__inner{width:min(calc(100% - 32px),var(--besjaar-ui-width,1280px));margin-inline:auto}
+    .besjaar-seo-guides__card{border:1px solid rgba(23,59,94,.14);border-radius:20px;background:#fff;box-shadow:0 10px 30px rgba(19,42,62,.06);overflow:hidden}
+    .besjaar-seo-guides__toggle{display:flex;align-items:center;gap:16px;padding:18px 22px;cursor:pointer;list-style:none}
+    .besjaar-seo-guides__toggle::-webkit-details-marker{display:none}
+    .besjaar-seo-guides__icon{flex:0 0 44px;width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:var(--besjaar-ui-accent-warm,#EEF6FB);color:var(--besjaar-ui-accent,#173B5E)}
+    .besjaar-seo-guides__icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .besjaar-seo-guides__text{flex:1 1 auto;min-width:0}
+    .besjaar-seo-guides__text h2{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:-.01em;color:var(--besjaar-ui-accent,#173B5E)}
+    .besjaar-seo-guides__text p{margin:3px 0 0;font-size:.85rem;line-height:1.45;color:var(--besjaar-ui-muted,#61798E)}
+    .besjaar-seo-guides__cta{flex:0 0 auto;display:inline-flex;align-items:center;gap:9px;min-height:40px;padding:0 16px;border-radius:999px;background:var(--besjaar-ui-accent,#173B5E);color:#fff;font-size:.78rem;font-weight:700;letter-spacing:.02em;white-space:nowrap;transition:background .18s ease}
+    .besjaar-seo-guides__toggle:hover .besjaar-seo-guides__cta{background:#0f2944}
+    .besjaar-seo-guides__cta svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+    .besjaar-seo-guides details[open] .besjaar-seo-guides__cta svg{transform:rotate(180deg)}
+    .besjaar-seo-guides__body{padding:0 22px 22px}
+    .besjaar-seo-guides__list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:0;padding:0;list-style:none}
+    .besjaar-seo-guides__list li{margin:0;min-width:0}
+    .besjaar-seo-guides__list a{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;padding:14px 16px;border:1px solid rgba(23,59,94,.12);border-radius:14px;background:var(--besjaar-ui-accent-warm,#EEF6FB);color:var(--besjaar-ui-text,#132A3E);font-size:.9rem;font-weight:600;line-height:1.35;text-decoration:none;transition:border-color .18s ease,background .18s ease,transform .18s ease}
+    .besjaar-seo-guides__list a::after{content:"→";flex:0 0 auto;color:var(--besjaar-ui-accent,#173B5E)}
+    .besjaar-seo-guides__list a:hover{background:#fff;border-color:rgba(23,59,94,.3);transform:translateY(-1px)}
+    .besjaar-seo-guides__all{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:.84rem;font-weight:700;color:var(--besjaar-ui-accent,#173B5E);text-decoration:underline;text-underline-offset:3px}
+    @media (max-width:700px){
+      .besjaar-seo-guides{padding:22px 0 24px}.besjaar-seo-guides__inner{width:min(calc(100% - 24px),var(--besjaar-ui-width,1280px))}
+      .besjaar-seo-guides__toggle{flex-wrap:wrap;gap:12px;padding:16px}
+      .besjaar-seo-guides__text{flex-basis:calc(100% - 56px)}
+      .besjaar-seo-guides__cta{width:100%;justify-content:center}
+      .besjaar-seo-guides__body{padding:0 16px 16px}
+    }
+  </style>
+  <aside class="besjaar-seo-guides" aria-labelledby="BesjaarSeoGuides-{{ section.id }}">
+    <div class="besjaar-seo-guides__inner">
+      <details class="besjaar-seo-guides__card">
+        <summary class="besjaar-seo-guides__toggle">
+          <span class="besjaar-seo-guides__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v16H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v16h5.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg></span>
+          <span class="besjaar-seo-guides__text"><h2 id="BesjaarSeoGuides-{{ section.id }}">{{ guide_label }}</h2><p>{{ guide_intro }}</p></span>
+          <span class="besjaar-seo-guides__cta">{{ guide_cta_before }} {{ guide_shown }} {{ guide_cta_after }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+        </summary>
+        <div class="besjaar-seo-guides__body">
+          <ul class="besjaar-seo-guides__list">
+            {% for guide_article in guide_blog.articles limit: section.settings.link_limit %}
+              <li><a href="{% render 'localized-internal-url', url: guide_article.url %}">{{ guide_article.title | escape }}</a></li>
+            {% endfor %}
+          </ul>
+          {% if guide_blog_url != blank %}<a class="besjaar-seo-guides__all" href="{{ guide_blog_url }}">{{ guide_all }} →</a>{% endif %}
+        </div>
+      </details>
+    </div>
+  </aside>
+{% endif %}
+{% schema %}
+{
+  "name": "Besjaar guide links",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Links the guide blog from every page so the articles are internally linked and crawlable. Renders nothing while the blog has no published posts."
+    },
+    {"type": "text", "id": "blog_handle", "label": "Blog handle", "default": "gids"},
+    {"type": "range", "id": "link_limit", "label": "Guides to link", "min": 3, "max": 12, "step": 1, "default": 6}
+  ],
+  "enabled_on": {"groups": ["footer"]}
+}
+{% endschema %}

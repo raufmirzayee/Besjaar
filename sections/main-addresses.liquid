@@ -1,0 +1,112 @@
+<section class="besjaar-ui-section besjaar-ui-addresses-page besjaar-ui-account-v41 besjaar-ui-account-v41--addresses">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-account-v41__subhero">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.customer_space' | t }}</p>
+        <h1>{{ 'besjaar_ui.account.addresses' | t }}</h1>
+        <p>{{ 'besjaar_ui.account.addresses_copy_v41' | t }}</p>
+      </div>
+      <a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ routes.account_url }}">← {{ 'besjaar_ui.account.back_to_account' | t }}</a>
+    </div>
+
+    {% render 'besjaar-ui-account-nav', active: 'addresses' %}
+
+    <div class="besjaar-ui-address-v41__toolbar">
+      <div><strong>{{ 'besjaar_ui.account.saved_addresses' | t }}</strong><span>{{ 'besjaar_ui.account.addresses_count' | t: count: customer.addresses.size }}</span></div>
+      <details class="besjaar-ui-address-v41__add">
+        <summary class="besjaar-ui-button besjaar-ui-button--primary">+ {{ 'besjaar_ui.account.add_address' | t }}</summary>
+        <div class="besjaar-ui-address-v41__form-panel">
+          <div class="besjaar-ui-address-v41__form-head"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.new_address' | t }}</p><h2>{{ 'besjaar_ui.account.add_delivery_address' | t }}</h2></div></div>
+          {% form 'customer_address', customer.new_address %}
+            <div class="besjaar-ui-form-grid besjaar-ui-form-grid--2">
+              <div><label class="besjaar-ui-label" for="AddressFirstNameNew">{{ 'besjaar_ui.account.first_name' | t }}</label><input class="besjaar-ui-input" id="AddressFirstNameNew" type="text" name="address[first_name]" autocomplete="given-name"></div>
+              <div><label class="besjaar-ui-label" for="AddressLastNameNew">{{ 'besjaar_ui.account.last_name' | t }}</label><input class="besjaar-ui-input" id="AddressLastNameNew" type="text" name="address[last_name]" autocomplete="family-name"></div>
+              <div><label class="besjaar-ui-label" for="AddressCompanyNew">{{ 'besjaar_ui.account.company' | t }}</label><input class="besjaar-ui-input" id="AddressCompanyNew" type="text" name="address[company]" autocomplete="organization"></div>
+              <div><label class="besjaar-ui-label" for="AddressPhoneNew">{{ 'besjaar_ui.account.phone' | t }}</label><input class="besjaar-ui-input" id="AddressPhoneNew" type="tel" name="address[phone]" autocomplete="tel"></div>
+              <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressAddress1New">{{ 'besjaar_ui.account.address_line_1' | t }}</label><input class="besjaar-ui-input" id="AddressAddress1New" type="text" name="address[address1]" autocomplete="address-line1" required></div>
+              <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressAddress2New">{{ 'besjaar_ui.account.address_line_2' | t }}</label><input class="besjaar-ui-input" id="AddressAddress2New" type="text" name="address[address2]" autocomplete="address-line2"></div>
+              <div><label class="besjaar-ui-label" for="AddressZipNew">{{ 'besjaar_ui.account.postal_code' | t }}</label><input class="besjaar-ui-input" id="AddressZipNew" type="text" name="address[zip]" autocomplete="postal-code"></div>
+              <div><label class="besjaar-ui-label" for="AddressCityNew">{{ 'besjaar_ui.account.city' | t }}</label><input class="besjaar-ui-input" id="AddressCityNew" type="text" name="address[city]" autocomplete="address-level2" required></div>
+              <div><label class="besjaar-ui-label" for="AddressProvinceNew">{{ 'besjaar_ui.account.province' | t }}</label><input class="besjaar-ui-input" id="AddressProvinceNew" type="text" name="address[province]" autocomplete="address-level1"></div>
+              <div><label class="besjaar-ui-label" for="AddressCountryNew">{{ 'besjaar_ui.account.country' | t }}</label><select class="besjaar-ui-select" id="AddressCountryNew" name="address[country]">{{ all_country_option_tags }}</select></div>
+            </div>
+            <label class="besjaar-ui-check"><input type="checkbox" name="address[default]" value="1"><span>{{ 'besjaar_ui.account.set_default' | t }}</span></label>
+            <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.account.save_address' | t }}</button>
+          {% endform %}
+        </div>
+      </details>
+    </div>
+
+    {% if customer.default_address %}
+      {% assign address = customer.default_address %}
+      <article class="besjaar-ui-address-v41__default">
+        <div class="besjaar-ui-address-v41__default-mark"><span aria-hidden="true">⌂</span></div>
+        <div class="besjaar-ui-address-v41__default-copy">
+          <div><span>{{ 'besjaar_ui.account.default_address' | t }}</span><h2>{{ address.first_name | escape }} {{ address.last_name | escape }}</h2></div>
+          <div class="besjaar-ui-address-v41__formatted">{{ address | format_address }}</div>
+        </div>
+        <details class="besjaar-ui-address-v41__edit">
+          <summary class="besjaar-ui-button besjaar-ui-button--ghost">{{ 'besjaar_ui.account.edit_address' | t }}</summary>
+          <div class="besjaar-ui-address-v41__form-panel besjaar-ui-address-v41__form-panel--inline">
+            {% form 'customer_address', address %}
+              <div class="besjaar-ui-form-grid besjaar-ui-form-grid--2">
+                <div><label class="besjaar-ui-label" for="AddressFirstName-{{ address.id }}">{{ 'besjaar_ui.account.first_name' | t }}</label><input class="besjaar-ui-input" id="AddressFirstName-{{ address.id }}" type="text" name="address[first_name]" value="{{ address.first_name | escape }}" autocomplete="given-name"></div>
+                <div><label class="besjaar-ui-label" for="AddressLastName-{{ address.id }}">{{ 'besjaar_ui.account.last_name' | t }}</label><input class="besjaar-ui-input" id="AddressLastName-{{ address.id }}" type="text" name="address[last_name]" value="{{ address.last_name | escape }}" autocomplete="family-name"></div>
+                <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressLine1-{{ address.id }}">{{ 'besjaar_ui.account.address_line_1' | t }}</label><input class="besjaar-ui-input" id="AddressLine1-{{ address.id }}" type="text" name="address[address1]" value="{{ address.address1 | escape }}" autocomplete="address-line1" required></div>
+                <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressLine2-{{ address.id }}">{{ 'besjaar_ui.account.address_line_2' | t }}</label><input class="besjaar-ui-input" id="AddressLine2-{{ address.id }}" type="text" name="address[address2]" value="{{ address.address2 | escape }}" autocomplete="address-line2"></div>
+                <div><label class="besjaar-ui-label" for="AddressZip-{{ address.id }}">{{ 'besjaar_ui.account.postal_code' | t }}</label><input class="besjaar-ui-input" id="AddressZip-{{ address.id }}" type="text" name="address[zip]" value="{{ address.zip | escape }}" autocomplete="postal-code"></div>
+                <div><label class="besjaar-ui-label" for="AddressCity-{{ address.id }}">{{ 'besjaar_ui.account.city' | t }}</label><input class="besjaar-ui-input" id="AddressCity-{{ address.id }}" type="text" name="address[city]" value="{{ address.city | escape }}" autocomplete="address-level2" required></div>
+                <div><label class="besjaar-ui-label" for="AddressProvince-{{ address.id }}">{{ 'besjaar_ui.account.province' | t }}</label><input class="besjaar-ui-input" id="AddressProvince-{{ address.id }}" type="text" name="address[province]" value="{{ address.province | escape }}" autocomplete="address-level1"></div>
+                <div><label class="besjaar-ui-label" for="AddressCountry-{{ address.id }}">{{ 'besjaar_ui.account.country' | t }}</label><select class="besjaar-ui-select" id="AddressCountry-{{ address.id }}" name="address[country]" data-default="{{ address.country }}">{{ all_country_option_tags }}</select></div>
+                <div><label class="besjaar-ui-label" for="AddressPhone-{{ address.id }}">{{ 'besjaar_ui.account.phone' | t }}</label><input class="besjaar-ui-input" id="AddressPhone-{{ address.id }}" type="tel" name="address[phone]" value="{{ address.phone | escape }}" autocomplete="tel"></div>
+              </div>
+              <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.account.save_address' | t }}</button>
+            {% endform %}
+          </div>
+        </details>
+      </article>
+    {% endif %}
+
+    {% if customer.addresses.size > 0 %}
+      <div class="besjaar-ui-address-v41__grid">
+        {% for address in customer.addresses %}
+          {% unless address == customer.default_address %}
+            <article class="besjaar-ui-address-v41__card">
+              <div class="besjaar-ui-address-v41__card-top"><span>{{ 'besjaar_ui.account.delivery_address' | t }}</span><strong>{{ forloop.index | prepend: '0' }}</strong></div>
+              <h3>{{ address.first_name | escape }} {{ address.last_name | escape }}</h3>
+              <div class="besjaar-ui-address-v41__formatted">{{ address | format_address }}</div>
+              <details class="besjaar-ui-address-v41__edit">
+                <summary class="besjaar-ui-mini-link">{{ 'besjaar_ui.account.edit_address' | t }} →</summary>
+                <div class="besjaar-ui-address-v41__form-panel besjaar-ui-address-v41__form-panel--inline">
+                  {% form 'customer_address', address %}
+                    <div class="besjaar-ui-form-grid besjaar-ui-form-grid--2">
+                      <div><label class="besjaar-ui-label" for="AddressFirstName-{{ address.id }}">{{ 'besjaar_ui.account.first_name' | t }}</label><input class="besjaar-ui-input" id="AddressFirstName-{{ address.id }}" type="text" name="address[first_name]" value="{{ address.first_name | escape }}" autocomplete="given-name"></div>
+                      <div><label class="besjaar-ui-label" for="AddressLastName-{{ address.id }}">{{ 'besjaar_ui.account.last_name' | t }}</label><input class="besjaar-ui-input" id="AddressLastName-{{ address.id }}" type="text" name="address[last_name]" value="{{ address.last_name | escape }}" autocomplete="family-name"></div>
+                      <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressLine1-{{ address.id }}">{{ 'besjaar_ui.account.address_line_1' | t }}</label><input class="besjaar-ui-input" id="AddressLine1-{{ address.id }}" type="text" name="address[address1]" value="{{ address.address1 | escape }}" autocomplete="address-line1" required></div>
+                      <div class="besjaar-ui-form-grid__wide"><label class="besjaar-ui-label" for="AddressLine2-{{ address.id }}">{{ 'besjaar_ui.account.address_line_2' | t }}</label><input class="besjaar-ui-input" id="AddressLine2-{{ address.id }}" type="text" name="address[address2]" value="{{ address.address2 | escape }}" autocomplete="address-line2"></div>
+                      <div><label class="besjaar-ui-label" for="AddressZip-{{ address.id }}">{{ 'besjaar_ui.account.postal_code' | t }}</label><input class="besjaar-ui-input" id="AddressZip-{{ address.id }}" type="text" name="address[zip]" value="{{ address.zip | escape }}" autocomplete="postal-code"></div>
+                      <div><label class="besjaar-ui-label" for="AddressCity-{{ address.id }}">{{ 'besjaar_ui.account.city' | t }}</label><input class="besjaar-ui-input" id="AddressCity-{{ address.id }}" type="text" name="address[city]" value="{{ address.city | escape }}" autocomplete="address-level2" required></div>
+                      <div><label class="besjaar-ui-label" for="AddressProvince-{{ address.id }}">{{ 'besjaar_ui.account.province' | t }}</label><input class="besjaar-ui-input" id="AddressProvince-{{ address.id }}" type="text" name="address[province]" value="{{ address.province | escape }}" autocomplete="address-level1"></div>
+                      <div><label class="besjaar-ui-label" for="AddressCountry-{{ address.id }}">{{ 'besjaar_ui.account.country' | t }}</label><select class="besjaar-ui-select" id="AddressCountry-{{ address.id }}" name="address[country]" data-default="{{ address.country }}">{{ all_country_option_tags }}</select></div>
+                      <div><label class="besjaar-ui-label" for="AddressPhone-{{ address.id }}">{{ 'besjaar_ui.account.phone' | t }}</label><input class="besjaar-ui-input" id="AddressPhone-{{ address.id }}" type="tel" name="address[phone]" value="{{ address.phone | escape }}" autocomplete="tel"></div>
+                    </div>
+                    <label class="besjaar-ui-check"><input type="checkbox" name="address[default]" value="1"><span>{{ 'besjaar_ui.account.set_default' | t }}</span></label>
+                    <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.account.save_address' | t }}</button>
+                  {% endform %}
+                </div>
+              </details>
+            </article>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="besjaar-ui-account-v41__empty">
+        <span class="besjaar-ui-account-v41__empty-icon" aria-hidden="true">⌂</span>
+        <div><h2>{{ 'besjaar_ui.account.no_addresses_title' | t }}</h2><p>{{ 'besjaar_ui.account.no_addresses_copy_v41' | t }}</p></div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+{"name":"Addresses","settings":[]}
+{% endschema %}

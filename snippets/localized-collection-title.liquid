@@ -1,0 +1,57 @@
+{%- liquid
+  assign besjaar_ui_collection = collection
+  assign besjaar_ui_handle = handle | default: besjaar_ui_collection.handle | downcase | strip
+  assign besjaar_ui_title = title | default: besjaar_ui_collection.title
+  assign besjaar_ui_focus_collection = settings.shower_collection
+  assign is_focus_collection = false
+  assign besjaar_ui_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign besjaar_ui_identity = besjaar_ui_title | append: ' ' | append: besjaar_ui_handle | downcase
+
+  if besjaar_ui_focus_collection != blank and besjaar_ui_collection != blank and besjaar_ui_collection.id == besjaar_ui_focus_collection.id
+    assign is_focus_collection = true
+  elsif besjaar_ui_handle == 'badkamer-douche' or besjaar_ui_handle == 'douche' or besjaar_ui_handle == 'shower' or besjaar_ui_handle == 'showerheads' or besjaar_ui_handle == 'douchekoppen'
+    assign is_focus_collection = true
+  endif
+
+  assign collection_title_key = besjaar_ui_title | downcase | strip
+  assign generic_head_title = false
+  assign generic_filter_title = false
+  if collection_title_key == blank or collection_title_key == 'showerheads' or collection_title_key == 'shower heads' or collection_title_key == 'douchekoppen' or collection_title_key == 'besjaar'
+    assign generic_head_title = true
+  endif
+  if collection_title_key == blank or collection_title_key == 'shower filters' or collection_title_key == 'shower filter' or collection_title_key == 'douchefilters' or collection_title_key == 'douchefilter' or collection_title_key == 'filters'
+    assign generic_filter_title = true
+  endif
+
+  if is_focus_collection and generic_head_title
+    assign besjaar_ui_title = 'besjaar_ui.shower_store.catalog.collection_name' | t
+  elsif besjaar_ui_handle == 'all'
+    case besjaar_ui_lang
+      when 'en'
+        assign besjaar_ui_title = 'Showerheads & filters'
+      when 'de'
+        assign besjaar_ui_title = 'Duschköpfe & Filter'
+      when 'fr'
+        assign besjaar_ui_title = 'Pommeaux & filtres de douche'
+      when 'es'
+        assign besjaar_ui_title = 'Alcachofas y filtros de ducha'
+      else
+        assign besjaar_ui_title = 'Douchekoppen & filters'
+    endcase
+  elsif generic_filter_title and besjaar_ui_identity contains 'filter'
+    case besjaar_ui_lang
+      when 'en'
+        assign besjaar_ui_title = 'Shower filters'
+      when 'de'
+        assign besjaar_ui_title = 'Duschfilter'
+      when 'fr'
+        assign besjaar_ui_title = 'Filtres de douche'
+      when 'es'
+        assign besjaar_ui_title = 'Filtros de ducha'
+      else
+        assign besjaar_ui_title = 'Douchefilters'
+    endcase
+  endif
+
+  echo besjaar_ui_title
+-%}

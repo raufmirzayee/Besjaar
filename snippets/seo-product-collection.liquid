@@ -1,0 +1,40 @@
+{%- comment -%}Return a real collection handle, independent of collection-scoped product URLs.{%- endcomment -%}
+{%- liquid
+  assign breadcrumb_collection = blank
+  comment
+    2026-09-22: a product that is not a shower head (e.g. the filter refill
+    set) prefers a collection whose handle contains 'filter', so its crumb and
+    BreadcrumbList point at Douchefilters instead of Douchekoppen.
+  endcomment
+  capture breadcrumb_is_head
+    render 'is-shower-head', product: product
+  endcapture
+  assign breadcrumb_is_head = breadcrumb_is_head | strip
+  if breadcrumb_is_head != 'true'
+    for candidate in product.collections
+      if candidate.handle contains 'filter'
+        assign breadcrumb_collection = candidate
+        break
+      endif
+    endfor
+  endif
+  if breadcrumb_collection == blank
+    for candidate in product.collections
+      if settings.shower_collection != blank and candidate.id == settings.shower_collection.id
+        assign breadcrumb_collection = candidate
+        break
+      endif
+    endfor
+  endif
+  if breadcrumb_collection == blank
+    for candidate in product.collections
+      unless candidate.handle == 'all' or candidate.handle == 'frontpage'
+        assign breadcrumb_collection = candidate
+        break
+      endunless
+    endfor
+  endif
+  if breadcrumb_collection != blank
+    echo breadcrumb_collection.handle
+  endif
+-%}

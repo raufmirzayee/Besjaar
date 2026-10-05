@@ -1,0 +1,27 @@
+{%- comment -%}Emit a GTIN only when its length, digits and GS1 check digit are valid. Includes a trailing comma.{%- endcomment -%}
+{%- liquid
+  assign code = barcode | append: '' | strip
+  assign code_size = code | size
+  assign valid_code = false
+  if code_size == 8 or code_size == 12 or code_size == 13 or code_size == 14
+    assign valid_code = true
+    assign chars = code | split: '' | reverse
+    assign checksum = 0
+    for char in chars
+      unless '0123456789' contains char
+        assign valid_code = false
+      endunless
+      assign position_parity = forloop.index0 | modulo: 2
+      assign digit = char | plus: 0
+      if position_parity == 1
+        assign digit = digit | times: 3
+      endif
+      assign checksum = checksum | plus: digit
+    endfor
+    assign remainder = checksum | modulo: 10
+    if remainder != 0
+      assign valid_code = false
+    endif
+  endif
+-%}
+{%- if valid_code -%}"gtin{{ code_size }}": {{ code | json }},{%- endif -%}

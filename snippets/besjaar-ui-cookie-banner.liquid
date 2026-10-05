@@ -1,0 +1,56 @@
+{%- comment -%}
+  Besjaar — first-visit cookie consent banner.
+
+  Consent itself is written through Shopify's Customer Privacy API in
+  besjaar-ui-consent.js, so region detection, storage and the
+  `visitorConsentCollected` event stay Shopify's responsibility. Shopify's own
+  banner is the fallback: theme.liquid suppresses it from the <head> (so two
+  banners never paint) and besjaar-ui-consent.js hands it back if the API
+  never initialises.
+{%- endcomment -%}
+{% if settings.show_cookie_banner and settings.show_cookie_preferences %}
+  <div
+    class="besjaar-consent besjaar-consent-banner"
+    data-besjaar-consent-banner
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="BesjaarConsentTitle"
+    aria-describedby="BesjaarConsentText"
+    tabindex="-1"
+    hidden
+  >
+    <div class="besjaar-consent-banner__card">
+      <div class="besjaar-consent-banner__body">
+        <span class="besjaar-consent-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+            <circle cx="12" cy="12" r="9"/>
+            <circle cx="9" cy="9.5" r="1.05" fill="currentColor" stroke="none"/>
+            <circle cx="14.6" cy="11" r="1.05" fill="currentColor" stroke="none"/>
+            <circle cx="10" cy="15" r="1.05" fill="currentColor" stroke="none"/>
+            <circle cx="15" cy="15.4" r="1.05" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <div>
+          <p class="besjaar-consent-banner__title" id="BesjaarConsentTitle">{{ 'besjaar_ui.consent.banner_title' | t }}</p>
+          <p class="besjaar-consent-banner__text" id="BesjaarConsentText">
+            {{ 'besjaar_ui.consent.banner_body' | t }}
+            {%- if shop.privacy_policy != blank %}
+              <a class="besjaar-consent-link" href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ 'besjaar_ui.analytics.privacy_policy' | t }}</a>
+            {%- endif %}
+          </p>
+        </div>
+      </div>
+      <div class="besjaar-consent-banner__actions">
+        <button class="besjaar-consent-btn besjaar-consent-btn--primary" type="button" data-besjaar-consent-accept>
+          {{- 'besjaar_ui.consent.accept_all' | t -}}
+        </button>
+        <button class="besjaar-consent-btn besjaar-consent-btn--secondary" type="button" data-besjaar-consent-reject>
+          {{- 'besjaar_ui.consent.reject_all' | t -}}
+        </button>
+        <button class="besjaar-consent-btn besjaar-consent-btn--ghost" type="button" data-besjaar-consent-customize>
+          {{- 'besjaar_ui.consent.customize' | t -}}
+        </button>
+      </div>
+    </div>
+  </div>
+{% endif %}

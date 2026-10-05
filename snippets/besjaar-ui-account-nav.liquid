@@ -1,0 +1,16 @@
+{% liquid
+  assign account_active = active | default: 'overview'
+  assign support_url = blank
+  if settings.account_support_page != blank
+    capture support_url
+      render 'localized-internal-url', url: settings.account_support_page.url
+    endcapture
+    assign support_url = support_url | strip
+  endif
+%}
+<nav class="besjaar-ui-account-v41__nav" aria-label="{{ 'besjaar_ui.account.account_navigation' | t | escape }}">
+  <a href="{{ routes.account_url }}"{% if account_active == 'overview' %} class="is-active" aria-current="page"{% endif %}>{{ 'besjaar_ui.account.overview' | t }}</a>
+  <a href="{{ routes.account_url }}#orders"{% if account_active == 'orders' %} class="is-active" aria-current="page"{% endif %}>{{ 'besjaar_ui.account.orders' | t }}</a>
+  <a href="{{ routes.account_addresses_url }}"{% if account_active == 'addresses' %} class="is-active" aria-current="page"{% endif %}>{{ 'besjaar_ui.account.addresses' | t }}</a>
+  {% if support_url != blank %}<a href="{{ support_url }}">{{ 'besjaar_ui.account.support' | t }}</a>{% endif %}
+</nav>

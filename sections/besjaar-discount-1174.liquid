@@ -1,0 +1,103 @@
+{%- comment -%}
+  Besjaar 11.74 — Shopify discount visibility carrier.
+
+  Loads the stylesheet for snippets/besjaar-discount-badge.liquid once per
+  page. It lives in the header group for the same reason the other besjaar-*
+  carriers do: the badge appears on cards rendered by several different
+  sections, so the stylesheet cannot belong to any one of them.
+
+  It loads unconditionally. The stylesheet also colours the cart's savings line,
+  which Shopify's own cart drives (cart.total_discount) rather than the mirror,
+  so gating it on the mirror being enabled would leave that line unstyled in
+  exactly the case where a discount is being applied.
+  See snippets/besjaar-discount-badge.liquid for how the badge data gets there.
+{%- endcomment -%}
+{{ 'besjaar-discount-badge.css' | asset_url | stylesheet_tag: preload: true }}
+
+{%- comment -%}
+  2026-09-27: product data for the cart drawer's "Misschien ook interessant"
+  row, with sales included. It is the same list sections/site-header.liquid
+  renders, plus one addition: a compare-at-price sale (price below the
+  compare-at price) is shown like an automatic discount — sale price in red,
+  earlier price struck through, "36% KORTING" badge. An automatic discount
+  from the mirror still wins when one applies.
+
+  This section sits before the header in the header group, so this script is
+  the first [data-besjaar-ui-cart-range] on the page and is the one
+  assets/besjaar-ui-core.js reads. The header's own copy stays as a fallback.
+{%- endcomment -%}
+{%- capture bjc_range_json -%}
+[
+  {%- assign bjc_count = 0 -%}
+  {%- for bjc_product in collections['all'].products limit: 50 -%}
+    {%- if bjc_count >= 12 -%}{%- break -%}{%- endif -%}
+    {%- capture bjc_is_focus -%}{% render 'is-focus-showerhead', product: bjc_product %}{%- endcapture -%}
+    {%- assign bjc_is_focus = bjc_is_focus | strip -%}
+    {%- if bjc_is_focus == 'true' and bjc_product.available -%}
+      {%- assign bjc_variant = bjc_product.selected_or_first_available_variant -%}
+      {%- if bjc_variant != blank -%}
+        {%- capture bjc_url -%}{% render 'localized-internal-url', url: bjc_product.url %}{%- endcapture -%}
+        {%- capture bjc_now -%}{% render 'besjaar-discount-badge', product: bjc_product, variant: bjc_variant, layout: 'cents' %}{%- endcapture -%}
+        {%- assign bjc_now = bjc_now | strip -%}
+        {%- capture bjc_badge -%}{% render 'besjaar-discount-badge', product: bjc_product, variant: bjc_variant, layout: 'label' %}{%- endcapture -%}
+        {%- assign bjc_price = bjc_product.price -%}
+        {%- if bjc_now == '' and bjc_variant.compare_at_price > bjc_variant.price -%}
+          {%- assign bjc_price = bjc_variant.compare_at_price -%}
+          {%- assign bjc_now = bjc_variant.price -%}
+          {%- capture bjc_badge -%}{% render 'besjaar-compare-sale', product: bjc_product, variant: bjc_variant, layout: 'badge' %}{%- endcapture -%}
+        {%- endif -%}
+        {%- if bjc_count > 0 -%},{%- endif -%}
+        {
+          "id": {{ bjc_product.id | json }},
+          "title": {{ bjc_product.title | json }},
+          "url": {{ bjc_url | strip | json }},
+          "image": {% if bjc_product.featured_image %}{{ bjc_product.featured_image | image_url: width: 180 | json }}{% else %}""{% endif %},
+          "price": {{ bjc_price | json }},
+          "priceNow": {% if bjc_now != '' %}{{ bjc_now }}{% else %}null{% endif %},
+          "badge": {{ bjc_badge | strip | json }},
+          "variantId": {{ bjc_variant.id | json }}
+        }
+        {%- assign bjc_count = bjc_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+]
+{%- endcapture -%}
+<script type="application/json" data-besjaar-ui-cart-range>{{ bjc_range_json | strip }}</script>
+
+{%- comment -%}
+  2026-09-27: compare-at price per variant id, for the lines in the cart
+  drawer. The drawer is drawn from /cart.js, which carries no compare-at
+  price, so without this a product on sale that way (e.g. €39,99 → €25,49)
+  showed only its sale price there. assets/besjaar-ui-core.js reads it and
+  shows the earlier price struck through with "Bespaar 36%", the same way
+  as a line with an automatic discount.
+{%- endcomment -%}
+{%- capture bjc_compare_json -%}
+  {%- assign bjc_compare_count = 0 -%}
+  {%- for bjc_product in collections['all'].products limit: 50 -%}
+    {%- for bjc_v in bjc_product.variants -%}
+      {%- if bjc_v.compare_at_price > bjc_v.price -%}
+        {%- if bjc_compare_count > 0 -%},{%- endif -%}
+        "{{ bjc_v.id }}": {{ bjc_v.compare_at_price }}
+        {%- assign bjc_compare_count = bjc_compare_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endcapture -%}
+<script type="application/json" data-besjaar-compare-prices>{ {{ bjc_compare_json | strip }} }</script>
+
+{% schema %}
+{
+  "name": "Besjaar discount badges",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loads the styling for the Shopify discount badges shown on product cards and on the product page, and the product list for the cart drawer's suggestions (with sale prices). The badges read the live discount configuration mirrored into the shop metafield besjaar_discounts.active, and compare-at-price sales. Keep this section in the header group, before the header."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

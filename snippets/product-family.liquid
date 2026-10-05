@@ -1,0 +1,34 @@
+{%- liquid
+  assign besjaar_ui_family_product = product
+  assign besjaar_ui_family = 'other'
+  assign besjaar_ui_template_hint = template_hint | default: '' | downcase | strip
+
+  if besjaar_ui_family_product != blank
+    if besjaar_ui_template_hint == 'shower'
+      assign besjaar_ui_family = 'shower'
+    elsif besjaar_ui_family_product.metafields.custom.product_family != blank
+      assign besjaar_ui_declared_family = besjaar_ui_family_product.metafields.custom.product_family.value | downcase | strip | replace: ' ', '_' | replace: '-', '_'
+      case besjaar_ui_declared_family
+        when 'shower', 'bath', 'bathroom', 'showerhead', 'shower_head', 'filtered_shower_head', 'shower_set', 'hand_shower'
+          assign besjaar_ui_family = 'shower'
+      endcase
+    endif
+
+    if besjaar_ui_family != 'shower' and besjaar_ui_family_product.metafields.custom.shower_family != blank
+      assign besjaar_ui_family = 'shower'
+    endif
+
+    comment
+      Temporary migration fallback for shower products while structured
+      metafields are being populated. Once custom.product_family = shower is set
+      on each selected model, title/type wording no longer matters.
+    endcomment
+    if besjaar_ui_family != 'shower'
+      assign besjaar_ui_type = besjaar_ui_family_product.type | downcase
+      assign besjaar_ui_title = besjaar_ui_family_product.title | downcase
+      if besjaar_ui_type contains 'douche' or besjaar_ui_type contains 'shower' or besjaar_ui_title contains 'douchekop' or besjaar_ui_title contains 'handdouche' or besjaar_ui_title contains 'douchefilter' or besjaar_ui_title contains 'doucheslang' or besjaar_ui_title contains 'shower head' or besjaar_ui_title contains 'showerhead' or besjaar_ui_title contains 'hand shower' or besjaar_ui_title contains 'shower filter' or besjaar_ui_title contains 'shower hose'
+        assign besjaar_ui_family = 'shower'
+      endif
+    endif
+  endif
+-%}{{- besjaar_ui_family -}}

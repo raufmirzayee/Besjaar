@@ -1,0 +1,90 @@
+{% liquid
+  assign addon_1 = settings.bundle_accessory_1
+  assign addon_2 = settings.bundle_accessory_2
+  assign addon_3 = settings.bundle_accessory_3
+  capture addon_1_is_head_capture
+    render 'is-shower-head', product: addon_1
+  endcapture
+  assign addon_1_is_head = addon_1_is_head_capture | strip
+  capture addon_2_is_head_capture
+    render 'is-shower-head', product: addon_2
+  endcapture
+  assign addon_2_is_head = addon_2_is_head_capture | strip
+  capture addon_3_is_head_capture
+    render 'is-shower-head', product: addon_3
+  endcapture
+  assign addon_3_is_head = addon_3_is_head_capture | strip
+
+  capture cart_product_tokens
+    for cart_item in cart.items
+      echo '|'
+      echo cart_item.product.id
+      echo '|'
+    endfor
+  endcapture
+  assign visible_addon_count = 0
+  if addon_1 != blank and addon_1.available and addon_1_is_head != 'true'
+    capture addon_token
+      echo '|'
+      echo addon_1.id
+      echo '|'
+    endcapture
+    unless cart_product_tokens contains addon_token
+      assign visible_addon_count = visible_addon_count | plus: 1
+    endunless
+  endif
+  if addon_2 != blank and addon_2.available and addon_2.id != addon_1.id and addon_2_is_head != 'true'
+    capture addon_token
+      echo '|'
+      echo addon_2.id
+      echo '|'
+    endcapture
+    unless cart_product_tokens contains addon_token
+      assign visible_addon_count = visible_addon_count | plus: 1
+    endunless
+  endif
+  if addon_3 != blank and addon_3.available and addon_3.id != addon_1.id and addon_3.id != addon_2.id and addon_3_is_head != 'true'
+    capture addon_token
+      echo '|'
+      echo addon_3.id
+      echo '|'
+    endcapture
+    unless cart_product_tokens contains addon_token
+      assign visible_addon_count = visible_addon_count | plus: 1
+    endunless
+  endif
+%}
+{% if settings.show_cart_addons and cart.item_count > 0 and visible_addon_count > 0 %}
+  <section class="besjaar-ui-section besjaar-ui-cart-addons" data-cart-addons>
+    <div class="besjaar-ui-shell">
+      <div class="besjaar-ui-section-heading besjaar-ui-cart-addons__head">
+        <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.cart.addons_kicker' | t }}</p><h2>{{ 'besjaar_ui.cart.addons_heading' | t }}</h2><p class="besjaar-ui-copy">{{ 'besjaar_ui.cart.addons_copy' | t }}</p></div>
+      </div>
+      <div class="besjaar-ui-cart-addons__grid">
+        {% for addon_index in (1..3) %}
+          {% case addon_index %}
+            {% when 1 %}{% assign addon = addon_1 %}{% assign addon_is_head = addon_1_is_head %}
+            {% when 2 %}{% assign addon = addon_2 %}{% assign addon_is_head = addon_2_is_head %}
+            {% else %}{% assign addon = addon_3 %}{% assign addon_is_head = addon_3_is_head %}
+          {% endcase %}
+          {% if addon != blank and addon.available and addon_is_head != 'true' %}
+            {% assign duplicate_addon = false %}
+            {% if addon_index == 2 and addon.id == addon_1.id %}{% assign duplicate_addon = true %}{% endif %}
+            {% if addon_index == 3 %}{% if addon.id == addon_1.id or addon.id == addon_2.id %}{% assign duplicate_addon = true %}{% endif %}{% endif %}
+            {% unless duplicate_addon %}
+              {% capture current_addon_token %}|{{ addon.id }}|{% endcapture %}
+              {% unless cart_product_tokens contains current_addon_token %}
+                {% assign addon_variant = addon.selected_or_first_available_variant %}
+                <article class="besjaar-ui-cart-addon">
+                  <a class="besjaar-ui-cart-addon__media" href="{% render 'localized-internal-url', url: addon.url %}">{% if addon.featured_image %}{{ addon.featured_image | image_url: width: 420 | image_tag: loading: 'lazy', widths: '210,420', sizes: '(max-width: 700px) 110px, 160px', alt: addon.title }}{% endif %}</a>
+                  <div class="besjaar-ui-cart-addon__body"><small>{{ 'besjaar_ui.cart.addon_label' | t }}</small><h3><a href="{% render 'localized-internal-url', url: addon.url %}">{% render 'localized-product-title', product: addon %}</a></h3><strong>{{ addon_variant.price | money }}</strong><button class="besjaar-ui-button besjaar-ui-button--ghost" type="button" data-cart-addon-add="{{ addon_variant.id }}" data-adding-label="{{ 'besjaar_ui.bundle.adding' | t | escape }}" data-added-label="{{ 'besjaar_ui.cart.addon_added' | t | escape }}">+ {{ 'besjaar_ui.cart.addon_add' | t }}</button></div>
+                </article>
+              {% endunless %}
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+{% schema %}{"name":"BesjaarUI cart add-ons","settings":[],"presets":[{"name":"BesjaarUI cart add-ons"}]}{% endschema %}

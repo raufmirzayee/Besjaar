@@ -1,0 +1,64 @@
+{% capture besjaar_ui_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+<section class="besjaar-ui-404 besjaar-ui-404--v21">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-404__code">404</div>
+    <p class="besjaar-ui-kicker">{{ 'besjaar_ui.not_found.kicker' | t }}</p>
+    <h1>{{ 'besjaar_ui.not_found.heading' | t }}</h1>
+    <p class="besjaar-ui-copy" style="margin-inline:auto">{{ 'besjaar_ui.not_found.text' | t }}</p>
+    <div class="besjaar-ui-404__actions">
+      <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ routes.root_url }}">{{ 'besjaar_ui.not_found.button' | t }}</a>
+      <a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.not_found.shop' | t }}</a>
+    </div>
+    <form class="besjaar-ui-search-form besjaar-ui-404__search" action="{{ routes.search_url }}" method="get" role="search">
+      <input type="hidden" name="type" value="product">
+      <input type="hidden" name="options[prefix]" value="last">
+      <label class="besjaar-ui-visually-hidden" for="BesjaarUI404Search">{{ 'besjaar_ui.accessibility.search' | t }}</label><input class="besjaar-ui-input" id="BesjaarUI404Search" type="search" name="q" autocomplete="off" placeholder="{{ 'besjaar_ui.search.placeholder' | t | escape }}" required>
+      <button class="besjaar-ui-button besjaar-ui-button--ghost" type="submit">{{ 'besjaar_ui.search.button' | t }}</button>
+    </form>
+    <div class="besjaar-ui-404__popular" role="group" aria-label="{{ 'besjaar_ui.search.popular' | t | escape }}">
+      <span>{{ 'besjaar_ui.search.popular' | t }}</span>
+      <div class="besjaar-ui-search-shortcuts">
+        {% assign besjaar_ui_popular_terms = 'besjaar_ui.search.popular_terms' | t | split: ',' %}
+        {% for term in besjaar_ui_popular_terms limit: 4 %}
+          {% assign clean_term = term | strip %}
+          {% if clean_term != blank %}<a href="{{ routes.search_url }}?type=product&options%5Bprefix%5D=last&q={{ clean_term | url_encode }}">{{ clean_term }}</a>{% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {%- comment -%}Besjaar 11.6: land lost visitors on shoppable cards, not only a search box — same fallback-range pattern as the zero-results search state.{%- endcomment -%}
+    {% liquid
+      assign besjaar_ui_404_collection = settings.shower_collection
+      if besjaar_ui_404_collection == blank
+        assign besjaar_ui_404_collection = collections['badkamer-douche']
+      endif
+      if besjaar_ui_404_collection == blank
+        assign besjaar_ui_404_collection = collections['douchekoppen']
+      endif
+      if besjaar_ui_404_collection == blank
+        assign besjaar_ui_404_collection = collections['showerheads']
+      endif
+      if besjaar_ui_404_collection == blank
+        assign besjaar_ui_404_collection = collections['douche']
+      endif
+      if besjaar_ui_404_collection == blank
+        assign besjaar_ui_404_collection = collections['shower']
+      endif
+    %}
+    {% if besjaar_ui_404_collection != blank and besjaar_ui_404_collection.products.size > 0 %}
+      <div class="besjaar-ui-search-five-range besjaar-ui-404__range">
+        <div class="besjaar-ui-heading-row"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_store.search.range_kicker' | t }}</p><h2 class="besjaar-ui-subtitle">{{ 'besjaar_ui.shower_store.search.available' | t }}</h2></div><a class="besjaar-ui-mini-link" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.shower_store.search.browse_all' | t }} →</a></div>
+        <div class="besjaar-ui-grid besjaar-ui-grid--4">
+          {% assign besjaar_ui_404_shown = 0 %}
+          {% for besjaar_ui_404_product in besjaar_ui_404_collection.products %}
+            {% if besjaar_ui_404_shown >= 4 %}{% break %}{% endif %}
+            {% capture besjaar_ui_404_head_capture %}{% render 'is-focus-showerhead', product: besjaar_ui_404_product %}{% endcapture %}
+            {% assign besjaar_ui_404_is_head = besjaar_ui_404_head_capture | strip %}
+            {% if besjaar_ui_404_is_head == 'true' %}{% render 'product-card', product: besjaar_ui_404_product %}{% assign besjaar_ui_404_shown = besjaar_ui_404_shown | plus: 1 %}{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% schema %}{"name":"Main 404","settings":[]}{% endschema %}

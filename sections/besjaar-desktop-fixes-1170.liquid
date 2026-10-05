@@ -1,0 +1,159 @@
+{%- comment -%}
+  Besjaar 11.6.14 — desktop-only refinements that sit on top of the desktop
+  carrier (kept separate so the large carrier is not rewritten for small
+  changes; fold both into the desktop CSS during consolidation).
+
+  - Hero, full-bleed (≥ 901px): the photo becomes the section background,
+    edge to edge. On desktop the image is swapped for the lifestyle shot
+    (besjaar-lifestyle-shower.webp) and the scene band gets the Besjaar lady shower lifestyle
+    image (besjaar-lady-shower-desktop.webp) so the two never repeat;
+    the swap is done by the script below with the asset URLs rendered
+    here, and the hero image is faded in once swapped. Layering: the inner
+    grid is left static so the image (z 0) is positioned against the
+    section, the wash (section ::after, z 1) sits above it and the text
+    column (z 3) above both. The text row keeps the page container width
+    and the text column is inset a further clamp(32px, 7vw, 140px) from
+    the container edge. Navy wash from the left, white text, white primary
+    button; chips in the right corners. Height from clamp(560px, 78vh,
+    800px).
+  - Shop hub (/collections/all): the "Eén collectie…" banner is visually
+    hidden on desktop (stays in the DOM as the page h1).
+  - Product page: gallery capped to a 640px ice stage with the product
+    blended onto it, thumbnails as square tiles centred beneath, summary
+    type scaled up; the third-party "Secure Checkout With" badge block is
+    hidden by the script (found by its heading text, never touching the
+    theme's own buttons).
+  - About page (sections/main-page, about branch): navy/ice palette, the
+    brand stage becomes a wordmark card with a product packshot blended
+    onto ice (first filter model without hose, else the first product),
+    the four category cards get cover photos from theme assets, the
+    principles/story/service blocks get tiles. Asset and image URLs are
+    rendered as custom properties on <body> below.
+  - Trust strip: continuous loop on wide screens (see script).
+  - Header search pill forced into one row.
+  - Feature cards, bento: first card tall on the left, two stacked rows on
+    the right.
+{%- endcomment -%}
+{%- if request.page_type == 'index' -%}
+<script type="application/json" id="bj-desktop-hero-swap">{"hero":{{ 'besjaar-hero-premium-spa.webp' | asset_url | json }},"scene":{{ 'besjaar-lady-shower-desktop.webp' | asset_url | json }}}</script>
+{%- endif -%}
+{%- if request.page_type == 'page' -%}
+  {%- liquid
+    assign bj_about_product = blank
+    for bj_p in collections['all'].products
+      if bj_about_product == blank and bj_p.featured_image != blank and bj_p.title contains 'Filter'
+        unless bj_p.title contains 'Slang' or bj_p.title contains 'Navulset'
+          assign bj_about_product = bj_p
+        endunless
+      endif
+    endfor
+    if bj_about_product == blank
+      assign bj_about_product = collections['all'].products.first
+    endif
+    assign bj_about_stage = ''
+    if bj_about_product != blank and bj_about_product.featured_image != blank
+      assign bj_about_stage = bj_about_product.featured_image | image_url: width: 900
+    endif
+  -%}
+  <style>body[data-page-type="page"]{--bj-about-stage:url({{ bj_about_stage }});--bj-about-1:url({{ 'besjaar-web-real-modes.webp' | asset_url }});--bj-about-2:url({{ 'besjaar-macro-nozzles.webp' | asset_url }});--bj-about-3:url({{ 'besjaar-premium-hero-pressure-v3.webp' | asset_url }});--bj-about-4:url({{ 'besjaar-lifestyle-shower.webp' | asset_url }})}</style>
+{%- endif -%}
+{{ 'besjaar-seo-carriers-late.css' | asset_url | stylesheet_tag: preload: true }}
+<script>
+(function () {
+  'use strict';
+  if (!window.matchMedia) return;
+  var wide = window.matchMedia('(min-width: 901px)');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Desktop hero/scene image swap */
+  var swapImages = function () {
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    var data = document.getElementById('bj-desktop-hero-swap');
+    var heroImg = document.querySelector('.besjaar-store-hero--premium-exact .besjaar-store-hero__image-card img');
+    if (!data || !heroImg || heroImg.getAttribute('data-bj-swapped')) return;
+    if (!wide.matches) return;
+    var urls = {};
+    try { urls = JSON.parse(data.textContent || '{}') || {}; } catch (e) { urls = {}; }
+    var apply = function (img, url) {
+      if (!img || !url) return;
+      img.removeAttribute('srcset');
+      img.removeAttribute('sizes');
+      img.setAttribute('src', url);
+      img.setAttribute('data-bj-swapped', '1');
+    };
+    apply(heroImg, urls.hero);
+    apply(document.querySelector('.besjaar-store-scene img'), urls.scene);
+  };
+
+  /* Product page: hide the third-party "Secure Checkout With" badge block on desktop */
+  var hideBadgeBlock = function () {
+    if (!wide.matches || document.body.getAttribute('data-page-type') !== 'product') return;
+    var summary = document.querySelector('.besjaar-store-premium-pd__summary') || document.querySelector('[data-besjaar-product-section]');
+    if (!summary) return;
+    var nodes = summary.querySelectorAll('*');
+    for (var i = 0; i < nodes.length; i += 1) {
+      var node = nodes[i];
+      if (node.children.length) continue;
+      if (!/secure checkout with/i.test(node.textContent || '')) continue;
+      var block = node;
+      for (var depth = 0; depth < 6 && block.parentElement; depth += 1) {
+        var parent = block.parentElement;
+        if (parent === summary || parent.classList.contains('besjaar-store-premium-pd__form') || parent.classList.contains('besjaar-store-premium-pd__instant')) break;
+        if (parent.querySelector('.besjaar-store-premium-pd__add, .shopify-payment-button, form[action*="/cart/add"]')) break;
+        block = parent;
+        if (block.querySelector('img, svg')) break;
+      }
+      if (!block.querySelector('.besjaar-store-premium-pd__add, .shopify-payment-button, form[action*="/cart/add"]')) block.classList.add('bj-hidden-badges');
+      return;
+    }
+  };
+
+  /* Trust strip: continuous loop on wide screens */
+  var ticker = function () {
+    if (reduced || !wide.matches) return;
+    if (document.body.getAttribute('data-page-type') !== 'index') return;
+    var row = document.querySelector('.besjaar-store-strip .besjaar-store-strip__row[data-bj-marquee="1"]');
+    if (!row) return;
+    var track = row.querySelector('.bj-marquee__track');
+    var set = track ? track.querySelector('.bj-marquee__set') : null;
+    if (!track || !set) return;
+    row.classList.remove('bj-marquee--static');
+    row.classList.add('bj-marquee');
+    var rowWidth = row.getBoundingClientRect().width;
+    var setWidth = set.getBoundingClientRect().width;
+    if (!setWidth || !rowWidth) return;
+    var needed = Math.ceil(rowWidth / setWidth) + 1;
+    var copies = track.querySelectorAll('.bj-marquee__set').length;
+    while (copies < needed) {
+      var clone = set.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      track.appendChild(clone);
+      copies += 1;
+    }
+    track.style.setProperty('--bj-marquee-shift', (-setWidth) + 'px');
+    track.style.setProperty('--bj-marquee-duration', Math.max(18, Math.round(setWidth / 40)) + 's');
+  };
+
+  var now = function () { swapImages(); hideBadgeBlock(); };
+  var later = function () { swapImages(); hideBadgeBlock(); window.setTimeout(ticker, 220); window.setTimeout(hideBadgeBlock, 1500); window.setTimeout(hideBadgeBlock, 4000); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later, { once: true });
+  else later();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { window.setTimeout(ticker, 220); }).catch(function () {});
+  window.addEventListener('resize', function () { now(); window.setTimeout(ticker, 220); }, { passive: true });
+  document.addEventListener('shopify:section:load', later);
+})();
+</script>
+{% schema %}
+{
+  "name": "Besjaar desktop fixes",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.14: desktop-only refinements (full-bleed lifestyle hero, moving trust strip, header search pill, bento feature cards, shop hub banner hidden, product gallery and badge cleanup, About page with wordmark card and photo tiles). Keep in the header group after the desktop section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

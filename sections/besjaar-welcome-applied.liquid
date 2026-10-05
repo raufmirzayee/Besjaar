@@ -1,0 +1,457 @@
+{%- comment -%}
+  Besjaar — welcome-offer notice and welcome prices (2026-09-28).
+
+  1. Notice. After a shopper claims the Welcome Drop, Shopify's customer form
+     sends them through /discount/CODE to the product range. This section
+     confirms on that landing page that the code is saved.
+
+  2. Welcome prices. A claimed percentage code (WELKOM10/15/20) is applied at
+     checkout on top of the product's own sale price. For a shopper who has
+     claimed one, every product it covers shows that final price everywhere it
+     is displayed: product cards, the product page (price, sticky bar, badge,
+     savings), the recently-viewed strip and the cart drawer's suggestions.
+     The badge names both reductions ("13% + 20% KORTING").
+
+     Prices are computed here, server-side, for each code, from the price the
+     shop already shows (automatic discount from the mirror, else the product
+     price) and rounded the way Shopify rounds a percentage discount: the cut
+     is truncated to the cent. The script only picks the right numbers.
+
+     The code's scope (the collections it applies to) is not readable from
+     Liquid, so it is a setting on this section; keep it in step with the
+     WELKOM codes in Admin > Discounts.
+
+  The script is inline (not deferred) so it can read the claim state and
+  rewrite the price lists other sections print (data-besjaar-recent-prices,
+  data-besjaar-ui-cart-range) before the deferred theme scripts read them. It
+  uses the storage keys and ?besjaar_offer_claimed= marker of
+  assets/besjaar-welcome-offer.js.
+{%- endcomment -%}
+{%- liquid
+  assign bjw_show = settings.welcome_offer_enabled
+  if customer != blank
+    assign bjw_show = false
+  endif
+  if request.design_mode or request.visual_preview_mode
+    assign bjw_show = false
+  endif
+
+  assign bjw_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bjw_lang
+    when 'en'
+      assign bjw_title = 'Your welcome discount is applied'
+      assign bjw_body = 'Code {code} ({value}) is saved and will be deducted automatically at checkout.'
+      assign bjw_off = 'off'
+      assign bjw_note = 'Includes your {pct}% welcome discount (code {code}), applied automatically at checkout.'
+      assign bjw_save = 'Save'
+    when 'de'
+      assign bjw_title = 'Dein Willkommensrabatt ist aktiviert'
+      assign bjw_body = 'Der Code {code} ({value}) ist gespeichert und wird an der Kasse automatisch abgezogen.'
+      assign bjw_off = 'Rabatt'
+      assign bjw_note = 'Inkl. {pct}% Willkommensrabatt (Code {code}), wird an der Kasse automatisch abgezogen.'
+      assign bjw_save = 'Spare'
+    when 'fr'
+      assign bjw_title = 'Votre réduction de bienvenue est appliquée'
+      assign bjw_body = 'Le code {code} ({value}) est enregistré et sera déduit automatiquement au paiement.'
+      assign bjw_off = 'de réduction'
+      assign bjw_note = 'Remise de bienvenue de {pct}% incluse (code {code}), appliquée automatiquement au paiement.'
+      assign bjw_save = 'Économisez'
+    when 'es'
+      assign bjw_title = 'Tu descuento de bienvenida está aplicado'
+      assign bjw_body = 'El código {code} ({value}) está guardado y se descontará automáticamente al pagar.'
+      assign bjw_off = 'de descuento'
+      assign bjw_note = 'Descuento de bienvenida del {pct}% incluido (código {code}), aplicado automáticamente al pagar.'
+      assign bjw_save = 'Ahorra'
+    else
+      assign bjw_title = 'Je welkomstkorting is toegepast'
+      assign bjw_body = 'Code {code} ({value}) is opgeslagen en wordt automatisch verrekend bij het afrekenen.'
+      assign bjw_off = 'korting'
+      assign bjw_note = 'Incl. {pct}% welkomstkorting (code {code}), automatisch verrekend bij het afrekenen.'
+      assign bjw_save = 'Bespaar'
+  endcase
+
+  assign bjw_pcts = '10,15,20' | split: ','
+  assign bjw_scope = section.settings.welcome_collections | default: 'showerhead,shower-filter' | split: ','
+-%}
+{%- if bjw_show -%}
+  {%- comment -%}
+    Final price per product, variant and welcome percentage. "now" is the price
+    the shop shows today, "was" the struck-through reference (the regular price
+    under an automatic discount, the compare-at price under a compare-at sale,
+    else the price itself) and "sale" the existing reduction in whole percent.
+  {%- endcomment -%}
+  {%- capture bjw_prices_json -%}
+    {%- assign bjw_seen = '|' -%}
+    {%- assign bjw_count = 0 -%}
+    {%- for bjw_scope_handle in bjw_scope -%}
+      {%- assign bjw_collection_handle = bjw_scope_handle | strip -%}
+      {%- assign bjw_collection = collections[bjw_collection_handle] -%}
+      {%- if bjw_collection == blank -%}{%- continue -%}{%- endif -%}
+      {%- for bjw_product in bjw_collection.products limit: 50 -%}
+        {%- capture bjw_token -%}|{{ bjw_product.handle }}|{%- endcapture -%}
+        {%- if bjw_seen contains bjw_token -%}{%- continue -%}{%- endif -%}
+        {%- assign bjw_seen = bjw_seen | append: bjw_token -%}
+        {%- assign bjw_first = bjw_product.selected_or_first_available_variant | default: bjw_product.variants.first -%}
+        {%- if bjw_count > 0 -%},{%- endif -%}
+        {{ bjw_product.handle | json }}: { "id": {{ bjw_product.id }}, "first": {{ bjw_first.id }}, "v": {
+        {%- for bjw_variant in bjw_product.variants -%}
+          {%- capture bjw_auto -%}{% render 'besjaar-discount-badge', product: bjw_product, variant: bjw_variant, layout: 'cents' %}{%- endcapture -%}
+          {%- assign bjw_auto = bjw_auto | strip -%}
+          {%- if bjw_auto != '' -%}
+            {%- assign bjw_now = bjw_auto | plus: 0 -%}
+            {%- assign bjw_was = bjw_variant.price -%}
+          {%- elsif bjw_variant.compare_at_price > bjw_variant.price -%}
+            {%- assign bjw_now = bjw_variant.price -%}
+            {%- assign bjw_was = bjw_variant.compare_at_price -%}
+          {%- else -%}
+            {%- assign bjw_now = bjw_variant.price -%}
+            {%- assign bjw_was = bjw_variant.price -%}
+          {%- endif -%}
+          {%- assign bjw_sale = 0 -%}
+          {%- if bjw_was > bjw_now -%}
+            {%- assign bjw_sale = bjw_was | minus: bjw_now | times: 100 | divided_by: bjw_was -%}
+          {%- endif -%}
+          {%- unless forloop.first -%},{%- endunless -%}
+          "{{ bjw_variant.id }}": { "was": {{ bjw_was }}, "sale": {{ bjw_sale }}, "wm": {{ bjw_was | money | json }}, "p": {
+          {%- for bjw_pct_text in bjw_pcts -%}
+            {%- assign bjw_pct = bjw_pct_text | plus: 0 -%}
+            {%- assign bjw_cut = bjw_now | times: bjw_pct | divided_by: 100 -%}
+            {%- assign bjw_final = bjw_now | minus: bjw_cut -%}
+            {%- assign bjw_saving = bjw_was | minus: bjw_final -%}
+            {%- unless forloop.first -%},{%- endunless -%}
+            "{{ bjw_pct }}": { "c": {{ bjw_final }}, "m": {{ bjw_final | money | json }}, "s": {{ bjw_saving | money | json }} }
+          {%- endfor -%}
+          } }
+        {%- endfor -%}
+        } }
+        {%- assign bjw_count = bjw_count | plus: 1 -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- liquid
+    comment
+      Codes Shopify has actually attached to the cart. When the cart holds a
+      product the codes cover and the claimed code is not among these, the
+      code is not in play (used, removed or replaced) and no welcome price is
+      shown.
+    endcomment
+    assign bjw_cart_codes = '|'
+    for bjw_application in cart.discount_applications
+      if bjw_application.type == 'discount_code'
+        assign bjw_cart_codes = bjw_cart_codes | append: bjw_application.title | append: '|'
+      endif
+    endfor
+    assign bjw_cart_covered = false
+    for bjw_item in cart.items
+      capture bjw_item_token
+        echo '|'
+        echo bjw_item.product.handle
+        echo '|'
+      endcapture
+      if bjw_seen contains bjw_item_token
+        assign bjw_cart_covered = true
+      endif
+    endfor
+  -%}
+  <style>
+    .bj-offer-applied{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));z-index:2147483000;display:flex;align-items:flex-start;gap:12px;box-sizing:border-box;width:min(520px,calc(100% - 32px));padding:14px 14px 14px 16px;border-radius:14px;background:#102D49;color:#fff;box-shadow:0 18px 40px rgba(16,45,73,.28);font-family:inherit;opacity:0;transform:translate(-50%,16px);transition:opacity .25s ease,transform .25s ease}
+    .bj-offer-applied.is-visible{opacity:1;transform:translate(-50%,0)}
+    .bj-offer-applied[hidden]{display:none}
+    .bj-offer-applied__icon{flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:#2E8B57;display:grid;place-items:center}
+    .bj-offer-applied__icon svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+    .bj-offer-applied__text{flex:1 1 auto;min-width:0;display:grid;gap:2px;font-size:.9rem;line-height:1.45}
+    .bj-offer-applied__text strong{font-size:.98rem}
+    .bj-offer-applied__text span{color:rgba(255,255,255,.84)}
+    .bj-offer-applied__close{flex:0 0 32px;width:32px;height:32px;margin:-4px -4px 0 0;padding:0;border:0;border-radius:50%;background:transparent;color:#fff;cursor:pointer;display:grid;place-items:center}
+    .bj-offer-applied__close:hover,.bj-offer-applied__close:focus-visible{background:rgba(255,255,255,.14)}
+    .bj-offer-applied__close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+    @media (prefers-reduced-motion:reduce){.bj-offer-applied{transition:none}}
+  </style>
+  <div id="BesjaarWelcomeApplied" class="bj-offer-applied" role="status" aria-live="polite" hidden>
+    <span class="bj-offer-applied__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    <div class="bj-offer-applied__text"><strong data-applied-title></strong><span data-applied-body></span></div>
+    <button class="bj-offer-applied__close" type="button" data-applied-close aria-label="{{ 'besjaar_ui.welcome_offer.close' | t | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <script type="application/json" id="BesjaarWelcomeAppliedConfig">
+    {
+      "title": {{ bjw_title | json }},
+      "body": {{ bjw_body | json }},
+      "note": {{ bjw_note | json }},
+      "save": {{ bjw_save | json }},
+      "regularLabel": {{ 'besjaar_ui.product.regular_price' | t | json }},
+      "rewards": [
+        {"id":"10","pct":10,"value":{{ '10% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_10 | default: 'WELKOM10' | json }}},
+        {"id":"15","pct":15,"value":{{ '15% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_15 | default: 'WELKOM15' | json }}},
+        {"id":"20","pct":20,"value":{{ '20% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_20 | default: 'WELKOM20' | json }}},
+        {"id":"shipping","pct":0,"value":{{ 'besjaar_ui.welcome_offer.free_shipping_value' | t | json }},"code":{{ settings.welcome_offer_code_shipping | default: 'WELKOMSHIP' | json }}}
+      ],
+      "cartCodes": {{ bjw_cart_codes | json }},
+      "cartCovered": {{ bjw_cart_covered | json }},
+      "prices": { {{ bjw_prices_json | strip }} }
+    }
+  </script>
+  <script>
+    (() => {
+      let config = {};
+      try { config = JSON.parse(document.getElementById('BesjaarWelcomeAppliedConfig')?.textContent || '{}'); } catch { return; }
+      const rewards = Array.isArray(config.rewards) ? config.rewards : [];
+      const prices = config.prices || {};
+
+      // Same keys, marker and claim lifetime as assets/besjaar-welcome-offer.js.
+      const PENDING_KEY = 'besjaar_welcome_offer_pending_session_v3';
+      const CLAIMED_KEY = 'besjaar_welcome_offer_claimed_v3';
+      const PENDING_MS = 10 * 60 * 1000;
+      const CLAIM_ACTIVE_MS = 2 * 24 * 60 * 60 * 1000;
+      const read = (store, key) => { try { return JSON.parse(store.getItem(key) || 'null'); } catch { return null; } };
+
+      // Captured now, before the deferred welcome-offer script strips the
+      // marker from the URL and clears the pending claim.
+      const params = new URLSearchParams(location.search);
+      const marker = params.get('besjaar_offer_claimed');
+      const pending = read(sessionStorage, PENDING_KEY);
+      const pendingFresh = !!pending?.at && (Date.now() - Number(pending.at)) < PENDING_MS;
+
+      /* ---------- Welcome prices ---------- */
+
+      const byProductId = {};
+      const byVariantId = {};
+      Object.keys(prices).forEach(handle => {
+        const entry = prices[handle];
+        byProductId[entry.id] = entry;
+        Object.keys(entry.v || {}).forEach(variantId => { byVariantId[variantId] = entry; });
+      });
+
+      // The percentage code this shopper has claimed and that is still in play.
+      const claimedReward = () => {
+        const claim = read(localStorage, CLAIMED_KEY);
+        if (!claim?.at || claim.status !== 'active') return null;
+        const age = Date.now() - Number(claim.at);
+        if (!Number.isFinite(age) || age < 0 || age > CLAIM_ACTIVE_MS) return null;
+        const reward = rewards.find(r => r.id === claim.reward) || rewards.find(r => r.code === claim.code);
+        if (!reward || !reward.pct || (claim.code && claim.code !== reward.code)) return null;
+        if (config.cartCovered && !String(config.cartCodes || '').includes(`|${reward.code}|`)) return null;
+        return reward;
+      };
+
+      const badgeText = (variant, reward) => variant.sale > 0 ? `${variant.sale}% + ${reward.pct}% KORTING` : `${reward.pct}% KORTING`;
+      const variantOf = (entry, variantId) => (entry?.v || {})[variantId] || (entry?.v || {})[entry?.first] || null;
+
+      const wasNode = variant => {
+        const was = document.createElement('s');
+        was.className = 'bj-price__was';
+        const hidden = document.createElement('span');
+        hidden.className = 'besjaar-ui-visually-hidden';
+        hidden.textContent = `${config.regularLabel || ''} `;
+        was.append(hidden, variant.wm);
+        return was;
+      };
+
+      // Price lists that other sections print for client-side rendering.
+      const rewriteLists = reward => {
+        document.querySelectorAll('script[data-besjaar-recent-prices]').forEach(list => {
+          try {
+            const data = JSON.parse(list.textContent || '{}');
+            Object.keys(data).forEach(handle => {
+              const entry = prices[handle];
+              const variant = variantOf(entry, entry?.first);
+              if (!variant) return;
+              data[handle].p = variant.was;
+              data[handle].s = variant.p[reward.pct].c;
+              data[handle].b = badgeText(variant, reward);
+            });
+            list.textContent = JSON.stringify(data);
+          } catch {}
+        });
+        document.querySelectorAll('script[data-besjaar-ui-cart-range]').forEach(list => {
+          try {
+            const data = JSON.parse(list.textContent || '[]');
+            data.forEach(item => {
+              const entry = byProductId[item.id];
+              const variant = variantOf(entry, item.variantId);
+              if (!variant) return;
+              item.price = variant.was;
+              item.priceNow = variant.p[reward.pct].c;
+              item.badge = badgeText(variant, reward);
+            });
+            list.textContent = JSON.stringify(data);
+          } catch {}
+        });
+      };
+
+      // Product cards: an element whose class ends in "__price" inside a card
+      // that links to the product. The card's own badge slot takes the badge.
+      // Cart drawer suggestions are handled through their price list above.
+      const rewriteCards = reward => {
+        document.querySelectorAll('[class*="__price"]').forEach(priceEl => {
+          const priceClass = Array.from(priceEl.classList).find(name => /__price$/.test(name));
+          if (!priceClass || priceEl.closest('[data-product-root]')) return;
+          // Cart lines carry Shopify's own discounted line totals; never touch them.
+          if (priceEl.closest('[class*="cart"], [id*="cart"], [id*="Cart"], form[action*="/cart"]')) return;
+          const card = priceEl.closest('article') || priceEl.parentElement?.parentElement;
+          const link = card?.querySelector('a[href*="/products/"]');
+          if (!link) return;
+          let handle = '';
+          try { handle = decodeURIComponent(new URL(link.href, location.origin).pathname.split('/products/')[1].split('/')[0]); } catch { return; }
+          const entry = prices[handle];
+          const variant = variantOf(entry, entry?.first);
+          if (!variant) return;
+          if (priceEl.dataset.bjWelcome === reward.id) return;
+          priceEl.dataset.bjWelcome = reward.id;
+
+          const now = document.createElement('span');
+          now.className = 'bj-price__now';
+          now.textContent = variant.p[reward.pct].m;
+          priceEl.replaceChildren(now, ' ', wasNode(variant));
+
+          const prefix = priceClass.replace(/__price$/, '');
+          let badge = card.querySelector('.bj-discount-badge') || card.querySelector(`.${prefix}__badge`);
+          if (!badge) {
+            const holder = card.querySelector(`.${prefix}__badges`) || card.querySelector(`.${prefix}__media`);
+            if (holder) {
+              badge = document.createElement('span');
+              badge.className = `${prefix}__badge`;
+              if (prefix === 'besjaar-collection-product-card') badge.classList.add('besjaar-collection-badge');
+              holder.appendChild(badge);
+            }
+          }
+          if (badge) {
+            Array.from(badge.classList).forEach(name => { if (/--(dark|muted|sale)$/.test(name)) badge.classList.remove(name); });
+            badge.classList.add('bj-discount-badge');
+            badge.textContent = badgeText(variant, reward);
+          }
+        });
+      };
+
+      // Product page buy box, for the variant currently selected.
+      const rewriteProductPage = reward => {
+        document.querySelectorAll('[data-product-root]').forEach(root => {
+          const variantId = root.querySelector('[data-variant-id]')?.value;
+          const entry = byVariantId[variantId];
+          const variant = variantOf(entry, variantId);
+          if (!variant) return;
+          const final = variant.p[reward.pct];
+
+          const price = root.querySelector('.besjaar-store-premium-pd__price');
+          if (price) { price.textContent = final.m; price.classList.add('is-bj-discounted'); }
+          const sticky = root.querySelector('[id^="BesjaarStickyPrice-"]');
+          if (sticky) sticky.textContent = final.m;
+          const was = root.querySelector('[data-bj-price-was]');
+          if (was) {
+            was.hidden = false;
+            const wasValue = was.querySelector('[data-bj-was-value]');
+            if (wasValue) wasValue.textContent = variant.wm;
+          }
+          const saving = root.querySelector('.besjaar-store-premium-pd__sale');
+          if (saving) { saving.textContent = `${config.save} ${final.s}`; saving.hidden = false; }
+
+          const topline = root.querySelector('.besjaar-store-premium-pd__topline');
+          let badge = topline?.querySelector('.bj-discount-badge');
+          if (topline && !badge) {
+            badge = document.createElement('span');
+            badge.className = 'bj-discount-badge';
+            const brand = topline.querySelector('.besjaar-store-premium-pd__brand');
+            if (brand) brand.after(badge); else topline.prepend(badge);
+          }
+          if (badge) badge.textContent = badgeText(variant, reward);
+
+          const row = root.querySelector('.besjaar-store-premium-pd__price-row');
+          if (row) {
+            let note = root.querySelector('[data-bj-welcome-note]');
+            if (!note) {
+              note = document.createElement('p');
+              note.className = 'bj-discount-note';
+              note.dataset.bjWelcomeNote = '';
+              row.after(note);
+            }
+            note.textContent = String(config.note || '').replace('{pct}', reward.pct).replace('{code}', reward.code);
+          }
+        });
+      };
+
+      let appliedReward = null;
+      const applyWelcomePrices = () => {
+        const reward = claimedReward();
+        if (!reward) return;
+        if (!appliedReward) rewriteLists(reward);
+        appliedReward = reward;
+        rewriteCards(reward);
+        rewriteProductPage(reward);
+      };
+
+      // Everything above this section is parsed by now, and the deferred theme
+      // scripts have not yet read the price lists.
+      applyWelcomePrices();
+      // The variant picker rewrites the buy box; put the welcome price back.
+      document.addEventListener('besjaar_ui:variant-change', () => window.setTimeout(applyWelcomePrices, 0));
+
+      /* ---------- "Discount applied" notice ---------- */
+
+      const notice = document.getElementById('BesjaarWelcomeApplied');
+      const show = reward => {
+        if (!notice) return;
+        const fill = text => String(text || '').replace('{code}', reward.code).replace('{value}', reward.value || '');
+        notice.querySelector('[data-applied-title]').textContent = fill(config.title);
+        notice.querySelector('[data-applied-body]').textContent = fill(config.body);
+        notice.hidden = false;
+        requestAnimationFrame(() => notice.classList.add('is-visible'));
+        let timer = null;
+        const hide = () => {
+          clearTimeout(timer);
+          notice.classList.remove('is-visible');
+          window.setTimeout(() => { notice.hidden = true; }, 300);
+        };
+        notice.querySelector('[data-applied-close]')?.addEventListener('click', hide, { once: true });
+        timer = window.setTimeout(hide, 10000);
+        document.dispatchEvent(new CustomEvent('besjaar_ui:welcome_offer_applied_notice', { detail: { reward: reward.id } }));
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // The page Shopify re-renders after a failed or same-page submission
+        // carries these flags; the welcome-offer script handles those cases.
+        const flag = name => document.querySelector(`[data-offer-server-${name}]`)?.value === 'true';
+        const formPage = flag('success') || flag('error') || params.get('customer_posted') === 'true' || location.pathname.includes('/challenge');
+
+        let reward = null;
+        if (!formPage) {
+          if (marker) {
+            reward = rewards.find(r => r.id === marker) || (pending && rewards.find(r => r.code === pending.code)) || null;
+          } else if (pendingFresh) {
+            // Shopify's discount redirect dropped our marker: a fresh pending
+            // claim with no form flags still means the sign-up went through.
+            reward = rewards.find(r => r.id === pending.reward) || rewards.find(r => r.code === pending.code) || null;
+            if (reward) {
+              try { sessionStorage.removeItem(PENDING_KEY); } catch {}
+              try { localStorage.setItem(CLAIMED_KEY, JSON.stringify({ at: Date.now(), reward: reward.id, code: reward.code, status: 'active' })); } catch {}
+            }
+          }
+          if (reward?.code) show(reward);
+        }
+        // A claim confirmed on this very page (by the notice above or by the
+        // welcome-offer script) and anything the deferred scripts drew.
+        applyWelcomePrices();
+      });
+    })();
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Besjaar welcome notice",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows a short 'discount applied' confirmation after a shopper claims the Welcome Drop, and from then on shows that shopper the welcome price on every product the code covers. It follows the Welcome offer settings in Theme settings. Keep this section in the footer group."
+    },
+    {
+      "type": "text",
+      "id": "welcome_collections",
+      "label": "Collections the welcome codes apply to",
+      "info": "Collection handles, comma-separated. Keep in step with the WELKOM codes in Admin > Discounts.",
+      "default": "showerhead,shower-filter"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  }
+}
+{% endschema %}

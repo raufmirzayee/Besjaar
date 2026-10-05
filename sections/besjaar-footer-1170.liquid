@@ -1,0 +1,34 @@
+{%- comment -%}
+  Besjaar 11.6.18 — footer assurance band.
+
+  Was three chunky cards, each a third of a phone screen tall, icon stacked
+  above centred text. Now one quiet band: three columns divided by hairlines,
+  no card chrome, a small sky icon disc per item. Roughly a tenth of the
+  height, and it reads as a reassurance line rather than a feature section.
+
+  Phones: icon above a short label, centred, supporting line small beneath.
+  From 700px: icon to the left of the text, left aligned, larger type.
+
+  Selectors are deliberately specific — the earlier footer rules in the
+  desktop carrier were being outranked here.
+  2026-09-13 consolidation: this section's <style> block was extracted during
+  the CSS bundling pass. The rules above are now served from
+  assets/besjaar-seo-carriers-late.css, loaded by besjaar-desktop-fixes-1170.
+  Editing this file changes nothing — edit the bundle instead. The section is
+  kept so existing header-group settings stay valid.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Besjaar footer polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: the footer assurance block is one hairline-divided band of three columns instead of three stacked cards — compact on phones, icon-left rows from 700px. Keep in the header group after the desktop section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

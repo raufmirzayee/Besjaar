@@ -1,0 +1,19 @@
+{%- comment -%}
+  Besjaar v8 SEO compatibility section.
+  Organization / Brand / WebSite JSON-LD is now consolidated in
+  snippets/structured-data.liquid, and the visible official-site statement is
+  rendered server-side inside <main> by snippets/besjaar-official-line.liquid.
+  This section intentionally emits no duplicate markup.
+{%- endcomment -%}
+{% schema %}
+{
+  "name": "Besjaar SEO entity",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "v8: SEO entity markup is consolidated in structured-data.liquid; this compatibility section is intentionally empty."
+    }
+  ],
+  "enabled_on": {"groups": ["header"]}
+}
+{% endschema %}

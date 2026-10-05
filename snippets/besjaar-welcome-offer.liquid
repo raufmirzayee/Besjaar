@@ -1,0 +1,267 @@
+{%- comment -%}
+  Besjaar welcome offer — simple one-step version (2026-09-29).
+
+  One card: the discount, one line of text, first name (optional), e-mail,
+  one button. A small tab in the lower-left corner ("Bespaar 20%") is
+  visible from page load and reopens it. It opens by itself once per visit,
+  10 seconds after the page loads, on the homepage and collection pages only — never on product, cart or checkout pages.
+
+  The offer shown is the reward with the highest weight in Theme settings >
+  Welcome offer (no lottery any more). It keeps the storage keys and the
+  ?besjaar_offer_claimed= marker that sections/besjaar-welcome-applied.liquid
+  reads, so the "discount applied" notice and the welcome prices keep working.
+  Self-contained: the old besjaar-welcome-offer.css/.js assets are no longer
+  loaded.
+{%- endcomment -%}
+{%- liquid
+  assign bjw_allowed = settings.welcome_offer_enabled
+  if customer != blank
+    assign bjw_allowed = false
+  endif
+  if request.design_mode or request.visual_preview_mode
+    assign bjw_allowed = false
+  endif
+  if request.page_type == 'cart' or request.page_type == 'search' or request.page_type == '404' or request.page_type contains 'customers'
+    assign bjw_allowed = false
+  endif
+  if request.path contains '/apps/' or request.path contains '/checkouts/' or request.path contains '/checkout'
+    assign bjw_allowed = false
+  endif
+
+  assign bjw_w10 = settings.welcome_offer_weight_10 | default: 25 | plus: 0
+  assign bjw_w15 = settings.welcome_offer_weight_15 | default: 55 | plus: 0
+  assign bjw_w20 = settings.welcome_offer_weight_20 | default: 10 | plus: 0
+  assign bjw_wship = settings.welcome_offer_weight_shipping | default: 10 | plus: 0
+  assign bjw_id = '10'
+  assign bjw_pct = 10
+  assign bjw_code = settings.welcome_offer_code_10 | default: 'WELKOM10'
+  assign bjw_w = bjw_w10
+  if bjw_w15 > bjw_w
+    assign bjw_id = '15'
+    assign bjw_pct = 15
+    assign bjw_code = settings.welcome_offer_code_15 | default: 'WELKOM15'
+    assign bjw_w = bjw_w15
+  endif
+  if bjw_w20 > bjw_w
+    assign bjw_id = '20'
+    assign bjw_pct = 20
+    assign bjw_code = settings.welcome_offer_code_20 | default: 'WELKOM20'
+    assign bjw_w = bjw_w20
+  endif
+  if bjw_wship > bjw_w
+    assign bjw_id = 'shipping'
+    assign bjw_pct = 0
+    assign bjw_code = settings.welcome_offer_code_shipping | default: 'WELKOMSHIP'
+    assign bjw_w = bjw_wship
+  endif
+  if bjw_w <= 0 or bjw_code == blank
+    assign bjw_allowed = false
+  endif
+
+  assign bjw_auto = false
+  if request.page_type == 'index' or request.page_type == 'collection' or request.page_type == 'list-collections'
+    assign bjw_auto = true
+  endif
+
+  assign bjw_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bjw_lang
+    when 'en'
+      assign bjw_tab = 'Save ' | append: bjw_pct | append: '%'
+      assign bjw_title = 'Save ' | append: bjw_pct | append: '%'
+      assign bjw_text = 'Sign up and get ' | append: bjw_pct | append: '% off your first Besjaar order.'
+      if bjw_id == 'shipping'
+        assign bjw_tab = 'Free shipping'
+        assign bjw_title = 'Free shipping'
+        assign bjw_text = 'Sign up and get free shipping on your first Besjaar order.'
+      endif
+      assign bjw_first = 'First name'
+      assign bjw_email = 'Your email address'
+      assign bjw_button = 'Get my discount'
+      assign bjw_note = 'By signing up you agree to receive Besjaar emails. Unsubscribe anytime.'
+      assign bjw_close = 'Close'
+      assign bjw_error = 'That did not work. Check your email address and try again.'
+    when 'de'
+      assign bjw_tab = bjw_pct | prepend: '' | append: '% sparen'
+      assign bjw_title = bjw_pct | prepend: '' | append: '% sparen'
+      assign bjw_text = 'Melde dich an und erhalte ' | append: bjw_pct | append: '% Rabatt auf deine erste Besjaar-Bestellung.'
+      if bjw_id == 'shipping'
+        assign bjw_tab = 'Gratis Versand'
+        assign bjw_title = 'Gratis Versand'
+        assign bjw_text = 'Melde dich an und erhalte gratis Versand auf deine erste Besjaar-Bestellung.'
+      endif
+      assign bjw_first = 'Vorname'
+      assign bjw_email = 'Deine E-Mail-Adresse'
+      assign bjw_button = 'Rabatt sichern'
+      assign bjw_note = 'Mit der Anmeldung erhältst du E-Mails von Besjaar. Abmelden ist jederzeit möglich.'
+      assign bjw_close = 'Schließen'
+      assign bjw_error = 'Das hat nicht geklappt. Prüfe deine E-Mail-Adresse und versuche es erneut.'
+    when 'fr'
+      assign bjw_tab = 'Économisez ' | append: bjw_pct | append: ' %'
+      assign bjw_title = 'Économisez ' | append: bjw_pct | append: ' %'
+      assign bjw_text = 'Inscrivez-vous et recevez ' | append: bjw_pct | append: ' % de réduction sur votre première commande Besjaar.'
+      if bjw_id == 'shipping'
+        assign bjw_tab = 'Livraison gratuite'
+        assign bjw_title = 'Livraison gratuite'
+        assign bjw_text = 'Inscrivez-vous et recevez la livraison gratuite sur votre première commande Besjaar.'
+      endif
+      assign bjw_first = 'Prénom'
+      assign bjw_email = 'Votre adresse e-mail'
+      assign bjw_button = 'Recevoir ma réduction'
+      assign bjw_note = 'En vous inscrivant, vous acceptez de recevoir les e-mails de Besjaar. Désinscription possible à tout moment.'
+      assign bjw_close = 'Fermer'
+      assign bjw_error = 'Cela n’a pas fonctionné. Vérifiez votre adresse e-mail et réessayez.'
+    when 'es'
+      assign bjw_tab = 'Ahorra un ' | append: bjw_pct | append: ' %'
+      assign bjw_title = 'Ahorra un ' | append: bjw_pct | append: ' %'
+      assign bjw_text = 'Suscríbete y recibe un ' | append: bjw_pct | append: ' % de descuento en tu primer pedido de Besjaar.'
+      if bjw_id == 'shipping'
+        assign bjw_tab = 'Envío gratis'
+        assign bjw_title = 'Envío gratis'
+        assign bjw_text = 'Suscríbete y recibe envío gratis en tu primer pedido de Besjaar.'
+      endif
+      assign bjw_first = 'Nombre'
+      assign bjw_email = 'Tu correo electrónico'
+      assign bjw_button = 'Obtener mi descuento'
+      assign bjw_note = 'Al suscribirte, aceptas recibir emails de Besjaar. Puedes darte de baja en cualquier momento.'
+      assign bjw_close = 'Cerrar'
+      assign bjw_error = 'No ha funcionado. Comprueba tu correo electrónico e inténtalo de nuevo.'
+    else
+      assign bjw_tab = 'Bespaar ' | append: bjw_pct | append: '%'
+      assign bjw_title = 'Bespaar ' | append: bjw_pct | append: '%'
+      assign bjw_text = 'Meld je aan en ontvang ' | append: bjw_pct | append: '% korting op je eerste Besjaar-bestelling.'
+      if bjw_id == 'shipping'
+        assign bjw_tab = 'Gratis verzending'
+        assign bjw_title = 'Gratis verzending'
+        assign bjw_text = 'Meld je aan en ontvang gratis verzending op je eerste Besjaar-bestelling.'
+      endif
+      assign bjw_first = 'Voornaam'
+      assign bjw_email = 'Je e-mailadres'
+      assign bjw_button = 'Ontvang mijn korting'
+      assign bjw_note = 'Door je aan te melden ontvang je e-mails van Besjaar. Uitschrijven kan altijd.'
+      assign bjw_close = 'Sluiten'
+      assign bjw_error = 'Dat lukte niet. Controleer je e-mailadres en probeer het opnieuw.'
+  endcase
+
+  assign bjw_target = routes.all_products_collection_url | append: '?besjaar_offer_claimed=' | append: bjw_id | url_encode
+  assign bjw_return_to = routes.root_url | append: 'discount/' | append: bjw_code | append: '?redirect=' | append: bjw_target
+-%}
+{%- if bjw_allowed -%}
+<style>
+  .bjw-tab{position:fixed;left:20px;bottom:20px;z-index:70;display:inline-flex;align-items:center;gap:14px;padding:15px 20px;border:3px solid #fff;border-radius:14px;background:#B5E524;color:#0F2947;font:800 17px/1 Inter,system-ui,sans-serif;letter-spacing:.01em;box-shadow:0 10px 28px rgba(15,41,71,.35);animation:bjw-tab-in .6s ease-out both}
+  .bjw-tab[hidden]{display:none}
+  .bjw-tab button{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;cursor:pointer;line-height:1}
+  .bjw-tab .bjw-tab__x{font-size:20px;opacity:.7}
+  .bjw-tab .bjw-tab__x:hover{opacity:1}
+  @keyframes bjw-tab-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  dialog.bjw{position:fixed;inset:0;margin:auto;border:0;padding:0;border-radius:16px;width:min(92vw,420px);max-height:90vh;background:#fff;color:#132A3E;box-shadow:0 24px 64px rgba(15,41,71,.35);z-index:1000}
+  dialog.bjw::backdrop{background:rgba(15,41,71,.45)}
+  dialog.bjw:not([open]){display:none}
+  .bjw__inner{position:relative;padding:40px 28px 24px;text-align:center;font-family:Inter,system-ui,sans-serif}
+  .bjw__close{position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#61798E;font-size:24px;line-height:1;cursor:pointer}
+  .bjw__close:hover{background:#EEF6FB;color:#132A3E}
+  .bjw__title{margin:0 0 8px;font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.01em;color:#132A3E}
+  .bjw__text{margin:0 0 20px;font-size:16px;line-height:1.5;color:#3F5670}
+  .bjw__form{margin:0}
+  .bjw__field{display:block;width:100%;box-sizing:border-box;height:50px;margin:0 0 10px;padding:0 14px;border:1px solid #CFD8E2;border-radius:10px;background:#fff;font:16px Inter,system-ui,sans-serif;color:#132A3E}
+  .bjw__field:focus{outline:2px solid #173B5E;outline-offset:1px;border-color:#173B5E}
+  .bjw__btn{display:block;width:100%;height:52px;margin-top:4px;border:0;border-radius:10px;background:#173B5E;color:#fff;font:600 16px Inter,system-ui,sans-serif;letter-spacing:.01em;cursor:pointer}
+  .bjw__btn:hover{background:#102D49}
+  .bjw__note{margin:14px 0 0;font-size:12px;line-height:1.5;color:#61798E}
+  .bjw__error{margin:0 0 10px;font-size:14px;line-height:1.4;color:#B42318}
+  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}.bjw-tab{left:12px;bottom:12px;padding:13px 16px;font-size:15px}}
+</style>
+
+<div id="BjwTab" class="bjw-tab">
+  <button type="button" data-bjw-open aria-controls="BjwDialog">{{ bjw_tab | escape }}</button>
+  <button type="button" class="bjw-tab__x" data-bjw-dismiss aria-label="{{ bjw_close | escape }}">&times;</button>
+</div>
+
+<dialog id="BjwDialog" class="bjw"
+  data-reward-id="{{ bjw_id }}"
+  data-reward-code="{{ bjw_code | escape }}"
+  data-auto-open="{% if bjw_auto %}true{% else %}false{% endif %}"
+  data-delay="10"
+  data-has-errors="{% if form.errors %}true{% else %}false{% endif %}"
+  aria-labelledby="BjwTitle">
+  <div class="bjw__inner">
+    <button type="button" class="bjw__close" data-bjw-close aria-label="{{ bjw_close | escape }}">&times;</button>
+    <h2 id="BjwTitle" class="bjw__title">{{ bjw_title | escape }}</h2>
+    <p class="bjw__text">{{ bjw_text | escape }}</p>
+    {% form 'customer', return_to: bjw_return_to, id: 'BjwForm', class: 'bjw__form' %}
+      <input type="hidden" name="contact[tags]" value="newsletter,besjaar-welcome-offer,besjaar-welcome-simple-v2,besjaar-welcome-{{ bjw_id }},besjaar-welcome-code-{{ bjw_code | escape }},besjaar-locale-{{ bjw_lang }}">
+      {% if form.errors %}<p class="bjw__error" role="alert">{{ bjw_error | escape }}</p>{% endif %}
+      <input class="bjw__field" type="text" name="contact[first_name]" placeholder="{{ bjw_first | escape }}" autocomplete="given-name" aria-label="{{ bjw_first | escape }}">
+      <input class="bjw__field" type="email" name="contact[email]" placeholder="{{ bjw_email | escape }}" autocomplete="email" required aria-label="{{ bjw_email | escape }}">
+      <button class="bjw__btn" type="submit">{{ bjw_button | escape }}</button>
+    {% endform %}
+    <p class="bjw__note">{{ bjw_note | escape }}</p>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  var d = document.getElementById('BjwDialog');
+  var tab = document.getElementById('BjwTab');
+  if (!d) return;
+  var K = {
+    claimed: 'besjaar_welcome_offer_claimed_v3',
+    pending: 'besjaar_welcome_offer_pending_session_v3',
+    seen: 'besjaar_welcome_offer_seen_session_v3',
+    closed: 'besjaar_welcome_offer_closed_session_v3',
+    tab: 'besjaar_welcome_tab_dismissed_session_v1'
+  };
+  var reward = { id: d.getAttribute('data-reward-id'), code: d.getAttribute('data-reward-code') };
+  function get(s, k) { try { return JSON.parse(s.getItem(k) || 'null'); } catch (e) { return null; } }
+  function set(s, k, v) { try { s.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function del(s, k) { try { s.removeItem(k); } catch (e) {} }
+
+  /* Landed here after Shopify's /discount/CODE redirect: the code is saved for this shopper. */
+  var p = new URLSearchParams(location.search);
+  if (p.get('besjaar_offer_claimed')) {
+    set(localStorage, K.claimed, { at: Date.now(), reward: reward.id, code: reward.code, status: 'active' });
+    del(sessionStorage, K.pending);
+    p.delete('besjaar_offer_claimed');
+    var q = p.toString();
+    history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash);
+  }
+  var claim = get(localStorage, K.claimed);
+  var ttl = claim && claim.status === 'pending' ? 10 * 60 * 1000 : 2 * 24 * 60 * 60 * 1000;
+  var claimed = !!(claim && claim.at && (Date.now() - Number(claim.at)) < ttl);
+
+  function open() {
+    if (d.open) return;
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    set(sessionStorage, K.seen, { at: Date.now() });
+    if (tab) tab.hidden = true;
+    var f = d.querySelector('input[type="email"]');
+    if (f && window.matchMedia('(min-width: 761px)').matches) setTimeout(function () { f.focus(); }, 60);
+  }
+  function close() {
+    if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
+    set(sessionStorage, K.closed, { at: Date.now() });
+    if (tab && !claimed && !get(sessionStorage, K.tab)) tab.hidden = false;
+  }
+  d.querySelector('[data-bjw-close]').addEventListener('click', close);
+  d.addEventListener('click', function (e) { if (e.target === d) close(); });
+  d.addEventListener('cancel', function (e) { e.preventDefault(); close(); });
+  var form = d.querySelector('form');
+  if (form) form.addEventListener('submit', function () {
+    /* Shopify posts the form natively and redirects to /discount/CODE. Mark the claim as pending so nothing reopens meanwhile. */
+    set(sessionStorage, K.pending, { at: Date.now(), reward: reward.id, code: reward.code });
+    set(localStorage, K.claimed, { at: Date.now(), reward: reward.id, code: reward.code, status: 'pending' });
+  });
+  if (tab) {
+    tab.querySelector('[data-bjw-open]').addEventListener('click', function () { del(sessionStorage, K.closed); open(); });
+    tab.querySelector('[data-bjw-dismiss]').addEventListener('click', function () { tab.hidden = true; set(sessionStorage, K.tab, { at: Date.now() }); });
+  }
+
+  if (tab && (claimed || get(sessionStorage, K.tab))) tab.hidden = true;
+  if (claimed) return;
+  if (d.getAttribute('data-has-errors') === 'true') { open(); return; }
+  var autoOpen = d.getAttribute('data-auto-open') === 'true' && !get(sessionStorage, K.seen) && !get(sessionStorage, K.closed);
+  if (!autoOpen) return;
+  var delay = Math.max(1, Number(d.getAttribute('data-delay') || 10)) * 1000;
+  setTimeout(function () { if (!document.querySelector('dialog[open]')) open(); }, delay);
+})();
+</script>
+{%- endif -%}

@@ -1,0 +1,36 @@
+{%- comment -%}
+  Besjaar 11.6.21 — Judge.me review carousel, brought into the house system.
+
+  The app block ships with black text, a grey card and Judge.me's default
+  star colour, which reads as a third-party widget dropped onto the page.
+  Colour, copy and the empty media well are fixed in the block's own settings
+  (templates/index.json); this file is the layout and typography pass that
+  those settings cannot reach.
+
+  Everything is scoped to the section id of the app block on the home page,
+  so no other Judge.me widget — the product page badge, the review widget —
+  is touched. Selectors are written against Judge.me's jdgm- class names with
+  substring fallbacks, because the markup is the app's and can change under
+  us; if a selector stops matching, the block simply falls back to Judge.me's
+  own styling rather than breaking.
+  2026-09-13 consolidation: this section's <style> block was extracted during
+  the CSS bundling pass. The rules above are now served from
+  assets/besjaar-seo-carriers-late.css, loaded by besjaar-desktop-fixes-1170.
+  Editing this file changes nothing — edit the bundle instead. The section is
+  kept so existing header-group settings stay valid.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Besjaar review polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.21: restyles the Judge.me cards carousel on the home page to the Besjaar type and colour system — section-weight heading, hairline white cards, gold stars, circular arrows. Scoped to that one block, so other Judge.me widgets are untouched. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

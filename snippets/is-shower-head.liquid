@@ -1,0 +1,28 @@
+{%- liquid
+  assign besjaar_ui_shower_candidate = product
+  assign besjaar_ui_is_shower_head = false
+  capture besjaar_ui_candidate_family_capture
+    render 'product-family', product: besjaar_ui_shower_candidate
+  endcapture
+  assign besjaar_ui_candidate_family = besjaar_ui_candidate_family_capture | strip
+
+  if besjaar_ui_candidate_family == 'shower'
+    assign besjaar_ui_shower_subtype = besjaar_ui_shower_candidate.metafields.custom.shower_family.value | default: '' | downcase | strip | replace: '-', '_'
+    case besjaar_ui_shower_subtype
+      when 'shower_filter', 'replacement_filter', 'filter', 'shower_hose', 'hose', 'shower_accessory', 'accessory'
+        assign besjaar_ui_is_shower_head = false
+      when 'shower_head', 'filtered_shower_head', 'hand_shower', 'shower_set', 'showerhead'
+        assign besjaar_ui_is_shower_head = true
+      else
+        assign besjaar_ui_candidate_title = besjaar_ui_shower_candidate.title | downcase
+        assign besjaar_ui_candidate_type = besjaar_ui_shower_candidate.type | downcase
+        if besjaar_ui_candidate_title contains 'douchekop' or besjaar_ui_candidate_title contains 'shower head' or besjaar_ui_candidate_title contains 'showerhead' or besjaar_ui_candidate_title contains 'handdouche' or besjaar_ui_candidate_title contains 'hand shower' or besjaar_ui_candidate_type contains 'douchekop' or besjaar_ui_candidate_type contains 'shower head'
+          assign besjaar_ui_is_shower_head = true
+        elsif besjaar_ui_candidate_title contains 'filter' or besjaar_ui_candidate_title contains 'slang' or besjaar_ui_candidate_title contains 'hose'
+          assign besjaar_ui_is_shower_head = false
+        else
+          assign besjaar_ui_is_shower_head = true
+        endif
+    endcase
+  endif
+-%}{{- besjaar_ui_is_shower_head -}}

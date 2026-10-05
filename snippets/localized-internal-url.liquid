@@ -1,0 +1,95 @@
+{%- liquid
+  assign besjaar_ui_url = url | default: '' | strip
+  assign besjaar_ui_root = routes.root_url | default: '/'
+
+  comment
+    Normalize absolute URLs that point back to this same Shopify storefront.
+    This protects menu/page settings that were saved as full custom-domain or
+    myshopify.com URLs while preserving the visitor's active EN/NL locale.
+  endcomment
+  if besjaar_ui_url != blank
+    assign besjaar_ui_url_size = besjaar_ui_url | size
+    assign besjaar_ui_shop_url = shop.url | default: ''
+    assign besjaar_ui_shop_url_size = besjaar_ui_shop_url | size
+    assign besjaar_ui_shop_url_prefix = besjaar_ui_url | slice: 0, besjaar_ui_shop_url_size
+
+    assign besjaar_ui_secure_url = shop.secure_url | default: ''
+    assign besjaar_ui_secure_url_size = besjaar_ui_secure_url | size
+    assign besjaar_ui_secure_url_prefix = besjaar_ui_url | slice: 0, besjaar_ui_secure_url_size
+
+    assign besjaar_ui_permanent_https = 'https://' | append: shop.permanent_domain
+    assign besjaar_ui_permanent_https_size = besjaar_ui_permanent_https | size
+    assign besjaar_ui_permanent_https_prefix = besjaar_ui_url | slice: 0, besjaar_ui_permanent_https_size
+
+    assign besjaar_ui_permanent_http = 'http://' | append: shop.permanent_domain
+    assign besjaar_ui_permanent_http_size = besjaar_ui_permanent_http | size
+    assign besjaar_ui_permanent_http_prefix = besjaar_ui_url | slice: 0, besjaar_ui_permanent_http_size
+
+    if besjaar_ui_shop_url != blank and besjaar_ui_shop_url_prefix == besjaar_ui_shop_url
+      assign besjaar_ui_url = besjaar_ui_url | slice: besjaar_ui_shop_url_size, besjaar_ui_url_size
+    elsif besjaar_ui_secure_url != blank and besjaar_ui_secure_url_prefix == besjaar_ui_secure_url
+      assign besjaar_ui_url = besjaar_ui_url | slice: besjaar_ui_secure_url_size, besjaar_ui_url_size
+    elsif shop.permanent_domain != blank and besjaar_ui_permanent_https_prefix == besjaar_ui_permanent_https
+      assign besjaar_ui_url = besjaar_ui_url | slice: besjaar_ui_permanent_https_size, besjaar_ui_url_size
+    elsif shop.permanent_domain != blank and besjaar_ui_permanent_http_prefix == besjaar_ui_permanent_http
+      assign besjaar_ui_url = besjaar_ui_url | slice: besjaar_ui_permanent_http_size, besjaar_ui_url_size
+    endif
+  endif
+
+  if besjaar_ui_url == blank
+    assign besjaar_ui_url = '/'
+  endif
+
+  assign besjaar_ui_url_lc = besjaar_ui_url | downcase
+  assign besjaar_ui_first_char = besjaar_ui_url | slice: 0, 1
+  assign besjaar_ui_root_length = besjaar_ui_root | size
+  assign besjaar_ui_url_root_prefix = besjaar_ui_url | slice: 0, besjaar_ui_root_length
+  assign besjaar_ui_root_last_char = besjaar_ui_root | slice: -1, 1
+  assign besjaar_ui_is_external = false
+
+  if besjaar_ui_url contains '://' or besjaar_ui_url contains 'mailto:' or besjaar_ui_url contains 'tel:' or besjaar_ui_url contains 'javascript:'
+    assign besjaar_ui_is_external = true
+  endif
+
+  comment
+    ParcelPanel is an app-proxy route. Rebuild it from the locale-aware root
+    instead of trusting any stored or previously malformed source URL.
+  endcomment
+  if besjaar_ui_url_lc contains 'parcelpanel'
+    if besjaar_ui_root == '/'
+      echo '/apps/parcelpanel'
+    elsif besjaar_ui_root_last_char == '/'
+      echo besjaar_ui_root | append: 'apps/parcelpanel'
+    else
+      echo besjaar_ui_root | append: '/apps/parcelpanel'
+    endif
+  elsif besjaar_ui_is_external or besjaar_ui_first_char == '#' or besjaar_ui_first_char == '?'
+    echo besjaar_ui_url
+  elsif besjaar_ui_url contains '/policies/'
+    assign besjaar_ui_policy_tail = besjaar_ui_url | split: '/policies/' | last
+    if besjaar_ui_root == '/'
+      echo '/policies/' | append: besjaar_ui_policy_tail
+    elsif besjaar_ui_root_last_char == '/'
+      echo besjaar_ui_root | append: 'policies/' | append: besjaar_ui_policy_tail
+    else
+      echo besjaar_ui_root | append: '/policies/' | append: besjaar_ui_policy_tail
+    endif
+  elsif besjaar_ui_first_char == '/'
+    if besjaar_ui_root == '/' or besjaar_ui_url_root_prefix == besjaar_ui_root
+      echo besjaar_ui_url
+    else
+      assign besjaar_ui_path_without_slash = besjaar_ui_url | remove_first: '/'
+      if besjaar_ui_root_last_char == '/'
+        echo besjaar_ui_root | append: besjaar_ui_path_without_slash
+      else
+        echo besjaar_ui_root | append: '/' | append: besjaar_ui_path_without_slash
+      endif
+    endif
+  else
+    if besjaar_ui_root_last_char == '/'
+      echo besjaar_ui_root | append: besjaar_ui_url
+    else
+      echo besjaar_ui_root | append: '/' | append: besjaar_ui_url
+    endif
+  endif
+-%}

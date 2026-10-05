@@ -1,0 +1,78 @@
+{% liquid
+  assign source_collection = section.settings.collection | default: settings.shower_collection
+  if source_collection == blank
+    assign source_collection = collections['badkamer-douche']
+  endif
+  if source_collection == blank
+    assign source_collection = collections['douche']
+  endif
+  if source_collection == blank
+    assign source_collection = collections['shower']
+  endif
+  assign total_weighted = 0
+  assign total_reviews = 0
+  assign rated_products = 0
+  for item in source_collection.products limit: 30
+    capture item_is_head_capture
+      render 'is-focus-showerhead', product: item
+    endcapture
+    assign item_is_head = item_is_head_capture | strip
+    assign item_rating_meta = item.metafields.reviews.rating
+    assign item_count_meta = item.metafields.reviews.rating_count
+    if item_is_head == 'true' and item_rating_meta != blank and item_count_meta != blank
+      assign item_rating = item_rating_meta.value.rating | default: item_rating_meta.value
+      assign item_count = item_count_meta.value | default: item_count_meta
+      if item_rating != blank and item_count > 0
+        assign weighted = item_rating | times: item_count
+        assign total_weighted = total_weighted | plus: weighted
+        assign total_reviews = total_reviews | plus: item_count
+        assign rated_products = rated_products | plus: 1
+      endif
+    endif
+  endfor
+  assign average_rating = 0
+  if total_reviews > 0
+    assign average_rating = total_weighted | divided_by: total_reviews
+  endif
+%}
+{% if settings.show_home_review_summary and total_reviews > 0 %}
+<section class="besjaar-ui-section besjaar-ui-social-proof" data-reveal>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-social-proof__panel">
+      <div class="besjaar-ui-social-proof__intro">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.reviews.social_kicker' | t }}</p>
+        <h2>{{ 'besjaar_ui.reviews.social_heading' | t }}</h2>
+        <p>{{ 'besjaar_ui.reviews.social_copy' | t }}</p>
+        <div class="besjaar-ui-social-proof__score">
+          <strong>{{ average_rating | round: 1 }}</strong>
+          <div><span aria-hidden="true">★★★★★</span><small>{{ 'besjaar_ui.reviews.based_on' | t: count: total_reviews }}</small></div>
+        </div>
+      </div>
+      <div class="besjaar-ui-social-proof__products">
+        {% assign shown = 0 %}
+        {% for item in source_collection.products limit: 30 %}
+          {% capture item_is_head_capture %}{% render 'is-focus-showerhead', product: item %}{% endcapture %}
+          {% assign item_is_head = item_is_head_capture | strip %}
+          {% if shown < 3 and item_is_head == 'true' and item.metafields.reviews.rating != blank and item.metafields.reviews.rating_count != blank %}
+            {% assign rc = item.metafields.reviews.rating_count.value | default: item.metafields.reviews.rating_count %}
+            {% if rc > 0 %}
+              <a href="{% render 'localized-internal-url', url: item.url %}" class="besjaar-ui-social-proof__product">
+                <div class="besjaar-ui-social-proof__product-media">{% if item.featured_image %}{{ item.featured_image | image_url: width: 360 | image_tag: loading: 'lazy', alt: item.title }}{% endif %}</div>
+                {% capture besjaar_ui_social_product_title %}{% render 'localized-product-title', product: item %}{% endcapture %}<div><strong>{{ besjaar_ui_social_product_title | strip | truncatewords: 7 }}</strong>{% render 'review-stars', product: item, compact: true %}</div>
+              </a>
+              {% assign shown = shown | plus: 1 %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Review social proof",
+  "settings":[{"type":"collection","id":"collection","label":"Products used for rating summary"}],
+  "presets":[{"name":"Review social proof"}]
+}
+{% endschema %}

@@ -1,0 +1,22 @@
+<section class="besjaar-ui-section besjaar-ui-home-contact" id="besjaar-contact">
+  <div class="besjaar-ui-shell besjaar-ui-home-contact__grid">
+    <div class="besjaar-ui-home-support__head">
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.contact.kicker' | t }}</p>
+      <h2>{{ 'besjaar_ui.contact.title' | t }}</h2>
+      <p>{{ 'besjaar_ui.contact.intro' | t }}</p>
+    </div>
+    <div class="besjaar-ui-home-contact__form">
+      {% form 'contact' %}
+        {% if form.posted_successfully? %}<p class="besjaar-ui-form-message besjaar-ui-form-message--success" role="status" aria-live="polite">{{ 'besjaar_ui.contact.success' | t }}</p>{% endif %}
+        {% if form.errors %}<div class="besjaar-ui-form-message" role="alert">{{ form.errors | default_errors }}</div>{% endif %}
+        <div class="besjaar-ui-home-contact__fields">
+          <label><span>{{ 'besjaar_ui.contact.name' | t }}</span><input class="besjaar-ui-input" type="text" name="contact[name]" autocomplete="name"></label>
+          <label><span>{{ 'besjaar_ui.contact.email' | t }}</span><input class="besjaar-ui-input" type="email" name="contact[email]" autocomplete="email" required></label>
+        </div>
+        <label><span>{{ 'besjaar_ui.contact.message' | t }}</span><textarea class="besjaar-ui-input" name="contact[body]" rows="5" required></textarea></label>
+        <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.contact.send' | t }}</button>
+      {% endform %}
+    </div>
+  </div>
+</section>
+{% schema %}{"name":"Home contact","settings":[],"presets":[{"name":"Home contact"}]}{% endschema %}

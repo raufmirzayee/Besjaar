@@ -1,0 +1,82 @@
+{% capture besjaar_ui_focus_capture %}{% render 'is-focus-showerhead', product: product %}{% endcapture %}
+{% assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip %}
+{% if settings.enable_product_qa and besjaar_ui_is_focus == 'true' %}
+{% liquid
+  assign qa_count = 0
+  assign app_count = 0
+  for block in section.blocks
+    if block.type == 'question_answer' and block.settings.question != blank and block.settings.answer != blank
+      assign qa_count = qa_count | plus: 1
+    elsif block.type == '@app'
+      assign app_count = app_count | plus: 1
+    endif
+  endfor
+%}
+<section class="besjaar-ui-section besjaar-ui-product-qa" id="besjaar-ui-product-qa" data-reveal>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-heading-row besjaar-ui-product-qa__head">
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.qa.kicker' | t }}</p><h2 class="besjaar-ui-title">{% if section.settings.heading != blank %}{{ section.settings.heading }}{% else %}{{ 'besjaar_ui.qa.heading' | t }}{% endif %}</h2><p class="besjaar-ui-copy">{{ 'besjaar_ui.qa.copy' | t }}</p></div>
+      {% if qa_count > 0 %}<span class="besjaar-ui-qa-count">{{ qa_count }}</span>{% endif %}
+    </div>
+
+    <div class="besjaar-ui-product-qa__layout">
+      <div class="besjaar-ui-product-qa__answers">
+        {% if qa_count > 0 %}
+          <div class="besjaar-ui-qa-list">
+            {% for block in section.blocks %}
+              {% if block.type != 'question_answer' or block.settings.question == blank or block.settings.answer == blank %}{% continue %}{% endif %}
+              <details class="besjaar-ui-qa-item" {% if forloop.first %}open{% endif %} {{ block.shopify_attributes }}>
+                <summary><span>{{ block.settings.question }}</span><i>+</i></summary>
+                <div class="besjaar-ui-qa-item__answer"><small>{{ 'besjaar_ui.qa.merchant_answer' | t }}</small><div class="besjaar-ui-content">{{ block.settings.answer }}</div></div>
+              </details>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="besjaar-ui-qa-empty"><span aria-hidden="true">?</span><p>{{ 'besjaar_ui.qa.empty' | t }}</p></div>
+        {% endif %}
+
+        {% if app_count > 0 %}
+          <div class="besjaar-ui-qa-apps"><p class="besjaar-ui-kicker">{{ 'besjaar_ui.qa.app_heading' | t }}</p>{% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}</div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.enable_question_form %}
+        <aside class="besjaar-ui-qa-form-card">
+          <span class="besjaar-ui-qa-form-card__icon" aria-hidden="true">?</span>
+          <h3>{{ 'besjaar_ui.qa.ask_heading' | t }}</h3>
+          <p>{{ 'besjaar_ui.qa.ask_copy' | t }}</p>
+          {% form 'contact', id: 'BesjaarUIProductQuestionForm', class: 'besjaar-ui-qa-form' %}
+            {% if form.posted_successfully? %}<div class="besjaar-ui-form-success" role="status">✓ {{ 'besjaar_ui.qa.success' | t }}</div>{% endif %}
+            {% if form.errors %}<div id="BesjaarUIProductQuestionErrors" class="besjaar-ui-form-message besjaar-ui-form-message--error" role="alert" aria-live="assertive"><strong>{{ 'besjaar_ui.forms.error_heading' | t }}</strong><span>{{ 'besjaar_ui.qa.error' | t }}</span>{{ form.errors | default_errors }}</div>{% endif %}
+            <input type="hidden" name="contact[request_type]" value="Product question">
+            <input type="hidden" name="contact[product]" value="{{ product.title | escape }}">
+            <input type="hidden" name="contact[product_url]" value="{{ shop.url }}{{ product.url }}">
+            <input type="hidden" name="contact[variant_id]" value="{{ product.selected_or_first_available_variant.id }}" data-qa-variant>
+            <label><span>{{ 'besjaar_ui.qa.name' | t }}</span><input class="besjaar-ui-input" type="text" name="contact[name]" autocomplete="name" value="{{ form.name | default: customer.name | escape }}"></label>
+            <label><span>{{ 'besjaar_ui.qa.email' | t }}</span><input class="besjaar-ui-input" type="email" name="contact[email]" autocomplete="email" required aria-required="true"{% if form.errors contains 'email' %} aria-invalid="true" aria-describedby="BesjaarUIProductQuestionErrors"{% endif %} value="{{ form.email | default: customer.email | escape }}"></label>
+            <label><span>{{ 'besjaar_ui.qa.question' | t }}</span><textarea class="besjaar-ui-textarea" name="contact[question]" required aria-required="true" placeholder="{{ 'besjaar_ui.qa.question_placeholder' | t | escape }}">{{ form.question | escape }}</textarea></label>
+            <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.qa.submit' | t }}</button>
+          {% endform %}
+        </aside>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{
+  "name":"Product Q&A",
+  "settings":[
+    {"type":"text","id":"heading","label":"Optional custom heading"},
+    {"type":"checkbox","id":"enable_question_form","label":"Allow customers to send product questions","default":true}
+  ],
+  "blocks":[
+    {"type":"question_answer","name":"Question & answer","settings":[
+      {"type":"text","id":"question","label":"Question"},
+      {"type":"richtext","id":"answer","label":"Answer"}
+    ]},
+    {"type":"@app"}
+  ],
+  "presets":[{"name":"Product Q&A"}]
+}
+{% endschema %}

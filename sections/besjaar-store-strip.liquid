@@ -1,0 +1,78 @@
+{%- liquid
+  comment
+    Besjaar CRO 2026-09-29: on the Dutch storefront the section's own blocks
+    win over the translated spec phrases, so the strip can carry the three
+    things a shopper wants to know before buying (shipping, delivery, returns)
+    instead of product adjectives. Other languages keep the translated copy
+    unless "use translated copy" is switched off.
+
+    Moving strip (2026-09-29, on request): the items scroll right to left in
+    a seamless loop on phones and computers. The item list is rendered four
+    times (copies are aria-hidden) and the track slides by exactly one copy,
+    so there is never a gap. The row keeps data-bj-marquee="1" so the older
+    ticker in sections/besjaar-runtime-1167.liquid does not clone it again.
+    Hover pauses it; visitors who ask for reduced motion get a still row
+    they can swipe.
+  endcomment
+  assign strip_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign strip_use_blocks = false
+  if section.blocks.size > 0
+    if section.settings.use_localized_copy == false or strip_lang == 'nl'
+      assign strip_use_blocks = true
+    endif
+  endif
+  assign strip_count = 5
+  if strip_use_blocks
+    assign strip_count = section.blocks.size
+  endif
+-%}
+<style>
+  body .besjaar-store-strip{overflow:hidden!important}
+  body .besjaar-store-strip .besjaar-store-strip__row.bj-strip__track{display:flex!important;flex-wrap:nowrap!important;width:max-content!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important;gap:0!important;transform:translateX(0);animation:bj-strip-scroll var(--bj-strip-duration,32s) linear infinite!important;will-change:transform}
+  body .besjaar-store-strip .bj-strip__track>span{flex:0 0 auto!important;min-width:0!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;padding-left:36px!important;padding-right:36px!important}
+  body .besjaar-store-strip:hover .bj-strip__track{animation-play-state:paused!important}
+  @keyframes bj-strip-scroll{from{transform:translateX(0)}to{transform:translateX(-25%)}}
+  @media (max-width:760px){
+    body .besjaar-store-strip .bj-strip__track{--bj-strip-duration:24s}
+    body .besjaar-store-strip .bj-strip__track>span{min-height:48px!important;padding-left:20px!important;padding-right:20px!important;font-size:.66rem!important}
+  }
+  @media (prefers-reduced-motion:reduce){
+    body .besjaar-store-strip{overflow-x:auto!important}
+    body .besjaar-store-strip .besjaar-store-strip__row.bj-strip__track{animation:none!important}
+  }
+</style>
+{%- capture strip_items -%}
+  {%- if strip_use_blocks -%}
+    {%- for block in section.blocks -%}<span {{ block.shopify_attributes }}><i aria-hidden="true">✓</i>{{ block.settings.text | escape }}</span>{%- endfor -%}
+  {%- elsif section.settings.use_localized_copy -%}
+    <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i1' | t }}</span>
+    <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i2' | t }}</span>
+    <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i3' | t }}</span>
+    <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i4' | t }}</span>
+    <span><i aria-hidden="true">✓</i>{{ 'besjaar_store.strip.i5' | t }}</span>
+  {%- else -%}
+    <span><i aria-hidden="true">✓</i>PREMIUM CHROOMAFWERKING</span>
+    <span><i aria-hidden="true">✓</i>KRACHTIGE STRAAL</span>
+    <span><i aria-hidden="true">✓</i>½″ UNIVERSELE AANSLUITING</span>
+    <span><i aria-hidden="true">✓</i>FILTEROPTIE BESCHIKBAAR</span>
+    <span><i aria-hidden="true">✓</i>30 DAGEN BEDENKTIJD</span>
+  {%- endif -%}
+{%- endcapture -%}
+{%- assign strip_copy = strip_items | replace: ' data-shopify-editor-block=', ' data-bj-copy=' | replace: '<span', '<span aria-hidden="true"' -%}
+<div class="besjaar-store besjaar-store-strip">
+  <div class="besjaar-store-shell besjaar-store-strip__row bj-strip__track" data-bj-marquee="1">
+    {{ strip_items }}{{ strip_copy }}{{ strip_copy }}{{ strip_copy }}
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Besjaar Store spec strip",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true, "info": "Op /nl worden de blokken hieronder gebruikt zodra er blokken zijn."}
+  ],
+  "blocks": [
+    {"type": "item", "name": "Item", "settings": [{"type": "text", "id": "text", "label": "Text", "default": "CHROOM AFWERKING"}]}
+  ],
+  "presets": [{"name": "Besjaar Store spec strip"}]
+}
+{% endschema %}
