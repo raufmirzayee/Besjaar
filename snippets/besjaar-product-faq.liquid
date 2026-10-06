@@ -24,6 +24,10 @@
     endcapture
     assign bpf_threshold_cents = bpf_threshold_cents | strip | plus: 0
     assign bpf_threshold_money = bpf_threshold_cents | money_without_trailing_zeros
+    capture bpf_free_always
+      render 'besjaar-shipping-zone', field: 'free_always'
+    endcapture
+    assign bpf_free_always = bpf_free_always | strip
 
     case bpf_locale
       when 'en'
@@ -69,6 +73,8 @@
         assign bpf_a_shipping_prefix = 'Free shipping from '
         assign bpf_a_shipping_suffix = '; below that, shipping costs apply.'
         assign bpf_a_shipping_link = 'View the shipping policy'
+        assign bpf_a_shipping_free = 'Shipping is free.'
+        assign bpf_a_shipping_none = 'You see the shipping costs in the cart and at checkout.'
       when 'de'
         assign bpf_label = 'Häufige Fragen'
         assign bpf_q_fit = 'Passt dieser Duschkopf auf meinen Duschschlauch?'
@@ -112,6 +118,8 @@
         assign bpf_a_shipping_prefix = 'Kostenloser Versand ab '
         assign bpf_a_shipping_suffix = '; darunter fallen Versandkosten an.'
         assign bpf_a_shipping_link = 'Versandbedingungen ansehen'
+        assign bpf_a_shipping_free = 'Der Versand ist kostenlos.'
+        assign bpf_a_shipping_none = 'Die Versandkosten siehst du im Warenkorb und im Checkout.'
       when 'fr'
         assign bpf_label = 'Questions fréquentes'
         assign bpf_q_fit = 'Ce pommeau est-il compatible avec mon flexible de douche ?'
@@ -155,6 +163,8 @@
         assign bpf_a_shipping_prefix = 'Livraison gratuite à partir de '
         assign bpf_a_shipping_suffix = ' ; en dessous, des frais de port s’appliquent.'
         assign bpf_a_shipping_link = 'Voir la politique de livraison'
+        assign bpf_a_shipping_free = 'La livraison est gratuite.'
+        assign bpf_a_shipping_none = 'Les frais de livraison s’affichent dans le panier et au paiement.'
       when 'es'
         assign bpf_label = 'Preguntas frecuentes'
         assign bpf_q_fit = '¿Esta alcachofa encaja en mi manguera de ducha?'
@@ -198,6 +208,8 @@
         assign bpf_a_shipping_prefix = 'Envío gratis a partir de '
         assign bpf_a_shipping_suffix = '; por debajo de ese importe se aplican gastos de envío.'
         assign bpf_a_shipping_link = 'Ver la política de envíos'
+        assign bpf_a_shipping_free = 'El envío es gratis.'
+        assign bpf_a_shipping_none = 'Los gastos de envío los ves en el carrito y al finalizar la compra.'
       else
         assign bpf_label = 'Veelgestelde vragen'
         assign bpf_q_fit = 'Past deze douchekop op mijn doucheslang?'
@@ -241,6 +253,8 @@
         assign bpf_a_shipping_prefix = 'Gratis verzending vanaf '
         assign bpf_a_shipping_suffix = '; daaronder betaal je verzendkosten.'
         assign bpf_a_shipping_link = 'Bekijk het verzendbeleid'
+        assign bpf_a_shipping_free = 'Verzending is gratis.'
+        assign bpf_a_shipping_none = 'De verzendkosten zie je in de winkelwagen en bij het afrekenen.'
     endcase
 
     capture bpf_capture
@@ -443,7 +457,10 @@
       {%- if bpf_warranty_months > 0 -%}
         <p><strong>{{ bpf_q_warranty }}</strong><br>{{ bpf_warranty_months }}{{ bpf_a_warranty_suffix }}</p>
       {%- endif -%}
-      <p><strong>{{ bpf_q_shipping }}</strong><br>{{ bpf_a_shipping_prefix }}{{ bpf_threshold_money }}{{ bpf_a_shipping_suffix }}
+      <p><strong>{{ bpf_q_shipping }}</strong><br>
+        {%- if bpf_free_always == 'true' -%}{{ bpf_a_shipping_free }}
+        {%- elsif bpf_threshold_cents > 0 -%}{{ bpf_a_shipping_prefix }}{{ bpf_threshold_money }}{{ bpf_a_shipping_suffix }}
+        {%- else -%}{{ bpf_a_shipping_none }}{%- endif -%}
         {%- if bpf_shipping_url != blank %} <a href="{{ bpf_shipping_url }}">{{ bpf_a_shipping_link }}</a>{%- endif -%}
       </p>
     </div>

@@ -50,6 +50,8 @@
       "sign_in_create": "Anmelden / Konto erstellen",
       "my_account": "Mein Konto",
       "announcement_mobile": "KOSTENLOSER NL-VERSAND AB {{ amount }}",
+      "announcement_free": "KOSTENLOSER VERSAND IN DEN NIEDERLANDEN",
+      "announcement_mobile_free": "KOSTENLOSER NL-VERSAND",
       "announcement_country": "KOSTENLOSER VERSAND NACH {{ country }} AB {{ amount }}",
       "announcement_mobile_generic": "KOSTENLOSER VERSAND AB {{ amount }}",
       "announcement_generic": "SCHNELLER VERSAND AUS DEN NIEDERLANDEN · {{ days }} TAGE RÜCKGABE",
@@ -298,6 +300,7 @@
       "shower_hose_none_chip": "Ohne Schlauch",
       "details_kicker": "DETAILS / 01",
       "free_shipping_from": "Kostenloser Versand ab {{ amount }}",
+      "free_shipping": "Kostenloser Versand",
       "returns_days": "{{ days }} Tage Rückgabe",
       "warranty_months_dynamic": "{{ months }} Monate Garantie",
       "regular_price": "Regulärer Preis",
@@ -1436,7 +1439,7 @@
       "q5": "Kann ich einen Duschkopf zurückgeben?",
       "a5": "Ja. Du kannst deine Bestellung innerhalb von 30 Tagen nach Lieferung zurücksenden, unbenutzt und in der Originalverpackung. Kontaktiere den Kundenservice für die Rücksendeanleitung; die Rücksendekosten trägst du selbst, es sei denn, das Produkt ist defekt oder wir haben einen Fehler gemacht. Zusätzlich erhältst du 12 Monate Garantie.",
       "q6": "Wie lange dauert die Lieferung?",
-      "a6": "Werktags vor 16:00 Uhr bestellt, versenden wir noch am selben Tag. In den Niederlanden ist der Versand ab 20,99 € kostenlos; darunter zahlst du 4,50 €. Für andere Länder siehst du die Versandkosten im Warenkorb und im Checkout. Wir liefern in die Niederlande, nach Belgien, Deutschland, Frankreich und Spanien.",
+      "a6": "Werktags vor 16:00 Uhr bestellt, versenden wir noch am selben Tag. Innerhalb der Niederlande ist der Versand immer kostenlos. Nach Belgien, Deutschland, Frankreich und Spanien kostet der Versand 2,99 €, ab 30 € ist er kostenlos.",
       "q7": "Wie kann ich meine Bestellung verfolgen?",
       "a7": "Nutze den Tracking-Link in deiner Versandbestätigung oder öffne „Bestellung verfolgen“ im Besjaar Shop.",
       "q8": "Wie kontaktiere ich Besjaar?",
@@ -1589,7 +1592,7 @@
       },
       "meta": {
         "title": "Besjaar® Offizieller Shop | Duschköpfe & Duschfilter",
-        "description": "Offizieller Besjaar Shop für Duschköpfe, Duschfilter und Ersatzfilter. Modelle und Strahlarten vergleichen. Versand in NL ab 20,99 € gratis."
+        "description": "Offizieller Besjaar Shop für Duschköpfe, Duschfilter und Ersatzfilter. Modelle und Strahlarten vergleichen. Kostenloser Versand in den Niederlanden."
       },
       "retired": {
         "kicker": "BESJAAR / AKTUELLES SORTIMENT",

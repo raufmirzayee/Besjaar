@@ -13,9 +13,15 @@
              ship_zone2_threshold / ship_zone2_rate / ship_zone2_transit_*
     none   = any other country: no free-shipping promise, no rate
 
+  2026-10-06: a zone whose rate setting is exactly 0 ships free on every
+  order (NL since 6 Oct). Its threshold is reported as 0, so the "€X to free
+  shipping" progress bars stay hidden, and field 'free_always' returns 'true'
+  so callers show a plain "Free shipping" instead of "Free shipping from €X".
+  An empty rate still means "no rate shown".
+
   Usage: {% render 'besjaar-shipping-zone', field: 'threshold_cents' %}
-  field: zone | threshold_cents | rate | transit_min | transit_max |
-         country_code | country_name
+  field: zone | threshold_cents | free_always | rate | transit_min |
+         transit_max | country_code | country_name
   Output is plain text (no whitespace) so callers can capture + strip it.
 {%- endcomment -%}
 {%- liquid
@@ -37,6 +43,17 @@
     assign bsz_zone = '2'
   endif
 
+  assign bsz_rate = ''
+  if bsz_zone == '1'
+    assign bsz_rate = settings.standard_shipping_rate | default: '' | strip | replace: ',', '.'
+  elsif bsz_zone == '2'
+    assign bsz_rate = settings.ship_zone2_rate | default: '' | strip | replace: ',', '.'
+  endif
+  assign bsz_free_always = false
+  if bsz_rate == '0' or bsz_rate == '0.0' or bsz_rate == '0.00'
+    assign bsz_free_always = true
+  endif
+
   case bsz_field
     when 'zone'
       echo bsz_zone
@@ -48,14 +65,20 @@
       else
         echo shop.address.country
       endif
+    when 'free_always'
+      if bsz_free_always
+        echo 'true'
+      endif
     when 'threshold_cents'
       comment
-        2026-09-29: Settings > Shipping now has a free-shipping threshold with
-        cents (NL: €20,99). The slider only takes whole euros, so the exact
-        text setting wins when it is filled in (e.g. "20.99" or "20,99").
+        2026-09-29: the zone 1 threshold can have cents (e.g. €20,99). The
+        slider only takes whole euros, so the exact text setting wins when it
+        is filled in (e.g. "20.99" or "20,99").
       endcomment
       assign bsz_exact = settings.free_shipping_threshold_exact | default: '' | strip | replace: ',', '.'
-      if bsz_zone == '1' and bsz_exact != blank
+      if bsz_free_always
+        echo 0
+      elsif bsz_zone == '1' and bsz_exact != blank
         echo bsz_exact | times: 100 | round
       elsif bsz_zone == '1'
         echo settings.free_shipping_threshold | default: 0 | times: 100

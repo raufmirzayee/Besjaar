@@ -62,9 +62,21 @@
   endcapture
   assign bj_ship_cents = bj_ship_cents | strip | plus: 0
   assign bj_ship_money = bj_ship_cents | money_without_trailing_zeros
-  assign bj_menu_t1 = 'besjaar_ui.product.free_shipping_from' | t: amount: bj_ship_money
+  capture bj_ship_free
+    render 'besjaar-shipping-zone', field: 'free_always'
+  endcapture
+  assign bj_ship_free = bj_ship_free | strip
+  assign bj_menu_t1 = ''
+  if bj_ship_free == 'true'
+    assign bj_menu_t1 = 'besjaar_ui.product.free_shipping' | t
+  elsif bj_ship_cents > 0
+    assign bj_menu_t1 = 'besjaar_ui.product.free_shipping_from' | t: amount: bj_ship_money
+  endif
   assign bj_menu_t2 = 'besjaar_ui.product.returns_days' | t: days: settings.return_window_days
-  assign bj_menu_foot = bj_menu_t1 | append: ' · ' | append: bj_menu_t2
+  assign bj_menu_foot = bj_menu_t2
+  if bj_menu_t1 != ''
+    assign bj_menu_foot = bj_menu_t1 | append: ' · ' | append: bj_menu_t2
+  endif
   assign bj_menu_cat = 'Categorieën'
   assign bj_menu_more = 'Meer'
   case request.locale.iso_code

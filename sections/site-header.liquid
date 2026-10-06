@@ -17,8 +17,20 @@
     render 'besjaar-shipping-zone', field: 'country_name'
   endcapture
   assign besjaar_ui_ship_country_name = besjaar_ui_ship_country_name | strip | upcase
+  comment
+    2026-10-06: NL ships free on every order (shipping-zone 'free_always'), so
+    zone 1 announces free shipping without an amount; the "from €X" wording is
+    only used when the zone has a threshold.
+  endcomment
+  capture besjaar_ui_ship_free_always
+    render 'besjaar-shipping-zone', field: 'free_always'
+  endcapture
+  assign besjaar_ui_ship_free_always = besjaar_ui_ship_free_always | strip
   if section.settings.use_localized_announcement
-    if besjaar_ui_ship_zone == '1'
+    if besjaar_ui_ship_zone == '1' and besjaar_ui_ship_free_always == 'true'
+      assign announcement_text = 'besjaar_ui.header.announcement_free' | t
+      assign announcement_mobile_text = 'besjaar_ui.header.announcement_mobile_free' | t
+    elsif besjaar_ui_ship_zone == '1' and besjaar_ui_free_shipping_threshold_cents > 0
       assign announcement_text = 'besjaar_ui.header.announcement' | t: amount: besjaar_ui_free_shipping_threshold_money
       assign announcement_mobile_text = 'besjaar_ui.header.announcement_mobile' | t: amount: besjaar_ui_free_shipping_threshold_money
     elsif besjaar_ui_ship_zone == '2' and besjaar_ui_free_shipping_threshold_cents > 0
@@ -259,7 +271,9 @@
             assign bja_returns = settings.return_window_days | append: ' dagen retour'
         endcase
         assign bja_ship = ''
-        if besjaar_ui_free_shipping_threshold_cents > 0
+        if besjaar_ui_ship_free_always == 'true'
+          assign bja_ship = 'besjaar_ui.product.free_shipping' | t
+        elsif besjaar_ui_free_shipping_threshold_cents > 0
           assign bja_ship = 'besjaar_ui.product.free_shipping_from' | t: amount: besjaar_ui_free_shipping_threshold_money
         endif
       -%}
@@ -893,8 +907,8 @@
     <div class="besjaar-ui-cart-drawer__actions"><a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ routes.cart_url }}">{{ 'besjaar_ui.header.view_cart' | t }}</a><form action="{{ routes.cart_url }}" method="post" data-cart-checkout-form><input type="hidden" name="checkout" value="Checkout"><button class="besjaar-ui-button besjaar-ui-button--primary" type="submit" name="checkout" value="Checkout" data-cart-drawer-checkout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>{{ 'besjaar_ui.cart.drawer_checkout' | t | replace: '→', '' | strip }}</span><span class="besjaar-ui-cart-drawer__checkout-total" data-cart-drawer-checkout-total>{{ cart.total_price | money }}</span></button></form><button class="besjaar-ui-cart-drawer__continue" type="button" data-close-drawer>{{ 'besjaar_ui.cart.drawer_continue' | t }}</button></div>
     <p class="bj-cd-trust"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>{{ bjcd_trust }}</p>
     <div class="besjaar-ui-cart-drawer__benefits" aria-label="{{ 'besjaar_ui.product.purchase_confidence' | t | escape }}">
-      {% if besjaar_ui_free_shipping_threshold_cents > 0 %}
-        <span class="besjaar-ui-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><small>{{ 'besjaar_ui.product.free_shipping_from' | t: amount: besjaar_ui_free_shipping_threshold_money }}</small></span>
+      {% if besjaar_ui_ship_free_always == 'true' or besjaar_ui_free_shipping_threshold_cents > 0 %}
+        <span class="besjaar-ui-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><small>{% if besjaar_ui_ship_free_always == 'true' %}{{ 'besjaar_ui.product.free_shipping' | t }}{% else %}{{ 'besjaar_ui.product.free_shipping_from' | t: amount: besjaar_ui_free_shipping_threshold_money }}{% endif %}</small></span>
       {% endif %}
       <span class="besjaar-ui-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 7 8-4 8 4-8 4-8-4Zm0 0v10l8 4 8-4V7M12 11v10"/></svg><small>{{ 'besjaar_ui.product.returns_days' | t: days: settings.return_window_days }}</small></span>
       <span class="besjaar-ui-cart-drawer__benefit-item"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3"/></svg><small>{{ 'besjaar_ui.cart.secure_checkout_note' | t }}</small></span>
@@ -938,8 +952,8 @@
   "settings":[
     {"type":"checkbox","id":"show_announcement","label":"Show announcement","default":true},
     {"type":"checkbox","id":"use_localized_announcement","label":"Use automatic localized announcement (EN / NL / DE / FR)","default":true},
-    {"type":"text","id":"announcement","label":"Custom announcement","default":"GRATIS VERZENDING IN NL VANAF €25 — BESJAAR DOUCHEKOPPEN, DUIDELIJK VERGELEKEN"},
-    {"type":"text","id":"announcement_mobile","label":"Custom mobile announcement","default":"GRATIS NL VERZENDING VANAF €25","info":"Keep this short so it stays readable on small screens."},
+    {"type":"text","id":"announcement","label":"Custom announcement","default":"GRATIS VERZENDING IN HEEL NEDERLAND — BESJAAR DOUCHEKOPPEN, DUIDELIJK VERGELEKEN"},
+    {"type":"text","id":"announcement_mobile","label":"Custom mobile announcement","default":"GRATIS VERZENDING IN NL","info":"Keep this short so it stays readable on small screens."},
     {"type":"url","id":"announcement_link","label":"Announcement link"},
     {"type":"text","id":"announcement_discount_code","label":"Optional real discount code","info":"Only enter a code that already exists in Shopify."},
     {"type":"text","id":"announcement_start_at","label":"Campaign start (ISO 8601)"},

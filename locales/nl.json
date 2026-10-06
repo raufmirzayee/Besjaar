@@ -198,6 +198,8 @@
       "sign_in_create": "Inloggen / account maken",
       "my_account": "Mijn account",
       "announcement_mobile": "GRATIS NL VERZENDING VANAF {{ amount }}",
+      "announcement_free": "GRATIS VERZENDING IN HEEL NEDERLAND",
+      "announcement_mobile_free": "GRATIS VERZENDING IN NL",
       "announcement_country": "GRATIS VERZENDING IN {{ country }} VANAF {{ amount }}",
       "announcement_mobile_generic": "GRATIS VERZENDING VANAF {{ amount }}",
       "announcement_generic": "SNELLE VERZENDING VANUIT NEDERLAND · {{ days }} DAGEN RETOUR",
@@ -446,6 +448,7 @@
       "shower_hose_none_chip": "Zonder slang",
       "details_kicker": "DETAILS / 01",
       "free_shipping_from": "Gratis verzending vanaf {{ amount }}",
+      "free_shipping": "Gratis verzending",
       "returns_days": "{{ days }} dagen retourneren",
       "warranty_months_dynamic": "{{ months }} maanden garantie",
       "regular_price": "Normale prijs",
@@ -1584,7 +1587,7 @@
       "q5": "Kan ik een douchekop retourneren?",
       "a5": "Ja. Je kunt je bestelling binnen 30 dagen na levering retourneren, ongebruikt en in de originele verpakking. Neem contact op met de klantenservice voor de retourinstructies; retourkosten zijn voor eigen rekening, tenzij het product defect is of wij een fout hebben gemaakt. Daarnaast krijg je 12 maanden garantie.",
       "q6": "Hoe lang duurt de bezorging?",
-      "a6": "Op werkdagen voor 16.00 uur besteld, dan verzenden we dezelfde dag. Verzending is gratis vanaf €20,99; daaronder betaal je €4,50. We leveren in Nederland, België, Duitsland, Frankrijk en Spanje.",
+      "a6": "Op werkdagen voor 16.00 uur besteld, dan verzenden we dezelfde dag. Binnen Nederland is verzending altijd gratis. Naar België, Duitsland, Frankrijk en Spanje kost verzending €2,99, en vanaf €30 is het gratis.",
       "q7": "Hoe volg ik mijn bestelling?",
       "a7": "Gebruik de trackinglink in je verzendbevestiging of open Bestelling volgen in de Besjaar-webshop.",
       "q8": "Hoe neem ik contact op met Besjaar?",
@@ -1737,7 +1740,7 @@
       },
       "meta": {
         "title": "Besjaar® Officiële Webshop | Douchekoppen & Douchefilters",
-        "description": "Officiële Besjaar webshop voor douchekoppen, douchefilters en navulsets. Vergelijk modellen en sproeistanden. Gratis verzending in NL vanaf €20,99."
+        "description": "Officiële Besjaar webshop voor douchekoppen, douchefilters en navulsets. Vergelijk modellen en sproeistanden. Gratis verzending in heel Nederland."
       },
       "retired": {
         "kicker": "BESJAAR / GERICHT ASSORTIMENT",

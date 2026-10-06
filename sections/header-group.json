@@ -100,8 +100,8 @@
       "settings": {
         "show_announcement": true,
         "use_localized_announcement": true,
-        "announcement": "GRATIS VERZENDING IN NL VANAF €20,99",
-        "announcement_mobile": "GRATIS NL VERZENDING VANAF €20,99",
+        "announcement": "GRATIS VERZENDING IN HEEL NEDERLAND",
+        "announcement_mobile": "GRATIS VERZENDING IN NL",
         "announcement_link": "",
         "announcement_discount_code": "",
         "announcement_start_at": "",

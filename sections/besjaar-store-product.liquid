@@ -915,6 +915,10 @@
             render 'besjaar-shipping-zone', field: 'country_code'
           endcapture
           assign bj_ship_country = bj_ship_country | strip
+          capture bj_ship_free
+            render 'besjaar-shipping-zone', field: 'free_always'
+          endcapture
+          assign bj_ship_free = bj_ship_free | strip
           case product_copy_locale
             when 'de'
               assign bj_ship_prefix = 'Versand am'
@@ -945,7 +949,9 @@
           assign bj_cutoff = settings.order_cutoff_hour | default: 16
           assign bj_ship_fallback = bj_ship_fallback | replace: '16', bj_cutoff
           assign bj_free_text = ''
-          if bj_ship_zone != '' and shipping_threshold_cents > 0
+          if bj_ship_free == 'true'
+            assign bj_free_text = bj_free_now
+          elsif bj_ship_zone != '' and shipping_threshold_cents > 0
             if current_variant.price >= shipping_threshold_cents
               assign bj_free_text = bj_free_now
             else

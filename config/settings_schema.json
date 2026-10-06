@@ -391,7 +391,7 @@
         "type": "text",
         "id": "standard_shipping_rate",
         "label": "Standard shipping rate (EUR)",
-        "info": "Shipping rate for orders below the free-shipping threshold, used in product structured data (Offer shippingDetails). Use a dot for decimals (4.99). Leave 0 or empty to omit.",
+        "info": "Zone 1 shipping rate for orders below the free-shipping threshold, also used in product structured data (Offer shippingDetails). Use a dot for decimals (4.99). Enter 0 if every order to zone 1 ships free: the theme then says \"Free shipping\" without a threshold. Leave empty to omit.",
         "default": "4.99"
       },
       {
@@ -429,7 +429,7 @@
         "type": "text",
         "id": "ship_zone2_rate",
         "label": "Zone 2 shipping rate (EUR)",
-        "info": "Rate below the threshold. Use a dot for decimals (4.95).",
+        "info": "Rate below the threshold. Use a dot for decimals (4.95). Enter 0 if every order to these countries ships free.",
         "default": "4.95"
       },
       {

@@ -192,8 +192,9 @@
       2026-09-22: every Offer inside Shopify's node gets the store's shipping
       and return terms (Google merchant listing attributes). Values come from
       theme settings (Delivery & trust) and Shopify policies only: the rate is
-      0 when the product's lowest price reaches the free-shipping threshold,
-      otherwise the standard rate setting (omitted when that is 0); delivery
+      0 when the product's lowest price reaches the free-shipping threshold
+      or the zone's rate setting is 0 (free on every order, NL since
+      2026-10-06), otherwise the rate setting (omitted when empty); delivery
       countries are the markets the store ships to; the return window is the
       returns setting and links to the refund policy. Nothing is invented.
     endcomment
@@ -227,12 +228,14 @@
             assign sd_z_threshold = sd_z_exact | times: 100 | round
           endif
           assign sd_z_rate = settings.standard_shipping_rate | default: 0 | plus: 0.0
+          assign sd_z_rate_raw = settings.standard_shipping_rate | default: '' | strip | replace: ',', '.'
           assign sd_z_countries = sd_ship_countries
           assign sd_z_tmin = settings.transit_min_business_days | default: 1
           assign sd_z_tmax = settings.transit_max_business_days | default: sd_z_tmin
         else
           assign sd_z_threshold = settings.ship_zone2_threshold | default: 0 | times: 100
           assign sd_z_rate = settings.ship_zone2_rate | default: 0 | plus: 0.0
+          assign sd_z_rate_raw = settings.ship_zone2_rate | default: '' | strip | replace: ',', '.'
           assign sd_z_countries = sd_zone2_countries
           assign sd_z_tmin = settings.ship_zone2_transit_min | default: 1
           assign sd_z_tmax = settings.ship_zone2_transit_max | default: sd_z_tmin
@@ -246,6 +249,8 @@
           assign sd_z_value = '0'
         elsif sd_z_rate > 0
           assign sd_z_value = sd_z_rate | append: ''
+        elsif sd_z_rate_raw == '0' or sd_z_rate_raw == '0.0' or sd_z_rate_raw == '0.00'
+          assign sd_z_value = '0'
         endif
         if sd_z_value == blank
           continue
