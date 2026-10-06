@@ -342,6 +342,7 @@
         {%- if footer_filter_collection != blank -%}{%- capture footer_filter_title -%}{% render 'localized-collection-title', collection: footer_filter_collection %}{%- endcapture -%}{%- endif -%}
         <li><a href="{{ footer_filter_url }}">{% if footer_filter_collection != blank %}{{ footer_filter_title | strip | replace: '&amp;', '&' | escape_once }}{% else %}{{ 'besjaar_ui.shower_collection.family_filter' | t }}{% endif %}</a></li>
         <li><a href="{{ footer_b2b_url }}">{{ footer_b2b_label | escape }}</a></li>
+        {%- if settings.enable_besjaar_club and settings.club_page != blank -%}<li><a href="{% render 'localized-internal-url', url: settings.club_page.url %}"{% if request.page_type == 'page' and page.handle == settings.club_page.handle %} aria-current="page"{% endif %}>{{ settings.club_name | default: 'Besjaar Club' | escape }}</a></li>{%- endif -%}
         <li><a href="{{ footer_about_url }}">{% render 'localized-page-title', page: footer_about_page, handle: 'about-us' %}</a></li>
       </ul>
     </details>

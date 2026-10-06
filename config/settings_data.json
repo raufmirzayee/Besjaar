@@ -55,6 +55,7 @@
     "button_radius": 40,
     "card_radius": 16,
     "club_name": "Besjaar Club",
+    "club_page": "besjaar-club",
     "compact_card_titles": true,
     "contact_page": "contact-us",
     "content_for_index": [],

@@ -1,0 +1,1213 @@
+{%- comment -%}
+  Besjaar Club — loyalty programme page (2026-10-06).
+
+  Members are customers with a Besjaar account (Shopify customer accounts:
+  sign-in with a one-time code by e-mail). The page only promises what is set
+  up in Shopify:
+  - welcome discount = "Welcome code" (WELKOM20: 20% off the showerhead and
+    shower-filter collections, once per customer);
+  - member discount = "Member code" (CLUBFILTER20: 20% off the shower-filter
+    collection on every order, does not combine with other product
+    discounts);
+  - orders and tracking in the customer account.
+  Codes are printed only for signed-in customers. Clearing a code setting
+  takes that benefit off the page everywhere (intro, card, perks, FAQ,
+  terms), so a discount that is ended in Shopify can be removed here in one
+  step. The percentages are settings too: keep them equal to Shopify >
+  Discounts.
+
+  Sign-in uses routes.storefront_login_url, which brings the customer back
+  to this page after the e-mail code, so the codes are there straight away.
+
+  Copy is localised NL/EN/DE/FR/ES in the section, like besjaar-b2b. The
+  "always included" row reads the shipping-zone snippet and the theme
+  settings, so it says the same as the rest of the store. The calendar
+  buttons build the reminder in the browser; nothing is sent to Besjaar.
+{%- endcomment -%}
+{%- liquid
+  assign c_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  case c_lang
+    when 'en'
+      assign t_h1a = 'Free to join.'
+      assign t_h1b = 'Savings on every refill.'
+      assign t_h1b_alt = 'Benefits from your first order.'
+      assign t_intro_a = 'Sign in with your email address and you are a member.'
+      assign t_intro_both = 'You get a one-time [W]% welcome discount and [R]% off every set of replacement filters.'
+      assign t_intro_w = 'You get a one-time [W]% welcome discount.'
+      assign t_intro_r = 'You get [R]% off every set of replacement filters.'
+      assign t_intro_c = 'No points, no subscription.'
+      assign t_intro_member = 'Welcome back[NAME]. Your member codes are ready below: copy them and paste them at checkout.'
+      assign t_cta_join = 'Join for free'
+      assign t_have = 'Already a member?'
+      assign t_login = 'Sign in'
+      assign t_cta_refill = 'Order replacement filters'
+      assign t_cta_shop = 'View showerheads'
+      assign t_cta_account = 'My orders'
+      assign t_trust = 'Free · Sign in with a code by email · No password needed'
+      assign t_signed_in = 'Signed in as [EMAIL]'
+      assign t_logout = 'Sign out'
+      assign t_card_name = 'YOUR NAME'
+      assign t_card_member = 'MEMBER'
+      assign t_card_perk = 'on every refill'
+      assign t_card_perk_w = 'welcome discount'
+      assign t_perks_kicker = 'Member benefits'
+      assign t_perks_title = 'What you get as a member.'
+      assign t_p1_tag = 'One-time'
+      assign t_p1_title = 'Welcome discount'
+      assign t_p1_text = 'On showerheads and shower filters, on an order of your choice.'
+      assign t_p1_note = 'Can be used once per customer.'
+      assign t_p2_tag = 'Every order'
+      assign t_p2_title = 'On every set of replacement filters'
+      assign t_p2_text = 'Every time you order, as often as you like.'
+      assign t_p2_price = 'Now [NEW] instead of [OLD].'
+      assign t_p2_note = 'Cannot be combined with the welcome discount.'
+      assign t_p3_tag = 'Always'
+      assign t_p3_title = 'Orders and tracking in one place'
+      assign t_p3_text = 'See what you ordered, track your parcel and manage your addresses. You sign in with a code by email: no password to remember.'
+      assign t_p3_link = 'Go to my account'
+      assign t_code_label = 'Your code'
+      assign t_copy = 'Copy'
+      assign t_copied = 'Copied'
+      assign t_locked = 'Sign in to see your code'
+      assign t_copy_aria = 'Copy code [CODE]'
+      assign t_steps_kicker = 'How it works'
+      assign t_steps_title = 'A member in three steps.'
+      assign t_s1t = 'Sign in with your email'
+      assign t_s1c = 'Enter your email address and confirm with the code we email you. Your account is active right away.'
+      assign t_s2t = 'Copy your member code'
+      assign t_s2c = 'Once signed in, your codes appear on this page. They stay here whenever you need them.'
+      assign t_s3t = 'Paste it at checkout'
+      assign t_s3c = 'Enter the code in the ‘Discount code’ field. You see the discount in your total straight away.'
+      assign t_refill_kicker = 'Filter rhythm'
+      assign t_refill_title = 'A fresh filter, right on time.'
+      assign t_refill_text = 'The filter in your showerhead traps limescale and chlorine, so it slowly fills up. Replace it every [MIN] to [MAX] months on average: sooner with hard water or if you shower often.'
+      assign t_tl_label = 'When to replace your filter'
+      assign t_tl1 = 'New filter'
+      assign t_tl1s = 'Day 1'
+      assign t_tl2 = 'With hard water'
+      assign t_tl2s = 'after [MIN] months'
+      assign t_tl3 = 'At the latest'
+      assign t_tl3s = 'after [MAX] months'
+      assign t_member_price = 'Member price'
+      assign t_regular = 'Regular'
+      assign t_view_refill = 'View replacement filters'
+      assign t_rem_title = 'Add a reminder to your calendar'
+      assign t_rem_text = 'No emails from us: you set a reminder for [MIN] months from now in your own calendar.'
+      assign t_rem_google = 'Google Calendar'
+      assign t_rem_ics = 'Apple / Outlook'
+      assign t_rem_event = 'Time for new Besjaar shower filters'
+      assign t_rem_desc = 'Replace the filters in your Besjaar showerhead.'
+      assign t_rem_desc_member = 'As a member you get [R]% off with code [CODE].'
+      assign t_inc_kicker = 'For everyone'
+      assign t_inc_title = 'Always included, member or not.'
+      assign t_ship_free = 'Free shipping'
+      assign t_ship_free_s = 'On every order, with no minimum.'
+      assign t_ship_from = 'Free shipping from [AMOUNT]'
+      assign t_ship_from_s = 'Below that, shipping is [RATE].'
+      assign t_ship_none = 'Fast shipping'
+      assign t_ship_none_s = 'Shipping costs are shown at checkout.'
+      assign t_returns = '[D]-day returns'
+      assign t_returns_s = 'Return unused within [D] days of delivery.'
+      assign t_warranty = '[M]-month warranty'
+      assign t_warranty_s = 'On top of your statutory consumer rights.'
+      assign t_secure = 'Secure payment'
+      assign t_secure_s = 'Through Shopify’s encrypted checkout.'
+      assign t_faq_kicker = 'Questions'
+      assign t_faq_title = 'Good to know.'
+      assign t_q1 = 'Does membership cost anything?'
+      assign t_a1 = 'No. Joining is free and there is no commitment: no subscription and no minimum order.'
+      assign t_q2 = 'How do I join?'
+      assign t_a2 = 'Click ‘Join for free’ and sign in with your email address. We email you a code, and with it your account is active right away. Ordered from us before with that email address? Then you will find those orders in your account too.'
+      assign t_q3 = 'How often can I use the filter discount?'
+      assign t_a3 = 'On every order, as often as you like. The discount applies to replacement filters and cannot be combined with other product discounts.'
+      assign t_a3_w = 'On every order, as often as you like. The discount applies to replacement filters and cannot be combined with other product discounts, such as the welcome discount.'
+      assign t_q4 = 'Do I need to collect points?'
+      assign t_a4 = 'No. There are no points to keep track of and nothing that expires. Your member discount simply works on every order.'
+      assign t_q5 = 'What do you do with my email address?'
+      assign t_a5 = 'We use it for your account and your orders. You only receive newsletters if you choose to.'
+      assign t_privacy_cta = 'Read our privacy policy'
+      assign t_q6 = 'Can I stop?'
+      assign t_a6 = 'Yes, whenever you like. There is nothing to cancel. Would you like us to delete your account and data? Email [EMAIL] and we will take care of it.'
+      assign t_end_title = 'Become a member today.'
+      assign t_end_text = 'Free, in under a minute. Your codes are ready straight away.'
+      assign t_end_title_m = 'Time for new filters?'
+      assign t_end_text_m = 'With your member code you pay [NEW] instead of [OLD].'
+      assign t_terms_title = 'Club terms'
+      assign t_terms_a = 'Membership is free and applies to customers with a Besjaar account.'
+      assign t_terms_w = 'Welcome discount: a one-time [W]% off showerheads and shower filters, once per customer.'
+      assign t_terms_r = 'Member discount: [R]% off replacement filters on every order, not combinable with other product discounts.'
+      assign t_terms_b = 'Discounts do not apply to shipping costs. Besjaar may change the benefits; the current terms are always on this page.'
+      assign t_updated = 'Last updated: 6 October 2026'
+    when 'de'
+      assign t_h1a = 'Kostenlos Mitglied.'
+      assign t_h1b = 'Sparen bei jedem Ersatzfilter.'
+      assign t_h1b_alt = 'Vorteile ab der ersten Bestellung.'
+      assign t_intro_a = 'Melde dich mit deiner E-Mail-Adresse an und du bist Mitglied.'
+      assign t_intro_both = 'Du bekommst einmalig [W] % Willkommensrabatt und [R] % Rabatt auf jedes Set Ersatzfilter.'
+      assign t_intro_w = 'Du bekommst einmalig [W] % Willkommensrabatt.'
+      assign t_intro_r = 'Du bekommst [R] % Rabatt auf jedes Set Ersatzfilter.'
+      assign t_intro_c = 'Ohne Punkte, ohne Abo.'
+      assign t_intro_member = 'Willkommen zurück[NAME]. Deine Mitgliedscodes stehen unten bereit: kopieren und an der Kasse einfügen.'
+      assign t_cta_join = 'Kostenlos Mitglied werden'
+      assign t_have = 'Schon Mitglied?'
+      assign t_login = 'Anmelden'
+      assign t_cta_refill = 'Ersatzfilter bestellen'
+      assign t_cta_shop = 'Duschköpfe ansehen'
+      assign t_cta_account = 'Meine Bestellungen'
+      assign t_trust = 'Kostenlos · Anmeldung mit Code per E-Mail · Kein Passwort nötig'
+      assign t_signed_in = 'Angemeldet als [EMAIL]'
+      assign t_logout = 'Abmelden'
+      assign t_card_name = 'DEIN NAME'
+      assign t_card_member = 'MITGLIED'
+      assign t_card_perk = 'auf jeden Ersatzfilter'
+      assign t_card_perk_w = 'Willkommensrabatt'
+      assign t_perks_kicker = 'Mitgliedervorteile'
+      assign t_perks_title = 'Das bekommst du als Mitglied.'
+      assign t_p1_tag = 'Einmalig'
+      assign t_p1_title = 'Willkommensrabatt'
+      assign t_p1_text = 'Auf Duschköpfe und Duschfilter, bei einer Bestellung deiner Wahl.'
+      assign t_p1_note = 'Einmal pro Kunde einlösbar.'
+      assign t_p2_tag = 'Jede Bestellung'
+      assign t_p2_title = 'Auf jedes Set Ersatzfilter'
+      assign t_p2_text = 'Bei jeder Bestellung, so oft du willst.'
+      assign t_p2_price = 'Jetzt [NEW] statt [OLD].'
+      assign t_p2_note = 'Nicht mit dem Willkommensrabatt kombinierbar.'
+      assign t_p3_tag = 'Immer'
+      assign t_p3_title = 'Bestellungen und Sendungsverfolgung an einem Ort'
+      assign t_p3_text = 'Sieh, was du bestellt hast, verfolge dein Paket und verwalte deine Adressen. Die Anmeldung läuft über einen Code per E-Mail: kein Passwort zum Merken.'
+      assign t_p3_link = 'Zu meinem Konto'
+      assign t_code_label = 'Dein Code'
+      assign t_copy = 'Kopieren'
+      assign t_copied = 'Kopiert'
+      assign t_locked = 'Melde dich an, um deinen Code zu sehen'
+      assign t_copy_aria = 'Code [CODE] kopieren'
+      assign t_steps_kicker = 'So funktioniert es'
+      assign t_steps_title = 'In drei Schritten Mitglied.'
+      assign t_s1t = 'Mit deiner E-Mail anmelden'
+      assign t_s1c = 'Gib deine E-Mail-Adresse ein und bestätige mit dem Code, den wir dir schicken. Dein Konto ist sofort aktiv.'
+      assign t_s2t = 'Mitgliedscode kopieren'
+      assign t_s2c = 'Angemeldet siehst du deine Codes auf dieser Seite. Sie bleiben hier jederzeit abrufbar.'
+      assign t_s3t = 'An der Kasse einfügen'
+      assign t_s3c = 'Gib den Code im Feld ‚Rabattcode‘ ein. Den Rabatt siehst du sofort in deiner Summe.'
+      assign t_refill_kicker = 'Filterrhythmus'
+      assign t_refill_title = 'Ein frischer Filter, genau zur richtigen Zeit.'
+      assign t_refill_text = 'Der Filter in deinem Duschkopf hält Kalk und Chlor zurück und setzt sich dadurch langsam zu. Tausche ihn im Schnitt alle [MIN] bis [MAX] Monate: früher bei hartem Wasser oder wenn du oft duschst.'
+      assign t_tl_label = 'Wann du den Filter tauschst'
+      assign t_tl1 = 'Neuer Filter'
+      assign t_tl1s = 'Tag 1'
+      assign t_tl2 = 'Bei hartem Wasser'
+      assign t_tl2s = 'nach [MIN] Monaten'
+      assign t_tl3 = 'Spätestens'
+      assign t_tl3s = 'nach [MAX] Monaten'
+      assign t_member_price = 'Mitgliederpreis'
+      assign t_regular = 'Normal'
+      assign t_view_refill = 'Ersatzfilter ansehen'
+      assign t_rem_title = 'Erinnerung in deinen Kalender eintragen'
+      assign t_rem_text = 'Keine E-Mails von uns: Du legst selbst eine Erinnerung in [MIN] Monaten in deinem eigenen Kalender an.'
+      assign t_rem_google = 'Google Kalender'
+      assign t_rem_ics = 'Apple / Outlook'
+      assign t_rem_event = 'Zeit für neue Besjaar Duschfilter'
+      assign t_rem_desc = 'Tausche die Filter in deinem Besjaar Duschkopf.'
+      assign t_rem_desc_member = 'Als Mitglied bekommst du [R] % Rabatt mit dem Code [CODE].'
+      assign t_inc_kicker = 'Für alle'
+      assign t_inc_title = 'Immer inklusive, ob Mitglied oder nicht.'
+      assign t_ship_free = 'Kostenloser Versand'
+      assign t_ship_free_s = 'Bei jeder Bestellung, ohne Mindestbestellwert.'
+      assign t_ship_from = 'Kostenloser Versand ab [AMOUNT]'
+      assign t_ship_from_s = 'Darunter [RATE] Versandkosten.'
+      assign t_ship_none = 'Schneller Versand'
+      assign t_ship_none_s = 'Die Versandkosten siehst du an der Kasse.'
+      assign t_returns = '[D] Tage Rückgaberecht'
+      assign t_returns_s = 'Unbenutzt zurück innerhalb von [D] Tagen nach Lieferung.'
+      assign t_warranty = '[M] Monate Garantie'
+      assign t_warranty_s = 'Zusätzlich zu deinen gesetzlichen Rechten.'
+      assign t_secure = 'Sicher bezahlen'
+      assign t_secure_s = 'Über den verschlüsselten Shopify-Checkout.'
+      assign t_faq_kicker = 'Fragen'
+      assign t_faq_title = 'Gut zu wissen.'
+      assign t_q1 = 'Kostet die Mitgliedschaft etwas?'
+      assign t_a1 = 'Nein. Die Mitgliedschaft ist kostenlos und unverbindlich: kein Abo, kein Mindestbestellwert.'
+      assign t_q2 = 'Wie werde ich Mitglied?'
+      assign t_a2 = 'Klicke auf ‚Kostenlos Mitglied werden‘ und melde dich mit deiner E-Mail-Adresse an. Du bekommst einen Code per E-Mail, damit ist dein Konto sofort aktiv. Hast du mit dieser E-Mail-Adresse schon einmal bestellt? Dann findest du diese Bestellungen auch in deinem Konto.'
+      assign t_q3 = 'Wie oft kann ich den Filterrabatt nutzen?'
+      assign t_a3 = 'Bei jeder Bestellung, so oft du willst. Der Rabatt gilt für Ersatzfilter und ist nicht mit anderen Produktrabatten kombinierbar.'
+      assign t_a3_w = 'Bei jeder Bestellung, so oft du willst. Der Rabatt gilt für Ersatzfilter und ist nicht mit anderen Produktrabatten kombinierbar, etwa dem Willkommensrabatt.'
+      assign t_q4 = 'Muss ich Punkte sammeln?'
+      assign t_a4 = 'Nein. Es gibt keine Punkte, die du verfolgen musst, und nichts, was verfällt. Dein Mitgliederrabatt gilt einfach bei jeder Bestellung.'
+      assign t_q5 = 'Was macht ihr mit meiner E-Mail-Adresse?'
+      assign t_a5 = 'Wir nutzen sie für dein Konto und deine Bestellungen. Newsletter bekommst du nur, wenn du das selbst möchtest.'
+      assign t_privacy_cta = 'Zu unserer Datenschutzerklärung'
+      assign t_q6 = 'Kann ich aufhören?'
+      assign t_a6 = 'Ja, jederzeit. Du musst nichts kündigen. Sollen wir dein Konto und deine Daten löschen? Schreib an [EMAIL], dann erledigen wir das.'
+      assign t_end_title = 'Werde noch heute Mitglied.'
+      assign t_end_text = 'Kostenlos, in weniger als einer Minute. Deine Codes stehen sofort bereit.'
+      assign t_end_title_m = 'Zeit für neue Filter?'
+      assign t_end_text_m = 'Mit deinem Mitgliedscode zahlst du [NEW] statt [OLD].'
+      assign t_terms_title = 'Clubbedingungen'
+      assign t_terms_a = 'Die Mitgliedschaft ist kostenlos und gilt für Kundinnen und Kunden mit einem Besjaar-Konto.'
+      assign t_terms_w = 'Willkommensrabatt: einmalig [W] % auf Duschköpfe und Duschfilter, einmal pro Kunde.'
+      assign t_terms_r = 'Mitgliederrabatt: [R] % auf Ersatzfilter bei jeder Bestellung, nicht mit anderen Produktrabatten kombinierbar.'
+      assign t_terms_b = 'Rabatte gelten nicht für Versandkosten. Besjaar kann die Vorteile ändern; die aktuellen Bedingungen stehen immer auf dieser Seite.'
+      assign t_updated = 'Zuletzt aktualisiert: 6. Oktober 2026'
+    when 'fr'
+      assign t_h1a = 'Adhésion gratuite.'
+      assign t_h1b = 'Une remise à chaque recharge.'
+      assign t_h1b_alt = 'Des avantages dès la première commande.'
+      assign t_intro_a = 'Connectez-vous avec votre adresse e-mail et vous êtes membre.'
+      assign t_intro_both = 'Vous profitez une fois de [W] % de remise de bienvenue, puis de [R] % sur chaque lot de filtres de rechange.'
+      assign t_intro_w = 'Vous profitez une fois de [W] % de remise de bienvenue.'
+      assign t_intro_r = 'Vous profitez de [R] % sur chaque lot de filtres de rechange.'
+      assign t_intro_c = 'Sans points, sans abonnement.'
+      assign t_intro_member = 'Bon retour[NAME]. Vos codes membre sont prêts ci-dessous : copiez-les et collez-les au moment du paiement.'
+      assign t_cta_join = 'Devenir membre gratuitement'
+      assign t_have = 'Déjà membre ?'
+      assign t_login = 'Se connecter'
+      assign t_cta_refill = 'Commander des filtres de rechange'
+      assign t_cta_shop = 'Voir les pommeaux'
+      assign t_cta_account = 'Mes commandes'
+      assign t_trust = 'Gratuit · Connexion avec un code par e-mail · Aucun mot de passe'
+      assign t_signed_in = 'Connecté en tant que [EMAIL]'
+      assign t_logout = 'Se déconnecter'
+      assign t_card_name = 'VOTRE NOM'
+      assign t_card_member = 'MEMBRE'
+      assign t_card_perk = 'sur chaque recharge'
+      assign t_card_perk_w = 'remise de bienvenue'
+      assign t_perks_kicker = 'Avantages membres'
+      assign t_perks_title = 'Ce que vous obtenez en tant que membre.'
+      assign t_p1_tag = 'Une fois'
+      assign t_p1_title = 'Remise de bienvenue'
+      assign t_p1_text = 'Sur les pommeaux et les filtres de douche, pour la commande de votre choix.'
+      assign t_p1_note = 'Utilisable une fois par client.'
+      assign t_p2_tag = 'Chaque commande'
+      assign t_p2_title = 'Sur chaque lot de filtres de rechange'
+      assign t_p2_text = 'À chaque commande, aussi souvent que vous le souhaitez.'
+      assign t_p2_price = '[NEW] au lieu de [OLD].'
+      assign t_p2_note = 'Non cumulable avec la remise de bienvenue.'
+      assign t_p3_tag = 'Toujours'
+      assign t_p3_title = 'Commandes et suivi au même endroit'
+      assign t_p3_text = 'Retrouvez vos commandes, suivez votre colis et gérez vos adresses. La connexion se fait avec un code par e-mail : aucun mot de passe à retenir.'
+      assign t_p3_link = 'Accéder à mon compte'
+      assign t_code_label = 'Votre code'
+      assign t_copy = 'Copier'
+      assign t_copied = 'Copié'
+      assign t_locked = 'Connectez-vous pour voir votre code'
+      assign t_copy_aria = 'Copier le code [CODE]'
+      assign t_steps_kicker = 'Comment ça marche'
+      assign t_steps_title = 'Membre en trois étapes.'
+      assign t_s1t = 'Connectez-vous avec votre e-mail'
+      assign t_s1c = 'Saisissez votre adresse e-mail et confirmez avec le code reçu par e-mail. Votre compte est actif immédiatement.'
+      assign t_s2t = 'Copiez votre code membre'
+      assign t_s2c = 'Une fois connecté, vos codes s’affichent sur cette page. Ils y restent disponibles à tout moment.'
+      assign t_s3t = 'Collez-le au paiement'
+      assign t_s3c = 'Saisissez le code dans le champ « Code de réduction ». La remise apparaît aussitôt dans votre total.'
+      assign t_refill_kicker = 'Rythme du filtre'
+      assign t_refill_title = 'Un filtre frais, au bon moment.'
+      assign t_refill_text = 'Le filtre de votre pommeau retient le calcaire et le chlore, et se remplit donc peu à peu. Remplacez-le en moyenne tous les [MIN] à [MAX] mois : plus tôt si votre eau est dure ou si vous vous douchez souvent.'
+      assign t_tl_label = 'Quand remplacer votre filtre'
+      assign t_tl1 = 'Nouveau filtre'
+      assign t_tl1s = 'Jour 1'
+      assign t_tl2 = 'Eau dure'
+      assign t_tl2s = 'après [MIN] mois'
+      assign t_tl3 = 'Au plus tard'
+      assign t_tl3s = 'après [MAX] mois'
+      assign t_member_price = 'Prix membre'
+      assign t_regular = 'Prix normal'
+      assign t_view_refill = 'Voir les filtres de rechange'
+      assign t_rem_title = 'Ajoutez un rappel à votre agenda'
+      assign t_rem_text = 'Pas d’e-mails de notre part : vous créez vous-même un rappel dans [MIN] mois, dans votre propre agenda.'
+      assign t_rem_google = 'Google Agenda'
+      assign t_rem_ics = 'Apple / Outlook'
+      assign t_rem_event = 'Il est temps de changer vos filtres Besjaar'
+      assign t_rem_desc = 'Remplacez les filtres de votre pommeau Besjaar.'
+      assign t_rem_desc_member = 'En tant que membre, vous bénéficiez de [R] % de remise avec le code [CODE].'
+      assign t_inc_kicker = 'Pour tous'
+      assign t_inc_title = 'Toujours inclus, membre ou non.'
+      assign t_ship_free = 'Livraison gratuite'
+      assign t_ship_free_s = 'Sur chaque commande, sans minimum.'
+      assign t_ship_from = 'Livraison gratuite dès [AMOUNT]'
+      assign t_ship_from_s = 'En dessous, livraison à [RATE].'
+      assign t_ship_none = 'Expédition rapide'
+      assign t_ship_none_s = 'Les frais de livraison s’affichent au paiement.'
+      assign t_returns = '[D] jours pour retourner'
+      assign t_returns_s = 'Retour non utilisé sous [D] jours après la livraison.'
+      assign t_warranty = 'Garantie [M] mois'
+      assign t_warranty_s = 'En plus de vos droits légaux de consommateur.'
+      assign t_secure = 'Paiement sécurisé'
+      assign t_secure_s = 'Via le paiement chiffré de Shopify.'
+      assign t_faq_kicker = 'Questions'
+      assign t_faq_title = 'Bon à savoir.'
+      assign t_q1 = 'L’adhésion est-elle payante ?'
+      assign t_a1 = 'Non. L’adhésion est gratuite et sans engagement : pas d’abonnement, pas de minimum de commande.'
+      assign t_q2 = 'Comment devenir membre ?'
+      assign t_a2 = 'Cliquez sur « Devenir membre gratuitement » et connectez-vous avec votre adresse e-mail. Vous recevez un code par e-mail, et votre compte est aussitôt actif. Vous avez déjà commandé avec cette adresse ? Vous retrouverez aussi ces commandes dans votre compte.'
+      assign t_q3 = 'À quelle fréquence puis-je utiliser la remise sur les filtres ?'
+      assign t_a3 = 'À chaque commande, aussi souvent que vous le souhaitez. La remise s’applique aux filtres de rechange et n’est pas cumulable avec d’autres remises produit.'
+      assign t_a3_w = 'À chaque commande, aussi souvent que vous le souhaitez. La remise s’applique aux filtres de rechange et n’est pas cumulable avec d’autres remises produit, comme la remise de bienvenue.'
+      assign t_q4 = 'Dois-je cumuler des points ?'
+      assign t_a4 = 'Non. Il n’y a aucun point à suivre et rien n’expire. Votre remise membre s’applique simplement à chaque commande.'
+      assign t_q5 = 'Que faites-vous de mon adresse e-mail ?'
+      assign t_a5 = 'Nous l’utilisons pour votre compte et vos commandes. Vous ne recevez de newsletter que si vous le choisissez.'
+      assign t_privacy_cta = 'Lire notre politique de confidentialité'
+      assign t_q6 = 'Puis-je arrêter ?'
+      assign t_a6 = 'Oui, quand vous voulez. Il n’y a rien à résilier. Vous souhaitez que nous supprimions votre compte et vos données ? Écrivez à [EMAIL] et nous nous en occupons.'
+      assign t_end_title = 'Devenez membre dès aujourd’hui.'
+      assign t_end_text = 'Gratuit, en moins d’une minute. Vos codes sont prêts tout de suite.'
+      assign t_end_title_m = 'Il est temps de changer vos filtres ?'
+      assign t_end_text_m = 'Avec votre code membre, vous payez [NEW] au lieu de [OLD].'
+      assign t_terms_title = 'Conditions du club'
+      assign t_terms_a = 'L’adhésion est gratuite et réservée aux clients disposant d’un compte Besjaar.'
+      assign t_terms_w = 'Remise de bienvenue : [W] % une seule fois sur les pommeaux et filtres de douche, une fois par client.'
+      assign t_terms_r = 'Remise membre : [R] % sur les filtres de rechange à chaque commande, non cumulable avec d’autres remises produit.'
+      assign t_terms_b = 'Les remises ne s’appliquent pas aux frais de livraison. Besjaar peut modifier les avantages ; les conditions en vigueur figurent toujours sur cette page.'
+      assign t_updated = 'Dernière mise à jour : 6 octobre 2026'
+    when 'es'
+      assign t_h1a = 'Hazte miembro gratis.'
+      assign t_h1b = 'Ahorra en cada recambio.'
+      assign t_h1b_alt = 'Ventajas desde tu primer pedido.'
+      assign t_intro_a = 'Inicia sesión con tu correo electrónico y ya eres miembro.'
+      assign t_intro_both = 'Recibes una vez un [W] % de descuento de bienvenida y un [R] % en cada juego de filtros de recambio.'
+      assign t_intro_w = 'Recibes una vez un [W] % de descuento de bienvenida.'
+      assign t_intro_r = 'Recibes un [R] % en cada juego de filtros de recambio.'
+      assign t_intro_c = 'Sin puntos, sin suscripción.'
+      assign t_intro_member = 'Hola de nuevo[NAME]. Tus códigos de miembro están listos abajo: cópialos y pégalos al finalizar la compra.'
+      assign t_cta_join = 'Hazte miembro gratis'
+      assign t_have = '¿Ya eres miembro?'
+      assign t_login = 'Inicia sesión'
+      assign t_cta_refill = 'Pedir filtros de recambio'
+      assign t_cta_shop = 'Ver alcachofas'
+      assign t_cta_account = 'Mis pedidos'
+      assign t_trust = 'Gratis · Acceso con un código por correo · Sin contraseña'
+      assign t_signed_in = 'Sesión iniciada como [EMAIL]'
+      assign t_logout = 'Cerrar sesión'
+      assign t_card_name = 'TU NOMBRE'
+      assign t_card_member = 'MIEMBRO'
+      assign t_card_perk = 'en cada recambio'
+      assign t_card_perk_w = 'de bienvenida'
+      assign t_perks_kicker = 'Ventajas para miembros'
+      assign t_perks_title = 'Lo que recibes como miembro.'
+      assign t_p1_tag = 'Una vez'
+      assign t_p1_title = 'Descuento de bienvenida'
+      assign t_p1_text = 'En alcachofas y filtros de ducha, en el pedido que elijas.'
+      assign t_p1_note = 'Se puede usar una vez por cliente.'
+      assign t_p2_tag = 'Cada pedido'
+      assign t_p2_title = 'En cada juego de filtros de recambio'
+      assign t_p2_text = 'En cada pedido, tantas veces como quieras.'
+      assign t_p2_price = 'Ahora [NEW] en lugar de [OLD].'
+      assign t_p2_note = 'No se puede combinar con el descuento de bienvenida.'
+      assign t_p3_tag = 'Siempre'
+      assign t_p3_title = 'Pedidos y seguimiento en un solo lugar'
+      assign t_p3_text = 'Consulta lo que pediste, sigue tu paquete y gestiona tus direcciones. Accedes con un código por correo: sin contraseña que recordar.'
+      assign t_p3_link = 'Ir a mi cuenta'
+      assign t_code_label = 'Tu código'
+      assign t_copy = 'Copiar'
+      assign t_copied = 'Copiado'
+      assign t_locked = 'Inicia sesión para ver tu código'
+      assign t_copy_aria = 'Copiar el código [CODE]'
+      assign t_steps_kicker = 'Cómo funciona'
+      assign t_steps_title = 'Miembro en tres pasos.'
+      assign t_s1t = 'Inicia sesión con tu correo'
+      assign t_s1c = 'Escribe tu correo electrónico y confirma con el código que te enviamos. Tu cuenta queda activa al momento.'
+      assign t_s2t = 'Copia tu código de miembro'
+      assign t_s2c = 'Con la sesión iniciada, tus códigos aparecen en esta página. Siempre los tendrás aquí.'
+      assign t_s3t = 'Pégalo al pagar'
+      assign t_s3c = 'Introduce el código en el campo «Código de descuento». Verás el descuento en tu total al instante.'
+      assign t_refill_kicker = 'Ritmo del filtro'
+      assign t_refill_title = 'Un filtro nuevo, justo a tiempo.'
+      assign t_refill_text = 'El filtro de tu alcachofa retiene la cal y el cloro, por eso se va llenando poco a poco. Cámbialo de media cada [MIN] a [MAX] meses: antes si el agua es dura o si te duchas a menudo.'
+      assign t_tl_label = 'Cuándo cambiar el filtro'
+      assign t_tl1 = 'Filtro nuevo'
+      assign t_tl1s = 'Día 1'
+      assign t_tl2 = 'Con agua dura'
+      assign t_tl2s = 'tras [MIN] meses'
+      assign t_tl3 = 'Como máximo'
+      assign t_tl3s = 'tras [MAX] meses'
+      assign t_member_price = 'Precio de miembro'
+      assign t_regular = 'Precio normal'
+      assign t_view_refill = 'Ver filtros de recambio'
+      assign t_rem_title = 'Pon un recordatorio en tu calendario'
+      assign t_rem_text = 'Sin correos nuestros: tú mismo creas un recordatorio dentro de [MIN] meses en tu propio calendario.'
+      assign t_rem_google = 'Google Calendar'
+      assign t_rem_ics = 'Apple / Outlook'
+      assign t_rem_event = 'Toca cambiar los filtros Besjaar'
+      assign t_rem_desc = 'Cambia los filtros de tu alcachofa Besjaar.'
+      assign t_rem_desc_member = 'Como miembro tienes un [R] % de descuento con el código [CODE].'
+      assign t_inc_kicker = 'Para todos'
+      assign t_inc_title = 'Siempre incluido, seas miembro o no.'
+      assign t_ship_free = 'Envío gratis'
+      assign t_ship_free_s = 'En cada pedido, sin importe mínimo.'
+      assign t_ship_from = 'Envío gratis desde [AMOUNT]'
+      assign t_ship_from_s = 'Por debajo, el envío cuesta [RATE].'
+      assign t_ship_none = 'Envío rápido'
+      assign t_ship_none_s = 'Los gastos de envío se muestran al pagar.'
+      assign t_returns = '[D] días para devolver'
+      assign t_returns_s = 'Devolución sin usar en [D] días desde la entrega.'
+      assign t_warranty = '[M] meses de garantía'
+      assign t_warranty_s = 'Además de tus derechos legales como consumidor.'
+      assign t_secure = 'Pago seguro'
+      assign t_secure_s = 'A través del pago cifrado de Shopify.'
+      assign t_faq_kicker = 'Preguntas'
+      assign t_faq_title = 'Bueno saberlo.'
+      assign t_q1 = '¿La membresía cuesta algo?'
+      assign t_a1 = 'No. Hacerte miembro es gratis y sin compromiso: sin suscripción y sin pedido mínimo.'
+      assign t_q2 = '¿Cómo me hago miembro?'
+      assign t_a2 = 'Haz clic en «Hazte miembro gratis» e inicia sesión con tu correo electrónico. Te enviamos un código por correo y tu cuenta queda activa al momento. ¿Ya has pedido antes con ese correo? Entonces también verás esos pedidos en tu cuenta.'
+      assign t_q3 = '¿Cuántas veces puedo usar el descuento en filtros?'
+      assign t_a3 = 'En cada pedido, tantas veces como quieras. El descuento se aplica a los filtros de recambio y no se puede combinar con otros descuentos de producto.'
+      assign t_a3_w = 'En cada pedido, tantas veces como quieras. El descuento se aplica a los filtros de recambio y no se puede combinar con otros descuentos de producto, como el de bienvenida.'
+      assign t_q4 = '¿Tengo que acumular puntos?'
+      assign t_a4 = 'No. No hay puntos que controlar ni nada que caduque. Tu descuento de miembro funciona en cada pedido.'
+      assign t_q5 = '¿Qué hacéis con mi correo electrónico?'
+      assign t_a5 = 'Lo usamos para tu cuenta y tus pedidos. Solo recibes boletines si tú lo eliges.'
+      assign t_privacy_cta = 'Lee nuestra política de privacidad'
+      assign t_q6 = '¿Puedo darme de baja?'
+      assign t_a6 = 'Sí, cuando quieras. No tienes que cancelar nada. ¿Quieres que borremos tu cuenta y tus datos? Escribe a [EMAIL] y nos encargamos.'
+      assign t_end_title = 'Hazte miembro hoy.'
+      assign t_end_text = 'Gratis, en menos de un minuto. Tus códigos están listos al instante.'
+      assign t_end_title_m = '¿Toca cambiar los filtros?'
+      assign t_end_text_m = 'Con tu código de miembro pagas [NEW] en lugar de [OLD].'
+      assign t_terms_title = 'Condiciones del club'
+      assign t_terms_a = 'La membresía es gratuita y se aplica a clientes con una cuenta Besjaar.'
+      assign t_terms_w = 'Descuento de bienvenida: un [W] % una sola vez en alcachofas y filtros de ducha, una vez por cliente.'
+      assign t_terms_r = 'Descuento de miembro: un [R] % en filtros de recambio en cada pedido, no combinable con otros descuentos de producto.'
+      assign t_terms_b = 'Los descuentos no se aplican a los gastos de envío. Besjaar puede modificar las ventajas; las condiciones vigentes siempre están en esta página.'
+      assign t_updated = 'Última actualización: 6 de octubre de 2026'
+    else
+      assign t_h1a = 'Gratis lid.'
+      assign t_h1b = 'Voordeel bij elke navulset.'
+      assign t_h1b_alt = 'Voordeel vanaf je eerste bestelling.'
+      assign t_intro_a = 'Log in met je e-mailadres en je bent lid.'
+      assign t_intro_both = 'Je krijgt eenmalig [W]% welkomstkorting en [R]% korting op elke set vervangfilters.'
+      assign t_intro_w = 'Je krijgt eenmalig [W]% welkomstkorting.'
+      assign t_intro_r = 'Je krijgt [R]% korting op elke set vervangfilters.'
+      assign t_intro_c = 'Zonder punten, zonder abonnement.'
+      assign t_intro_member = 'Welkom terug[NAME]. Je ledencodes staan hieronder klaar: kopieer ze en plak ze bij het afrekenen.'
+      assign t_cta_join = 'Gratis lid worden'
+      assign t_have = 'Al lid?'
+      assign t_login = 'Log in'
+      assign t_cta_refill = 'Bestel vervangfilters'
+      assign t_cta_shop = 'Bekijk douchekoppen'
+      assign t_cta_account = 'Mijn bestellingen'
+      assign t_trust = 'Gratis · Inloggen met een code per e-mail · Geen wachtwoord nodig'
+      assign t_signed_in = 'Ingelogd als [EMAIL]'
+      assign t_logout = 'Uitloggen'
+      assign t_card_name = 'JOUW NAAM'
+      assign t_card_member = 'LID'
+      assign t_card_perk = 'op elke navulset'
+      assign t_card_perk_w = 'welkomstkorting'
+      assign t_perks_kicker = 'Ledenvoordelen'
+      assign t_perks_title = 'Wat je als lid krijgt.'
+      assign t_p1_tag = 'Eenmalig'
+      assign t_p1_title = 'Welkomstkorting'
+      assign t_p1_text = 'Op douchekoppen en douchefilters, bij een bestelling naar keuze.'
+      assign t_p1_note = 'Eén keer te gebruiken per klant.'
+      assign t_p2_tag = 'Elke bestelling'
+      assign t_p2_title = 'Op elke set vervangfilters'
+      assign t_p2_text = 'Bij elke bestelling, zo vaak als je wilt.'
+      assign t_p2_price = 'Nu [NEW] in plaats van [OLD].'
+      assign t_p2_note = 'Niet te combineren met de welkomstkorting.'
+      assign t_p3_tag = 'Altijd'
+      assign t_p3_title = 'Bestellingen en track & trace op één plek'
+      assign t_p3_text = 'Bekijk wat je bestelde, volg je pakket en beheer je adressen. Inloggen gaat met een code per e-mail: geen wachtwoord om te onthouden.'
+      assign t_p3_link = 'Naar mijn account'
+      assign t_code_label = 'Jouw code'
+      assign t_copy = 'Kopieer'
+      assign t_copied = 'Gekopieerd'
+      assign t_locked = 'Log in om je code te zien'
+      assign t_copy_aria = 'Kopieer code [CODE]'
+      assign t_steps_kicker = 'Zo werkt het'
+      assign t_steps_title = 'In drie stappen lid.'
+      assign t_s1t = 'Log in met je e-mail'
+      assign t_s1c = 'Vul je e-mailadres in en bevestig met de code die je per e-mail krijgt. Je account is meteen actief.'
+      assign t_s2t = 'Kopieer je ledencode'
+      assign t_s2c = 'Ingelogd zie je je codes op deze pagina. Ze blijven hier altijd voor je klaarstaan.'
+      assign t_s3t = 'Plak hem bij het afrekenen'
+      assign t_s3c = 'Vul de code in bij ‘Kortingscode’. Je ziet de korting direct in je totaal.'
+      assign t_refill_kicker = 'Filterritme'
+      assign t_refill_title = 'Een vers filter, precies op tijd.'
+      assign t_refill_text = 'Het filter in je douchekop vangt kalk en chloor af en raakt daardoor langzaam vol. Vervang het gemiddeld elke [MIN] tot [MAX] maanden: eerder bij hard water of als je vaak doucht.'
+      assign t_tl_label = 'Wanneer vervang je je filter?'
+      assign t_tl1 = 'Nieuw filter'
+      assign t_tl1s = 'Dag 1'
+      assign t_tl2 = 'Bij hard water'
+      assign t_tl2s = 'na [MIN] maanden'
+      assign t_tl3 = 'Uiterlijk'
+      assign t_tl3s = 'na [MAX] maanden'
+      assign t_member_price = 'Ledenprijs'
+      assign t_regular = 'Normaal'
+      assign t_view_refill = 'Bekijk vervangfilters'
+      assign t_rem_title = 'Zet een herinnering in je agenda'
+      assign t_rem_text = 'Geen mailtjes van ons: je zet zelf een herinnering over [MIN] maanden in je eigen agenda.'
+      assign t_rem_google = 'Google Agenda'
+      assign t_rem_ics = 'Apple / Outlook'
+      assign t_rem_event = 'Tijd voor nieuwe Besjaar-douchefilters'
+      assign t_rem_desc = 'Vervang de filters in je Besjaar-douchekop.'
+      assign t_rem_desc_member = 'Als lid krijg je [R]% korting met code [CODE].'
+      assign t_inc_kicker = 'Voor iedereen'
+      assign t_inc_title = 'Altijd inbegrepen, lid of niet.'
+      assign t_ship_free = 'Gratis verzending'
+      assign t_ship_free_s = 'Op elke bestelling, zonder minimumbedrag.'
+      assign t_ship_from = 'Gratis verzending vanaf [AMOUNT]'
+      assign t_ship_from_s = 'Daaronder [RATE] verzendkosten.'
+      assign t_ship_none = 'Snelle verzending'
+      assign t_ship_none_s = 'De verzendkosten zie je bij het afrekenen.'
+      assign t_returns = '[D] dagen bedenktijd'
+      assign t_returns_s = 'Ongebruikt retour binnen [D] dagen na levering.'
+      assign t_warranty = '[M] maanden garantie'
+      assign t_warranty_s = 'Naast je wettelijke rechten als consument.'
+      assign t_secure = 'Veilig betalen'
+      assign t_secure_s = 'Via de versleutelde checkout van Shopify.'
+      assign t_faq_kicker = 'Vragen'
+      assign t_faq_title = 'Goed om te weten.'
+      assign t_q1 = 'Kost het lidmaatschap iets?'
+      assign t_a1 = 'Nee. Lid worden is gratis en je zit nergens aan vast: geen abonnement en geen minimale bestelling.'
+      assign t_q2 = 'Hoe word ik lid?'
+      assign t_a2 = 'Klik op ‘Gratis lid worden’ en log in met je e-mailadres. Je krijgt een code per e-mail; daarmee is je account meteen actief. Heb je al eens met dat e-mailadres besteld? Dan vind je die bestellingen ook terug in je account.'
+      assign t_q3 = 'Hoe vaak kan ik de korting op vervangfilters gebruiken?'
+      assign t_a3 = 'Bij elke bestelling, zo vaak als je wilt. De korting geldt voor vervangfilters en is niet te combineren met andere productkortingen.'
+      assign t_a3_w = 'Bij elke bestelling, zo vaak als je wilt. De korting geldt voor vervangfilters en is niet te combineren met andere productkortingen, zoals de welkomstkorting.'
+      assign t_q4 = 'Moet ik punten sparen?'
+      assign t_a4 = 'Nee. Er zijn geen punten om bij te houden en er verloopt niets. Je ledenkorting werkt gewoon bij elke bestelling.'
+      assign t_q5 = 'Wat doen jullie met mijn e-mailadres?'
+      assign t_a5 = 'We gebruiken het voor je account en je bestellingen. Nieuwsbrieven krijg je alleen als je daar zelf voor kiest.'
+      assign t_privacy_cta = 'Lees ons privacybeleid'
+      assign t_q6 = 'Kan ik stoppen?'
+      assign t_a6 = 'Ja, wanneer je wilt. Je hoeft niets op te zeggen. Wil je dat we je account en gegevens verwijderen? Mail naar [EMAIL], dan regelen we het.'
+      assign t_end_title = 'Word vandaag nog lid.'
+      assign t_end_text = 'Gratis, in minder dan een minuut. Je codes staan direct klaar.'
+      assign t_end_title_m = 'Tijd voor nieuwe filters?'
+      assign t_end_text_m = 'Met je ledencode betaal je [NEW] in plaats van [OLD].'
+      assign t_terms_title = 'Clubvoorwaarden'
+      assign t_terms_a = 'Het lidmaatschap is gratis en geldt voor klanten met een Besjaar-account.'
+      assign t_terms_w = 'Welkomstkorting: eenmalig [W]% op douchekoppen en douchefilters, één keer per klant.'
+      assign t_terms_r = 'Ledenkorting: [R]% op vervangfilters, bij elke bestelling, niet te combineren met andere productkortingen.'
+      assign t_terms_b = 'Kortingen gelden niet voor verzendkosten. Besjaar kan de voordelen aanpassen; de geldende voorwaarden staan altijd op deze pagina.'
+      assign t_updated = 'Laatst bijgewerkt: 6 oktober 2026'
+  endcase
+
+  assign c_club_name = settings.club_name | default: 'Besjaar Club'
+  assign c_w = section.settings.welcome_percent | default: 20
+  assign c_r = section.settings.refill_percent | default: 20
+  assign c_min = section.settings.refill_months_min | default: 3
+  assign c_max = section.settings.refill_months_max | default: 5
+  if c_max < c_min
+    assign c_max = c_min
+  endif
+  assign c_w_code = section.settings.welcome_code | default: '' | strip | upcase
+  assign c_r_code = section.settings.refill_code | default: '' | strip | upcase
+  assign c_has_w = false
+  if c_w_code != blank
+    assign c_has_w = true
+  endif
+  assign c_has_r = false
+  if c_r_code != blank
+    assign c_has_r = true
+  endif
+
+  assign c_member = false
+  if customer
+    assign c_member = true
+  elsif request.design_mode and section.settings.preview_member
+    assign c_member = true
+  endif
+  assign c_name_part = ''
+  assign c_card_name = t_card_name
+  if customer
+    assign c_first = customer.first_name | default: '' | strip | escape
+    if c_first != blank
+      assign c_name_part = ', ' | append: c_first
+    endif
+    assign c_card_name = customer.name | default: '' | strip
+    if c_card_name == blank
+      assign c_card_name = customer.email | split: '@' | first
+    endif
+    assign c_card_name = c_card_name | upcase
+  endif
+
+  assign c_customer_email = ''
+  if customer
+    assign c_customer_email = customer.email | escape
+  endif
+
+  assign c_login = routes.storefront_login_url | default: routes.account_login_url
+  assign c_account = routes.account_url
+
+  assign c_refill = section.settings.refill_product
+  assign c_refill_url = ''
+  assign c_old = ''
+  assign c_new = ''
+  if c_refill != blank
+    capture c_refill_url
+      render 'localized-internal-url', url: c_refill.url
+    endcapture
+    assign c_refill_url = c_refill_url | strip
+    assign c_old_cents = c_refill.price
+    assign c_off_cents = c_old_cents | times: c_r | divided_by: 100.0 | round
+    assign c_new_cents = c_old_cents | minus: c_off_cents
+    assign c_old = c_old_cents | money
+    assign c_new = c_new_cents | money
+    assign c_img_alt = c_refill.featured_image.alt | default: c_refill.title
+  endif
+  capture c_shop_url
+    render 'shower-store-url'
+  endcapture
+  assign c_shop_url = c_shop_url | strip
+
+  capture c_ship_free
+    render 'besjaar-shipping-zone', field: 'free_always'
+  endcapture
+  capture c_ship_thr
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  capture c_ship_rate
+    render 'besjaar-shipping-zone', field: 'rate'
+  endcapture
+  assign c_ship_free = c_ship_free | strip
+  assign c_ship_thr = c_ship_thr | strip | plus: 0
+  assign c_ship_rate = c_ship_rate | strip
+  if c_ship_free == 'true'
+    assign c_ship_t = t_ship_free
+    assign c_ship_s = t_ship_free_s
+  elsif c_ship_thr > 0
+    assign c_ship_amount = c_ship_thr | money_without_trailing_zeros
+    assign c_ship_t = t_ship_from | replace: '[AMOUNT]', c_ship_amount
+    assign c_ship_s = t_ship_none_s
+    if c_ship_rate != blank
+      assign c_rate_money = c_ship_rate | times: 100 | round | money
+      assign c_ship_s = t_ship_from_s | replace: '[RATE]', c_rate_money
+    endif
+  else
+    assign c_ship_t = t_ship_none
+    assign c_ship_s = t_ship_none_s
+  endif
+  assign c_days = settings.return_window_days | default: 30
+  assign c_months = settings.warranty_months | default: 12
+
+  assign c_intro = t_intro_a
+  if c_has_w and c_has_r
+    assign c_intro = c_intro | append: ' ' | append: t_intro_both
+  elsif c_has_w
+    assign c_intro = c_intro | append: ' ' | append: t_intro_w
+  elsif c_has_r
+    assign c_intro = c_intro | append: ' ' | append: t_intro_r
+  endif
+  assign c_intro = c_intro | append: ' ' | append: t_intro_c
+  assign c_h1b = t_h1b_alt
+  if c_has_r
+    assign c_h1b = t_h1b
+  endif
+
+  assign c_terms = t_terms_a
+  if c_has_w
+    assign c_terms = c_terms | append: ' ' | append: t_terms_w
+  endif
+  if c_has_r
+    assign c_terms = c_terms | append: ' ' | append: t_terms_r
+  endif
+  assign c_terms = c_terms | append: ' ' | append: t_terms_b
+
+  assign c_email = settings.support_email | default: shop.email
+  assign c_rem_details = t_rem_desc
+  if c_member and c_has_r
+    assign c_rem_member = t_rem_desc_member | replace: '[R]', c_r | replace: '[CODE]', c_r_code
+    assign c_rem_details = c_rem_details | append: ' ' | append: c_rem_member
+  endif
+  if c_refill_url != blank
+    assign c_rem_details = c_rem_details | append: ' ' | append: request.origin | append: c_refill_url
+  endif
+-%}
+<section class="bjc" data-bjc>
+  <div class="besjaar-store-shell">
+
+    <div class="bjc-hero">
+      <div class="bjc-hero__copy">
+        <h1 class="bjc-hero__title">
+          <span class="bjc-kicker">{{ c_club_name | escape }}</span>
+          <span class="bjc-hero__l1">{{ t_h1a | escape }}</span>
+          <span class="bjc-hero__l2">{{ c_h1b | escape }}</span>
+        </h1>
+        {%- if c_member -%}
+          <p class="bjc-hero__intro">{{ t_intro_member | escape | replace: '[NAME]', c_name_part }}</p>
+          <div class="bjc-hero__actions">
+            {%- if c_refill_url != blank -%}
+              <a class="bjc-btn" href="{{ c_refill_url }}">{{ t_cta_refill | escape }} <span aria-hidden="true">→</span></a>
+            {%- else -%}
+              <a class="bjc-btn" href="{{ c_shop_url }}">{{ t_cta_shop | escape }} <span aria-hidden="true">→</span></a>
+            {%- endif -%}
+            <a class="bjc-link" href="{{ c_account }}">{{ t_cta_account | escape }}</a>
+          </div>
+          {%- if customer -%}
+            <p class="bjc-hero__trust">{{ t_signed_in | escape | replace: '[EMAIL]', c_customer_email }} · <a href="{{ routes.account_logout_url }}">{{ t_logout | escape }}</a></p>
+          {%- endif -%}
+        {%- else -%}
+          <p class="bjc-hero__intro">{{ c_intro | replace: '[W]', c_w | replace: '[R]', c_r | escape }}</p>
+          <div class="bjc-hero__actions">
+            <a class="bjc-btn" href="{{ c_login }}" rel="nofollow">{{ t_cta_join | escape }} <span aria-hidden="true">→</span></a>
+            <span class="bjc-hero__have">{{ t_have | escape }} <a class="bjc-link" href="{{ c_login }}" rel="nofollow">{{ t_login | escape }}</a></span>
+          </div>
+          <p class="bjc-hero__trust">{{ t_trust | escape }}</p>
+        {%- endif -%}
+      </div>
+
+      <div class="bjc-hero__visual" aria-hidden="true">
+        <div class="bjc-card bjc-card--ghost"></div>
+        <div class="bjc-card">
+          <svg class="bjc-card__waves" viewBox="0 0 400 250" preserveAspectRatio="none"><path d="M0 170c60-28 120-28 180 0s120 28 220-4"/><path d="M0 198c60-28 120-28 180 0s120 28 220-4"/><path d="M0 226c60-28 120-28 180 0s120 28 220-4"/></svg>
+          <div class="bjc-card__top">
+            <span class="bjc-card__brand">BESJAAR <b>CLUB</b></span>
+            <svg class="bjc-card__drop" viewBox="0 0 24 24"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11Z"/></svg>
+          </div>
+          {%- if c_has_r -%}
+            <div class="bjc-card__value"><strong>{{ c_r }}<span>%</span></strong><small>{{ t_card_perk | escape }}</small></div>
+          {%- elsif c_has_w -%}
+            <div class="bjc-card__value"><strong>{{ c_w }}<span>%</span></strong><small>{{ t_card_perk_w | escape }}</small></div>
+          {%- endif -%}
+          <div class="bjc-card__bottom">
+            <span class="bjc-card__name">{{ c_card_name | escape }}</span>
+            <span class="bjc-card__tier">{{ t_card_member | escape }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bjc-block">
+      <div class="bjc-head">
+        <span class="bjc-kicker">{{ t_perks_kicker | escape }}</span>
+        <h2>{{ t_perks_title | escape }}</h2>
+      </div>
+      <div class="bjc-perks">
+        {%- if c_has_w -%}
+          <article class="bjc-perk">
+            <span class="bjc-perk__tag">{{ t_p1_tag | escape }}</span>
+            <strong class="bjc-perk__big">{{ c_w }}<span>%</span></strong>
+            <h3>{{ t_p1_title | escape }}</h3>
+            <p>{{ t_p1_text | escape }}</p>
+            {%- if c_member -%}
+              <div class="bjc-code">
+                <span class="bjc-code__label">{{ t_code_label | escape }}</span>
+                <code class="bjc-code__value">{{ c_w_code | escape }}</code>
+                <button class="bjc-code__copy" type="button" data-bjc-copy="{{ c_w_code | escape }}" aria-label="{{ t_copy_aria | replace: '[CODE]', c_w_code | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span data-bjc-copy-label>{{ t_copy | escape }}</span></button>
+              </div>
+            {%- else -%}
+              <a class="bjc-lock" href="{{ c_login }}" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>{{ t_locked | escape }}</span><i aria-hidden="true">••••••••</i></a>
+            {%- endif -%}
+            <small class="bjc-perk__note">{{ t_p1_note | escape }}</small>
+          </article>
+        {%- endif -%}
+        {%- if c_has_r -%}
+          <article class="bjc-perk bjc-perk--feature">
+            <span class="bjc-perk__tag">{{ t_p2_tag | escape }}</span>
+            <strong class="bjc-perk__big">{{ c_r }}<span>%</span></strong>
+            <h3>{{ t_p2_title | escape }}</h3>
+            <p>{{ t_p2_text | escape }}{% if c_new != blank %} <b>{{ t_p2_price | escape | replace: '[NEW]', c_new | replace: '[OLD]', c_old }}</b>{% endif %}</p>
+            {%- if c_member -%}
+              <div class="bjc-code">
+                <span class="bjc-code__label">{{ t_code_label | escape }}</span>
+                <code class="bjc-code__value">{{ c_r_code | escape }}</code>
+                <button class="bjc-code__copy" type="button" data-bjc-copy="{{ c_r_code | escape }}" aria-label="{{ t_copy_aria | replace: '[CODE]', c_r_code | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span data-bjc-copy-label>{{ t_copy | escape }}</span></button>
+              </div>
+            {%- else -%}
+              <a class="bjc-lock" href="{{ c_login }}" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>{{ t_locked | escape }}</span><i aria-hidden="true">••••••••</i></a>
+            {%- endif -%}
+            {%- if c_has_w -%}<small class="bjc-perk__note">{{ t_p2_note | escape }}</small>{%- endif -%}
+          </article>
+        {%- endif -%}
+        <article class="bjc-perk">
+          <span class="bjc-perk__tag">{{ t_p3_tag | escape }}</span>
+          <span class="bjc-perk__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg></span>
+          <h3>{{ t_p3_title | escape }}</h3>
+          <p>{{ t_p3_text | escape }}</p>
+          <a class="bjc-link" href="{% if customer %}{{ c_account }}{% else %}{{ c_login }}{% endif %}" rel="nofollow">{{ t_p3_link | escape }} <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </div>
+
+    <div class="bjc-block">
+      <div class="bjc-head">
+        <span class="bjc-kicker">{{ t_steps_kicker | escape }}</span>
+        <h2>{{ t_steps_title | escape }}</h2>
+      </div>
+      <ol class="bjc-steps">
+        <li><span class="bjc-steps__n" aria-hidden="true">01</span><h3>{{ t_s1t | escape }}</h3><p>{{ t_s1c | escape }}</p></li>
+        <li><span class="bjc-steps__n" aria-hidden="true">02</span><h3>{{ t_s2t | escape }}</h3><p>{{ t_s2c | escape }}</p></li>
+        <li><span class="bjc-steps__n" aria-hidden="true">03</span><h3>{{ t_s3t | escape }}</h3><p>{{ t_s3c | escape }}</p></li>
+      </ol>
+    </div>
+
+    {%- if c_refill != blank -%}
+      <div class="bjc-block bjc-refill">
+        <div class="bjc-refill__copy">
+          <span class="bjc-kicker">{{ t_refill_kicker | escape }}</span>
+          <h2>{{ t_refill_title | escape }}</h2>
+          <p>{{ t_refill_text | replace: '[MIN]', c_min | replace: '[MAX]', c_max | escape }}</p>
+          <ol class="bjc-tl" aria-label="{{ t_tl_label | escape }}">
+            <li><strong>{{ t_tl1 | escape }}</strong><span>{{ t_tl1s | escape }}</span></li>
+            <li><strong>{{ t_tl2 | escape }}</strong><span>{{ t_tl2s | replace: '[MIN]', c_min | escape }}</span></li>
+            <li><strong>{{ t_tl3 | escape }}</strong><span>{{ t_tl3s | replace: '[MAX]', c_max | escape }}</span></li>
+          </ol>
+          {%- if section.settings.show_reminder -%}
+            <div class="bjc-rem" data-bjc-reminder data-months="{{ c_min }}" data-title="{{ t_rem_event | escape }}" data-details="{{ c_rem_details | escape }}" data-file="besjaar-filter.ics">
+              <span class="bjc-rem__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+              <div>
+                <h3>{{ t_rem_title | escape }}</h3>
+                <p>{{ t_rem_text | replace: '[MIN]', c_min | escape }}</p>
+                <div class="bjc-rem__btns">
+                  <a class="bjc-chip" href="https://calendar.google.com/calendar/render?action=TEMPLATE" target="_blank" rel="noopener" data-bjc-gcal>{{ t_rem_google | escape }}</a>
+                  <button class="bjc-chip" type="button" data-bjc-ics>{{ t_rem_ics | escape }}</button>
+                </div>
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+        <a class="bjc-product" href="{{ c_refill_url }}">
+          <span class="bjc-product__media">
+            {%- if c_refill.featured_image != blank -%}
+              {{ c_refill.featured_image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '360, 540, 720', sizes: '(min-width: 901px) 380px, 90vw', alt: c_img_alt }}
+            {%- endif -%}
+          </span>
+          <span class="bjc-product__title">{{ c_refill.title | escape }}</span>
+          {%- if c_has_r -%}
+            <span class="bjc-product__prices">
+              <span class="bjc-product__member"><small>{{ t_member_price | escape }}</small><strong>{{ c_new }}</strong></span>
+              <span class="bjc-product__regular"><small>{{ t_regular | escape }}</small><s>{{ c_old }}</s></span>
+            </span>
+          {%- else -%}
+            <span class="bjc-product__prices"><span class="bjc-product__member"><strong>{{ c_old }}</strong></span></span>
+          {%- endif -%}
+          <span class="bjc-product__cta">{{ t_view_refill | escape }} <span aria-hidden="true">→</span></span>
+        </a>
+      </div>
+    {%- endif -%}
+
+    <div class="bjc-block bjc-incl">
+      <div class="bjc-head">
+        <span class="bjc-kicker">{{ t_inc_kicker | escape }}</span>
+        <h2>{{ t_inc_title | escape }}</h2>
+      </div>
+      <ul class="bjc-incl__list" role="list">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg><div><strong>{{ c_ship_t | escape }}</strong><span>{{ c_ship_s | escape }}</span></div></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10a6 6 0 1 1-5.2 9M4 7l3-3M4 7l3 3"/></svg><div><strong>{{ t_returns | replace: '[D]', c_days | escape }}</strong><span>{{ t_returns_s | replace: '[D]', c_days | escape }}</span></div></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-2.9 8.2-7 10-4.1-1.8-7-5.4-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg><div><strong>{{ t_warranty | replace: '[M]', c_months | escape }}</strong><span>{{ t_warranty_s | escape }}</span></div></li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>{{ t_secure | escape }}</strong><span>{{ t_secure_s | escape }}</span></div></li>
+      </ul>
+    </div>
+
+    <div class="bjc-block bjc-faq">
+      <div class="bjc-head">
+        <span class="bjc-kicker">{{ t_faq_kicker | escape }}</span>
+        <h2>{{ t_faq_title | escape }}</h2>
+      </div>
+      <div class="bjc-faq__list">
+        <details><summary>{{ t_q1 | escape }}</summary><p>{{ t_a1 | escape }}</p></details>
+        <details><summary>{{ t_q2 | escape }}</summary><p>{{ t_a2 | escape }}</p></details>
+        {%- if c_has_r -%}<details><summary>{{ t_q3 | escape }}</summary><p>{% if c_has_w %}{{ t_a3_w | escape }}{% else %}{{ t_a3 | escape }}{% endif %}</p></details>{%- endif -%}
+        <details><summary>{{ t_q4 | escape }}</summary><p>{{ t_a4 | escape }}</p></details>
+        <details><summary>{{ t_q5 | escape }}</summary><p>{{ t_a5 | escape }}{% if shop.privacy_policy != blank %} <a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ t_privacy_cta | escape }}</a>{% endif %}</p></details>
+        <details><summary>{{ t_q6 | escape }}</summary><p>{%- assign c_a6 = t_a6 | escape | split: '[EMAIL]' -%}{{ c_a6[0] }}<a href="mailto:{{ c_email | escape }}">{{ c_email | escape }}</a>{{ c_a6[1] }}</p></details>
+      </div>
+    </div>
+
+    <div class="bjc-end">
+      {%- if c_member -%}
+        <div>
+          <h2>{{ t_end_title_m | escape }}</h2>
+          {%- if c_has_r and c_new != blank -%}<p>{{ t_end_text_m | escape | replace: '[NEW]', c_new | replace: '[OLD]', c_old }}</p>{%- endif -%}
+        </div>
+        {%- if c_refill_url != blank -%}
+          <a class="bjc-btn bjc-btn--light" href="{{ c_refill_url }}">{{ t_cta_refill | escape }} <span aria-hidden="true">→</span></a>
+        {%- else -%}
+          <a class="bjc-btn bjc-btn--light" href="{{ c_shop_url }}">{{ t_cta_shop | escape }} <span aria-hidden="true">→</span></a>
+        {%- endif -%}
+      {%- else -%}
+        <div>
+          <h2>{{ t_end_title | escape }}</h2>
+          <p>{{ t_end_text | escape }}</p>
+        </div>
+        <a class="bjc-btn bjc-btn--light" href="{{ c_login }}" rel="nofollow">{{ t_cta_join | escape }} <span aria-hidden="true">→</span></a>
+      {%- endif -%}
+    </div>
+
+    <div class="bjc-terms">
+      <h2>{{ t_terms_title | escape }}</h2>
+      <p>{{ c_terms | replace: '[W]', c_w | replace: '[R]', c_r | escape }}</p>
+      <p class="bjc-terms__date">{{ t_updated | escape }}</p>
+    </div>
+
+    <p class="bjc-live" aria-live="polite" data-bjc-live></p>
+  </div>
+</section>
+
+<style>
+  .bjc{padding:clamp(24px,5vw,56px) 0 clamp(40px,8vw,88px);background:#FFFFFF;color:var(--bj-ink,#132A3E)}
+  body[data-page-type] .bjc>.besjaar-store-shell{box-sizing:border-box!important;width:min(100% - 32px,1240px)!important;max-width:1240px!important;margin-left:auto!important;margin-right:auto!important;padding-left:0!important;padding-right:0!important}
+  .bjc *{box-sizing:border-box}
+  .bjc h1,.bjc h2,.bjc h3{font-family:var(--bj-font-heading,inherit);color:var(--bj-navy-deep,#102D49)}
+  .bjc h2{margin:0;font-size:clamp(1.5rem,4.2vw,2.2rem);font-weight:600;line-height:1.12;letter-spacing:-.025em}
+  .bjc h3{margin:0;font-size:1.02rem;font-weight:600;line-height:1.3;letter-spacing:-.01em}
+  .bjc p{margin:0;color:var(--bj-muted,#61798E);line-height:1.6}
+  .bjc a{color:inherit}
+  .bjc :focus-visible{outline:2px solid var(--bj-blue,#3F779F);outline-offset:3px;border-radius:6px}
+  .bjc-kicker{display:inline-flex;align-items:center;align-self:flex-start;margin:0 0 14px;padding:6px 12px;border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:999px;background:var(--bj-ice-100,#EDF6FA);color:var(--bj-navy-bright,#24547C);font-family:var(--bj-font-body,inherit);font-size:.62rem;font-weight:700;letter-spacing:.14em;line-height:1;text-transform:uppercase}
+  .bjc-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:999px;background:var(--bj-navy-deep,#102D49);color:#FFFFFF!important;font-size:.95rem;font-weight:600;text-decoration:none;transition:background-color .2s ease,transform .2s ease}
+  .bjc-btn:hover{background:var(--bj-navy,#173B5E)}
+  .bjc-btn--light{background:#FFFFFF;color:var(--bj-navy-deep,#102D49)!important}
+  .bjc-btn--light:hover{background:var(--bj-ice-100,#EDF6FA)}
+  .bjc-link{color:var(--bj-navy-bright,#24547C)!important;font-size:.9rem;font-weight:600;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+  .bjc-block{margin-top:clamp(48px,8vw,96px)}
+  .bjc-head{display:flex;flex-direction:column;max-width:44ch;margin:0 0 clamp(18px,3vw,28px)}
+
+  .bjc-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:32px;padding:clamp(24px,5vw,56px);border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:28px;background:radial-gradient(120% 90% at 100% 0%,var(--bj-ice-200,#DDECF4) 0%,rgba(221,236,244,0) 55%),linear-gradient(180deg,var(--bj-ice-50,#F6FAFC) 0%,#FFFFFF 100%);overflow:hidden}
+  .bjc-hero__copy{display:flex;flex-direction:column;align-items:flex-start}
+  .bjc-hero__title{display:flex;flex-direction:column;margin:0 0 18px;font-size:clamp(2.3rem,7.4vw,3.9rem);font-weight:700;line-height:1.02;letter-spacing:-.035em}
+  .bjc-hero__title .bjc-kicker{margin-bottom:18px}
+  .bjc-hero__l2{color:var(--bj-navy-bright,#24547C);font-weight:500}
+  .bjc-hero__intro{max-width:48ch;font-size:clamp(1rem,1.6vw,1.1rem)}
+  .bjc-hero__actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-top:26px}
+  .bjc-hero__have{color:var(--bj-muted,#61798E);font-size:.9rem}
+  .bjc-hero__trust{margin-top:18px!important;font-size:.8rem!important;letter-spacing:.01em}
+  .bjc-hero__trust a{color:var(--bj-navy-bright,#24547C);font-weight:600}
+  .bjc-hero__visual{position:relative;display:grid;place-items:center;min-height:250px;padding:12px 0 8px}
+
+  .bjc-card{position:relative;width:min(100%,400px);aspect-ratio:1.586;padding:clamp(18px,4vw,26px);border-radius:22px;background:var(--bj-grad-band,linear-gradient(135deg,#102D49 0%,#173B5E 55%,#24547C 100%));color:#FFFFFF;box-shadow:0 30px 60px rgba(16,45,73,.28),inset 0 1px 0 rgba(255,255,255,.14);display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;transform:rotate(-4deg)}
+  .bjc-card--ghost{position:absolute;background:linear-gradient(135deg,var(--bj-ice-200,#DDECF4) 0%,#FFFFFF 100%);box-shadow:0 16px 40px rgba(16,45,73,.10);transform:rotate(5deg) translate(18px,6px)}
+  .bjc-card__waves{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:rgba(255,255,255,.12);stroke-width:1.5}
+  .bjc-card__top,.bjc-card__bottom{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .bjc-card__brand{font-size:.78rem;font-weight:600;letter-spacing:.32em}
+  .bjc-card__brand b{color:var(--bj-gold,#C99B4D);font-weight:700}
+  .bjc-card__drop{width:26px;height:26px;fill:rgba(255,255,255,.14);stroke:var(--bj-gold,#C99B4D);stroke-width:1.4}
+  .bjc-card__value{position:relative;display:flex;align-items:baseline;gap:10px}
+  .bjc-card__value strong{font-family:var(--bj-font-heading,inherit);font-size:clamp(2.4rem,7vw,3.2rem);font-weight:600;line-height:1;letter-spacing:-.03em}
+  .bjc-card__value strong span{color:var(--bj-gold,#C99B4D)}
+  .bjc-card__value small{max-width:12ch;font-size:.74rem;line-height:1.3;opacity:.85}
+  .bjc-card__name{overflow:hidden;font-size:.74rem;letter-spacing:.16em;text-overflow:ellipsis;white-space:nowrap;opacity:.9}
+  .bjc-card__tier{flex:0 0 auto;padding:4px 10px;border:1px solid rgba(201,155,77,.6);border-radius:999px;color:var(--bj-gold,#C99B4D);font-size:.62rem;font-weight:700;letter-spacing:.16em}
+
+  .bjc-perks{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+  .bjc-perk{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:clamp(20px,3vw,28px);border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:22px;background:#FFFFFF}
+  .bjc-perk--feature{border-color:rgba(201,155,77,.45);background:linear-gradient(180deg,#FFFDF8 0%,#FFFFFF 60%);box-shadow:0 18px 44px rgba(16,45,73,.07)}
+  .bjc-perk__tag{padding:5px 10px;border-radius:999px;background:var(--bj-ice-100,#EDF6FA);color:var(--bj-navy-bright,#24547C);font-size:.6rem;font-weight:700;letter-spacing:.14em;line-height:1;text-transform:uppercase}
+  .bjc-perk--feature .bjc-perk__tag{background:rgba(201,155,77,.14);color:#8A6527}
+  .bjc-perk__big{margin-top:6px;color:var(--bj-navy-deep,#102D49);font-family:var(--bj-font-heading,inherit);font-size:clamp(2.6rem,6vw,3.4rem);font-weight:600;line-height:1;letter-spacing:-.04em}
+  .bjc-perk__big span{color:var(--bj-gold,#C99B4D)}
+  .bjc-perk__icon{display:grid;place-items:center;width:56px;height:56px;margin-top:6px;border-radius:16px;background:var(--bj-ice-100,#EDF6FA);color:var(--bj-navy-deep,#102D49)}
+  .bjc-perk__icon svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+  .bjc-perk p{font-size:.92rem}
+  .bjc-perk p b{color:var(--bj-navy-deep,#102D49);font-weight:600}
+  .bjc-perk .bjc-link{margin-top:auto}
+  .bjc-perk__note{margin-top:auto;color:var(--bj-muted,#61798E);font-size:.74rem;line-height:1.4}
+  .bjc-code{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:2px 10px;width:100%;margin-top:6px;padding:10px 10px 10px 14px;border:1.5px dashed rgba(36,84,124,.35);border-radius:14px;background:var(--bj-ice-50,#F6FAFC)}
+  .bjc-code__label{grid-column:1 / -1;color:var(--bj-muted,#61798E);font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .bjc-code__value{min-width:0;padding:0;color:var(--bj-navy-deep,#102D49);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:1.05rem;font-weight:700;letter-spacing:.06em;overflow-wrap:anywhere;background:none;user-select:all}
+  .bjc-code__copy{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:var(--bj-navy-deep,#102D49);color:#FFFFFF;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer}
+  .bjc-code__copy svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .bjc-code__copy.is-done{background:var(--bj-success,#2F6B58)}
+  .bjc-lock{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:12px 14px;border:1.5px dashed var(--bj-line-strong,rgba(23,59,94,.22));border-radius:14px;background:var(--bj-ice-50,#F6FAFC);color:var(--bj-navy-deep,#102D49)!important;font-size:.84rem;font-weight:600;text-decoration:none}
+  .bjc-lock svg{flex:0 0 auto;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .bjc-lock i{margin-left:auto;color:rgba(23,59,94,.28);font-style:normal;letter-spacing:.12em}
+  .bjc-lock:hover{border-color:var(--bj-navy-bright,#24547C)}
+
+  .bjc-steps{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin:0;padding:0;list-style:none;counter-reset:none}
+  .bjc-steps li{position:relative;padding:22px 22px 24px;border-top:2px solid var(--bj-navy-deep,#102D49);background:var(--bj-ice-50,#F6FAFC);border-radius:0 0 18px 18px}
+  .bjc-steps__n{display:block;margin:0 0 18px;color:var(--bj-gold,#C99B4D);font-size:.74rem;font-weight:700;letter-spacing:.14em}
+  .bjc-steps h3{margin-bottom:6px}
+  .bjc-steps p{font-size:.9rem}
+
+  .bjc-refill{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+  .bjc-refill__copy{display:flex;flex-direction:column;align-items:flex-start}
+  .bjc-refill__copy h2{margin-bottom:12px}
+  .bjc-refill__copy>p{max-width:56ch}
+  .bjc-tl{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;margin:28px 0 0;padding:26px 0 0;list-style:none}
+  .bjc-tl:before{content:"";position:absolute;left:6px;right:6px;top:6px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--bj-sky,#A9D4EC) 0%,var(--bj-navy-bright,#24547C) 60%,var(--bj-gold,#C99B4D) 100%)}
+  .bjc-tl li{position:relative;display:flex;flex-direction:column;gap:2px}
+  .bjc-tl li:before{content:"";position:absolute;left:0;top:-26px;width:14px;height:14px;border:3px solid #FFFFFF;border-radius:50%;background:var(--bj-navy-bright,#24547C);box-shadow:0 0 0 1px var(--bj-line,rgba(23,59,94,.12))}
+  .bjc-tl li:first-child:before{background:var(--bj-sky,#A9D4EC)}
+  .bjc-tl li:last-child:before{background:var(--bj-gold,#C99B4D)}
+  .bjc-tl strong{color:var(--bj-navy-deep,#102D49);font-size:.86rem;font-weight:600}
+  .bjc-tl span{color:var(--bj-muted,#61798E);font-size:.78rem}
+  .bjc-rem{display:flex;gap:14px;width:100%;margin-top:28px;padding:18px;border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:18px;background:var(--bj-ice-50,#F6FAFC)}
+  .bjc-rem__icon{display:grid;flex:0 0 auto;place-items:center;width:44px;height:44px;border-radius:12px;background:#FFFFFF;color:var(--bj-navy-deep,#102D49);box-shadow:0 1px 0 var(--bj-line,rgba(23,59,94,.12))}
+  .bjc-rem__icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7}
+  .bjc-rem h3{margin-bottom:4px;font-size:.95rem}
+  .bjc-rem p{font-size:.84rem}
+  .bjc-rem__btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .bjc-chip{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid var(--bj-line-strong,rgba(23,59,94,.22));border-radius:999px;background:#FFFFFF;color:var(--bj-navy-deep,#102D49)!important;font-family:inherit;font-size:.82rem;font-weight:600;text-decoration:none;cursor:pointer}
+  .bjc-chip:hover{border-color:var(--bj-navy-bright,#24547C)}
+  .bjc-product{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:24px;background:#FFFFFF;box-shadow:0 18px 44px rgba(16,45,73,.07);text-decoration:none}
+  .bjc-product__media{display:block;overflow:hidden;aspect-ratio:1;border-radius:16px;background:var(--bj-ice-50,#F6FAFC)}
+  .bjc-product__media img{width:100%;height:100%;object-fit:contain;display:block}
+  .bjc-product__title{padding:4px 4px 0;color:var(--bj-navy-deep,#102D49);font-size:.92rem;font-weight:600;line-height:1.35}
+  .bjc-product__prices{display:flex;align-items:flex-end;gap:18px;padding:0 4px}
+  .bjc-product__prices small{display:block;color:var(--bj-muted,#61798E);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .bjc-product__member strong{color:var(--bj-navy-deep,#102D49);font-family:var(--bj-font-heading,inherit);font-size:1.6rem;font-weight:600;line-height:1.1}
+  .bjc-product__regular s{color:var(--bj-muted,#61798E);font-size:1rem}
+  .bjc-product__cta{margin:4px 4px 2px;color:var(--bj-navy-bright,#24547C);font-size:.86rem;font-weight:600}
+
+  .bjc-incl__list{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0;padding:0;list-style:none}
+  .bjc-incl__list li{display:flex;align-items:flex-start;gap:14px;padding:18px;border:1px solid var(--bj-line,rgba(23,59,94,.12));border-radius:18px;background:#FFFFFF}
+  .bjc-incl__list svg{flex:0 0 auto;width:24px;height:24px;margin-top:2px;fill:none;stroke:var(--bj-navy-bright,#24547C);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .bjc-incl__list strong{display:block;color:var(--bj-navy-deep,#102D49);font-size:.94rem;font-weight:600}
+  .bjc-incl__list span{display:block;margin-top:2px;color:var(--bj-muted,#61798E);font-size:.82rem;line-height:1.45}
+
+  .bjc-faq{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .bjc-faq__list{border-top:1px solid var(--bj-line,rgba(23,59,94,.12))}
+  .bjc-faq details{border-bottom:1px solid var(--bj-line,rgba(23,59,94,.12))}
+  .bjc-faq summary{position:relative;display:block;padding:20px 44px 20px 0;color:var(--bj-navy-deep,#102D49);font-size:1rem;font-weight:600;line-height:1.4;cursor:pointer;list-style:none}
+  .bjc-faq summary::-webkit-details-marker{display:none}
+  .bjc-faq summary:after{content:"";position:absolute;right:6px;top:50%;width:10px;height:10px;border-right:2px solid var(--bj-navy-bright,#24547C);border-bottom:2px solid var(--bj-navy-bright,#24547C);transform:translateY(-70%) rotate(45deg);transition:transform .2s ease}
+  .bjc-faq details[open] summary:after{transform:translateY(-30%) rotate(-135deg)}
+  .bjc-faq details p{max-width:64ch;padding:0 0 22px;font-size:.94rem}
+  .bjc-faq details p a{color:var(--bj-navy-bright,#24547C);font-weight:600}
+
+  .bjc-end{display:flex;flex-direction:column;align-items:flex-start;gap:20px;margin-top:clamp(48px,8vw,96px);padding:clamp(26px,5vw,48px);border-radius:28px;background:var(--bj-grad-band,linear-gradient(135deg,#102D49 0%,#173B5E 55%,#24547C 100%));color:#FFFFFF}
+  .bjc .bjc-end h2{color:#FFFFFF}
+  .bjc-end p{margin-top:8px;color:rgba(255,255,255,.78)}
+  .bjc-terms{max-width:80ch;margin-top:clamp(32px,5vw,48px)}
+  .bjc .bjc-terms h2{margin-bottom:8px;font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--bj-navy-deep,#102D49)}
+  .bjc-terms p{font-size:.8rem;line-height:1.65}
+  .bjc-terms__date{margin-top:8px!important;font-size:.74rem!important}
+  .bjc-live{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+  @media (min-width:640px){
+    .bjc-incl__list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+  @media (min-width:901px){
+    .bjc-hero{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center}
+    .bjc-hero__visual{min-height:320px}
+    .bjc-perks{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .bjc-steps{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .bjc-refill{grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:56px}
+    .bjc-incl__list{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .bjc-faq{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:56px}
+    .bjc-end{flex-direction:row;align-items:center;justify-content:space-between}
+  }
+  @media (max-width:640px){
+    .bjc-hero{border-radius:22px}
+    .bjc-card{transform:rotate(-2deg)}
+    .bjc-card--ghost{transform:rotate(4deg) translate(10px,4px)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bjc-btn,.bjc-faq summary:after{transition:none}
+  }
+</style>
+
+<script>
+  (function () {
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function ymd(d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()); }
+    function icsText(s) { return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n'); }
+    function fold(line) {
+      var out = [];
+      while (line.length > 70) { out.push(line.slice(0, 70)); line = ' ' + line.slice(70); }
+      out.push(line);
+      return out.join('\r\n');
+    }
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+      return new Promise(function (resolve, reject) {
+        var area = document.createElement('textarea');
+        area.value = text;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        try { document.execCommand('copy') ? resolve() : reject(); } catch (e) { reject(e); }
+        document.body.removeChild(area);
+      });
+    }
+    function init(root) {
+      if (!root || root.dataset.bjcReady) return;
+      root.dataset.bjcReady = '1';
+      var live = root.querySelector('[data-bjc-live]');
+      var copiedLabel = {{ t_copied | json }};
+      root.querySelectorAll('[data-bjc-copy]').forEach(function (button) {
+        var label = button.querySelector('[data-bjc-copy-label]');
+        var original = label ? label.textContent : '';
+        button.addEventListener('click', function () {
+          var code = button.getAttribute('data-bjc-copy');
+          copyText(code).then(function () {
+            button.classList.add('is-done');
+            if (label) label.textContent = copiedLabel;
+            if (live) live.textContent = copiedLabel + ': ' + code;
+            setTimeout(function () {
+              button.classList.remove('is-done');
+              if (label) label.textContent = original;
+            }, 2200);
+          }).catch(function () {
+            var value = button.parentNode.querySelector('.bjc-code__value');
+            if (!value || !window.getSelection) return;
+            var range = document.createRange();
+            range.selectNodeContents(value);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+          });
+        });
+      });
+      var reminder = root.querySelector('[data-bjc-reminder]');
+      if (!reminder) return;
+      var months = parseInt(reminder.getAttribute('data-months'), 10) || 3;
+      var title = reminder.getAttribute('data-title');
+      var details = reminder.getAttribute('data-details');
+      var today = new Date();
+      var start = new Date(today.getFullYear(), today.getMonth() + months, today.getDate());
+      var end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 1);
+      var gcal = reminder.querySelector('[data-bjc-gcal]');
+      if (gcal) {
+        gcal.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+          + '&text=' + encodeURIComponent(title)
+          + '&dates=' + ymd(start) + '/' + ymd(end)
+          + '&details=' + encodeURIComponent(details);
+      }
+      var ics = reminder.querySelector('[data-bjc-ics]');
+      if (ics) {
+        ics.addEventListener('click', function () {
+          var now = new Date();
+          var stamp = now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';
+          var lines = [
+            'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Besjaar//Besjaar Club//NL', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            'UID:' + now.getTime() + '-filter@besjaar.eu',
+            'DTSTAMP:' + stamp,
+            'DTSTART;VALUE=DATE:' + ymd(start),
+            'DTEND;VALUE=DATE:' + ymd(end),
+            'SUMMARY:' + icsText(title),
+            'DESCRIPTION:' + icsText(details),
+            'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsText(title), 'TRIGGER:PT9H', 'END:VALARM',
+            'END:VEVENT', 'END:VCALENDAR'
+          ];
+          var blob = new Blob([lines.map(fold).join('\r\n') + '\r\n'], { type: 'text/calendar;charset=utf-8' });
+          var link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = reminder.getAttribute('data-file') || 'besjaar.ics';
+          document.body.appendChild(link);
+          link.click();
+          setTimeout(function () { URL.revokeObjectURL(link.href); link.remove(); }, 1000);
+        });
+      }
+    }
+    function initAll() { document.querySelectorAll('[data-bjc]').forEach(init); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAll); else initAll();
+    document.addEventListener('shopify:section:load', initAll);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Besjaar Club",
+  "settings": [
+    {"type": "paragraph", "content": "This page only promises what is set up in Shopify. Keep the codes and percentages equal to Shopify > Discounts. Clear a code to take that benefit off the page."},
+    {"type": "text", "id": "welcome_code", "label": "Welcome code", "default": "WELKOM20", "info": "One-time welcome discount. Must exist in Shopify > Discounts. Leave empty to hide this benefit."},
+    {"type": "range", "id": "welcome_percent", "label": "Welcome discount", "min": 5, "max": 50, "step": 1, "unit": "%", "default": 20},
+    {"type": "text", "id": "refill_code", "label": "Member code (replacement filters)", "default": "CLUBFILTER20", "info": "Discount on replacement filters for every order. Must exist in Shopify > Discounts. Leave empty to hide this benefit."},
+    {"type": "range", "id": "refill_percent", "label": "Member discount on replacement filters", "min": 5, "max": 50, "step": 1, "unit": "%", "default": 20},
+    {"type": "product", "id": "refill_product", "label": "Replacement filter product", "info": "Used for the member price, the product card and the reminder link."},
+    {"type": "range", "id": "refill_months_min", "label": "Replace filter after at least", "min": 1, "max": 12, "step": 1, "unit": "mo", "default": 3},
+    {"type": "range", "id": "refill_months_max", "label": "Replace filter after at most", "min": 1, "max": 12, "step": 1, "unit": "mo", "default": 5},
+    {"type": "checkbox", "id": "show_reminder", "label": "Show calendar reminder", "default": true},
+    {"type": "checkbox", "id": "preview_member", "label": "Show member view in the theme editor", "default": false, "info": "Only affects the theme editor, so you can check how a signed-in member sees the page."}
+  ],
+  "presets": [{"name": "Besjaar Club"}],
+  "enabled_on": {"templates": ["page"]}
+}
+{% endschema %}
