@@ -679,6 +679,7 @@
           <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}" hidden><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
         </div>
         {{ bjd_note }}
+        {%- render 'besjaar-member-price', product: product, variant: current_variant, layout: 'block', best_cents: bjd_cents -%}
 
         <div class="besjaar-store-premium-pd__description-group">
           {%- if section.settings.show_intro -%}<div class="besjaar-store-premium-pd__lede">{{ ui_lede }}</div>{%- endif -%}

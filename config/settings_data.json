@@ -54,6 +54,8 @@
     "bundle_accessories_preselected": false,
     "button_radius": 40,
     "card_radius": 16,
+    "club_member_collection": "shower-filter",
+    "club_member_percent": 20,
     "club_name": "Besjaar Club",
     "club_page": "besjaar-club",
     "compact_card_titles": true,

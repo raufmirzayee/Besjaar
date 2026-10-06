@@ -743,6 +743,30 @@
         "id": "show_club_header_link",
         "label": "Show club link in account menu",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "Member price"
+      },
+      {
+        "type": "paragraph",
+        "content": "Shows the Club member price on product pages and in Google's structured data. Keep it the same as the automatic member discount in Shopify › Discounts and the loyalty_program price in Google Merchant Center."
+      },
+      {
+        "type": "collection",
+        "id": "club_member_collection",
+        "label": "Products with a member price"
+      },
+      {
+        "type": "range",
+        "id": "club_member_percent",
+        "label": "Member discount",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "%",
+        "default": 20,
+        "info": "0 hides the member price."
       }
     ]
   },

@@ -74,6 +74,16 @@
   endif
   assign sd_logo_url = sd_logo_url | prepend: 'https:' | replace: 'https:https:', 'https:'
 
+  comment
+    2026-10-06: the Besjaar Club as a MemberProgram (Google loyalty program
+    structured data), built by snippets/besjaar-member-price.liquid: one free
+    tier whose benefit is the member price shown on product pages. Empty while
+    no member price is configured (Theme settings › Accounts & club).
+  endcomment
+  capture sd_member_program
+    render 'besjaar-member-price', layout: 'program_json'
+  endcapture
+  assign sd_member_program = sd_member_program | strip
 -%}
 <script type="application/ld+json">
   {
@@ -98,6 +108,7 @@
         ],
         {% if sd_org_same_as != blank %}"sameAs": [{{ sd_org_same_as | strip }}],{% endif %}
         "logo": {"@type": "ImageObject", "@id": {{ shop.url | append: '#logo' | json }}, "url": {{ sd_logo_url | json }}, "contentUrl": {{ sd_logo_url | json }}, "caption": "Besjaar"},
+        {% if sd_member_program != blank %}"hasMemberProgram": {{ sd_member_program }},{% endif %}
         "image": {{ sd_fallback_image_url | json }}{% if sd_support_email != blank or sd_support_phone != blank %},
         "contactPoint": {"@type": "ContactPoint", "contactType": "customer service"{% if sd_support_email != blank %}, "email": {{ sd_support_email | json }}{% endif %}{% if sd_support_phone != blank %}, "telephone": {{ sd_support_phone | json }}{% endif %}, "availableLanguage": [{% for sd_language in localization.available_languages %}{{ sd_language.iso_code | json }}{% unless forloop.last %},{% endunless %}{% endfor %}]}{% endif %}
       },
@@ -300,6 +311,24 @@
         assign sd_offer_extra = sd_offer_extra | append: ','
       endif
       assign sd_offer_extra = sd_offer_extra | append: sd_offer_returns
+    endif
+    comment
+      2026-10-06: the Besjaar Club member price as a second
+      UnitPriceSpecification next to the regular price, linked to the member
+      tier in the Organization node (snippets/besjaar-member-price.liquid).
+    endcomment
+    capture sd_member_best
+      render 'besjaar-discount-badge', product: product, layout: 'cents'
+    endcapture
+    capture sd_member_spec
+      render 'besjaar-member-price', product: product, layout: 'price_spec_json', best_cents: sd_member_best
+    endcapture
+    assign sd_member_spec = sd_member_spec | strip
+    if sd_member_spec != blank
+      if sd_offer_extra != blank
+        assign sd_offer_extra = sd_offer_extra | append: ','
+      endif
+      assign sd_offer_extra = sd_offer_extra | append: '"priceSpecification":' | append: sd_member_spec
     endif
     if sd_offer_extra != blank
       assign sd_offer_token = '"@type":"Offer",' | append: sd_offer_extra | append: ','
