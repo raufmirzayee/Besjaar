@@ -18,6 +18,7 @@
     {%- capture besjaar_ui_pill_flag_en -%}<svg viewBox="0 0 30 18" preserveAspectRatio="xMidYMid slice" focusable="false"><path fill="#012169" d="M0 0h30v18H0z"/><path stroke="#fff" stroke-width="4" d="m0 0 30 18M30 0 0 18"/><path stroke="#C8102E" stroke-width="2" d="m0 0 30 18M30 0 0 18"/><path fill="#fff" d="M12 0h6v18h-6zM0 6h30v6H0z"/><path fill="#C8102E" d="M13 0h4v18h-4zM0 7h30v4H0z"/></svg>{%- endcapture -%}
     {%- capture besjaar_ui_pill_flag_de -%}<svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid slice" focusable="false"><path fill="#FFCE00" d="M0 0h24v16H0z"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/></svg>{%- endcapture -%}
     {%- capture besjaar_ui_pill_flag_fr -%}<svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid slice" focusable="false"><path fill="#fff" d="M0 0h24v16H0z"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/></svg>{%- endcapture -%}
+    {%- capture besjaar_ui_pill_flag_es -%}<svg viewBox="0 0 24 16" preserveAspectRatio="xMidYMid slice" focusable="false"><path fill="#AA151B" d="M0 0h24v16H0z"/><path d="M0 4h24v8H0z" fill="#F1BF00"/></svg>{%- endcapture -%}
     <details class="besjaar-ui-language-pill" data-besjaar-ui-language-pill>
       <summary class="besjaar-ui-language-pill__trigger" aria-label="{{ 'besjaar_ui.markets.change_language' | t | escape }}: {{ localization.language.endonym_name | escape }}">
         {%- case besjaar_ui_active_language_code -%}
@@ -25,6 +26,7 @@
           {%- when 'en' -%}<span class="besjaar-ui-language-pill__flag" aria-hidden="true">{{ besjaar_ui_pill_flag_en }}</span>
           {%- when 'de' -%}<span class="besjaar-ui-language-pill__flag" aria-hidden="true">{{ besjaar_ui_pill_flag_de }}</span>
           {%- when 'fr' -%}<span class="besjaar-ui-language-pill__flag" aria-hidden="true">{{ besjaar_ui_pill_flag_fr }}</span>
+          {%- when 'es' -%}<span class="besjaar-ui-language-pill__flag" aria-hidden="true">{{ besjaar_ui_pill_flag_es }}</span>
           {%- else -%}<svg class="besjaar-ui-language-pill__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"/></svg>
         {%- endcase %}
         <span class="besjaar-ui-language-pill__code">{{ besjaar_ui_active_language_code | upcase }}</span>
@@ -61,6 +63,7 @@
                     {%- when 'en' -%}{{ besjaar_ui_pill_flag_en }}
                     {%- when 'de' -%}{{ besjaar_ui_pill_flag_de }}
                     {%- when 'fr' -%}{{ besjaar_ui_pill_flag_fr }}
+                    {%- when 'es' -%}{{ besjaar_ui_pill_flag_es }}
                   {%- endcase -%}
                 </span><span>{{ besjaar_ui_option_language_code | upcase }}</span></span>{% if besjaar_ui_is_current_language %}<svg class="besjaar-ui-language-pill__check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m3.2 8.2 3 3 6.6-6.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>{% endif %}</button>
               {% endif %}
@@ -132,6 +135,10 @@
             <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
               <rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/>
             </svg>
+          {% when 'es' %}
+            <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false">
+              <rect width="24" height="16" rx="2" fill="#AA151B"/><path d="M0 4h24v8H0z" fill="#F1BF00"/>
+            </svg>
           {% else %}
             <svg class="besjaar-ui-localization__flag-svg besjaar-ui-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
         {% endcase %}
@@ -169,6 +176,8 @@
                       <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#FFCE00"/><path d="M0 0h24v5.333H0z" fill="#000"/><path d="M0 5.333h24v5.334H0z" fill="#DD0000"/></svg>
                     {% when 'fr' %}
                       <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#fff"/><path d="M0 0h8v16H0z" fill="#0055A4"/><path d="M16 0h8v16h-8z" fill="#EF4135"/></svg>
+                    {% when 'es' %}
+                      <svg class="besjaar-ui-localization__flag-svg" viewBox="0 0 24 16" role="presentation" focusable="false"><rect width="24" height="16" rx="2" fill="#AA151B"/><path d="M0 4h24v8H0z" fill="#F1BF00"/></svg>
                     {% else %}
                       <svg class="besjaar-ui-localization__flag-svg besjaar-ui-localization__flag-svg--globe" viewBox="0 0 24 24" role="presentation" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 12h18M12 3c2.4 2.4 3.6 5.4 3.6 9S14.4 18.6 12 21M12 3C9.6 5.4 8.4 8.4 8.4 12s1.2 6.6 3.6 9" fill="none" stroke="currentColor" stroke-width="1.45"/></svg>
                   {% endcase %}
