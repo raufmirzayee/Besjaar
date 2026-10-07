@@ -5,7 +5,7 @@
       "settings": {
         "welcome_code": "WELKOM20",
         "welcome_percent": 20,
-        "refill_code": "CLUBFILTER20",
+        "show_member_price": true,
         "refill_percent": 20,
         "refill_product": "besjaar-douchefilter",
         "refill_months_min": 3,

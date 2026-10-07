@@ -6,12 +6,16 @@
   up in Shopify:
   - welcome discount = "Welcome code" (WELKOM20: 20% off the showerhead and
     shower-filter collections, once per customer);
-  - member discount = "Member code" (CLUBFILTER20: 20% off the shower-filter
-    collection on every order, does not combine with other product
-    discounts);
+  - member price = the automatic discount "Besjaar Club – ledenprijs" (20%
+    off the shower-filter collection on every order for the customer
+    segment "Besjaar Club-leden", does not combine with other product
+    discounts). It needs no code, so the page never shows one for it: Google
+    Merchant Center lists it as the loyalty program's member price and
+    checks this page against that (2026-10-07);
   - orders and tracking in the customer account.
-  Codes are printed only for signed-in customers. Clearing a code setting
-  takes that benefit off the page everywhere (intro, card, perks, FAQ,
+  The welcome code is printed only for signed-in customers. Clearing the
+  welcome code or unticking "Member price" takes that benefit off the page
+  everywhere (intro, card, perks, FAQ,
   terms), so a discount that is ended in Shopify can be removed here in one
   step. The percentages are settings too: keep them equal to Shopify >
   Discounts.
@@ -33,11 +37,13 @@
       assign t_h1b = 'Savings on every refill.'
       assign t_h1b_alt = 'Benefits from your first order.'
       assign t_intro_a = 'Sign in with your email address and you are a member.'
-      assign t_intro_both = 'You get a one-time [W]% welcome discount and [R]% off every set of replacement filters.'
+      assign t_intro_both = 'You get a one-time [W]% welcome discount and a member price on every set of replacement filters: [R]% off, applied automatically.'
       assign t_intro_w = 'You get a one-time [W]% welcome discount.'
-      assign t_intro_r = 'You get [R]% off every set of replacement filters.'
+      assign t_intro_r = 'You get a member price on every set of replacement filters: [R]% off, applied automatically.'
       assign t_intro_c = 'No points, no subscription.'
-      assign t_intro_member = 'Welcome back[NAME]. Your member codes are ready below: copy them and paste them at checkout.'
+      assign t_intro_member = 'Welcome back[NAME].'
+      assign t_intro_member_r = 'Your member price on replacement filters is applied automatically at checkout.'
+      assign t_intro_member_w = 'Your welcome code is ready below.'
       assign t_cta_join = 'Join for free'
       assign t_have = 'Already a member?'
       assign t_login = 'Sign in'
@@ -58,10 +64,12 @@
       assign t_p1_text = 'On showerheads and shower filters, on an order of your choice.'
       assign t_p1_note = 'Can be used once per customer.'
       assign t_p2_tag = 'Every order'
-      assign t_p2_title = 'On every set of replacement filters'
+      assign t_p2_title = 'Member price on every set of replacement filters'
       assign t_p2_text = 'Every time you order, as often as you like.'
-      assign t_p2_price = 'Now [NEW] instead of [OLD].'
+      assign t_p2_price = 'You pay [NEW] instead of [OLD].'
       assign t_p2_note = 'Cannot be combined with the welcome discount.'
+      assign t_p2_auto = 'Sign in and the member price is applied automatically'
+      assign t_p2_auto_m = 'Active on your account: applied automatically at checkout, no code needed'
       assign t_p3_tag = 'Always'
       assign t_p3_title = 'Orders and tracking in one place'
       assign t_p3_text = 'See what you ordered, track your parcel and manage your addresses. You sign in with a code by email: no password to remember.'
@@ -75,10 +83,14 @@
       assign t_steps_title = 'A member in three steps.'
       assign t_s1t = 'Sign in with your email'
       assign t_s1c = 'Enter your email address and confirm with the code we email you. Your account is active right away.'
-      assign t_s2t = 'Copy your member code'
-      assign t_s2c = 'Once signed in, your codes appear on this page. They stay here whenever you need them.'
-      assign t_s3t = 'Paste it at checkout'
-      assign t_s3c = 'Enter the code in the ‘Discount code’ field. You see the discount in your total straight away.'
+      assign t_s2t = 'Your member price is ready'
+      assign t_s2c = 'Once signed in, the member price on replacement filters is applied automatically at checkout. There is nothing to enter.'
+      assign t_s3t = 'Use your welcome code'
+      assign t_s3c = 'Your welcome code is on this page. Enter it once in the ‘Discount code’ field at checkout.'
+      assign t_s2t_w = 'Copy your welcome code'
+      assign t_s2c_w = 'Once signed in, your welcome code appears on this page. Enter it in the ‘Discount code’ field at checkout.'
+      assign t_s3t_any = 'Order whenever you like'
+      assign t_s3c_any = 'No minimum order and no subscription: you order when it suits you.'
       assign t_refill_kicker = 'Filter rhythm'
       assign t_refill_title = 'A fresh filter, right on time.'
       assign t_refill_text = 'The filter in your showerhead traps limescale and chlorine, so it slowly fills up. Replace it every [MIN] to [MAX] months on average: sooner with hard water or if you shower often.'
@@ -98,7 +110,7 @@
       assign t_rem_ics = 'Apple / Outlook'
       assign t_rem_event = 'Time for new Besjaar shower filters'
       assign t_rem_desc = 'Replace the filters in your Besjaar showerhead.'
-      assign t_rem_desc_member = 'As a member you get [R]% off with code [CODE].'
+      assign t_rem_desc_member = 'As a member you pay [NEW] instead of [OLD], applied automatically when you are signed in.'
       assign t_inc_kicker = 'For everyone'
       assign t_inc_title = 'Always included, member or not.'
       assign t_ship_free = 'Free shipping'
@@ -119,36 +131,39 @@
       assign t_a1 = 'No. Joining is free and there is no commitment: no subscription and no minimum order.'
       assign t_q2 = 'How do I join?'
       assign t_a2 = 'Click ‘Join for free’ and sign in with your email address. We email you a code, and with it your account is active right away. Ordered from us before with that email address? Then you will find those orders in your account too.'
-      assign t_q3 = 'How often can I use the filter discount?'
-      assign t_a3 = 'On every order, as often as you like. The discount applies to replacement filters and cannot be combined with other product discounts.'
-      assign t_a3_w = 'On every order, as often as you like. The discount applies to replacement filters and cannot be combined with other product discounts, such as the welcome discount.'
+      assign t_q3 = 'How do I get the member price on replacement filters?'
+      assign t_a3 = 'Sign in with your email address before you check out. The member price is then applied automatically, on every order, as often as you like. It cannot be combined with other product discounts.'
+      assign t_a3_w = 'Sign in with your email address before you check out. The member price is then applied automatically, on every order, as often as you like. It cannot be combined with other product discounts, such as the welcome discount.'
       assign t_q4 = 'Do I need to collect points?'
-      assign t_a4 = 'No. There are no points to keep track of and nothing that expires. Your member discount simply works on every order.'
+      assign t_a4 = 'No. There are no points to keep track of and nothing that expires.'
+      assign t_a4_r = 'Your member price simply applies to every order.'
       assign t_q5 = 'What do you do with my email address?'
       assign t_a5 = 'We use it for your account and your orders. You only receive newsletters if you choose to.'
       assign t_privacy_cta = 'Read our privacy policy'
       assign t_q6 = 'Can I stop?'
       assign t_a6 = 'Yes, whenever you like. There is nothing to cancel. Would you like us to delete your account and data? Email [EMAIL] and we will take care of it.'
       assign t_end_title = 'Become a member today.'
-      assign t_end_text = 'Free, in under a minute. Your codes are ready straight away.'
+      assign t_end_text = 'Free, in under a minute. Your benefits apply straight away.'
       assign t_end_title_m = 'Time for new filters?'
-      assign t_end_text_m = 'With your member code you pay [NEW] instead of [OLD].'
+      assign t_end_text_m = 'As a member you pay [NEW] instead of [OLD].'
       assign t_terms_title = 'Club terms'
       assign t_terms_a = 'Membership is free and applies to customers with a Besjaar account.'
       assign t_terms_w = 'Welcome discount: a one-time [W]% off showerheads and shower filters, once per customer.'
-      assign t_terms_r = 'Member discount: [R]% off replacement filters on every order, not combinable with other product discounts.'
+      assign t_terms_r = 'Member price: [R]% off replacement filters on every order, applied automatically when you are signed in at checkout; not combinable with other product discounts.'
       assign t_terms_b = 'Discounts do not apply to shipping costs. Besjaar may change the benefits; the current terms are always on this page.'
-      assign t_updated = 'Last updated: 6 October 2026'
+      assign t_updated = 'Last updated: 7 October 2026'
     when 'de'
       assign t_h1a = 'Kostenlos Mitglied.'
       assign t_h1b = 'Sparen bei jedem Ersatzfilter.'
       assign t_h1b_alt = 'Vorteile ab der ersten Bestellung.'
       assign t_intro_a = 'Melde dich mit deiner E-Mail-Adresse an und du bist Mitglied.'
-      assign t_intro_both = 'Du bekommst einmalig [W] % Willkommensrabatt und [R] % Rabatt auf jedes Set Ersatzfilter.'
+      assign t_intro_both = 'Du bekommst einmalig [W] % Willkommensrabatt und einen Mitgliederpreis auf jedes Set Ersatzfilter: [R] % Rabatt, automatisch abgezogen.'
       assign t_intro_w = 'Du bekommst einmalig [W] % Willkommensrabatt.'
-      assign t_intro_r = 'Du bekommst [R] % Rabatt auf jedes Set Ersatzfilter.'
+      assign t_intro_r = 'Du bekommst einen Mitgliederpreis auf jedes Set Ersatzfilter: [R] % Rabatt, automatisch abgezogen.'
       assign t_intro_c = 'Ohne Punkte, ohne Abo.'
-      assign t_intro_member = 'Willkommen zurück[NAME]. Deine Mitgliedscodes stehen unten bereit: kopieren und an der Kasse einfügen.'
+      assign t_intro_member = 'Willkommen zurück[NAME].'
+      assign t_intro_member_r = 'Dein Mitgliederpreis für Ersatzfilter wird beim Bezahlen automatisch abgezogen.'
+      assign t_intro_member_w = 'Dein Willkommenscode steht unten bereit.'
       assign t_cta_join = 'Kostenlos Mitglied werden'
       assign t_have = 'Schon Mitglied?'
       assign t_login = 'Anmelden'
@@ -169,10 +184,12 @@
       assign t_p1_text = 'Auf Duschköpfe und Duschfilter, bei einer Bestellung deiner Wahl.'
       assign t_p1_note = 'Einmal pro Kunde einlösbar.'
       assign t_p2_tag = 'Jede Bestellung'
-      assign t_p2_title = 'Auf jedes Set Ersatzfilter'
+      assign t_p2_title = 'Mitgliederpreis auf jedes Set Ersatzfilter'
       assign t_p2_text = 'Bei jeder Bestellung, so oft du willst.'
-      assign t_p2_price = 'Jetzt [NEW] statt [OLD].'
+      assign t_p2_price = 'Du zahlst [NEW] statt [OLD].'
       assign t_p2_note = 'Nicht mit dem Willkommensrabatt kombinierbar.'
+      assign t_p2_auto = 'Melde dich an, dann wird der Mitgliederpreis automatisch abgezogen'
+      assign t_p2_auto_m = 'Aktiv in deinem Konto: automatisch beim Bezahlen, ohne Code'
       assign t_p3_tag = 'Immer'
       assign t_p3_title = 'Bestellungen und Sendungsverfolgung an einem Ort'
       assign t_p3_text = 'Sieh, was du bestellt hast, verfolge dein Paket und verwalte deine Adressen. Die Anmeldung läuft über einen Code per E-Mail: kein Passwort zum Merken.'
@@ -186,10 +203,14 @@
       assign t_steps_title = 'In drei Schritten Mitglied.'
       assign t_s1t = 'Mit deiner E-Mail anmelden'
       assign t_s1c = 'Gib deine E-Mail-Adresse ein und bestätige mit dem Code, den wir dir schicken. Dein Konto ist sofort aktiv.'
-      assign t_s2t = 'Mitgliedscode kopieren'
-      assign t_s2c = 'Angemeldet siehst du deine Codes auf dieser Seite. Sie bleiben hier jederzeit abrufbar.'
-      assign t_s3t = 'An der Kasse einfügen'
-      assign t_s3c = 'Gib den Code im Feld ‚Rabattcode‘ ein. Den Rabatt siehst du sofort in deiner Summe.'
+      assign t_s2t = 'Dein Mitgliederpreis ist bereit'
+      assign t_s2c = 'Angemeldet wird der Mitgliederpreis für Ersatzfilter beim Bezahlen automatisch abgezogen. Du musst nichts eingeben.'
+      assign t_s3t = 'Willkommenscode einlösen'
+      assign t_s3c = 'Deinen Willkommenscode findest du auf dieser Seite. Gib ihn einmal im Feld ‚Rabattcode‘ an der Kasse ein.'
+      assign t_s2t_w = 'Willkommenscode kopieren'
+      assign t_s2c_w = 'Angemeldet siehst du deinen Willkommenscode auf dieser Seite. Gib ihn im Feld ‚Rabattcode‘ an der Kasse ein.'
+      assign t_s3t_any = 'Bestellen, wann du willst'
+      assign t_s3c_any = 'Kein Mindestbestellwert und kein Abo: Du bestellst, wann es dir passt.'
       assign t_refill_kicker = 'Filterrhythmus'
       assign t_refill_title = 'Ein frischer Filter, genau zur richtigen Zeit.'
       assign t_refill_text = 'Der Filter in deinem Duschkopf hält Kalk und Chlor zurück und setzt sich dadurch langsam zu. Tausche ihn im Schnitt alle [MIN] bis [MAX] Monate: früher bei hartem Wasser oder wenn du oft duschst.'
@@ -209,7 +230,7 @@
       assign t_rem_ics = 'Apple / Outlook'
       assign t_rem_event = 'Zeit für neue Besjaar Duschfilter'
       assign t_rem_desc = 'Tausche die Filter in deinem Besjaar Duschkopf.'
-      assign t_rem_desc_member = 'Als Mitglied bekommst du [R] % Rabatt mit dem Code [CODE].'
+      assign t_rem_desc_member = 'Als Mitglied zahlst du [NEW] statt [OLD]; der Mitgliederpreis wird automatisch abgezogen, wenn du angemeldet bist.'
       assign t_inc_kicker = 'Für alle'
       assign t_inc_title = 'Immer inklusive, ob Mitglied oder nicht.'
       assign t_ship_free = 'Kostenloser Versand'
@@ -230,36 +251,39 @@
       assign t_a1 = 'Nein. Die Mitgliedschaft ist kostenlos und unverbindlich: kein Abo, kein Mindestbestellwert.'
       assign t_q2 = 'Wie werde ich Mitglied?'
       assign t_a2 = 'Klicke auf ‚Kostenlos Mitglied werden‘ und melde dich mit deiner E-Mail-Adresse an. Du bekommst einen Code per E-Mail, damit ist dein Konto sofort aktiv. Hast du mit dieser E-Mail-Adresse schon einmal bestellt? Dann findest du diese Bestellungen auch in deinem Konto.'
-      assign t_q3 = 'Wie oft kann ich den Filterrabatt nutzen?'
-      assign t_a3 = 'Bei jeder Bestellung, so oft du willst. Der Rabatt gilt für Ersatzfilter und ist nicht mit anderen Produktrabatten kombinierbar.'
-      assign t_a3_w = 'Bei jeder Bestellung, so oft du willst. Der Rabatt gilt für Ersatzfilter und ist nicht mit anderen Produktrabatten kombinierbar, etwa dem Willkommensrabatt.'
+      assign t_q3 = 'Wie bekomme ich den Mitgliederpreis für Ersatzfilter?'
+      assign t_a3 = 'Melde dich vor dem Bezahlen mit deiner E-Mail-Adresse an. Dann wird der Mitgliederpreis automatisch abgezogen, bei jeder Bestellung, so oft du willst. Nicht mit anderen Produktrabatten kombinierbar.'
+      assign t_a3_w = 'Melde dich vor dem Bezahlen mit deiner E-Mail-Adresse an. Dann wird der Mitgliederpreis automatisch abgezogen, bei jeder Bestellung, so oft du willst. Nicht mit anderen Produktrabatten kombinierbar, etwa dem Willkommensrabatt.'
       assign t_q4 = 'Muss ich Punkte sammeln?'
-      assign t_a4 = 'Nein. Es gibt keine Punkte, die du verfolgen musst, und nichts, was verfällt. Dein Mitgliederrabatt gilt einfach bei jeder Bestellung.'
+      assign t_a4 = 'Nein. Es gibt keine Punkte, die du verfolgen musst, und nichts, was verfällt.'
+      assign t_a4_r = 'Dein Mitgliederpreis gilt einfach bei jeder Bestellung.'
       assign t_q5 = 'Was macht ihr mit meiner E-Mail-Adresse?'
       assign t_a5 = 'Wir nutzen sie für dein Konto und deine Bestellungen. Newsletter bekommst du nur, wenn du das selbst möchtest.'
       assign t_privacy_cta = 'Zu unserer Datenschutzerklärung'
       assign t_q6 = 'Kann ich aufhören?'
       assign t_a6 = 'Ja, jederzeit. Du musst nichts kündigen. Sollen wir dein Konto und deine Daten löschen? Schreib an [EMAIL], dann erledigen wir das.'
       assign t_end_title = 'Werde noch heute Mitglied.'
-      assign t_end_text = 'Kostenlos, in weniger als einer Minute. Deine Codes stehen sofort bereit.'
+      assign t_end_text = 'Kostenlos, in weniger als einer Minute. Deine Vorteile gelten sofort.'
       assign t_end_title_m = 'Zeit für neue Filter?'
-      assign t_end_text_m = 'Mit deinem Mitgliedscode zahlst du [NEW] statt [OLD].'
+      assign t_end_text_m = 'Als Mitglied zahlst du [NEW] statt [OLD].'
       assign t_terms_title = 'Clubbedingungen'
       assign t_terms_a = 'Die Mitgliedschaft ist kostenlos und gilt für Kundinnen und Kunden mit einem Besjaar-Konto.'
       assign t_terms_w = 'Willkommensrabatt: einmalig [W] % auf Duschköpfe und Duschfilter, einmal pro Kunde.'
-      assign t_terms_r = 'Mitgliederrabatt: [R] % auf Ersatzfilter bei jeder Bestellung, nicht mit anderen Produktrabatten kombinierbar.'
+      assign t_terms_r = 'Mitgliederpreis: [R] % Rabatt auf Ersatzfilter bei jeder Bestellung, automatisch abgezogen, wenn du beim Bezahlen angemeldet bist; nicht mit anderen Produktrabatten kombinierbar.'
       assign t_terms_b = 'Rabatte gelten nicht für Versandkosten. Besjaar kann die Vorteile ändern; die aktuellen Bedingungen stehen immer auf dieser Seite.'
-      assign t_updated = 'Zuletzt aktualisiert: 6. Oktober 2026'
+      assign t_updated = 'Zuletzt aktualisiert: 7. Oktober 2026'
     when 'fr'
       assign t_h1a = 'Adhésion gratuite.'
       assign t_h1b = 'Une remise à chaque recharge.'
       assign t_h1b_alt = 'Des avantages dès la première commande.'
       assign t_intro_a = 'Connectez-vous avec votre adresse e-mail et vous êtes membre.'
-      assign t_intro_both = 'Vous profitez une fois de [W] % de remise de bienvenue, puis de [R] % sur chaque lot de filtres de rechange.'
+      assign t_intro_both = 'Vous profitez une fois de [W] % de remise de bienvenue, puis d’un prix membre sur chaque lot de filtres de rechange : [R] % de remise, appliquée automatiquement.'
       assign t_intro_w = 'Vous profitez une fois de [W] % de remise de bienvenue.'
-      assign t_intro_r = 'Vous profitez de [R] % sur chaque lot de filtres de rechange.'
+      assign t_intro_r = 'Vous profitez d’un prix membre sur chaque lot de filtres de rechange : [R] % de remise, appliquée automatiquement.'
       assign t_intro_c = 'Sans points, sans abonnement.'
-      assign t_intro_member = 'Bon retour[NAME]. Vos codes membre sont prêts ci-dessous : copiez-les et collez-les au moment du paiement.'
+      assign t_intro_member = 'Bon retour[NAME].'
+      assign t_intro_member_r = 'Votre prix membre sur les filtres de rechange est appliqué automatiquement au paiement.'
+      assign t_intro_member_w = 'Votre code de bienvenue vous attend ci-dessous.'
       assign t_cta_join = 'Devenir membre gratuitement'
       assign t_have = 'Déjà membre ?'
       assign t_login = 'Se connecter'
@@ -280,10 +304,12 @@
       assign t_p1_text = 'Sur les pommeaux et les filtres de douche, pour la commande de votre choix.'
       assign t_p1_note = 'Utilisable une fois par client.'
       assign t_p2_tag = 'Chaque commande'
-      assign t_p2_title = 'Sur chaque lot de filtres de rechange'
+      assign t_p2_title = 'Prix membre sur chaque lot de filtres de rechange'
       assign t_p2_text = 'À chaque commande, aussi souvent que vous le souhaitez.'
-      assign t_p2_price = '[NEW] au lieu de [OLD].'
+      assign t_p2_price = 'Vous payez [NEW] au lieu de [OLD].'
       assign t_p2_note = 'Non cumulable avec la remise de bienvenue.'
+      assign t_p2_auto = 'Connectez-vous et le prix membre s’applique automatiquement'
+      assign t_p2_auto_m = 'Actif sur votre compte : appliqué automatiquement au paiement, sans code'
       assign t_p3_tag = 'Toujours'
       assign t_p3_title = 'Commandes et suivi au même endroit'
       assign t_p3_text = 'Retrouvez vos commandes, suivez votre colis et gérez vos adresses. La connexion se fait avec un code par e-mail : aucun mot de passe à retenir.'
@@ -297,10 +323,14 @@
       assign t_steps_title = 'Membre en trois étapes.'
       assign t_s1t = 'Connectez-vous avec votre e-mail'
       assign t_s1c = 'Saisissez votre adresse e-mail et confirmez avec le code reçu par e-mail. Votre compte est actif immédiatement.'
-      assign t_s2t = 'Copiez votre code membre'
-      assign t_s2c = 'Une fois connecté, vos codes s’affichent sur cette page. Ils y restent disponibles à tout moment.'
-      assign t_s3t = 'Collez-le au paiement'
-      assign t_s3c = 'Saisissez le code dans le champ « Code de réduction ». La remise apparaît aussitôt dans votre total.'
+      assign t_s2t = 'Votre prix membre est prêt'
+      assign t_s2c = 'Une fois connecté, le prix membre des filtres de rechange s’applique automatiquement au paiement. Rien à saisir.'
+      assign t_s3t = 'Utilisez votre code de bienvenue'
+      assign t_s3c = 'Votre code de bienvenue se trouve sur cette page. Saisissez-le une fois dans le champ « Code de réduction » au paiement.'
+      assign t_s2t_w = 'Copiez votre code de bienvenue'
+      assign t_s2c_w = 'Une fois connecté, votre code de bienvenue s’affiche sur cette page. Saisissez-le dans le champ « Code de réduction » au paiement.'
+      assign t_s3t_any = 'Commandez quand vous voulez'
+      assign t_s3c_any = 'Pas de minimum de commande ni d’abonnement : vous commandez quand cela vous convient.'
       assign t_refill_kicker = 'Rythme du filtre'
       assign t_refill_title = 'Un filtre frais, au bon moment.'
       assign t_refill_text = 'Le filtre de votre pommeau retient le calcaire et le chlore, et se remplit donc peu à peu. Remplacez-le en moyenne tous les [MIN] à [MAX] mois : plus tôt si votre eau est dure ou si vous vous douchez souvent.'
@@ -320,7 +350,7 @@
       assign t_rem_ics = 'Apple / Outlook'
       assign t_rem_event = 'Il est temps de changer vos filtres Besjaar'
       assign t_rem_desc = 'Remplacez les filtres de votre pommeau Besjaar.'
-      assign t_rem_desc_member = 'En tant que membre, vous bénéficiez de [R] % de remise avec le code [CODE].'
+      assign t_rem_desc_member = 'En tant que membre, vous payez [NEW] au lieu de [OLD] ; le prix membre s’applique automatiquement lorsque vous êtes connecté.'
       assign t_inc_kicker = 'Pour tous'
       assign t_inc_title = 'Toujours inclus, membre ou non.'
       assign t_ship_free = 'Livraison gratuite'
@@ -341,36 +371,39 @@
       assign t_a1 = 'Non. L’adhésion est gratuite et sans engagement : pas d’abonnement, pas de minimum de commande.'
       assign t_q2 = 'Comment devenir membre ?'
       assign t_a2 = 'Cliquez sur « Devenir membre gratuitement » et connectez-vous avec votre adresse e-mail. Vous recevez un code par e-mail, et votre compte est aussitôt actif. Vous avez déjà commandé avec cette adresse ? Vous retrouverez aussi ces commandes dans votre compte.'
-      assign t_q3 = 'À quelle fréquence puis-je utiliser la remise sur les filtres ?'
-      assign t_a3 = 'À chaque commande, aussi souvent que vous le souhaitez. La remise s’applique aux filtres de rechange et n’est pas cumulable avec d’autres remises produit.'
-      assign t_a3_w = 'À chaque commande, aussi souvent que vous le souhaitez. La remise s’applique aux filtres de rechange et n’est pas cumulable avec d’autres remises produit, comme la remise de bienvenue.'
+      assign t_q3 = 'Comment obtenir le prix membre sur les filtres de rechange ?'
+      assign t_a3 = 'Connectez-vous avec votre adresse e-mail avant de payer. Le prix membre s’applique alors automatiquement, à chaque commande, aussi souvent que vous le souhaitez. Non cumulable avec d’autres remises produit.'
+      assign t_a3_w = 'Connectez-vous avec votre adresse e-mail avant de payer. Le prix membre s’applique alors automatiquement, à chaque commande, aussi souvent que vous le souhaitez. Non cumulable avec d’autres remises produit, comme la remise de bienvenue.'
       assign t_q4 = 'Dois-je cumuler des points ?'
-      assign t_a4 = 'Non. Il n’y a aucun point à suivre et rien n’expire. Votre remise membre s’applique simplement à chaque commande.'
+      assign t_a4 = 'Non. Il n’y a aucun point à suivre et rien n’expire.'
+      assign t_a4_r = 'Votre prix membre s’applique simplement à chaque commande.'
       assign t_q5 = 'Que faites-vous de mon adresse e-mail ?'
       assign t_a5 = 'Nous l’utilisons pour votre compte et vos commandes. Vous ne recevez de newsletter que si vous le choisissez.'
       assign t_privacy_cta = 'Lire notre politique de confidentialité'
       assign t_q6 = 'Puis-je arrêter ?'
       assign t_a6 = 'Oui, quand vous voulez. Il n’y a rien à résilier. Vous souhaitez que nous supprimions votre compte et vos données ? Écrivez à [EMAIL] et nous nous en occupons.'
       assign t_end_title = 'Devenez membre dès aujourd’hui.'
-      assign t_end_text = 'Gratuit, en moins d’une minute. Vos codes sont prêts tout de suite.'
+      assign t_end_text = 'Gratuit, en moins d’une minute. Vos avantages s’appliquent tout de suite.'
       assign t_end_title_m = 'Il est temps de changer vos filtres ?'
-      assign t_end_text_m = 'Avec votre code membre, vous payez [NEW] au lieu de [OLD].'
+      assign t_end_text_m = 'En tant que membre, vous payez [NEW] au lieu de [OLD].'
       assign t_terms_title = 'Conditions du club'
       assign t_terms_a = 'L’adhésion est gratuite et réservée aux clients disposant d’un compte Besjaar.'
       assign t_terms_w = 'Remise de bienvenue : [W] % une seule fois sur les pommeaux et filtres de douche, une fois par client.'
-      assign t_terms_r = 'Remise membre : [R] % sur les filtres de rechange à chaque commande, non cumulable avec d’autres remises produit.'
+      assign t_terms_r = 'Prix membre : [R] % de remise sur les filtres de rechange à chaque commande, appliquée automatiquement si vous êtes connecté au moment du paiement ; non cumulable avec d’autres remises produit.'
       assign t_terms_b = 'Les remises ne s’appliquent pas aux frais de livraison. Besjaar peut modifier les avantages ; les conditions en vigueur figurent toujours sur cette page.'
-      assign t_updated = 'Dernière mise à jour : 6 octobre 2026'
+      assign t_updated = 'Dernière mise à jour : 7 octobre 2026'
     when 'es'
       assign t_h1a = 'Hazte miembro gratis.'
       assign t_h1b = 'Ahorra en cada recambio.'
       assign t_h1b_alt = 'Ventajas desde tu primer pedido.'
       assign t_intro_a = 'Inicia sesión con tu correo electrónico y ya eres miembro.'
-      assign t_intro_both = 'Recibes una vez un [W] % de descuento de bienvenida y un [R] % en cada juego de filtros de recambio.'
+      assign t_intro_both = 'Recibes una vez un [W] % de descuento de bienvenida y un precio de miembro en cada juego de filtros de recambio: un [R] % de descuento, aplicado automáticamente.'
       assign t_intro_w = 'Recibes una vez un [W] % de descuento de bienvenida.'
-      assign t_intro_r = 'Recibes un [R] % en cada juego de filtros de recambio.'
+      assign t_intro_r = 'Recibes un precio de miembro en cada juego de filtros de recambio: un [R] % de descuento, aplicado automáticamente.'
       assign t_intro_c = 'Sin puntos, sin suscripción.'
-      assign t_intro_member = 'Hola de nuevo[NAME]. Tus códigos de miembro están listos abajo: cópialos y pégalos al finalizar la compra.'
+      assign t_intro_member = 'Hola de nuevo[NAME].'
+      assign t_intro_member_r = 'Tu precio de miembro en filtros de recambio se aplica automáticamente al pagar.'
+      assign t_intro_member_w = 'Tu código de bienvenida está listo abajo.'
       assign t_cta_join = 'Hazte miembro gratis'
       assign t_have = '¿Ya eres miembro?'
       assign t_login = 'Inicia sesión'
@@ -391,10 +424,12 @@
       assign t_p1_text = 'En alcachofas y filtros de ducha, en el pedido que elijas.'
       assign t_p1_note = 'Se puede usar una vez por cliente.'
       assign t_p2_tag = 'Cada pedido'
-      assign t_p2_title = 'En cada juego de filtros de recambio'
+      assign t_p2_title = 'Precio de miembro en cada juego de filtros de recambio'
       assign t_p2_text = 'En cada pedido, tantas veces como quieras.'
-      assign t_p2_price = 'Ahora [NEW] en lugar de [OLD].'
+      assign t_p2_price = 'Pagas [NEW] en lugar de [OLD].'
       assign t_p2_note = 'No se puede combinar con el descuento de bienvenida.'
+      assign t_p2_auto = 'Inicia sesión y el precio de miembro se aplica automáticamente'
+      assign t_p2_auto_m = 'Activo en tu cuenta: se aplica automáticamente al pagar, sin código'
       assign t_p3_tag = 'Siempre'
       assign t_p3_title = 'Pedidos y seguimiento en un solo lugar'
       assign t_p3_text = 'Consulta lo que pediste, sigue tu paquete y gestiona tus direcciones. Accedes con un código por correo: sin contraseña que recordar.'
@@ -408,10 +443,14 @@
       assign t_steps_title = 'Miembro en tres pasos.'
       assign t_s1t = 'Inicia sesión con tu correo'
       assign t_s1c = 'Escribe tu correo electrónico y confirma con el código que te enviamos. Tu cuenta queda activa al momento.'
-      assign t_s2t = 'Copia tu código de miembro'
-      assign t_s2c = 'Con la sesión iniciada, tus códigos aparecen en esta página. Siempre los tendrás aquí.'
-      assign t_s3t = 'Pégalo al pagar'
-      assign t_s3c = 'Introduce el código en el campo «Código de descuento». Verás el descuento en tu total al instante.'
+      assign t_s2t = 'Tu precio de miembro está listo'
+      assign t_s2c = 'Con la sesión iniciada, el precio de miembro de los filtros de recambio se aplica automáticamente al pagar. No tienes que introducir nada.'
+      assign t_s3t = 'Usa tu código de bienvenida'
+      assign t_s3c = 'Tu código de bienvenida está en esta página. Introdúcelo una vez en el campo «Código de descuento» al pagar.'
+      assign t_s2t_w = 'Copia tu código de bienvenida'
+      assign t_s2c_w = 'Con la sesión iniciada, tu código de bienvenida aparece en esta página. Introdúcelo en el campo «Código de descuento» al pagar.'
+      assign t_s3t_any = 'Pide cuando quieras'
+      assign t_s3c_any = 'Sin pedido mínimo y sin suscripción: pides cuando te venga bien.'
       assign t_refill_kicker = 'Ritmo del filtro'
       assign t_refill_title = 'Un filtro nuevo, justo a tiempo.'
       assign t_refill_text = 'El filtro de tu alcachofa retiene la cal y el cloro, por eso se va llenando poco a poco. Cámbialo de media cada [MIN] a [MAX] meses: antes si el agua es dura o si te duchas a menudo.'
@@ -431,7 +470,7 @@
       assign t_rem_ics = 'Apple / Outlook'
       assign t_rem_event = 'Toca cambiar los filtros Besjaar'
       assign t_rem_desc = 'Cambia los filtros de tu alcachofa Besjaar.'
-      assign t_rem_desc_member = 'Como miembro tienes un [R] % de descuento con el código [CODE].'
+      assign t_rem_desc_member = 'Como miembro pagas [NEW] en lugar de [OLD]; el precio de miembro se aplica automáticamente si has iniciado sesión.'
       assign t_inc_kicker = 'Para todos'
       assign t_inc_title = 'Siempre incluido, seas miembro o no.'
       assign t_ship_free = 'Envío gratis'
@@ -452,36 +491,39 @@
       assign t_a1 = 'No. Hacerte miembro es gratis y sin compromiso: sin suscripción y sin pedido mínimo.'
       assign t_q2 = '¿Cómo me hago miembro?'
       assign t_a2 = 'Haz clic en «Hazte miembro gratis» e inicia sesión con tu correo electrónico. Te enviamos un código por correo y tu cuenta queda activa al momento. ¿Ya has pedido antes con ese correo? Entonces también verás esos pedidos en tu cuenta.'
-      assign t_q3 = '¿Cuántas veces puedo usar el descuento en filtros?'
-      assign t_a3 = 'En cada pedido, tantas veces como quieras. El descuento se aplica a los filtros de recambio y no se puede combinar con otros descuentos de producto.'
-      assign t_a3_w = 'En cada pedido, tantas veces como quieras. El descuento se aplica a los filtros de recambio y no se puede combinar con otros descuentos de producto, como el de bienvenida.'
+      assign t_q3 = '¿Cómo obtengo el precio de miembro en filtros de recambio?'
+      assign t_a3 = 'Inicia sesión con tu correo electrónico antes de pagar. El precio de miembro se aplica entonces automáticamente, en cada pedido, tantas veces como quieras. No se puede combinar con otros descuentos de producto.'
+      assign t_a3_w = 'Inicia sesión con tu correo electrónico antes de pagar. El precio de miembro se aplica entonces automáticamente, en cada pedido, tantas veces como quieras. No se puede combinar con otros descuentos de producto, como el de bienvenida.'
       assign t_q4 = '¿Tengo que acumular puntos?'
-      assign t_a4 = 'No. No hay puntos que controlar ni nada que caduque. Tu descuento de miembro funciona en cada pedido.'
+      assign t_a4 = 'No. No hay puntos que controlar ni nada que caduque.'
+      assign t_a4_r = 'Tu precio de miembro se aplica en cada pedido.'
       assign t_q5 = '¿Qué hacéis con mi correo electrónico?'
       assign t_a5 = 'Lo usamos para tu cuenta y tus pedidos. Solo recibes boletines si tú lo eliges.'
       assign t_privacy_cta = 'Lee nuestra política de privacidad'
       assign t_q6 = '¿Puedo darme de baja?'
       assign t_a6 = 'Sí, cuando quieras. No tienes que cancelar nada. ¿Quieres que borremos tu cuenta y tus datos? Escribe a [EMAIL] y nos encargamos.'
       assign t_end_title = 'Hazte miembro hoy.'
-      assign t_end_text = 'Gratis, en menos de un minuto. Tus códigos están listos al instante.'
+      assign t_end_text = 'Gratis, en menos de un minuto. Tus ventajas se aplican al instante.'
       assign t_end_title_m = '¿Toca cambiar los filtros?'
-      assign t_end_text_m = 'Con tu código de miembro pagas [NEW] en lugar de [OLD].'
+      assign t_end_text_m = 'Como miembro pagas [NEW] en lugar de [OLD].'
       assign t_terms_title = 'Condiciones del club'
       assign t_terms_a = 'La membresía es gratuita y se aplica a clientes con una cuenta Besjaar.'
       assign t_terms_w = 'Descuento de bienvenida: un [W] % una sola vez en alcachofas y filtros de ducha, una vez por cliente.'
-      assign t_terms_r = 'Descuento de miembro: un [R] % en filtros de recambio en cada pedido, no combinable con otros descuentos de producto.'
+      assign t_terms_r = 'Precio de miembro: un [R] % de descuento en filtros de recambio en cada pedido, aplicado automáticamente si has iniciado sesión al pagar; no combinable con otros descuentos de producto.'
       assign t_terms_b = 'Los descuentos no se aplican a los gastos de envío. Besjaar puede modificar las ventajas; las condiciones vigentes siempre están en esta página.'
-      assign t_updated = 'Última actualización: 6 de octubre de 2026'
+      assign t_updated = 'Última actualización: 7 de octubre de 2026'
     else
       assign t_h1a = 'Gratis lid.'
       assign t_h1b = 'Voordeel bij elke navulset.'
       assign t_h1b_alt = 'Voordeel vanaf je eerste bestelling.'
       assign t_intro_a = 'Log in met je e-mailadres en je bent lid.'
-      assign t_intro_both = 'Je krijgt eenmalig [W]% welkomstkorting en [R]% korting op elke set vervangfilters.'
+      assign t_intro_both = 'Je krijgt eenmalig [W]% welkomstkorting en een ledenprijs op elke set vervangfilters: [R]% korting, automatisch verrekend.'
       assign t_intro_w = 'Je krijgt eenmalig [W]% welkomstkorting.'
-      assign t_intro_r = 'Je krijgt [R]% korting op elke set vervangfilters.'
+      assign t_intro_r = 'Je krijgt een ledenprijs op elke set vervangfilters: [R]% korting, automatisch verrekend.'
       assign t_intro_c = 'Zonder punten, zonder abonnement.'
-      assign t_intro_member = 'Welkom terug[NAME]. Je ledencodes staan hieronder klaar: kopieer ze en plak ze bij het afrekenen.'
+      assign t_intro_member = 'Welkom terug[NAME].'
+      assign t_intro_member_r = 'Je ledenprijs op vervangfilters gaat bij het afrekenen automatisch van je bestelling af.'
+      assign t_intro_member_w = 'Je welkomstcode staat hieronder klaar.'
       assign t_cta_join = 'Gratis lid worden'
       assign t_have = 'Al lid?'
       assign t_login = 'Log in'
@@ -502,10 +544,12 @@
       assign t_p1_text = 'Op douchekoppen en douchefilters, bij een bestelling naar keuze.'
       assign t_p1_note = 'Eén keer te gebruiken per klant.'
       assign t_p2_tag = 'Elke bestelling'
-      assign t_p2_title = 'Op elke set vervangfilters'
+      assign t_p2_title = 'Ledenprijs op elke set vervangfilters'
       assign t_p2_text = 'Bij elke bestelling, zo vaak als je wilt.'
-      assign t_p2_price = 'Nu [NEW] in plaats van [OLD].'
+      assign t_p2_price = 'Je betaalt [NEW] in plaats van [OLD].'
       assign t_p2_note = 'Niet te combineren met de welkomstkorting.'
+      assign t_p2_auto = 'Log in en de ledenprijs gaat er automatisch af'
+      assign t_p2_auto_m = 'Actief op je account: automatisch bij het afrekenen, zonder code'
       assign t_p3_tag = 'Altijd'
       assign t_p3_title = 'Bestellingen en track & trace op één plek'
       assign t_p3_text = 'Bekijk wat je bestelde, volg je pakket en beheer je adressen. Inloggen gaat met een code per e-mail: geen wachtwoord om te onthouden.'
@@ -519,10 +563,14 @@
       assign t_steps_title = 'In drie stappen lid.'
       assign t_s1t = 'Log in met je e-mail'
       assign t_s1c = 'Vul je e-mailadres in en bevestig met de code die je per e-mail krijgt. Je account is meteen actief.'
-      assign t_s2t = 'Kopieer je ledencode'
-      assign t_s2c = 'Ingelogd zie je je codes op deze pagina. Ze blijven hier altijd voor je klaarstaan.'
-      assign t_s3t = 'Plak hem bij het afrekenen'
-      assign t_s3c = 'Vul de code in bij ‘Kortingscode’. Je ziet de korting direct in je totaal.'
+      assign t_s2t = 'Je ledenprijs staat klaar'
+      assign t_s2c = 'Ingelogd gaat de ledenprijs op vervangfilters bij het afrekenen automatisch van je bestelling af. Je hoeft niets in te vullen.'
+      assign t_s3t = 'Gebruik je welkomstcode'
+      assign t_s3c = 'Je welkomstcode staat op deze pagina. Vul hem één keer in bij ‘Kortingscode’ bij het afrekenen.'
+      assign t_s2t_w = 'Kopieer je welkomstcode'
+      assign t_s2c_w = 'Ingelogd zie je je welkomstcode op deze pagina. Vul hem in bij ‘Kortingscode’ bij het afrekenen.'
+      assign t_s3t_any = 'Bestel wanneer je wilt'
+      assign t_s3c_any = 'Geen minimumbedrag en geen abonnement: je bestelt wanneer het jou uitkomt.'
       assign t_refill_kicker = 'Filterritme'
       assign t_refill_title = 'Een vers filter, precies op tijd.'
       assign t_refill_text = 'Het filter in je douchekop vangt kalk en chloor af en raakt daardoor langzaam vol. Vervang het gemiddeld elke [MIN] tot [MAX] maanden: eerder bij hard water of als je vaak doucht.'
@@ -542,7 +590,7 @@
       assign t_rem_ics = 'Apple / Outlook'
       assign t_rem_event = 'Tijd voor nieuwe Besjaar-douchefilters'
       assign t_rem_desc = 'Vervang de filters in je Besjaar-douchekop.'
-      assign t_rem_desc_member = 'Als lid krijg je [R]% korting met code [CODE].'
+      assign t_rem_desc_member = 'Als lid betaal je [NEW] in plaats van [OLD]; de ledenprijs gaat er automatisch af als je bent ingelogd.'
       assign t_inc_kicker = 'Voor iedereen'
       assign t_inc_title = 'Altijd inbegrepen, lid of niet.'
       assign t_ship_free = 'Gratis verzending'
@@ -563,26 +611,27 @@
       assign t_a1 = 'Nee. Lid worden is gratis en je zit nergens aan vast: geen abonnement en geen minimale bestelling.'
       assign t_q2 = 'Hoe word ik lid?'
       assign t_a2 = 'Klik op ‘Gratis lid worden’ en log in met je e-mailadres. Je krijgt een code per e-mail; daarmee is je account meteen actief. Heb je al eens met dat e-mailadres besteld? Dan vind je die bestellingen ook terug in je account.'
-      assign t_q3 = 'Hoe vaak kan ik de korting op vervangfilters gebruiken?'
-      assign t_a3 = 'Bij elke bestelling, zo vaak als je wilt. De korting geldt voor vervangfilters en is niet te combineren met andere productkortingen.'
-      assign t_a3_w = 'Bij elke bestelling, zo vaak als je wilt. De korting geldt voor vervangfilters en is niet te combineren met andere productkortingen, zoals de welkomstkorting.'
+      assign t_q3 = 'Hoe krijg ik de ledenprijs op vervangfilters?'
+      assign t_a3 = 'Log in met je e-mailadres voordat je afrekent. De ledenprijs gaat er dan automatisch af, bij elke bestelling, zo vaak als je wilt. Niet te combineren met andere productkortingen.'
+      assign t_a3_w = 'Log in met je e-mailadres voordat je afrekent. De ledenprijs gaat er dan automatisch af, bij elke bestelling, zo vaak als je wilt. Niet te combineren met andere productkortingen, zoals de welkomstkorting.'
       assign t_q4 = 'Moet ik punten sparen?'
-      assign t_a4 = 'Nee. Er zijn geen punten om bij te houden en er verloopt niets. Je ledenkorting werkt gewoon bij elke bestelling.'
+      assign t_a4 = 'Nee. Er zijn geen punten om bij te houden en er verloopt niets.'
+      assign t_a4_r = 'Je ledenprijs geldt gewoon bij elke bestelling.'
       assign t_q5 = 'Wat doen jullie met mijn e-mailadres?'
       assign t_a5 = 'We gebruiken het voor je account en je bestellingen. Nieuwsbrieven krijg je alleen als je daar zelf voor kiest.'
       assign t_privacy_cta = 'Lees ons privacybeleid'
       assign t_q6 = 'Kan ik stoppen?'
       assign t_a6 = 'Ja, wanneer je wilt. Je hoeft niets op te zeggen. Wil je dat we je account en gegevens verwijderen? Mail naar [EMAIL], dan regelen we het.'
       assign t_end_title = 'Word vandaag nog lid.'
-      assign t_end_text = 'Gratis, in minder dan een minuut. Je codes staan direct klaar.'
+      assign t_end_text = 'Gratis, in minder dan een minuut. Je voordelen gelden meteen.'
       assign t_end_title_m = 'Tijd voor nieuwe filters?'
-      assign t_end_text_m = 'Met je ledencode betaal je [NEW] in plaats van [OLD].'
+      assign t_end_text_m = 'Als lid betaal je [NEW] in plaats van [OLD].'
       assign t_terms_title = 'Clubvoorwaarden'
       assign t_terms_a = 'Het lidmaatschap is gratis en geldt voor klanten met een Besjaar-account.'
       assign t_terms_w = 'Welkomstkorting: eenmalig [W]% op douchekoppen en douchefilters, één keer per klant.'
-      assign t_terms_r = 'Ledenkorting: [R]% op vervangfilters, bij elke bestelling, niet te combineren met andere productkortingen.'
+      assign t_terms_r = 'Ledenprijs: [R]% korting op vervangfilters, bij elke bestelling, automatisch verrekend als je bij het afrekenen bent ingelogd; niet te combineren met andere productkortingen.'
       assign t_terms_b = 'Kortingen gelden niet voor verzendkosten. Besjaar kan de voordelen aanpassen; de geldende voorwaarden staan altijd op deze pagina.'
-      assign t_updated = 'Laatst bijgewerkt: 6 oktober 2026'
+      assign t_updated = 'Laatst bijgewerkt: 7 oktober 2026'
   endcase
 
   assign c_club_name = settings.club_name | default: 'Besjaar Club'
@@ -594,13 +643,12 @@
     assign c_max = c_min
   endif
   assign c_w_code = section.settings.welcome_code | default: '' | strip | upcase
-  assign c_r_code = section.settings.refill_code | default: '' | strip | upcase
   assign c_has_w = false
   if c_w_code != blank
     assign c_has_w = true
   endif
   assign c_has_r = false
-  if c_r_code != blank
+  if section.settings.show_member_price
     assign c_has_r = true
   endif
 
@@ -692,6 +740,13 @@
     assign c_intro = c_intro | append: ' ' | append: t_intro_r
   endif
   assign c_intro = c_intro | append: ' ' | append: t_intro_c
+  assign c_intro_m = t_intro_member
+  if c_has_r
+    assign c_intro_m = c_intro_m | append: ' ' | append: t_intro_member_r
+  endif
+  if c_has_w
+    assign c_intro_m = c_intro_m | append: ' ' | append: t_intro_member_w
+  endif
   assign c_h1b = t_h1b_alt
   if c_has_r
     assign c_h1b = t_h1b
@@ -708,8 +763,8 @@
 
   assign c_email = settings.support_email | default: shop.email
   assign c_rem_details = t_rem_desc
-  if c_member and c_has_r
-    assign c_rem_member = t_rem_desc_member | replace: '[R]', c_r | replace: '[CODE]', c_r_code
+  if c_member and c_has_r and c_new != blank
+    assign c_rem_member = t_rem_desc_member | replace: '[NEW]', c_new | replace: '[OLD]', c_old
     assign c_rem_details = c_rem_details | append: ' ' | append: c_rem_member
   endif
   if c_refill_url != blank
@@ -727,7 +782,7 @@
           <span class="bjc-hero__l2">{{ c_h1b | escape }}</span>
         </h1>
         {%- if c_member -%}
-          <p class="bjc-hero__intro">{{ t_intro_member | escape | replace: '[NAME]', c_name_part }}</p>
+          <p class="bjc-hero__intro">{{ c_intro_m | escape | replace: '[NAME]', c_name_part }}</p>
           <div class="bjc-hero__actions">
             {%- if c_refill_url != blank -%}
               <a class="bjc-btn" href="{{ c_refill_url }}">{{ t_cta_refill | escape }} <span aria-hidden="true">→</span></a>
@@ -801,13 +856,9 @@
             <h3>{{ t_p2_title | escape }}</h3>
             <p>{{ t_p2_text | escape }}{% if c_new != blank %} <b>{{ t_p2_price | escape | replace: '[NEW]', c_new | replace: '[OLD]', c_old }}</b>{% endif %}</p>
             {%- if c_member -%}
-              <div class="bjc-code">
-                <span class="bjc-code__label">{{ t_code_label | escape }}</span>
-                <code class="bjc-code__value">{{ c_r_code | escape }}</code>
-                <button class="bjc-code__copy" type="button" data-bjc-copy="{{ c_r_code | escape }}" aria-label="{{ t_copy_aria | replace: '[CODE]', c_r_code | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span data-bjc-copy-label>{{ t_copy | escape }}</span></button>
-              </div>
+              <p class="bjc-auto"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg><span>{{ t_p2_auto_m | escape }}</span></p>
             {%- else -%}
-              <a class="bjc-lock" href="{{ c_login }}" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>{{ t_locked | escape }}</span><i aria-hidden="true">••••••••</i></a>
+              <a class="bjc-lock" href="{{ c_login }}" rel="nofollow"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>{{ t_p2_auto | escape }}</span><i aria-hidden="true">→</i></a>
             {%- endif -%}
             {%- if c_has_w -%}<small class="bjc-perk__note">{{ t_p2_note | escape }}</small>{%- endif -%}
           </article>
@@ -829,8 +880,16 @@
       </div>
       <ol class="bjc-steps">
         <li><span class="bjc-steps__n" aria-hidden="true">01</span><h3>{{ t_s1t | escape }}</h3><p>{{ t_s1c | escape }}</p></li>
-        <li><span class="bjc-steps__n" aria-hidden="true">02</span><h3>{{ t_s2t | escape }}</h3><p>{{ t_s2c | escape }}</p></li>
-        <li><span class="bjc-steps__n" aria-hidden="true">03</span><h3>{{ t_s3t | escape }}</h3><p>{{ t_s3c | escape }}</p></li>
+        {%- if c_has_r -%}
+          <li><span class="bjc-steps__n" aria-hidden="true">02</span><h3>{{ t_s2t | escape }}</h3><p>{{ t_s2c | escape }}</p></li>
+        {%- elsif c_has_w -%}
+          <li><span class="bjc-steps__n" aria-hidden="true">02</span><h3>{{ t_s2t_w | escape }}</h3><p>{{ t_s2c_w | escape }}</p></li>
+        {%- endif -%}
+        {%- if c_has_r and c_has_w -%}
+          <li><span class="bjc-steps__n" aria-hidden="true">03</span><h3>{{ t_s3t | escape }}</h3><p>{{ t_s3c | escape }}</p></li>
+        {%- else -%}
+          <li><span class="bjc-steps__n" aria-hidden="true">{% if c_has_r or c_has_w %}03{% else %}02{% endif %}</span><h3>{{ t_s3t_any | escape }}</h3><p>{{ t_s3c_any | escape }}</p></li>
+        {%- endif -%}
       </ol>
     </div>
 
@@ -901,7 +960,7 @@
         <details><summary>{{ t_q1 | escape }}</summary><p>{{ t_a1 | escape }}</p></details>
         <details><summary>{{ t_q2 | escape }}</summary><p>{{ t_a2 | escape }}</p></details>
         {%- if c_has_r -%}<details><summary>{{ t_q3 | escape }}</summary><p>{% if c_has_w %}{{ t_a3_w | escape }}{% else %}{{ t_a3 | escape }}{% endif %}</p></details>{%- endif -%}
-        <details><summary>{{ t_q4 | escape }}</summary><p>{{ t_a4 | escape }}</p></details>
+        <details><summary>{{ t_q4 | escape }}</summary><p>{{ t_a4 | escape }}{% if c_has_r %} {{ t_a4_r | escape }}{% endif %}</p></details>
         <details><summary>{{ t_q5 | escape }}</summary><p>{{ t_a5 | escape }}{% if shop.privacy_policy != blank %} <a href="{% render 'localized-internal-url', url: shop.privacy_policy.url %}">{{ t_privacy_cta | escape }}</a>{% endif %}</p></details>
         <details><summary>{{ t_q6 | escape }}</summary><p>{%- assign c_a6 = t_a6 | escape | split: '[EMAIL]' -%}{{ c_a6[0] }}<a href="mailto:{{ c_email | escape }}">{{ c_email | escape }}</a>{{ c_a6[1] }}</p></details>
       </div>
@@ -1005,6 +1064,8 @@
   .bjc-lock svg{flex:0 0 auto;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
   .bjc-lock i{margin-left:auto;color:rgba(23,59,94,.28);font-style:normal;letter-spacing:.12em}
   .bjc-lock:hover{border-color:var(--bj-navy-bright,#24547C)}
+  .bjc-auto{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;padding:12px 14px;border:1px solid rgba(47,107,88,.28);border-radius:14px;background:#F1F7F4;color:var(--bj-success,#2F6B58)!important;font-size:.84rem;font-weight:600;line-height:1.4}
+  .bjc-auto svg{flex:0 0 auto;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 
   .bjc-steps{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin:0;padding:0;list-style:none;counter-reset:none}
   .bjc-steps li{position:relative;padding:22px 22px 24px;border-top:2px solid var(--bj-navy-deep,#102D49);background:var(--bj-ice-50,#F6FAFC);border-radius:0 0 18px 18px}
@@ -1199,7 +1260,7 @@
     {"type": "paragraph", "content": "This page only promises what is set up in Shopify. Keep the codes and percentages equal to Shopify > Discounts. Clear a code to take that benefit off the page."},
     {"type": "text", "id": "welcome_code", "label": "Welcome code", "default": "WELKOM20", "info": "One-time welcome discount. Must exist in Shopify > Discounts. Leave empty to hide this benefit."},
     {"type": "range", "id": "welcome_percent", "label": "Welcome discount", "min": 5, "max": 50, "step": 1, "unit": "%", "default": 20},
-    {"type": "text", "id": "refill_code", "label": "Member code (replacement filters)", "default": "CLUBFILTER20", "info": "Discount on replacement filters for every order. Must exist in Shopify > Discounts. Leave empty to hide this benefit."},
+    {"type": "checkbox", "id": "show_member_price", "label": "Member price on replacement filters", "default": true, "info": "Signed-in members get it automatically through the automatic discount ‘Besjaar Club – ledenprijs’ in Shopify > Discounts. Untick to hide this benefit."},
     {"type": "range", "id": "refill_percent", "label": "Member discount on replacement filters", "min": 5, "max": 50, "step": 1, "unit": "%", "default": 20},
     {"type": "product", "id": "refill_product", "label": "Replacement filter product", "info": "Used for the member price, the product card and the reminder link."},
     {"type": "range", "id": "refill_months_min", "label": "Replace filter after at least", "min": 1, "max": 12, "step": 1, "unit": "mo", "default": 3},
