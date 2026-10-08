@@ -7,10 +7,19 @@
   via the ?discount= parameter, so they don't have to type the code.
 {% endcomment %}
 {% assign discount_code = 'WELKOM20' %}
-{% if url contains '?' %}
-  {% assign recover_url = url | append: '&discount=' | append: discount_code %}
+{% comment %}
+  `url` is the customer's saved checkout. It is empty in "Send test email"
+  previews, so fall back to the store's discount link (applies WELKOM20 and
+  opens the shop) instead of producing a broken "?discount=" link.
+{% endcomment %}
+{% assign checkout_link = url | default: abandoned_checkout_url %}
+{% unless checkout_link contains 'http' %}{% assign checkout_link = '' %}{% endunless %}
+{% if checkout_link == '' %}
+  {% assign recover_url = shop.url | append: '/discount/' | append: discount_code %}
+{% elsif checkout_link contains '?' %}
+  {% assign recover_url = checkout_link | append: '&discount=' | append: discount_code %}
 {% else %}
-  {% assign recover_url = url | append: '?discount=' | append: discount_code %}
+  {% assign recover_url = checkout_link | append: '?discount=' | append: discount_code %}
 {% endif %}
 {% capture email_title %}Je bent iets vergeten – en we hebben 20% korting voor je{% endcapture %}
 
