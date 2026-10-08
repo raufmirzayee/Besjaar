@@ -410,9 +410,8 @@
   })();
 </script>
 <script>
-  /* "Cookie preferences" → Shopify's cookie banner preferences. Shown once
-     Shopify has loaded its banner (it does so asynchronously), so the link
-     only appears where Shopify has actually loaded its banner. */
+  /* "Cookie preferences" → Shopify's cookie banner preferences. Hidden until
+     Shopify has loaded its banner, which happens asynchronously. */
   (function () {
     var items = document.querySelectorAll('[data-shopify-cookie-preferences-item]');
     if (!items.length) return;
