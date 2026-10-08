@@ -1,0 +1,141 @@
+{% comment %}
+  Besjaar – Abandoned checkout email (Nederlands)
+  Paste into: Settings > Notifications > Customer notifications > Abandoned checkout > Edit code
+  Subject:    {{ shop.name }} – je winkelwagen wacht op je (nu 20% korting)
+
+  The button reopens the customer's own checkout with WELKOM20 already applied
+  via the ?discount= parameter, so they don't have to type the code.
+{% endcomment %}
+{% assign discount_code = 'WELKOM20' %}
+{% if url contains '?' %}
+  {% assign recover_url = url | append: '&discount=' | append: discount_code %}
+{% else %}
+  {% assign recover_url = url | append: '?discount=' | append: discount_code %}
+{% endif %}
+{% capture email_title %}Je bent iets vergeten – en we hebben 20% korting voor je{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ email_title }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2933;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding:28px 24px 8px;">
+              {% if shop.email_logo_url %}
+                <a href="{{ shop.url }}"><img src="{{ shop.email_logo_url }}" alt="{{ shop.name }}" width="{{ shop.email_logo_width | default: 140 }}" style="max-width:180px;height:auto;border:0;"></a>
+              {% else %}
+                <a href="{{ shop.url }}" style="font-size:24px;font-weight:700;color:#1f2933;text-decoration:none;">{{ shop.name }}</a>
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- Intro -->
+          <tr>
+            <td style="padding:16px 32px 0;">
+              <h1 style="margin:0 0 12px;font-size:24px;line-height:1.3;color:#1f2933;">{{ email_title }}</h1>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                Hoi{% if customer.first_name != blank %} {{ customer.first_name }}{% elsif billing_address.first_name != blank %} {{ billing_address.first_name }}{% endif %},
+              </p>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                We zagen dat je je bestelling nog niet hebt afgerond. Geen zorgen – we hebben je winkelwagen voor je bewaard.
+              </p>
+              <p style="margin:0;font-size:16px;line-height:1.6;">
+                Als bedankje voor je interesse krijg je <strong>20% korting</strong> op je bestelling. De korting wordt <strong>automatisch toegepast</strong> zodra je op de knop hieronder klikt.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Discount badge -->
+          <tr>
+            <td align="center" style="padding:24px 32px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="border:2px dashed #0b7a75;border-radius:10px;">
+                <tr>
+                  <td align="center" style="padding:14px 28px;">
+                    <div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#52606d;">Jouw kortingscode</div>
+                    <div style="font-size:26px;font-weight:700;letter-spacing:2px;color:#0b7a75;">{{ discount_code }}</div>
+                    <div style="font-size:13px;color:#52606d;">20% korting – al toegepast via de knop</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 8px;">
+              <a href="{{ recover_url }}" style="display:inline-block;background:#0b7a75;color:#ffffff;font-size:17px;font-weight:600;text-decoration:none;padding:15px 34px;border-radius:8px;">Rond mijn bestelling af met 20% korting</a>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <h2 style="margin:0 0 12px;font-size:17px;color:#1f2933;">In je winkelwagen</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for line in line_items %}
+                  <tr>
+                    <td width="72" style="padding:8px 12px 8px 0;vertical-align:middle;">
+                      {% if line.image %}
+                        <img src="{{ line.image | img_url: 'compact_cropped' }}" alt="{{ line.title | escape }}" width="60" height="60" style="border-radius:8px;border:1px solid #e4e7eb;display:block;">
+                      {% endif %}
+                    </td>
+                    <td style="padding:8px 0;vertical-align:middle;font-size:15px;line-height:1.4;">
+                      <strong>{{ line.product.title | default: line.title }}</strong>
+                      {% if line.variant.title != blank and line.variant.title != 'Default Title' %}<br><span style="color:#52606d;font-size:13px;">{{ line.variant.title }}</span>{% endif %}
+                      <br><span style="color:#52606d;font-size:13px;">Aantal: {{ line.quantity }}</span>
+                    </td>
+                    <td align="right" style="padding:8px 0;vertical-align:middle;font-size:15px;white-space:nowrap;">
+                      {{ line.final_line_price | money }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Reassurance -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;border-radius:8px;">
+                <tr>
+                  <td style="padding:14px 18px;font-size:14px;line-height:1.7;color:#323f4b;">
+                    ✓ Veilig en vertrouwd betalen<br>
+                    ✓ Je winkelwagen staat nog precies zoals je hem achterliet<br>
+                    ✓ Vragen? Antwoord gewoon op deze e-mail – we helpen je graag
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Secondary CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 28px;">
+              <p style="margin:0 0 14px;font-size:14px;color:#52606d;">We bewaren je winkelwagen nog even voor je – wacht niet te lang.</p>
+              <a href="{{ recover_url }}" style="font-size:15px;color:#0b7a75;font-weight:600;">Ga verder naar afrekenen →</a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:18px 32px;border-top:1px solid #e4e7eb;font-size:12px;line-height:1.6;color:#7b8794;text-align:center;">
+              De kortingscode {{ discount_code }} is eenmalig per klant te gebruiken en niet te combineren met andere kortingen op de bestelling.<br>
+              {{ shop.name }}{% if shop.address.city != blank %} · {{ shop.address.city }}{% endif %} · <a href="{{ shop.url }}" style="color:#7b8794;">{{ shop.domain }}</a>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
