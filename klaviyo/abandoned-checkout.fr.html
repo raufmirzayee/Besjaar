@@ -61,7 +61,7 @@
             <td style="padding:24px 32px 0;">
               <h2 style="margin:0 0 12px;font-size:17px;color:#1f2933;">Dans votre panier</h2>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                {% for item in event.extra.line_items %}
+                {% if event.extra.line_items %}{% for item in event.extra.line_items %}
                   <tr>
                     <td width="72" style="padding:8px 12px 8px 0;vertical-align:middle;">
                       {% if item.product.images.0.src %}
@@ -76,7 +76,11 @@
                       {% currency_format item.line_price|floatformat:2 %}
                     </td>
                   </tr>
-                {% endfor %}
+                {% endfor %}{% else %}
+                  {% for name in event.ItemNames %}
+                    <tr><td colspan="3" style="padding:8px 0;font-size:15px;line-height:1.4;"><strong>{{ name }}</strong></td></tr>
+                  {% endfor %}
+                {% endif %}
               </table>
             </td>
           </tr>
