@@ -4,7 +4,7 @@
   One card: the discount, one line of text, first name (optional), e-mail,
   one button. A small tab in the lower-left corner ("Bespaar 20%") is
   visible from page load and reopens it. It opens by itself once per visit,
-  10 seconds after the page loads, on the homepage and collection pages only — never on product, cart or checkout pages.
+  15 seconds after the page loads, on the homepage and collection pages only — never on product, cart or checkout pages.
 
   The offer shown is the reward with the highest weight in Theme settings >
   Welcome offer (no lottery any more). It keeps the storage keys and the
@@ -180,7 +180,7 @@
   data-reward-id="{{ bjw_id }}"
   data-reward-code="{{ bjw_code | escape }}"
   data-auto-open="{% if bjw_auto %}true{% else %}false{% endif %}"
-  data-delay="10"
+  data-delay="15"
   data-has-errors="{% if form.errors %}true{% else %}false{% endif %}"
   aria-labelledby="BjwTitle">
   <div class="bjw__inner">
