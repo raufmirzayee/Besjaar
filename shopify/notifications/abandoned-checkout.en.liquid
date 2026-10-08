@@ -54,6 +54,15 @@
             </td>
           </tr>
 
+          <!-- Personal note typed when sending manually (Orders > Abandoned checkouts > Send a cart recovery email) -->
+          {% if custom_message and custom_message != blank %}
+          <tr>
+            <td style="padding:16px 32px 0;">
+              <p style="margin:0;padding:12px 16px;border-left:3px solid #0b7a75;background:#f4f6f8;font-size:15px;line-height:1.6;color:#323f4b;">{{ custom_message }}</p>
+            </td>
+          </tr>
+          {% endif %}
+
           <!-- Discount badge -->
           <tr>
             <td align="center" style="padding:24px 32px 8px;">
