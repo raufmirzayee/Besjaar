@@ -385,7 +385,15 @@
         {% if shop.terms_of_service != blank %}<li><a href="{% render 'localized-internal-url', url: shop.terms_of_service.url %}">{{ 'besjaar_store.footer.terms' | t }}</a></li>{% endif %}
         <li><a href="{{ footer_refund_url }}">{{ 'besjaar_ui.delivery.returns_policy' | t }}</a></li>
         {% if shop.shipping_policy != blank %}<li><a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{{ 'besjaar_ui.delivery.shipping_policy' | t }}</a></li>{% endif %}
-        {% if settings.show_cookie_preferences %}{% unless request.design_mode or request.visual_preview_mode %}<li><button class="besjaar-consent-footer-link" type="button" data-besjaar-ui-privacy-open aria-label="{{ 'besjaar_ui.consent.manage' | t | escape }}">{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>{% endunless %}{% endif %}
+        {%- comment -%}
+          Lets visitors change or withdraw cookie consent at any time. With the
+          Besjaar preference centre off, this reopens Shopify's own cookie
+          banner preferences (privacyBanner.showPreferences).
+        {%- endcomment -%}
+        {% unless request.design_mode or request.visual_preview_mode %}
+          {% if settings.show_cookie_preferences %}<li><button class="besjaar-consent-footer-link" type="button" data-besjaar-ui-privacy-open aria-label="{{ 'besjaar_ui.consent.manage' | t | escape }}">{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>
+          {% else %}<li data-shopify-cookie-preferences-item hidden><button type="button" data-shopify-cookie-preferences>{{ 'besjaar_ui.analytics.cookie_preferences' | t }}</button></li>{% endif %}
+        {% endunless %}
       </ul>
     </div>
     {% if footer_legal_line != blank %}<p class="bj-foot__legal">{{ footer_legal_line | escape }}</p>{% endif %}
@@ -399,6 +407,33 @@
     var sync = function () { cols.forEach(function (c) { c.open = !mq.matches; }); };
     sync();
     if (mq.addEventListener) mq.addEventListener('change', sync); else if (mq.addListener) mq.addListener(sync);
+  })();
+</script>
+<script>
+  /* "Cookie preferences" → Shopify's cookie banner preferences. Shown once
+     Shopify has loaded its banner (it does so asynchronously), so the link
+     only appears where Shopify has actually loaded its banner. */
+  (function () {
+    var items = document.querySelectorAll('[data-shopify-cookie-preferences-item]');
+    if (!items.length) return;
+    var available = function () {
+      return !!(window.privacyBanner && typeof window.privacyBanner.showPreferences === 'function');
+    };
+    var reveal = function () {
+      if (!available()) return false;
+      items.forEach(function (item) { item.hidden = false; });
+      return true;
+    };
+    items.forEach(function (item) {
+      item.querySelector('[data-shopify-cookie-preferences]').addEventListener('click', function () {
+        if (available()) window.privacyBanner.showPreferences();
+      });
+    });
+    if (reveal()) return;
+    var tries = 0;
+    var timer = setInterval(function () {
+      if (reveal() || ++tries >= 20) clearInterval(timer);
+    }, 500);
   })();
 </script>
 
