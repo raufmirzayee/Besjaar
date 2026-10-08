@@ -3,6 +3,9 @@
 Templates:
 - `abandoned-checkout.nl.liquid` – Dutch (default store language)
 - `abandoned-checkout.en.liquid` – English
+- `abandoned-checkout.de.liquid` – German
+- `abandoned-checkout.fr.liquid` – French
+- `abandoned-checkout.es.liquid` – Spanish
 
 The button opens the customer's own saved checkout with `&discount=WELKOM20`
 added to the link, so the 20% discount is already applied when they arrive.
@@ -11,8 +14,12 @@ added to the link, so the 20% discount is already applied when they arrive.
 1. Shopify admin → **Settings → Notifications → Customer notifications → Abandoned checkout**.
 2. Click **Edit code**, paste the contents of `abandoned-checkout.nl.liquid` into the email body.
 3. Subject: `{{ shop.name }} – je winkelwagen wacht op je (nu 20% korting)`
-4. If the store has English enabled, switch the language selector to English and paste
-   `abandoned-checkout.en.liquid` with subject `{{ shop.name }} – your cart is waiting (now 20% off)`.
+4. For each other language, switch the language selector at the top of the editor and paste that
+   language's file. Subjects:
+   - English: `{{ shop.name }} – your cart is waiting (now 20% off)`
+   - German: `{{ shop.name }} – dein Warenkorb wartet auf dich (jetzt 20 % Rabatt)`
+   - French: `{{ shop.name }} – votre panier vous attend (-20 % maintenant)`
+   - Spanish: `{{ shop.name }} – tu carrito te espera (ahora con un 20 % de descuento)`
 5. **Send test email** to yourself and click the button. The checkout should show WELKOM20 applied.
 
 ## 2. Turn on automatic sending

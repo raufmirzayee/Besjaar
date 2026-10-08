@@ -1,0 +1,159 @@
+{% comment %}
+  Besjaar – Abandoned checkout email (Deutsch)
+  Paste into the German version of: Settings > Notifications > Customer notifications > Abandoned checkout
+  Subject:    {{ shop.name }} – dein Warenkorb wartet auf dich (jetzt 20 % Rabatt)
+
+  The button reopens the customer's own checkout with WELKOM20 already applied
+  via the ?discount= parameter, so they don't have to type the code.
+{% endcomment %}
+{% assign discount_code = 'WELKOM20' %}
+{% comment %}
+  `url` is the customer's saved checkout. It is empty in "Send test email"
+  previews, so fall back to the store's discount link (applies WELKOM20 and
+  opens the shop) instead of producing a broken "?discount=" link.
+{% endcomment %}
+{% assign checkout_link = url | default: abandoned_checkout_url %}
+{% unless checkout_link contains 'http' %}{% assign checkout_link = '' %}{% endunless %}
+{% if checkout_link == '' %}
+  {% assign recover_url = shop.url | append: '/discount/' | append: discount_code %}
+{% elsif checkout_link contains '?' %}
+  {% assign recover_url = checkout_link | append: '&discount=' | append: discount_code %}
+{% else %}
+  {% assign recover_url = checkout_link | append: '?discount=' | append: discount_code %}
+{% endif %}
+{% capture email_title %}Du hast etwas vergessen – hier sind 20&nbsp;% Rabatt für dich{% endcapture %}
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ email_title }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2933;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding:28px 24px 8px;">
+              {% if shop.email_logo_url %}
+                <a href="{{ shop.url }}"><img src="{{ shop.email_logo_url }}" alt="{{ shop.name }}" width="{{ shop.email_logo_width | default: 140 }}" style="max-width:180px;height:auto;border:0;"></a>
+              {% else %}
+                <a href="{{ shop.url }}" style="font-size:24px;font-weight:700;color:#1f2933;text-decoration:none;">{{ shop.name }}</a>
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- Intro -->
+          <tr>
+            <td style="padding:16px 32px 0;">
+              <h1 style="margin:0 0 12px;font-size:24px;line-height:1.3;color:#1f2933;">{{ email_title }}</h1>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                Hallo{% if customer.first_name != blank %} {{ customer.first_name }}{% elsif billing_address.first_name != blank %} {{ billing_address.first_name }}{% endif %},
+              </p>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                Wir haben bemerkt, dass du deine Bestellung noch nicht abgeschlossen hast. Keine Sorge – wir haben deinen Warenkorb für dich gespeichert.
+              </p>
+              <p style="margin:0;font-size:16px;line-height:1.6;">
+                Als Dankeschön für dein Interesse bekommst du <strong>20&nbsp;% Rabatt</strong> auf deine Bestellung. Der Rabatt wird <strong>automatisch angewendet</strong>, sobald du auf den Button unten klickst.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Personal note typed when sending manually (Orders > Abandoned checkouts > Send a cart recovery email) -->
+          {% if custom_message and custom_message != blank %}
+          <tr>
+            <td style="padding:16px 32px 0;">
+              <p style="margin:0;padding:12px 16px;border-left:3px solid #0b7a75;background:#f4f6f8;font-size:15px;line-height:1.6;color:#323f4b;">{{ custom_message }}</p>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Discount badge -->
+          <tr>
+            <td align="center" style="padding:24px 32px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="border:2px dashed #0b7a75;border-radius:10px;">
+                <tr>
+                  <td align="center" style="padding:14px 28px;">
+                    <div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#52606d;">Dein Rabattcode</div>
+                    <div style="font-size:26px;font-weight:700;letter-spacing:2px;color:#0b7a75;">{{ discount_code }}</div>
+                    <div style="font-size:13px;color:#52606d;">20&nbsp;% Rabatt – wird über den Button automatisch angewendet</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 8px;">
+              <a href="{{ recover_url }}" style="display:inline-block;background:#0b7a75;color:#ffffff;font-size:17px;font-weight:600;text-decoration:none;padding:15px 34px;border-radius:8px;">Bestellung mit 20&nbsp;% Rabatt abschließen</a>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <h2 style="margin:0 0 12px;font-size:17px;color:#1f2933;">In deinem Warenkorb</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for line in line_items %}
+                  <tr>
+                    <td width="72" style="padding:8px 12px 8px 0;vertical-align:middle;">
+                      {% if line.image %}
+                        <img src="{{ line.image | img_url: 'compact_cropped' }}" alt="{{ line.title | escape }}" width="60" height="60" style="border-radius:8px;border:1px solid #e4e7eb;display:block;">
+                      {% endif %}
+                    </td>
+                    <td style="padding:8px 0;vertical-align:middle;font-size:15px;line-height:1.4;">
+                      <strong>{{ line.product.title | default: line.title }}</strong>
+                      {% if line.variant.title != blank and line.variant.title != 'Default Title' %}<br><span style="color:#52606d;font-size:13px;">{{ line.variant.title }}</span>{% endif %}
+                      <br><span style="color:#52606d;font-size:13px;">Menge: {{ line.quantity }}</span>
+                    </td>
+                    <td align="right" style="padding:8px 0;vertical-align:middle;font-size:15px;white-space:nowrap;">
+                      {{ line.final_line_price | money }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Reassurance -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;border-radius:8px;">
+                <tr>
+                  <td style="padding:14px 18px;font-size:14px;line-height:1.7;color:#323f4b;">
+                    ✓ Sicher und zuverlässig bezahlen<br>
+                    ✓ Dein Warenkorb ist genau so, wie du ihn verlassen hast<br>
+                    ✓ Fragen? Antworte einfach auf diese E-Mail – wir helfen dir gerne
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Secondary CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 28px;">
+              <p style="margin:0 0 14px;font-size:14px;color:#52606d;">Wir halten deinen Warenkorb noch kurz für dich bereit – warte nicht zu lange.</p>
+              <a href="{{ recover_url }}" style="font-size:15px;color:#0b7a75;font-weight:600;">Weiter zur Kasse →</a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:18px 32px;border-top:1px solid #e4e7eb;font-size:12px;line-height:1.6;color:#7b8794;text-align:center;">
+              Der Code {{ discount_code }} kann einmal pro Kunde verwendet werden und ist nicht mit anderen Bestellrabatten kombinierbar.<br>
+              {{ shop.name }}{% if shop.address.city != blank %} · {{ shop.address.city }}{% endif %} · <a href="{{ shop.url }}" style="color:#7b8794;">{{ shop.domain }}</a>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
