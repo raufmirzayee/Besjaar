@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vous avez oublié quelque chose – voici 20&nbsp;% de réduction</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f6f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1f2933;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding:28px 24px 8px;">
+              <a href="https://www.besjaar.eu" style="font-size:24px;font-weight:700;color:#1f2933;text-decoration:none;">Besjaar</a>
+            </td>
+          </tr>
+
+          <!-- Intro -->
+          <tr>
+            <td style="padding:16px 32px 0;">
+              <h1 style="margin:0 0 12px;font-size:24px;line-height:1.3;color:#1f2933;">Vous avez oublié quelque chose – voici 20&nbsp;% de réduction</h1>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                Bonjour{% if first_name %} {{ first_name }}{% endif %},
+              </p>
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.6;">
+                Nous avons remarqué que vous n'avez pas finalisé votre commande. Pas d'inquiétude – nous avons gardé votre panier pour vous.
+              </p>
+              <p style="margin:0;font-size:16px;line-height:1.6;">
+                Pour vous remercier de votre intérêt, vous bénéficiez de <strong>20&nbsp;% de réduction</strong> sur votre commande. La réduction est <strong>appliquée automatiquement</strong> lorsque vous cliquez sur le bouton ci-dessous.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Discount badge -->
+          <tr>
+            <td align="center" style="padding:24px 32px 8px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="border:2px dashed #0b7a75;border-radius:10px;">
+                <tr>
+                  <td align="center" style="padding:14px 28px;">
+                    <div style="font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#52606d;">Votre code promo</div>
+                    <div style="font-size:26px;font-weight:700;letter-spacing:2px;color:#0b7a75;">WELKOM20</div>
+                    <div style="font-size:13px;color:#52606d;">20&nbsp;% de réduction – appliquée via le bouton</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 8px;">
+              <a href="{% if event.extra.checkout_url %}{{ event.extra.checkout_url }}&discount=WELKOM20{% else %}https://www.besjaar.eu/discount/WELKOM20{% endif %}" style="display:inline-block;background:#0b7a75;color:#ffffff;font-size:17px;font-weight:600;text-decoration:none;padding:15px 34px;border-radius:8px;">Finaliser ma commande avec 20&nbsp;% de réduction</a>
+            </td>
+          </tr>
+
+          <!-- Items -->
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <h2 style="margin:0 0 12px;font-size:17px;color:#1f2933;">Dans votre panier</h2>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                {% for item in event.extra.line_items %}
+                  <tr>
+                    <td width="72" style="padding:8px 12px 8px 0;vertical-align:middle;">
+                      {% if item.product.images.0.src %}
+                        <img src="{{ item.product.images.0.src }}" alt="{{ item.product.title }}" width="60" height="60" style="border-radius:8px;border:1px solid #e4e7eb;display:block;object-fit:cover;">
+                      {% endif %}
+                    </td>
+                    <td style="padding:8px 0;vertical-align:middle;font-size:15px;line-height:1.4;">
+                      <strong>{{ item.product.title }}</strong>
+                      <br><span style="color:#52606d;font-size:13px;">Quantité : {{ item.quantity }}</span>
+                    </td>
+                    <td align="right" style="padding:8px 0;vertical-align:middle;font-size:15px;white-space:nowrap;">
+                      {% currency_format item.line_price|floatformat:2 %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Reassurance -->
+          <tr>
+            <td style="padding:24px 32px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;border-radius:8px;">
+                <tr>
+                  <td style="padding:14px 18px;font-size:14px;line-height:1.7;color:#323f4b;">
+                    ✓ Paiement sûr et sécurisé<br>
+                    ✓ Votre panier est exactement comme vous l'avez laissé<br>
+                    ✓ Des questions ? Répondez simplement à cet e-mail – nous serons ravis de vous aider
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Secondary CTA -->
+          <tr>
+            <td align="center" style="padding:16px 32px 28px;">
+              <p style="margin:0 0 14px;font-size:14px;color:#52606d;">Nous gardons votre panier encore un peu – n'attendez pas trop longtemps.</p>
+              <a href="{% if event.extra.checkout_url %}{{ event.extra.checkout_url }}&discount=WELKOM20{% else %}https://www.besjaar.eu/discount/WELKOM20{% endif %}" style="font-size:15px;color:#0b7a75;font-weight:600;">Passer à la caisse →</a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:18px 32px;border-top:1px solid #e4e7eb;font-size:12px;line-height:1.6;color:#7b8794;text-align:center;">
+              Le code WELKOM20 est utilisable une fois par client et n'est pas cumulable avec d'autres réductions sur la commande.<br>
+              {{ organization.name }} · {{ organization.full_address }}<br><a href="https://www.besjaar.eu" style="color:#7b8794;">www.besjaar.eu</a> · {% unsubscribe 'Se désabonner' %}
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
