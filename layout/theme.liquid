@@ -101,34 +101,6 @@
     {% render 'seo-head' %}
     {{ content_for_header }}
     {% render 'google-tag-manager', part: 'consent' %}
-    {%- comment -%}
-      OpenAI ads pixel. It is a marketing tracker, so it only loads once
-      Shopify's cookie banner reports marketing consent: straight away for a
-      visitor who already accepted (or whose region needs no consent), or the
-      moment they accept. Until then nothing is requested from OpenAI.
-    {%- endcomment -%}
-    <script>
-      (function () {
-        var loaded = false;
-        function load() {
-          if (loaded) return;
-          loaded = true;
-          !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");oaiq("init",{pixelId:"5PVp34ZNVNVgx7pCJc9xqJ",debug:true});
-        }
-        document.addEventListener('visitorConsentCollected', function (event) {
-          if (event.detail && event.detail.marketingAllowed === true) load();
-        });
-        function sync() {
-          if (!window.Shopify || typeof window.Shopify.loadFeatures !== 'function') return false;
-          window.Shopify.loadFeatures([{ name: 'consent-tracking-api', version: '0.1' }], function (error) {
-            var privacy = window.Shopify.customerPrivacy;
-            if (!error && privacy && privacy.marketingAllowed()) load();
-          });
-          return true;
-        }
-        if (!sync()) document.addEventListener('DOMContentLoaded', sync);
-      })();
-    </script>
 
     <style>
       :root {
