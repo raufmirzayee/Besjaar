@@ -1,0 +1,141 @@
+{%- comment -%}
+  Product JSON-LD for Google (rich results + Merchant listings).
+
+  Usage — in sections/main-product.liquid (or theme.liquid, inside a `template.name == 'product'` check):
+    {% render 'product-structured-data', product: product %}
+
+  If the theme already outputs `{{ product | structured_data }}` (Dawn and most OS 2.0 themes do,
+  in main-product.liquid), remove that line so Google doesn't see two conflicting Product blocks.
+
+  Data sources (in order of preference):
+    brand    → product.vendor (Besjaar / RYNEX / LYNEX), falls back to "Besjaar"
+    gtin     → custom.gtin metafield, then the variant barcode — only emitted when it is a valid
+               8/12/13/14-digit GTIN, because Google rejects malformed GTINs
+    material → custom.material, then shopify.housing-material / shopify.hardware-material
+               (category metafields, which are lists of metaobjects with a `label` field)
+    color    → shopify.color-pattern
+    rating   → reviews.rating + reviews.rating_count (only when there is at least one review)
+
+  Every value goes through the `json` filter, which quotes and escapes it — never wrap `| json`
+  output in extra quotes.
+{%- endcomment -%}
+
+{%- liquid
+  assign digits = '0,1,2,3,4,5,6,7,8,9' | split: ','
+
+  assign brand_name = product.vendor | default: 'Besjaar'
+
+  assign product_url = request.origin | append: product.url
+
+  # Pad tag/line boundaries with a space first so "<p>a</p><p>b</p>" doesn't collapse into "ab".
+  assign description = product.description | newline_to_br | replace: '<br', ' <br' | replace: '</', ' </' | strip_html | strip_newlines | split: ' ' | join: ' ' | strip | truncate: 5000
+  if description == blank
+    assign description = product.title
+  endif
+
+  assign product_gtin = product.metafields.custom.gtin.value | append: ''
+
+  assign material = product.metafields.custom.material.value | append: ''
+  if material == blank
+    assign material_list = product.metafields.shopify['housing-material'].value
+    if material_list == blank
+      assign material_list = product.metafields.shopify['hardware-material'].value
+    endif
+    assign material_labels = ''
+    for entry in material_list
+      assign material_labels = material_labels | append: entry.label.value | append: '|'
+    endfor
+    assign material = material_labels | split: '|' | join: ', '
+  endif
+
+  assign color_labels = ''
+  for entry in product.metafields.shopify['color-pattern'].value
+    assign color_labels = color_labels | append: entry.label.value | append: '|'
+  endfor
+  assign color = color_labels | split: '|' | join: ', '
+
+  assign rating = product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value | default: 0
+-%}
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": {{ product_url | json }},
+    "description": {{ description | json }},
+    "brand": {
+      "@type": "Brand",
+      "name": {{ brand_name | json }}
+    },
+    {%- if product.featured_image %}
+    "image": [
+      {%- for image in product.images limit: 5 -%}
+        {{ image | image_url: width: 1200 | prepend: 'https:' | json }}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ],
+    {%- endif %}
+    {%- if product.selected_or_first_available_variant.sku != blank %}
+    "sku": {{ product.selected_or_first_available_variant.sku | json }},
+    {%- endif %}
+    {%- if material != blank %}
+    "material": {{ material | json }},
+    {%- endif %}
+    {%- if color != blank %}
+    "color": {{ color | json }},
+    {%- endif %}
+    {%- if rating != blank and rating_count > 0 %}
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": {{ rating.rating | json }},
+      "bestRating": {{ rating.scale_max | json }},
+      "worstRating": {{ rating.scale_min | json }},
+      "ratingCount": {{ rating_count | json }}
+    },
+    {%- endif %}
+    "offers": [
+      {%- for variant in product.variants -%}
+        {%- liquid
+          assign gtin = product_gtin
+          if gtin == blank
+            assign gtin = variant.barcode | append: ''
+          endif
+          assign gtin = gtin | remove: ' ' | remove: '-'
+          assign non_digits = gtin
+          for d in digits
+            assign non_digits = non_digits | remove: d
+          endfor
+          assign gtin_valid = false
+          if gtin != blank and non_digits == blank
+            case gtin.size
+              when 8, 12, 13, 14
+                assign gtin_valid = true
+            endcase
+          endif
+        -%}
+        {
+          "@type": "Offer",
+          "url": {{ product_url | append: '?variant=' | append: variant.id | json }},
+          {%- if variant.title != 'Default Title' %}
+          "name": {{ variant.title | json }},
+          {%- endif %}
+          {%- if variant.sku != blank %}
+          "sku": {{ variant.sku | json }},
+          {%- endif %}
+          {%- if gtin_valid %}
+          "gtin": {{ gtin | json }},
+          {%- endif %}
+          "price": {{ variant.price | divided_by: 100.0 | json }},
+          "priceCurrency": {{ cart.currency.iso_code | json }},
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": "https://schema.org/{% if variant.available %}InStock{% else %}OutOfStock{% endif %}",
+          "seller": {
+            "@type": "Organization",
+            "name": {{ shop.name | json }}
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+</script>
