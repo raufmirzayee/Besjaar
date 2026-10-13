@@ -3,7 +3,7 @@
 | Language | Status |
 |---|---|
 | EN, DE, FR, ES | **Live.** Registered as translations of the shop's homepage SEO fields and read back. This also fixes the Spanish description, which was in French. |
-| **NL (primary)** | **Title live** (saved in Preferences on 13 Oct 2026; the 4 translated titles were re-linked and none is outdated). **Description still the old text:** it did not save, so step 3 below still needs doing. |
+| **NL (primary)** | **Title live** (saved in Preferences on 13 Oct 2026; the 4 translated titles were re-linked and none is outdated). **Description: kept the existing text by decision (13 Oct 2026)**; step 3 below is not needed. |
 
 ## Manual step (2 minutes)
 
