@@ -1,0 +1,23 @@
+{
+  "note": "Homepage SEO before 13 Oct 2026 update. No global.title_tag / global.description_tag shop metafields existed: the title fell back to the shop name and the description to the shop description. To roll back, delete both shop metafields (metafieldsDelete) and re-register these translations.",
+  "nl": {
+    "meta_title": "Besjaar",
+    "meta_description": "Ontdek de hoogwaardige douchekoppen en filters van Besjaar. Bescherm je huid en haar met beter water. Bestel veilig via onze officiële webshop!"
+  },
+  "en": {
+    "meta_title": "Besjaar",
+    "meta_description": "Discover high-quality shower heads and filters by Besjaar. Protect your skin and hair with better water. Order safely via our official online store!"
+  },
+  "de": {
+    "meta_title": "Besjaar",
+    "meta_description": "Entdecken Sie hochwertige Duschköpfe und Filter von Besjaar. Schützen Sie Haut und Haar mit besserem Wasser. Sicher im offiziellen Shop bestellen!"
+  },
+  "fr": {
+    "meta_title": "Besjaar",
+    "meta_description": "Découvrez les pommeaux de douche et filtres Besjaar. Protégez votre peau et vos cheveux avec une eau plus pure. Commandez en toute sécurité !"
+  },
+  "es": {
+    "meta_title": "Besjaar",
+    "meta_description": "Découvrez les pommeaux de douche et filtres de qualité Besjaar. Protégez votre peau et vos cheveux avec une eau meilleure. Commandez en toute sécurité !"
+  }
+}
