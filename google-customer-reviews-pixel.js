@@ -5,6 +5,7 @@ const DELIVERY_DAYS = 5;
 
 analytics.subscribe('checkout_completed', (event) => {
   const checkout = event.data.checkout;
+  if (!checkout || !checkout.email) return;
   const est = new Date(Date.now() + DELIVERY_DAYS * 86400000)
     .toISOString().slice(0, 10);
 
@@ -14,7 +15,7 @@ analytics.subscribe('checkout_completed', (event) => {
         merchant_id: 5872663998,
         order_id: String(checkout.order && checkout.order.id ? checkout.order.id : checkout.token),
         email: checkout.email,
-        delivery_country: checkout.shippingAddress.countryCode,
+        delivery_country: (checkout.shippingAddress || checkout.billingAddress || {}).countryCode,
         estimated_delivery_date: est
       });
     });
