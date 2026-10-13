@@ -1,0 +1,182 @@
+--- a/snippets/structured-data.liquid
++++ b/snippets/structured-data.liquid
+@@ -27,6 +27,19 @@
+   assign sd_website_id = shop.url | append: '#website'
+   assign sd_lang = request.locale.iso_code | split: '-' | first | downcase
+ 
++  comment
++    2026-10-13: every @id / url / BreadcrumbList item uses the primary-domain
++    canonical, the same rule layout/theme.liquid applies to <link rel=canonical>
++    and meta-tags.liquid to og:url. Before, a request served on
++    www.slimhome.nl, www.bestezaklampen.nl or the myshopify domain emitted
++    entity ids and breadcrumb items on that host, so the JSON-LD contradicted
++    the canonical tag.
++  endcomment
++  assign sd_canonical = canonical_url
++  if request.origin != shop.url
++    assign sd_canonical = canonical_url | replace_first: request.origin, shop.url
++  endif
++
+   assign sd_product_hidden = false
+   if request.page_type == 'product' and product != blank
+     assign sd_hidden_value = product.metafields.seo.hidden.value
+@@ -312,14 +325,24 @@
+     if sd_ship_items != blank
+       assign sd_offer_extra = '"shippingDetails":[' | append: sd_ship_items | append: ']'
+     endif
++    comment
++      2026-10-13: the return policy applies to every country the store ships
++      to (zone 1 + zone 2), not only the home zone, so BE/DE/FR/ES offers no
++      longer lack return terms. returnFees mirrors the refund policy: the
++      customer pays return shipping unless the item is defective or wrong.
++    endcomment
++    assign sd_return_countries = sd_ship_countries
++    if sd_zone2_countries != blank
++      assign sd_return_countries = sd_ship_countries | append: ',' | append: sd_zone2_countries | split: ',' | uniq | join: ','
++    endif
+     assign sd_return_days = settings.return_window_days | default: 0
+     if sd_return_days > 0
+       capture sd_offer_returns
+         echo '"hasMerchantReturnPolicy":{"@type":"MerchantReturnPolicy","applicableCountry":['
+-        echo sd_ship_countries
++        echo sd_return_countries
+         echo '],"returnPolicyCategory":"https://schema.org/MerchantReturnFiniteReturnWindow","merchantReturnDays":'
+         echo sd_return_days
+-        echo ',"returnMethod":"https://schema.org/ReturnByMail"'
++        echo ',"returnMethod":"https://schema.org/ReturnByMail","returnFees":"https://schema.org/ReturnFeesCustomerResponsibility"'
+         if shop.refund_policy != blank and shop.refund_policy.url != blank
+           assign sd_refund_url = shop.refund_policy.url
+           assign sd_refund_prefix = sd_refund_url | slice: 0, 1
+@@ -393,13 +416,13 @@
+     {
+       "@context": "https://schema.org",
+       "@type": "WebPage",
+-      "@id": {{ canonical_url | append: '#webpage' | json }},
+-      "url": {{ canonical_url | json }},
++      "@id": {{ sd_canonical | append: '#webpage' | json }},
++      "url": {{ sd_canonical | json }},
+       "name": {{ besjaar_ui_browser_title | json }},
+       "isPartOf": {"@id": {{ sd_website_id | json }}},
+       "publisher": {"@id": {{ sd_org_id | json }}},
+       "mainEntity": {"@id": {{ sd_product_id | json }}},
+-      "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
++      "breadcrumb": {"@id": {{ sd_canonical | append: '#breadcrumb' | json }}},
+       "inLanguage": {{ request.locale.iso_code | json }}
+     }
+   </script>
+@@ -419,11 +442,11 @@
+     {
+       "@context": "https://schema.org",
+       "@type": "BlogPosting",
+-      "@id": {{ canonical_url | append: '#article' | json }},
++      "@id": {{ sd_canonical | append: '#article' | json }},
+       "headline": {{ article.title | strip | truncate: 110 | json }},
+       "name": {{ article.title | strip | json }},
+-      "url": {{ canonical_url | json }},
+-      "mainEntityOfPage": {"@type": "WebPage", "@id": {{ canonical_url | json }}},
++      "url": {{ sd_canonical | json }},
++      "mainEntityOfPage": {"@type": "WebPage", "@id": {{ sd_canonical | json }}},
+       {% if sd_article_description != blank %}"description": {{ sd_article_description | json }},{% endif %}
+       "image": [{{ sd_article_image | json }}],
+       "datePublished": {{ article.published_at | date: '%Y-%m-%dT%H:%M:%S%z' | json }},
+@@ -444,7 +467,7 @@
+       "@type": "Blog",
+       "@id": {{ shop.url | append: blog.url | append: '#blog' | json }},
+       "name": {{ blog.title | json }},
+-      "url": {{ canonical_url | json }},
++      "url": {{ sd_canonical | json }},
+       "description": {{ besjaar_ui_meta_description | strip | json }},
+       "publisher": {"@id": {{ sd_org_id | json }}},
+       "isPartOf": {"@id": {{ sd_website_id | json }}},
+@@ -466,8 +489,8 @@
+     {
+       "@context": "https://schema.org",
+       "@type": "WebPage",
+-      "@id": {{ canonical_url | append: '#webpage' | json }},
+-      "url": {{ canonical_url | json }},
++      "@id": {{ sd_canonical | append: '#webpage' | json }},
++      "url": {{ sd_canonical | json }},
+       "name": {{ besjaar_ui_browser_title | strip | json }},
+       "description": {{ besjaar_ui_meta_description | strip | json }},
+       "isPartOf": {"@id": {{ sd_website_id | json }}},
+@@ -501,9 +524,9 @@
+       {
+         "@context": "https://schema.org",
+         "@type": {{ sd_page_type | json }},
+-        "@id": {{ canonical_url | append: '#webpage' | json }},
+-        "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
+-        "url": {{ canonical_url | json }},
++        "@id": {{ sd_canonical | append: '#webpage' | json }},
++        "breadcrumb": {"@id": {{ sd_canonical | append: '#breadcrumb' | json }}},
++        "url": {{ sd_canonical | json }},
+         "name": {{ sd_page_title | strip | default: page.title | json }},
+         {% if besjaar_ui_meta_description != blank %}"description": {{ besjaar_ui_meta_description | strip | json }},{% endif %}
+         "isPartOf": {"@id": {{ sd_website_id | json }}},
+@@ -533,7 +556,7 @@
+     {
+       "@context": "https://schema.org",
+       "@type": "BreadcrumbList",
+-      "@id": {{ canonical_url | append: '#breadcrumb' | json }},
++      "@id": {{ sd_canonical | append: '#breadcrumb' | json }},
+       "itemListElement": [
+         {
+           "@type": "ListItem",
+@@ -551,19 +574,19 @@
+           "@type": "ListItem",
+           "position": 3,
+           "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% elsif request.page_type == 'product' %},
+         {
+           "@type": "ListItem",
+           "position": 2,
+           "name": {{ sd_crumb_product_title | strip | default: product.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% elsif request.page_type == 'collection' %},
+         {
+           "@type": "ListItem",
+           "position": 2,
+           "name": {{ sd_crumb_collection_title | strip | default: collection.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% elsif request.page_type == 'article' %},
+         {
+           "@type": "ListItem",
+@@ -575,19 +598,19 @@
+           "@type": "ListItem",
+           "position": 3,
+           "name": {{ article.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% elsif request.page_type == 'blog' %},
+         {
+           "@type": "ListItem",
+           "position": 2,
+           "name": {{ blog.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% elsif request.page_type == 'page' %},
+         {
+           "@type": "ListItem",
+           "position": 2,
+           "name": {{ sd_crumb_page_title | strip | default: page.title | json }},
+-          "item": {{ canonical_url | json }}
++          "item": {{ sd_canonical | json }}
+         }{% endif %}
+       ]
+     }
+@@ -601,9 +624,9 @@
+     {
+       "@context": "https://schema.org",
+       "@type": "CollectionPage",
+-      "@id": {{ canonical_url | append: '#collectionpage' | json }},
+-      "breadcrumb": {"@id": {{ canonical_url | append: '#breadcrumb' | json }}},
+-      "url": {{ canonical_url | json }},
++      "@id": {{ sd_canonical | append: '#collectionpage' | json }},
++      "breadcrumb": {"@id": {{ sd_canonical | append: '#breadcrumb' | json }}},
++      "url": {{ sd_canonical | json }},
+       "name": {{ sd_collection_title | strip | default: collection.title | json }},
+       {% if besjaar_ui_meta_description != blank %}"description": {{ besjaar_ui_meta_description | json }},{% endif %}
+       "isPartOf": {"@id": {{ sd_website_id | json }}},
