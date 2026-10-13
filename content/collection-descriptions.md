@@ -4,6 +4,8 @@ Removes the claims that the filter takes limescale (*kalk*) out of the water and
 
 How the theme shows it: the **first paragraph** appears as plain text under the H1. The other paragraphs sit in the collapsed "Meer over …" panel, where links work.
 
+**Status: published to the live store on 13 Oct 2026** (Dutch via `collectionUpdate`, en/de/fr/es via `translationsRegister`; meta titles unchanged). To roll back, re-publish the values in `collection-descriptions.previous.json`.
+
 Data for publishing: `collection-descriptions.json` · Previous text for rollback: `collection-descriptions.previous.json`
 
 ## Douchekoppen (/collections/showerhead)
