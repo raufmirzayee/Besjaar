@@ -1,0 +1,9 @@
+{
+  "note": "Web presence for www.slimhome.nl before deletion on 13 Oct 2026. To recreate: webPresenceCreate with this domain, default locale and alternate locales (no subfolder suffix, not attached to any market).",
+  "id": "gid://shopify/MarketWebPresence/72068333895",
+  "domain": "www.slimhome.nl",
+  "defaultLocale": "nl",
+  "alternateLocales": ["de", "fr", "en"],
+  "subfolderSuffix": null,
+  "markets": []
+}

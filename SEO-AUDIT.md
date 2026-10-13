@@ -650,7 +650,7 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 
 | # | Task | Where | Owner | Done when |
 |---|---|---|---|---|
-| 1 | Redirect `slimhome.nl` + `bestezaklampen.nl` to primary; remove the slimhome web presence | Settings → Domains / Markets | Admin | `curl -I` on any slimhome URL → 301 to besjaar.eu |
+| 1 | ✅ **Done 13 Oct 2026.** `slimhome.nl` + `www.slimhome.nl` set to Redirecting (by owner); the `www.slimhome.nl` web presence deleted (rollback: `content/slimhome-webpresence.previous.json`). `bestezaklampen.nl` is no longer connected to the store | Settings → Domains / Markets | Admin | `curl -I` on any slimhome URL → 301 to besjaar.eu |
 | 2 | Create the "EU" market (BE/DE/FR/ES, EUR); deactivate or trim Worldwide | Settings → Markets | Admin | URL Inspection shows `priceCurrency: EUR` |
 | 3 | Delete/unpublish `/pages/faq`, `/pages/inloggen`, `/pages/privacy-policy`, `/pages/refund-policy`, `/pages/shipping-policy`, `/pages/terms-of-services` | Online Store → Pages | Admin | Each URL 301s to its target |
 | 4 | Main menu: "Assortiment" → `/collections/showerhead`; replace "Alle producten" | Navigation | Admin | No nav link to `/collections/all` |
