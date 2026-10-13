@@ -1,0 +1,31 @@
+<!--
+  Google Customer Reviews opt-in for Besjaar (Merchant Center ID 5872663998).
+
+  Where to paste (Shopify):
+    Settings > Checkout > Order status page > Additional scripts
+  (Liquid is evaluated there, so the order values below are filled in automatically.)
+
+  Adjust the "+ 432000" (5 days, in seconds) to your real delivery estimate.
+  If your store uses Customer Events / Web Pixels instead of Additional scripts,
+  the Liquid variables must be replaced with the checkout event data.
+-->
+<script src="https://apis.google.com/js/platform.js?onload=renderOptIn" async defer></script>
+
+<script>
+  window.renderOptIn = function() {
+    window.gapi.load('surveyoptin', function() {
+      window.gapi.surveyoptin.render(
+        {
+          // REQUIRED FIELDS
+          "merchant_id": 5872663998,
+          "order_id": "{{ order.order_number }}",
+          "email": "{{ checkout.email }}",
+          "delivery_country": "{{ shipping_address.country_code }}",
+          "estimated_delivery_date": "{{ 'now' | date: '%s' | plus: 432000 | date: '%Y-%m-%d' }}"
+
+          // OPTIONAL FIELDS (add if your products have GTINs/barcodes)
+          // "products": [{"gtin":"GTIN1"}, {"gtin":"GTIN2"}]
+        });
+    });
+  }
+</script>
