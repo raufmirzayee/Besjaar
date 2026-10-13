@@ -113,6 +113,8 @@ Target: **≤ 120 KB total CSS per template, ≤ 14 KB inline critical**. Expect
 
 ### 1.2 Image assets
 
+> **Correction (13 Oct 2026):** the hero recommendation below was wrong for this theme. On phones (≤ 900 px) the CSS shows the photo in a *square* card with `object-fit: cover`, so the 1916×821 image is already scaled up and every pixel is used. Serving a smaller file would blur it. See `theme-patches/speed-fix/README.md`.
+
 **Product and collection images are already correct:** `image_url` with `srcset` widths, `sizes`, `loading="lazy"` below the fold, `eager` + `fetchpriority="high"` on the first two collection cards and the PDP hero. Shopify's CDN negotiates **AVIF/WebP automatically** from the `Accept` header for `image_url` output, so the uploaded JPGs don't need converting.
 
 **Rules to keep across all templates:**
@@ -664,10 +666,10 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 
 | # | Task | Done when |
 |---|---|---|
-| 1 | Hero → `image_picker` + `<picture>` srcset (§1.2), update the preload | Home mobile LCP image ≤ 60 KB |
-| 2 | CSS consolidation, phase 1: Coverage audit, merge the 21 header-group patch sections into one stylesheet, drop dead files | Render-blocking CSS ≤ 400 KB |
-| 3 | CSS phase 2: per-template bundles + inline critical CSS + async rest | ≤ 120 KB/template; PSI mobile LCP < 2.5 s (lab) |
-| 4 | Cut the font weights in use to ≤ 3 faces | — |
+| 1 | ~~Hero → `image_picker` + `<picture>` srcset~~ **Dropped 13 Oct 2026:** on phones the photo fills a square card with `object-fit: cover`, so it is already scaled *up*; a smaller file would blur it, and a same-quality crop saves only ~21 KB (see `theme-patches/speed-fix/README.md`) | — |
+| 2 | ✅ **Done on a theme copy, 13 Oct 2026** (`Besjaar – speed fix 13 okt (copy)`, unpublished): rules for 566 retired classes + 1,853 never-winning declarations removed from 24 stylesheets; every page loads ~40% less CSS (homepage 876 → ~530 KB, 125 → ~76 KB gzipped). **Preview and publish it yourself** (checklist in `theme-patches/speed-fix/README.md`) | Render-blocking CSS ≤ 400 KB (reached ~520–545 KB; see phase 2) |
+| 3 | CSS phase 2: per-template bundles + inline critical CSS + async rest. Needs rendered pages (browser Coverage) to do safely; ~26% of the remaining CSS is page-specific | ≤ 120 KB/template; PSI mobile LCP < 2.5 s (lab) |
+| 4 | ~~Cut the font weights~~ **Not needed:** browsers only download weights a page actually uses, so unused `@font-face` declarations cost nothing | — |
 | 5 | PDP: add the GPSR block, "incl. btw" label and shipping line in the buy box | — |
 | 6 | PDP: restructure `body_html` → H2 sections (§4.4); keep the specs in metafields | No H3 without a parent H2 |
 | 7 | `seo-head.liquid`: localize the "Page N" title suffix | — |

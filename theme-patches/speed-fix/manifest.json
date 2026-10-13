@@ -1,0 +1,146 @@
+[
+ {
+  "file": "assets/besjaar-campaign.css",
+  "before": 3790,
+  "after": 2797,
+  "md5": "d3a7ab836fbb26c0622462e712dad0b6"
+ },
+ {
+  "file": "assets/besjaar-collection-step3.css",
+  "before": 16819,
+  "after": 16089,
+  "md5": "359db26a73f471e6751063bc42b8e737"
+ },
+ {
+  "file": "assets/besjaar-discount-badge.css",
+  "before": 4249,
+  "after": 1993,
+  "md5": "02edf1bd0527630b42685e2b023e3db4"
+ },
+ {
+  "file": "assets/besjaar-home-step2.css",
+  "before": 35732,
+  "after": 24780,
+  "md5": "62d8ab2f1f79a30d146b91ae69978792"
+ },
+ {
+  "file": "assets/besjaar-mobile-detail-clarity.css",
+  "before": 4237,
+  "after": 182,
+  "md5": "ae16ba6da34a616e3ad6a2ee27fa38dd"
+ },
+ {
+  "file": "assets/besjaar-mobile-feature-cards.css",
+  "before": 4600,
+  "after": 4550,
+  "md5": "6b5fe36f0e0d063fa84a293f83efe9cc"
+ },
+ {
+  "file": "assets/besjaar-product-detail.css",
+  "before": 19823,
+  "after": 14672,
+  "md5": "dd2873211ae35c9250d208288130f683"
+ },
+ {
+  "file": "assets/besjaar-product-step4.css",
+  "before": 30634,
+  "after": 19706,
+  "md5": "b06c9f17fb3205ebd07d24f8e4669689"
+ },
+ {
+  "file": "assets/besjaar-seo-base.css",
+  "before": 269352,
+  "after": 111600,
+  "md5": "e930cb44abb6fb2bd9665ef6e5beac1f"
+ },
+ {
+  "file": "assets/besjaar-seo-carriers-early.css",
+  "before": 99668,
+  "after": 82609,
+  "md5": "4e6d37d9b9748c62b194648b5ad4d943"
+ },
+ {
+  "file": "assets/besjaar-seo-carriers-late.css",
+  "before": 122108,
+  "after": 104475,
+  "md5": "fda92dc694dbf6f3647feebb6bb63acb"
+ },
+ {
+  "file": "assets/besjaar-seo-commerce.css",
+  "before": 49108,
+  "after": 27665,
+  "md5": "d0c850e01f2bac9fb8e985ad1783d81e"
+ },
+ {
+  "file": "assets/besjaar-seo-design.css",
+  "before": 204473,
+  "after": 119612,
+  "md5": "084d5ecd7110d8c172378cd70ca21be5"
+ },
+ {
+  "file": "assets/besjaar-seo-finish.css",
+  "before": 74626,
+  "after": 60067,
+  "md5": "7f22c0e4706d884b1930517f1918cf07"
+ },
+ {
+  "file": "assets/besjaar-shower-collection.css",
+  "before": 10162,
+  "after": 8779,
+  "md5": "f0206ec16ee3c40a452020f387101fe1"
+ },
+ {
+  "file": "assets/besjaar-store-home.css",
+  "before": 22391,
+  "after": 7662,
+  "md5": "b4c4238a7bbc7fd6346ccb3967260970"
+ },
+ {
+  "file": "assets/besjaar-ui-account.css",
+  "before": 46617,
+  "after": 44913,
+  "md5": "d6e0ac4f0ac010ca12a5af964f30d7e5"
+ },
+ {
+  "file": "assets/besjaar-ui-bundle.css",
+  "before": 2568,
+  "after": 747,
+  "md5": "4a03c7f678f49e044ef97437dbf1c539"
+ },
+ {
+  "file": "assets/besjaar-ui-cart.css",
+  "before": 10544,
+  "after": 4561,
+  "md5": "75387f646be2000ea920fa91e415e29f"
+ },
+ {
+  "file": "assets/besjaar-ui-catalog.css",
+  "before": 49458,
+  "after": 23402,
+  "md5": "9710f65a33a2adb3d79e522bea863000"
+ },
+ {
+  "file": "assets/besjaar-ui-consent.css",
+  "before": 13186,
+  "after": 12306,
+  "md5": "4ee2b2f000b388dda25eb26fc8b7548b"
+ },
+ {
+  "file": "assets/besjaar-ui-pages.css",
+  "before": 33585,
+  "after": 31111,
+  "md5": "d92003bd4499faf8df92c7aa67285b2d"
+ },
+ {
+  "file": "assets/besjaar-ui-recommendations.css",
+  "before": 3595,
+  "after": 3273,
+  "md5": "a04efbd09e7e23ca9820e51c26df42f8"
+ },
+ {
+  "file": "assets/besjaar-ui-shower-trust-education.css",
+  "before": 9903,
+  "after": 3064,
+  "md5": "d982216fb8e00651e81a23b53c7b399a"
+ }
+]
