@@ -1,0 +1,18 @@
+--- a/snippets/besjaar-welcome-offer.liquid
++++ b/snippets/besjaar-welcome-offer.liquid
+@@ -58,10 +58,12 @@
+     assign bjw_allowed = false
+   endif
+ 
++  comment
++    2026-10-14: the offer never opens by itself any more (it opened after 15
++    seconds on the home and collection pages). The corner chip ("Save 20%")
++    stays and opens it on click.
++  endcomment
+   assign bjw_auto = false
+-  if request.page_type == 'index' or request.page_type == 'collection' or request.page_type == 'list-collections'
+-    assign bjw_auto = true
+-  endif
+ 
+   assign bjw_lang = request.locale.iso_code | split: '-' | first | downcase
+   case bjw_lang

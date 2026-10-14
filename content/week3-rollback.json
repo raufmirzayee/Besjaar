@@ -7,7 +7,7 @@
   },
   "douchekop_met_filter_created": {
     "collection": "gid://shopify/Collection/690102993223 (handle douchekop-met-filter, manual sort, 2 filter heads)",
-    "state": "created with NL copy + en/de/fr/es translations; NOT yet published to any sales channel",
+    "state": "PUBLISHED 14 Oct 2026 on all 6 sales channels after the patched theme went live; the 5 temporary redirects are gone",
     "why_unpublished": "the live theme picks 'the first collection with filter in its handle/title' as the refill collection in 7 places (footer, mobile header, homepage button, /collections/all hub, page FAQ, product FAQ, related products); handle order would put douchekop-met-filter before shower-filter. The theme copy is patched to skip it (theme-patches/week3-copy/).",
     "go_live": "publish theme copy 202511286599 first, then publish the collection to Online Store (publication 200371110215) and the other channels",
     "undo": "collectionDelete(input:{id}) - nothing else references it"
@@ -95,5 +95,10 @@
     "filter_tag": "tag 'Filter' removed from gid://shopify/Product/10997944648007 (undo: tagsAdd)",
     "pdp_headings": "h3 -> h2 in body_html of all 5 products, 5 languages; previous bodies in content/pdp-body.previous.json",
     "theme_copy": "seo-head.liquid, besjaar-store-product.liquid, besjaar-store-footer.liquid in theme 202511286599; diff in theme-patches/week4-copy/changes.diff"
+  },
+  "no_auto_popup": {
+    "theme": "gid://shopify/OnlineStoreTheme/202542612807 'Besjaar – geen auto-popup 14 okt' (duplicate of the live theme 202511286599)",
+    "change": "snippets/besjaar-welcome-offer.liquid: bjw_auto always false; the 'Save 20%' chip stays",
+    "undo": "publish 202511286599 again"
   }
 }
