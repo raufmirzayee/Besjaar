@@ -1,0 +1,67 @@
+{%- comment -%}
+  Shared SEO head. layout/theme.liquid (and the GemPages layouts) render this
+  inside <head>; it outputs <title>, the meta description, the robots and
+  Open Graph tags (meta-tags.liquid) and the JSON-LD graph, including the
+  Organization node (structured-data.liquid). The canonical tag is in the
+  layouts.
+
+  2026-10-05: <title> and the meta description come straight from Shopify's
+  page_title and page_description, i.e. the "Search engine listing" fields in
+  the admin (Online Store > Preferences for the home page) and their Translate
+  & Adapt translations. The hardcoded per-page and per-language titles and
+  descriptions, and the theme-settings homepage override that replaced them,
+  were removed, so the admin is the one place a title or description is set.
+  page_title (which carries the search terms on /search) and the tag names
+  (taken from the URL) are escaped; escape_once leaves an already-escaped
+  value alone.
+{%- endcomment -%}
+{%- liquid
+  comment
+    2026-10-14: the tag and page-number suffixes in <title> follow the page
+    language (they were hardcoded in English on all 5 locales).
+  endcomment
+  assign seo_head_lang = request.locale.iso_code | split: '-' | first | downcase
+  case seo_head_lang
+    when 'en'
+      assign seo_head_tagged = 'tagged'
+      assign seo_head_page = 'Page'
+    when 'de'
+      assign seo_head_tagged = 'Tag'
+      assign seo_head_page = 'Seite'
+    when 'fr'
+      assign seo_head_tagged = 'tag'
+      assign seo_head_page = 'Page'
+    when 'es'
+      assign seo_head_tagged = 'etiqueta'
+      assign seo_head_page = 'Página'
+    else
+      assign seo_head_tagged = 'tag'
+      assign seo_head_page = 'Pagina'
+  endcase
+-%}
+<title>{{ page_title | escape_once }}{% if current_tags %} &ndash; {{ seo_head_tagged }} "{{ current_tags | join: ', ' | escape_once }}"{% endif %}{% if current_page != 1 %} &ndash; {{ seo_head_page }} {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+<meta name="description" content="{{ page_description | escape }}">
+<meta name="application-name" content="Besjaar">
+{%- liquid
+  comment
+    Plain-text title for og:title, twitter:title and the WebPage JSON-LD name,
+    which escape on output: the same page_title + shop.name rule as <title>,
+    without the tag and page-number suffixes.
+  endcomment
+  assign besjaar_ui_browser_title = page_title
+  unless page_title contains shop.name
+    assign besjaar_ui_browser_title = page_title | append: ' – ' | append: shop.name
+  endunless
+-%}
+{% render 'meta-tags', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: page_description %}
+{% render 'structured-data', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: page_description %}
+{%- if request.page_type == 'product' -%}
+  <script>
+    /* The theme owns Product JSON-LD (snippets/structured-data.liquid): Shopify's
+       serializer plus one aggregateRating from the reviews metafields. This guard
+       keeps Judge.me from adding a second Product/AggregateRating node even if its
+       "Google rich snippets" app setting is ever switched back on. */
+    window.judgemeOpts = window.judgemeOpts || {};
+    window.judgemeOpts.jldDisable = true;
+  </script>
+{%- endif -%}

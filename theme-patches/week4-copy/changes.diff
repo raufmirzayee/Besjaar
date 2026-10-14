@@ -1,0 +1,147 @@
+--- a/snippets/seo-head.liquid
++++ b/snippets/seo-head.liquid
+@@ -15,7 +15,31 @@
+   (taken from the URL) are escaped; escape_once leaves an already-escaped
+   value alone.
+ {%- endcomment -%}
+-<title>{{ page_title | escape_once }}{% if current_tags %} &ndash; tagged "{{ current_tags | join: ', ' | escape_once }}"{% endif %}{% if current_page != 1 %} &ndash; Page {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
++{%- liquid
++  comment
++    2026-10-14: the tag and page-number suffixes in <title> follow the page
++    language (they were hardcoded in English on all 5 locales).
++  endcomment
++  assign seo_head_lang = request.locale.iso_code | split: '-' | first | downcase
++  case seo_head_lang
++    when 'en'
++      assign seo_head_tagged = 'tagged'
++      assign seo_head_page = 'Page'
++    when 'de'
++      assign seo_head_tagged = 'Tag'
++      assign seo_head_page = 'Seite'
++    when 'fr'
++      assign seo_head_tagged = 'tag'
++      assign seo_head_page = 'Page'
++    when 'es'
++      assign seo_head_tagged = 'etiqueta'
++      assign seo_head_page = 'Página'
++    else
++      assign seo_head_tagged = 'tag'
++      assign seo_head_page = 'Pagina'
++  endcase
++-%}
++<title>{{ page_title | escape_once }}{% if current_tags %} &ndash; {{ seo_head_tagged }} "{{ current_tags | join: ', ' | escape_once }}"{% endif %}{% if current_page != 1 %} &ndash; {{ seo_head_page }} {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+ <meta name="description" content="{{ page_description | escape }}">
+ <meta name="application-name" content="Besjaar">
+ {%- liquid
+--- a/sections/besjaar-store-product.liquid
++++ b/sections/besjaar-store-product.liquid
+@@ -30,6 +30,7 @@
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge--dark{background:#1C2326}
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge--green{background:#1F5F52}
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price__vat{color:#8A9194;font-size:.68rem}
++  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price__vat a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0 0;padding:0;list-style:none;max-width:580px}
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{display:flex;align-items:center;gap:11px;min-height:64px;margin:0;padding:10px 14px;border-radius:12px;background:#F5F2EC}
+   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;color:#2B3437}
+@@ -675,7 +676,39 @@
+           </div>
+           {%- if bj_badge_dark != '' -%}<span class="bj-pd-badge bj-pd-badge--dark">{{ bj_badge_dark }}</span>{%- endif -%}
+           {%- if bj_badge_green != '' -%}<span class="bj-pd-badge bj-pd-badge--green">{{ bj_badge_green }}</span>{%- endif -%}
+-          <small class="bj-pd-price__vat">{{ ui_incl_vat }}</small>
++          {%- liquid
++            comment
++              2026-10-14: VAT and delivery cost next to the price, linked to the
++              shipping policy (price-indication rules, e.g. "inkl. MwSt., zzgl.
++              Versandkosten" in DE). A zone whose rate is 0 says free shipping.
++            endcomment
++            capture bj_vat_ship_free
++              render 'besjaar-shipping-zone', field: 'free_always'
++            endcapture
++            assign bj_vat_ship_free = bj_vat_ship_free | strip
++            case locale
++              when 'de'
++                assign bj_vat_ship_free_text = 'versandkostenfrei'
++                assign bj_vat_ship_paid_text = 'zzgl. Versandkosten'
++              when 'fr'
++                assign bj_vat_ship_free_text = 'livraison gratuite'
++                assign bj_vat_ship_paid_text = 'hors frais de livraison'
++              when 'es'
++                assign bj_vat_ship_free_text = 'envío gratis'
++                assign bj_vat_ship_paid_text = 'gastos de envío aparte'
++              when 'en'
++                assign bj_vat_ship_free_text = 'free shipping'
++                assign bj_vat_ship_paid_text = 'plus shipping'
++              else
++                assign bj_vat_ship_free_text = 'gratis verzending'
++                assign bj_vat_ship_paid_text = 'excl. verzendkosten'
++            endcase
++            assign bj_vat_ship_text = bj_vat_ship_paid_text
++            if bj_vat_ship_free == 'true'
++              assign bj_vat_ship_text = bj_vat_ship_free_text
++            endif
++          -%}
++          <small class="bj-pd-price__vat">{{ ui_incl_vat }}, <a href="{% render 'localized-internal-url', url: '/policies/shipping-policy' %}">{{ bj_vat_ship_text }}</a></small>
+           <span class="besjaar-store-premium-pd__compare" id="BesjaarCompare-{{ section.id }}" hidden><span class="besjaar-ui-visually-hidden">{{ 'besjaar_ui.product.regular_price' | t }} </span><s data-compare-value>{{ current_variant.compare_at_price | money }}</s></span>
+         </div>
+         {{ bjd_note }}
+--- a/sections/besjaar-store-footer.liquid
++++ b/sections/besjaar-store-footer.liquid
+@@ -323,7 +323,7 @@
+     .bj-foot__wrap{padding-left:32px;padding-right:32px}
+   }
+   @media (min-width:990px){
+-    .bj-foot__top{grid-template-columns:repeat(5,minmax(0,1fr))}
++    .bj-foot__top{grid-template-columns:repeat(6,minmax(0,1fr))}
+     .bj-foot__brand{grid-column:span 2}
+     .bj-foot__bottom{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}
+   }
+@@ -357,12 +357,49 @@
+         <li><a href="{{ footer_shop_url }}">{{ 'besjaar_ui.footer.all_products' | t }}</a></li>
+         {%- if footer_filter_collection != blank -%}{%- capture footer_filter_title -%}{% render 'localized-collection-title', collection: footer_filter_collection %}{%- endcapture -%}{%- endif -%}
+         <li><a href="{{ footer_filter_url }}">{% if footer_filter_collection != blank %}{{ footer_filter_title | strip | replace: '&amp;', '&' | escape_once }}{% else %}{{ 'besjaar_ui.shower_collection.family_filter' | t }}{% endif %}</a></li>
++        {%- comment -%}2026-10-14: the shower heads with a built-in filter, shown once that collection is published.{%- endcomment -%}
++        {%- assign footer_filter_heads = collections['douchekop-met-filter'] -%}
++        {%- if footer_filter_heads != blank and footer_filter_heads.products_count > 0 -%}{%- capture footer_filter_heads_title -%}{% render 'localized-collection-title', collection: footer_filter_heads %}{%- endcapture -%}<li><a href="{% render 'localized-internal-url', url: footer_filter_heads.url %}">{{ footer_filter_heads_title | strip | replace: '&amp;', '&' | escape_once }}</a></li>{%- endif -%}
+         <li><a href="{{ footer_b2b_url }}">{{ footer_b2b_label | escape }}</a></li>
+         {%- if settings.enable_besjaar_club and settings.club_page != blank -%}<li><a href="{% render 'localized-internal-url', url: settings.club_page.url %}"{% if request.page_type == 'page' and page.handle == settings.club_page.handle %} aria-current="page"{% endif %}>{{ settings.club_name | default: 'Besjaar Club' | escape }}</a></li>{%- endif -%}
+         <li><a href="{{ footer_about_url }}">{% render 'localized-page-title', page: footer_about_page, handle: 'about-us' %}</a></li>
+       </ul>
+     </details>
+ 
++    {%- liquid
++      comment
++        2026-10-14: a Gids column with five evergreen guides. Short labels per
++        language; each URL comes from the article itself, so translated
++        handles are used.
++      endcomment
++      case footer_lang
++        when 'en'
++          assign ft_gids_labels = 'Shower filter: worth it?|Removing limescale from your shower head|Replacing a shower head|Water hardness by province|Water-saving shower heads'
++        when 'de'
++          assign ft_gids_labels = 'Duschfilter: sinnvoll?|Kalk am Duschkopf entfernen|Duschkopf wechseln|Wasserhärte nach Provinz|Wassersparende Duschköpfe'
++        when 'fr'
++          assign ft_gids_labels = 'Filtre de douche : utile ?|Détartrer son pommeau|Changer de pommeau|Dureté de l’eau par province|Pommeaux économiques'
++        when 'es'
++          assign ft_gids_labels = 'Filtro de ducha: ¿merece la pena?|Quitar la cal de la alcachofa|Cambiar la alcachofa|Dureza del agua por provincia|Alcachofas ahorradoras'
++        else
++          assign ft_gids_labels = 'Douchefilter: zin of onzin?|Kalk op je douchekop verwijderen|Douchekop vervangen|Waterhardheid per provincie|Waterbesparende douchekoppen'
++      endcase
++      assign ft_gids_labels = ft_gids_labels | split: '|'
++      assign ft_gids_handles = 'douchefilter-zin-of-onzin|kalkaanslag-douchekop-verwijderen|douchekop-vervangen-in-5-minuten|waterhardheid-per-provincie|waterbesparende-douchekop-hoeveel-bespaar-je' | split: '|'
++    -%}
++    {%- if footer_guide_blog != blank and footer_guide_blog.articles_count > 0 -%}
++    <details class="bj-foot__col" open data-bj-foot-col>
++      <summary><span class="bj-foot__heading" role="heading" aria-level="2">{{ ft_guides }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
++      <ul class="bj-foot__links" role="list">
++        {%- for ft_gids_handle in ft_gids_handles -%}
++          {%- assign ft_gids_key = 'gids/' | append: ft_gids_handle -%}
++          {%- assign ft_gids_article = articles[ft_gids_key] -%}
++          {%- if ft_gids_article.url -%}<li><a href="{% render 'localized-internal-url', url: ft_gids_article.url %}"{% if request.page_type == 'article' and article.id == ft_gids_article.id %} aria-current="page"{% endif %}>{{ ft_gids_labels[forloop.index0] | escape }}</a></li>{%- endif -%}
++        {%- endfor -%}
++      </ul>
++    </details>
++    {%- endif -%}
++
+     <details class="bj-foot__col" open data-bj-foot-col>
+       <summary><span class="bj-foot__heading" role="heading" aria-level="2">{{ ft_help }}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+       <ul class="bj-foot__links" role="list">

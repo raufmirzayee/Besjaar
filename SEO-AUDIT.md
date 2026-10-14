@@ -263,7 +263,7 @@ Home (/)
    - Every Gids article: 1 link to the relevant **collection** (exact or partial anchor, e.g. "douchekoppen met filter") and 1 to the most relevant PDP. Today most links go PDP-only or brand-only.
    - Filter PDPs ↔ refill PDP (already present in the copy; also add it as an "accessory" block).
    - Non-filter PDPs → "Liever gefilterd water? → Douchekop met filter" (the 3-standen head already does this; replicate it on the slang variant).
-5. **Footer:** add a "Shop" column (Douchekoppen, Douchekop met filter, Douchefilters) and a "Gids" column (the top 5 evergreen guides). The current footer menu only links policies.
+5. ✅ **Done in the theme copy, 14 Oct 2026:** the Shop column gets "Douchekop met filter" once that collection is published, and there is a new Gids column with 5 evergreen guides. **Footer:** add a "Shop" column (Douchekoppen, Douchekop met filter, Douchefilters) and a "Gids" column (the top 5 evergreen guides). The current footer menu only links policies.
 6. **Breadcrumbs:** visible and in schema on PDP, collection, article and page. Already implemented; keep the collection crumb pointing at the most specific collection once `douchekop-met-filter` exists (update `seo-product-collection.liquid` priority).
 
 **When you add LED tools or personal care later,** give each category its own top-level collection hub with 2–4 intent-based child collections, and its own Gids topic cluster. Don't put them under a generic "Lifestyle" collection. Use mega-menu columns per category and never link `/collections/all` from navigation.
@@ -670,9 +670,9 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 | 2 | ✅ **Done on a theme copy, 13 Oct 2026** (`Besjaar – speed fix 13 okt (copy)`, unpublished): rules for 566 retired classes + 1,853 never-winning declarations removed from 24 stylesheets; every page loads ~40% less CSS (homepage 876 → ~530 KB, 125 → ~76 KB gzipped). **Preview and publish it yourself** (checklist in `theme-patches/speed-fix/README.md`) | Render-blocking CSS ≤ 400 KB (reached ~520–545 KB; see phase 2) |
 | 3 | CSS phase 2: per-template bundles + inline critical CSS + async rest. Needs rendered pages (browser Coverage) to do safely; ~26% of the remaining CSS is page-specific | ≤ 120 KB/template; PSI mobile LCP < 2.5 s (lab) |
 | 4 | ~~Cut the font weights~~ **Not needed:** browsers only download weights a page actually uses, so unused `@font-face` declarations cost nothing | — |
-| 5 | PDP: add the GPSR block, "incl. btw" label and shipping line in the buy box | — |
-| 6 | PDP: restructure `body_html` → H2 sections (§4.4); keep the specs in metafields | No H3 without a parent H2 |
-| 7 | `seo-head.liquid`: localize the "Page N" title suffix | — |
+| 5 | ⚠️ **Partly done in the theme copy, 14 Oct 2026.** The buy box already had "incl. btw" and the ship-date/free-shipping line. The VAT label now reads "incl. btw, gratis verzending" (NL) or "inkl. MwSt., zzgl. Versandkosten" (DE) etc., linked to the shipping policy. **GPSR block still open:** needs the manufacturer / EU responsible person's name and address | — |
+| 6 | ✅ **Done 14 Oct 2026 (headings).** The 3 orphan H3s in every product description ("Wat je merkt", "In de doos", "Specificaties") are now H2s in all 5 languages. They look the same because their inline styles fix the size. The specs and box contents stay in the description: the theme shows the text metafields on /nl only, so moving them out would remove them from EN/DE/FR/ES | No H3 without a parent H2 |
+| 7 | ✅ **Done in the theme copy, 14 Oct 2026:** Pagina / Page / Seite / Page / Página, and the tag suffix likewise | — |
 | 8 | Request indexing for the home page, 2 collections and 5 PDPs (nl + de) | — |
 
 ### Week 3 — Content & metadata
