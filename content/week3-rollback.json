@@ -89,5 +89,11 @@
     "page": "gid://shopify/Page/129777795399 (about-us)",
     "change": "mission 'minder kalk' -> nozzles easy to keep limescale-free; 'water hard in large parts of NL' -> soft on average, harder in Groningen/Zeeland/Limburg; filter claim -> particles + free chlorine, does not soften; 'good for skin and hair' removed; meta description 'zachter voor huid en haar' removed. nl/en/de/fr/es.",
     "previous": "content/about-us.previous.json"
+  },
+  "week4_items": {
+    "date": "14 Oct 2026",
+    "filter_tag": "tag 'Filter' removed from gid://shopify/Product/10997944648007 (undo: tagsAdd)",
+    "pdp_headings": "h3 -> h2 in body_html of all 5 products, 5 languages; previous bodies in content/pdp-body.previous.json",
+    "theme_copy": "seo-head.liquid, besjaar-store-product.liquid, besjaar-store-footer.liquid in theme 202511286599; diff in theme-patches/week4-copy/changes.diff"
   }
 }
