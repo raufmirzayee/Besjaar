@@ -653,13 +653,13 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 | # | Task | Where | Owner | Done when |
 |---|---|---|---|---|
 | 1 | ✅ **Done 13 Oct 2026.** `slimhome.nl` + `www.slimhome.nl` set to Redirecting (by owner); the `www.slimhome.nl` web presence deleted (rollback: `content/slimhome-webpresence.previous.json`). `bestezaklampen.nl` is no longer connected to the store | Settings → Domains / Markets | Admin | `curl -I` on any slimhome URL → 301 to besjaar.eu |
-| 2 | Create the "EU" market (BE/DE/FR/ES, EUR); deactivate or trim Worldwide | Settings → Markets | Admin | URL Inspection shows `priceCurrency: EUR` |
-| 3 | Delete/unpublish `/pages/faq`, `/pages/inloggen`, `/pages/privacy-policy`, `/pages/refund-policy`, `/pages/shipping-policy`, `/pages/terms-of-services` | Online Store → Pages | Admin | Each URL 301s to its target |
-| 4 | Main menu: "Assortiment" → `/collections/showerhead`; replace "Alle producten" | Navigation | Admin | No nav link to `/collections/all` |
-| 5 | Judge.me carousel `show_sample_reviews: false`; translate the carousel header | Customize → product template | Admin | — |
-| 6 | Apply `theme-patches/snippets/structured-data.liquid` on a duplicate theme, validate, publish | Edit code | Dev | Rich Results Test: Product + Merchant listing valid, 0 warnings on return policy |
-| 7 | Theme settings: zone-2 transit 1–3; `company_legal_name` = Univex B.V.; resolve the bol.com brand URL | Theme settings | Admin | — |
-| 8 | Reconcile NAP: one address, one phone across all policies + schema | Policies | Admin | — |
+| 2 | ✅ **Done 14 Oct 2026.** EU market (BE/DE/FR/ES, EUR) created; Worldwide set to draft | Settings → Markets | Admin | URL Inspection shows `priceCurrency: EUR` |
+| 3 | ✅ **Done 14 Oct 2026.** The 6 pages are unpublished (not deleted), so their existing redirects now apply | Online Store → Pages | Admin | Each URL 301s to its target |
+| 4 | ✅ **No change needed:** the theme does not render `main-menu`; its header Shop link already goes to `/collections/showerhead` | Navigation | Admin | No nav link to `/collections/all` |
+| 5 | ✅ **Done in the theme copy, 14 Oct 2026:** sample reviews off, heading "Wat klanten zeggen" + EN/DE/FR/ES on product and home. Goes live when the copy is published | Customize → product template | Admin | — |
+| 6 | ✅ **Uploaded to the theme copy, 14 Oct 2026.** Validate with the Rich Results Test on the preview, then publish | Edit code | Dev | Rich Results Test: Product + Merchant listing valid, 0 warnings on return policy |
+| 7 | ✅ **Done in the theme copy, 14 Oct 2026:** zone-2 transit 1–3; bol.com → `…/603580876/` (setting + homepage block); legal name already defaulted to Univex B.V. | Theme settings | Admin | — |
+| 8 | ⚠️ **Partly open:** the phone in the privacy policy must be changed by hand (no API permission for policies); the address was left as is (no preference given) | Policies | Admin | — |
 | 9 | Baseline: PSI for 4 templates, GSC export (queries/pages, 3 months), Merchant Center diagnostics | — | SEO | Baseline sheet saved |
 
 ### Week 2 — On-page & schema markup

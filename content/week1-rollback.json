@@ -1,0 +1,49 @@
+{
+  "note": "Week 1 changes made 13-14 Oct 2026. Each entry: what was changed and how to undo it.",
+  "pages_unpublished": {
+    "undo": "pageUpdate(id, page: {isPublished: true}) for each, or Online Store > Pages > Visibility: Visible",
+    "pages": {
+      "gid://shopify/Page/129777500487": "privacy-policy (redirects to /policies/privacy-policy)",
+      "gid://shopify/Page/129777533255": "refund-policy (redirects to /policies/refund-policy)",
+      "gid://shopify/Page/129777598791": "shipping-policy (redirects to /policies/shipping-policy)",
+      "gid://shopify/Page/129777631559": "terms-of-services (redirects to /policies/terms-of-service)",
+      "gid://shopify/Page/163292545351": "inloggen (redirects to /account/login)",
+      "gid://shopify/Page/166620004679": "faq, empty (redirects to /pages/faqs)"
+    }
+  },
+  "markets": {
+    "undo": "Set Worldwide (gid://shopify/Market/74800365895) back to ACTIVE with marketUpdate(status: ACTIVE); delete or draft the EU market created on 14 Oct 2026.",
+    "worldwide_before": {
+      "id": "gid://shopify/Market/74800365895",
+      "status": "ACTIVE",
+      "baseCurrency": "USD",
+      "localCurrencies": true,
+      "roundingEnabled": true,
+      "catalogs": [],
+      "regions": "~240 countries incl. BE, DE, FR, ES"
+    },
+    "netherlands": {
+      "id": "gid://shopify/Market/74800136519",
+      "unchanged": true
+    },
+    "done": "EU market gid://shopify/Market/108401262919 (BE, DE, FR, ES; EUR, no conversion) created ACTIVE; Worldwide set to DRAFT. Netherlands unchanged."
+  },
+  "not_done": {
+    "privacy_policy_phone": "No write_legal_policies permission: change +31 6 44341881 to +31 6 87616931 in Settings > Policies > Privacy policy (Contact section).",
+    "address": "Two addresses remain (Dr. A.F. Philipsweg 39 A vs Elbestraat 113): owner had no preference."
+  },
+  "theme_copy": {
+    "theme": "gid://shopify/OnlineStoreTheme/202511286599 (Besjaar – speed fix 13 okt (copy), unpublished)",
+    "files": {
+      "snippets/structured-data.liquid": "schema patch (primary-domain URLs, return policy for NL/BE/DE/FR/ES, returnFees)",
+      "templates/product.json": "Judge.me carousel show_sample_reviews false; header 'Customers are saying' -> 'Wat klanten zeggen' (+ en/de/fr/es translations)",
+      "templates/index.json": "bol.com source_url 604080876 -> 603580876 (+ carousel header translations)",
+      "config/settings_data.json": "ship_zone2_transit_min 1, ship_zone2_transit_max 3; bol_brand_url -> .../603580876/"
+    },
+    "undo": "Do not publish the copy, or re-upload the live theme's versions of these files (theme-patches/week1-copy has the new ones)."
+  },
+  "no_change_needed": {
+    "main_menu": "The theme does not render main-menu; the header Shop link already uses the shower_collection setting (/collections/showerhead).",
+    "company_legal_name": "Unset, so the schema default 'Univex B.V.' already applies."
+  }
+}
