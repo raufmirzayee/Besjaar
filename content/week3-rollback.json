@@ -67,5 +67,22 @@
     "safety_redirects": "20: /<lang>/products/<nl-handle> -> /<lang>/products/<translated-handle> (fire only if Shopify 404s the old path)",
     "undo": "translationsRemove(resourceId, translationKeys:[\"handle\"], locales:[en,de,fr,es]) per product, then delete the 20 safety redirects and point the 20 clone redirects back at /<lang>/products/<nl-handle>",
     "collections_not_translated": "theme identifies the refill collection by 'filter' in its handle (7 places); fr/es translations would not contain it"
+  },
+  "gids_limescale_claims": {
+    "date": "14 Oct 2026",
+    "articles": [
+      "kalkaanslag-douchekop-verwijderen",
+      "waterhardheid-per-provincie",
+      "hard-water-haar",
+      "kalk-water-droge-huid",
+      "douchekop-ontkalken-azijn-of-citroenzuur",
+      "kalkvlekken-douchewand-voorkomen",
+      "wat-is-besjaar",
+      "besjaar-assortiment-welke-douchekop",
+      "besjaar-douchekop-veelgestelde-vragen"
+    ],
+    "change": "'filter catches part of the limescale' -> 'holds back loose particles and breaks down free chlorine; dissolved limescale passes straight through' (nl/en/de/fr/es). kalkaanslag: remedy is silicone nozzles + water softener. kalkvlekken: H2 'Minder kalk vanaf de bron' -> 'Helpt een douchekop met filter?'",
+    "previous": "content/gids-claims.previous.json",
+    "not_changed": "5 unpublished clone posts (still contain the old claim; they redirect and are not visible); About us page (brand copy, left for owner)"
   }
 }

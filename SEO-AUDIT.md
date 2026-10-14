@@ -688,6 +688,7 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 | 7 | ✅ **Products done 14 Oct 2026** (`content/product-handles.json`), with 20 safety redirects from the old `/<lang>/products/<nl-handle>` URLs. **Collections deliberately not translated:** the theme finds the refill collection by "filter" in its handle, and FR *filtres* / ES *filtros* would break the footer link, FAQ refill link, related products and breadcrumbs | `/de/products/besjaar-hochdruck-duschkopf-mit-filter-…` resolves; old URL redirects |
 | 8 | Optional, on a duplicate theme: rename collection handles → `douchekoppen` / `douchefilters` (update the `club_member_collection` setting first) | Club price still applies to filters |
 | 9 | Author box + sources on the Gids articles | — |
+| 10 | ✅ **Done 14 Oct 2026.** Limescale claims removed from 9 articles in 5 languages. Before: "a filter catches part of the limescale". Now: it holds back loose particles and breaks down free chlorine; dissolved limescale passes straight through. Still open: the About us page says the filter catches "kalk" and that Dutch water is mostly hard (owner decision) | No claim contradicts the PDPs |
 
 ### Week 4 — Off-page & EU link building
 
