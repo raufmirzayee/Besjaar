@@ -679,7 +679,7 @@ H2  Productveiligheid & fabrikant (GPSR)                     (Univex B.V., addre
 
 | # | Task | Done when |
 |---|---|---|
-| 1 | ✅ **Done 13 Oct 2026.** Rewrote both collection descriptions + meta descriptions in nl/de/fr/es/en (claim-safe, §4.3); see `content/collection-descriptions.md` | No "kalk verwijderen/zachter water" claims anywhere (search Translate & Adapt) |
+| 1 | ✅ **Done 13–14 Oct 2026.** Homepage hero + filter/nozzle cards fixed in the theme copy (NL; other languages were already accurate). Rewrote both collection descriptions + meta descriptions in nl/de/fr/es/en (claim-safe, §4.3); see `content/collection-descriptions.md` | No "kalk verwijderen/zachter water" claims anywhere (search Translate & Adapt) |
 | 2 | ✅ **5 PDPs done 13 Oct 2026** (5 languages; see `content/product-meta.md`). Homepage: title live in all 5 languages and EN/DE/FR/ES descriptions live, 13 Oct 2026; NL description kept as is by decision | — |
 | 3 | Create the `douchekop-met-filter` smart collection + 300 words of copy + a menu link | Indexed in GSC |
 | 4 | Remove the refill set from Douchekoppen | — |

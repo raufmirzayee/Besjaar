@@ -22,7 +22,7 @@
         "secondary_label": "Why Besjaar",
         "heading_nl": "Een betere douche met Besjaar.",
         "heading_accent_nl": "Elke dag.",
-        "text_nl": "Douchekoppen met een krachtige straal en minder waterverbruik, 3 of 10 sproeistanden en optioneel een ingebouwd filter tegen kalk en chloor. Voor 16:00 besteld, morgen in huis.",
+        "text_nl": "Douchekoppen met een krachtige straal en minder waterverbruik, 3 of 10 sproeistanden en optioneel een ingebouwd filter tegen deeltjes en vrij chloor. Voor 16:00 besteld, morgen in huis.",
         "primary_label_nl": "Bekijk alle douchekoppen",
         "show_fallback_proof": false
       }
@@ -88,7 +88,7 @@
             "asset_image": "besjaar-web-real-nozzles.webp",
             "kicker": "ONDERHOUD",
             "title": "Kalk veeg je zo weg",
-            "text": "Flexibele siliconen sproeiers waar kalk niet aan hecht. Eén veeg met je duim en de straal is weer strak, ook met hard Nederlands leidingwater."
+            "text": "Flexibele siliconen sproeiers: kalkaanslag veeg je er met één duimbeweging af en de straal is weer strak, ook met hard Nederlands leidingwater."
           }
         },
         "f2": {
@@ -106,7 +106,7 @@
             "asset_image": "besjaar-web-real-water.webp",
             "kicker": "FILTER",
             "title": "8-traps filter in de greep",
-            "text": "Bij de filtermodellen zit een 8-traps filter in de handgreep dat kalk, chloor en onzuiverheden afvangt: zachter water voor huid en haar. Navulset elke 3 tot 5 maanden."
+            "text": "Bij de filtermodellen zit een 8-traps filter in de handgreep dat deeltjes tegenhoudt en vrij chloor afbreekt. Water ontharden of opgeloste kalk verwijderen doet het niet. Nieuw filter elke 3 tot 5 maanden."
           }
         }
       },

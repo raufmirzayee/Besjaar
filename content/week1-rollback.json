@@ -37,7 +37,7 @@
     "files": {
       "snippets/structured-data.liquid": "schema patch (primary-domain URLs, return policy for NL/BE/DE/FR/ES, returnFees)",
       "templates/product.json": "Judge.me carousel show_sample_reviews false; header 'Customers are saying' -> 'Wat klanten zeggen' (+ en/de/fr/es translations)",
-      "templates/index.json": "bol.com source_url 604080876 -> 603580876 (+ carousel header translations)",
+      "templates/index.json": "bol.com source_url 604080876 -> 603580876 (+ carousel header translations); homepage claim fixes (NL section settings): hero text 'filter tegen kalk en chloor' -> 'filter tegen deeltjes en vrij chloor'; filter card: removed 'kalk ... afvangt: zachter water voor huid en haar', added that it does not soften water or remove dissolved limescale; nozzle card: 'waar kalk niet aan hecht' -> 'kalkaanslag veeg je er met één duimbeweging af'",
       "config/settings_data.json": "ship_zone2_transit_min 1, ship_zone2_transit_max 3; bol_brand_url -> .../603580876/"
     },
     "undo": "Do not publish the copy, or re-upload the live theme's versions of these files (theme-patches/week1-copy has the new ones)."
