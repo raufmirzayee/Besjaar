@@ -1,0 +1,95 @@
+--- a/sections/besjaar-shower-collection.liquid
++++ b/sections/besjaar-shower-collection.liquid
+@@ -43,7 +43,7 @@
+ 
+         {% comment %}Pass 1 — Shower Heads first.{% endcomment %}
+         {% for shop_collection in collections %}
+-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
++          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
+           {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
+           {% assign is_filter_collection = false %}
+           {% if shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% assign is_filter_collection = true %}{% endif %}
+@@ -87,7 +87,7 @@
+ 
+         {% comment %}Pass 2 — Shower Filters second.{% endcomment %}
+         {% for shop_collection in collections %}
+-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
++          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
+           {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
+           {% unless shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% continue %}{% endunless %}
+           {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
+@@ -124,7 +124,7 @@
+ 
+         {% comment %}Pass 3 — any remaining active Besjaar collection comes after the two primary ranges.{% endcomment %}
+         {% for shop_collection in collections %}
+-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 %}{% continue %}{% endif %}
++          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
+           {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
+           {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
+           {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
+--- a/sections/site-header.liquid
++++ b/sections/site-header.liquid
+@@ -74,7 +74,7 @@
+   assign besjaar_ui_mobile_filter_collection = blank
+   for besjaar_ui_mobile_collection_candidate in collections
+     assign besjaar_ui_mobile_collection_identity = besjaar_ui_mobile_collection_candidate.title | append: ' ' | append: besjaar_ui_mobile_collection_candidate.handle | downcase
+-    if besjaar_ui_mobile_collection_candidate.products_count > 0 and besjaar_ui_mobile_collection_identity contains 'filter'
++    if besjaar_ui_mobile_collection_candidate.products_count > 0 and besjaar_ui_mobile_collection_identity contains 'filter' and besjaar_ui_mobile_collection_candidate.handle != 'douchekop-met-filter'
+       assign besjaar_ui_mobile_filter_collection = besjaar_ui_mobile_collection_candidate
+       break
+     endif
+--- a/sections/besjaar-features-1170.liquid
++++ b/sections/besjaar-features-1170.liquid
+@@ -17,7 +17,7 @@
+     assign bj_filter_collection = blank
+     for bj_c in collections
+       assign bj_ident = bj_c.title | append: ' ' | append: bj_c.handle | downcase
+-      if bj_ident contains 'filter'
++      if bj_ident contains 'filter' and bj_c.handle != 'douchekop-met-filter'
+         assign bj_filter_collection = bj_c
+         break
+       endif
+--- a/sections/besjaar-store-footer.liquid
++++ b/sections/besjaar-store-footer.liquid
+@@ -8,7 +8,7 @@
+   assign footer_filter_collection = blank
+   for footer_candidate_collection in collections
+     assign footer_collection_identity = footer_candidate_collection.title | append: ' ' | append: footer_candidate_collection.handle | downcase
+-    if footer_collection_identity contains 'filter' or footer_collection_identity contains 'douchefilter'
++    if footer_collection_identity contains 'filter' and footer_candidate_collection.handle != 'douchekop-met-filter'
+       assign footer_filter_collection = footer_candidate_collection
+       break
+     endif
+--- a/sections/main-page.liquid
++++ b/sections/main-page.liquid
+@@ -178,7 +178,7 @@
+         {%- liquid
+           assign faq_filter_product = blank
+           for faq_candidate_collection in collections
+-            if faq_candidate_collection.handle contains 'filter' and faq_candidate_collection.products_count > 0
++            if faq_candidate_collection.handle contains 'filter' and faq_candidate_collection.handle != 'douchekop-met-filter' and faq_candidate_collection.products_count > 0
+               for faq_candidate_product in faq_candidate_collection.products limit: 12
+                 capture faq_candidate_is_head
+                   render 'is-shower-head', product: faq_candidate_product
+--- a/snippets/besjaar-product-related.liquid
++++ b/snippets/besjaar-product-related.liquid
+@@ -91,7 +91,7 @@
+     assign bpr_filter_collection_found = false
+     for bpr_collection in collections
+       assign bpr_collection_handle = bpr_collection.handle | downcase
+-      if bpr_collection_handle contains 'filter'
++      if bpr_collection_handle contains 'filter' and bpr_collection_handle != 'douchekop-met-filter'
+         assign bpr_filter_collection = bpr_collection
+         assign bpr_filter_collection_found = true
+         break
+--- a/snippets/besjaar-product-faq.liquid
++++ b/snippets/besjaar-product-faq.liquid
+@@ -313,7 +313,7 @@
+     assign bpf_refill_found = false
+     for bpf_collection in collections
+       assign bpf_collection_handle = bpf_collection.handle | downcase
+-      if bpf_collection_handle contains 'filter'
++      if bpf_collection_handle contains 'filter' and bpf_collection_handle != 'douchekop-met-filter'
+         for bpf_candidate in bpf_collection.products limit: 12
+           if bpf_candidate.id == bpf_product.id
+             continue

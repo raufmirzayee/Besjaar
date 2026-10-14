@@ -1,0 +1,141 @@
+{
+ "products": [
+  {
+   "id": "gid://shopify/Product/10997729591623",
+   "nl": "besjaar-douchekop-3-sproeistanden-hoge-druk-luxe-moderne-handdouche-chrome",
+   "digest": "9d538e02c07834d924f104159eaaceccbfc990a4ac7cf24965dc7d447a778378",
+   "new": {
+    "en": "besjaar-luxury-hand-shower-high-pressure-3-modes-chrome",
+    "de": "besjaar-luxus-handbrause-hochdruck-3-strahlarten-chrom",
+    "fr": "besjaar-douchette-luxe-haute-pression-3-jets-chrome",
+    "es": "besjaar-ducha-de-mano-lujo-alta-presion-3-modos-cromo"
+   }
+  },
+  {
+   "id": "gid://shopify/Product/10997821243719",
+   "nl": "besjaar-douchefilter",
+   "digest": "35ace90d724c0ca8fd64ac30b09e11a96bb50f6b5eaf0df568652bc5a38fefb4",
+   "new": {
+    "en": "besjaar-replacement-shower-filters-set-of-2",
+    "de": "besjaar-ersatzfilter-duschkopf-2er-set",
+    "fr": "besjaar-filtres-de-rechange-douche-lot-de-2",
+    "es": "besjaar-filtros-de-recambio-ducha-set-de-2"
+   }
+  },
+  {
+   "id": "gid://shopify/Product/10997944648007",
+   "nl": "besjaar-douchekop-met-slang-handdouche-met-3-sproeistanden-regendouche-hoge-druk-chromen-douchekop",
+   "digest": "f898d0cfc96644aae2cd04ee079cc0267c472c02313d4f6eab2075fa3ad496db",
+   "new": {
+    "en": "besjaar-rain-shower-head-with-hose-high-pressure-3-modes-chrome",
+    "de": "besjaar-regendusche-mit-schlauch-hochdruck-3-strahlarten-chrom",
+    "fr": "besjaar-douche-pluie-avec-flexible-haute-pression-3-jets-chrome",
+    "es": "besjaar-ducha-de-lluvia-con-manguera-alta-presion-3-modos-cromo"
+   }
+  },
+  {
+   "id": "gid://shopify/Product/10998051602759",
+   "nl": "besjaar-hoge-druk-douchekop-met-filter-model-1002025-10-sproeistanden-waterbesparende-zilver",
+   "digest": "65daa2bfc0e6349cb87a77b7feab87be87e124170ac7dce1bd6021ecf2d10c30",
+   "new": {
+    "en": "besjaar-high-pressure-shower-head-with-filter-10-modes-silver",
+    "de": "besjaar-hochdruck-duschkopf-mit-filter-10-strahlarten-silber",
+    "fr": "besjaar-pommeau-de-douche-filtrant-haute-pression-10-jets-argent",
+    "es": "besjaar-alcachofa-de-ducha-con-filtro-alta-presion-10-modos-plata"
+   }
+  },
+  {
+   "id": "gid://shopify/Product/10998054912327",
+   "nl": "besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver",
+   "digest": "18daabc58f6d12a840a0771c3d2bfc7229435cdfc954105d91ccb8ac8e3e9d81",
+   "new": {
+    "en": "besjaar-shower-head-with-hose-and-filter-10-modes-silver",
+    "de": "besjaar-duschkopf-mit-schlauch-und-filter-10-strahlarten-silber",
+    "fr": "besjaar-pommeau-de-douche-avec-flexible-et-filtre-10-jets-argent",
+    "es": "besjaar-alcachofa-de-ducha-con-manguera-y-filtro-10-modos-plata"
+   }
+  }
+ ],
+ "redirects": [
+  [
+   "/en/products/besjaar-douchekop-3-sproeistanden-hoge-druk-luxe-moderne-handdouche-chrome",
+   "/en/products/besjaar-luxury-hand-shower-high-pressure-3-modes-chrome"
+  ],
+  [
+   "/de/products/besjaar-douchekop-3-sproeistanden-hoge-druk-luxe-moderne-handdouche-chrome",
+   "/de/products/besjaar-luxus-handbrause-hochdruck-3-strahlarten-chrom"
+  ],
+  [
+   "/fr/products/besjaar-douchekop-3-sproeistanden-hoge-druk-luxe-moderne-handdouche-chrome",
+   "/fr/products/besjaar-douchette-luxe-haute-pression-3-jets-chrome"
+  ],
+  [
+   "/es/products/besjaar-douchekop-3-sproeistanden-hoge-druk-luxe-moderne-handdouche-chrome",
+   "/es/products/besjaar-ducha-de-mano-lujo-alta-presion-3-modos-cromo"
+  ],
+  [
+   "/en/products/besjaar-douchefilter",
+   "/en/products/besjaar-replacement-shower-filters-set-of-2"
+  ],
+  [
+   "/de/products/besjaar-douchefilter",
+   "/de/products/besjaar-ersatzfilter-duschkopf-2er-set"
+  ],
+  [
+   "/fr/products/besjaar-douchefilter",
+   "/fr/products/besjaar-filtres-de-rechange-douche-lot-de-2"
+  ],
+  [
+   "/es/products/besjaar-douchefilter",
+   "/es/products/besjaar-filtros-de-recambio-ducha-set-de-2"
+  ],
+  [
+   "/en/products/besjaar-douchekop-met-slang-handdouche-met-3-sproeistanden-regendouche-hoge-druk-chromen-douchekop",
+   "/en/products/besjaar-rain-shower-head-with-hose-high-pressure-3-modes-chrome"
+  ],
+  [
+   "/de/products/besjaar-douchekop-met-slang-handdouche-met-3-sproeistanden-regendouche-hoge-druk-chromen-douchekop",
+   "/de/products/besjaar-regendusche-mit-schlauch-hochdruck-3-strahlarten-chrom"
+  ],
+  [
+   "/fr/products/besjaar-douchekop-met-slang-handdouche-met-3-sproeistanden-regendouche-hoge-druk-chromen-douchekop",
+   "/fr/products/besjaar-douche-pluie-avec-flexible-haute-pression-3-jets-chrome"
+  ],
+  [
+   "/es/products/besjaar-douchekop-met-slang-handdouche-met-3-sproeistanden-regendouche-hoge-druk-chromen-douchekop",
+   "/es/products/besjaar-ducha-de-lluvia-con-manguera-alta-presion-3-modos-cromo"
+  ],
+  [
+   "/en/products/besjaar-hoge-druk-douchekop-met-filter-model-1002025-10-sproeistanden-waterbesparende-zilver",
+   "/en/products/besjaar-high-pressure-shower-head-with-filter-10-modes-silver"
+  ],
+  [
+   "/de/products/besjaar-hoge-druk-douchekop-met-filter-model-1002025-10-sproeistanden-waterbesparende-zilver",
+   "/de/products/besjaar-hochdruck-duschkopf-mit-filter-10-strahlarten-silber"
+  ],
+  [
+   "/fr/products/besjaar-hoge-druk-douchekop-met-filter-model-1002025-10-sproeistanden-waterbesparende-zilver",
+   "/fr/products/besjaar-pommeau-de-douche-filtrant-haute-pression-10-jets-argent"
+  ],
+  [
+   "/es/products/besjaar-hoge-druk-douchekop-met-filter-model-1002025-10-sproeistanden-waterbesparende-zilver",
+   "/es/products/besjaar-alcachofa-de-ducha-con-filtro-alta-presion-10-modos-plata"
+  ],
+  [
+   "/en/products/besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver",
+   "/en/products/besjaar-shower-head-with-hose-and-filter-10-modes-silver"
+  ],
+  [
+   "/de/products/besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver",
+   "/de/products/besjaar-duschkopf-mit-schlauch-und-filter-10-strahlarten-silber"
+  ],
+  [
+   "/fr/products/besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver",
+   "/fr/products/besjaar-pommeau-de-douche-avec-flexible-et-filtre-10-jets-argent"
+  ],
+  [
+   "/es/products/besjaar-douchekop-met-slang-hoge-druk-met-filter-10-sproeistanden-regendouche-waterbesparende-handdouche-zilver",
+   "/es/products/besjaar-alcachofa-de-ducha-con-manguera-y-filtro-10-modos-plata"
+  ]
+ ]
+}

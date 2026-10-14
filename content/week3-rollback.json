@@ -1,0 +1,71 @@
+{
+  "note": "Week 3 store changes, 14 Oct 2026. Each entry: what changed and how to undo it.",
+  "douchekoppen_refill_removed": {
+    "collection": "gid://shopify/Collection/681702064455 (Douchekoppen, manual sort)",
+    "removed": "gid://shopify/Product/10997821243719 (besjaar-douchefilter, was position 5 of 5)",
+    "undo": "collectionAddProducts(id: collection, productIds: [product]); it is appended last, which matches its old position"
+  },
+  "douchekop_met_filter_created": {
+    "collection": "gid://shopify/Collection/690102993223 (handle douchekop-met-filter, manual sort, 2 filter heads)",
+    "state": "created with NL copy + en/de/fr/es translations; NOT yet published to any sales channel",
+    "why_unpublished": "the live theme picks 'the first collection with filter in its handle/title' as the refill collection in 7 places (footer, mobile header, homepage button, /collections/all hub, page FAQ, product FAQ, related products); handle order would put douchekop-met-filter before shower-filter. The theme copy is patched to skip it (theme-patches/week3-copy/).",
+    "go_live": "publish theme copy 202511286599 first, then publish the collection to Online Store (publication 200371110215) and the other channels",
+    "undo": "collectionDelete(input:{id}) - nothing else references it"
+  },
+  "theme_copy_filter_exclusion": {
+    "theme": "gid://shopify/OnlineStoreTheme/202511286599 (unpublished copy)",
+    "files": [
+      "sections/besjaar-shower-collection.liquid",
+      "sections/site-header.liquid",
+      "sections/besjaar-features-1170.liquid",
+      "sections/besjaar-store-footer.liquid",
+      "sections/main-page.liquid",
+      "snippets/besjaar-product-related.liquid",
+      "snippets/besjaar-product-faq.liquid"
+    ],
+    "undo": "reverse-apply theme-patches/week3-copy/filter-collection-exclusion.diff; the originals are identical to the live theme's files"
+  },
+  "news_cleanup": {
+    "moved_to_gids": {
+      "articles": [
+        "hoge-druk-douchekop-wat-betekent-dat",
+        "doucheslang-kiezen",
+        "pauzeknop-douchekop-besparen",
+        "douchefilter-kosten-per-jaar",
+        "douchefilter-vervangen-stappenplan"
+      ],
+      "change": "blogId news -> gids (gid://shopify/Blog/128620527943); tags 'Nieuws'/'Productnieuws' replaced by 'Gids'",
+      "undo": "articleUpdate blogId gid://shopify/Blog/105007120711 + old tags (content/week3-articles.previous.json); delete the /blogs/news/* redirects"
+    },
+    "unpublished_clones": {
+      "ids": [
+        "gid://shopify/Article/615462273351",
+        "gid://shopify/Article/615462306119",
+        "gid://shopify/Article/615462338887",
+        "gid://shopify/Article/615462371655",
+        "gid://shopify/Article/615462404423"
+      ],
+      "undo": "articleUpdate isPublished:true and delete their redirects"
+    },
+    "redirects_created": "50 in total: every language version of the 10 old /blogs/news/ URLs -> /blogs/gids/<same handle> or the product page (language versions point at the translated product handle)",
+    "link_rewrites": "60 links in 9 articles x 5 languages: news URLs -> gids/product URLs. Previous bodies: content/week3-articles.previous.json"
+  },
+  "gids_commerce_links": {
+    "articles": [
+      "waterhardheid-per-provincie",
+      "hard-water-haar",
+      "kalk-water-droge-huid",
+      "kalkvlekken-douchewand-voorkomen",
+      "douchekop-kalk-5-signalen"
+    ],
+    "change": "first 4: 'douchekop met filter' links to /collections/douchekop-met-filter; douchekop-kalk-5-signalen: +1 sentence linking the Luxe Handdouche PDP. All 5 languages.",
+    "previous": "content/week3-gids-links.previous.json",
+    "temporary_redirects": "/(en|de|fr|es/)?collections/douchekop-met-filter -> .../collections/showerhead (fire only while the collection is unpublished; delete after publishing it)"
+  },
+  "product_handles_translated": {
+    "plan": "content/product-handles.json (5 products x en/de/fr/es)",
+    "safety_redirects": "20: /<lang>/products/<nl-handle> -> /<lang>/products/<translated-handle> (fire only if Shopify 404s the old path)",
+    "undo": "translationsRemove(resourceId, translationKeys:[\"handle\"], locales:[en,de,fr,es]) per product, then delete the 20 safety redirects and point the 20 clone redirects back at /<lang>/products/<nl-handle>",
+    "collections_not_translated": "theme identifies the refill collection by 'filter' in its handle (7 places); fr/es translations would not contain it"
+  }
+}
