@@ -22,6 +22,20 @@ or changed in the preview theme (checksums verified against Shopify).
 Hero → service strip → brand intro → showerheads → model finder → why Besjaar →
 Judge.me reviews → bol.com rating (with source) → guides → trust & support → closing CTA.
 
+## Second review (2026-10-14)
+Checked the new files against every stylesheet, inline style and header/footer
+script that loads on the homepage and the About page. Fixed in
+`assets/besjaar-brand.css`:
+- "Vragen?" help panel: the theme's `body.besjaar-ui-polish-v34 h3` rule
+  coloured the heading dark ink (#14201a) on the green panel; now pinned white.
+- Model finder on the homepage: no empty fifth column with 4 models, and the
+  tablet card width works (the original rule has a `flex:0 0:min(...)` typo).
+- Product-card chips are compact below 460px.
+Confirmed unchanged behaviour: feature-card links (runtime script uses
+`BesjaarUIConfig.routes.allProducts`, not the hero button), About-page
+structured data (keyed on the page handle), finder translations in all five
+locales, no positional (`nth-child`) section styling on the homepage.
+
 ## Reverting
 Publishing nothing changes the live store. To undo after publishing, re-publish
 theme `202542612807`, which is untouched.

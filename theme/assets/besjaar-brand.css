@@ -164,6 +164,27 @@
 }
 .bp-model-card__facts li.is-yes { border-color: #CFE3DE; background: #EAF3F1; color: #174A40; }
 
+/* ---------- Overrides against older theme layers ---------- */
+/* besjaar-seo-base.css colours every h1-h3 with the dark ink
+   (body.besjaar-ui-polish-v34 h3, specificity 0,1,2). On the green help
+   panel that would be dark on dark, so the panel text is pinned to white. */
+body .bjb-trust .bjb-trust__help h3,
+body .bjb-trust .bjb-trust__help h3 * { color: #fff !important; }
+body .bjb-trust .bjb-trust__help p { color: rgba(255, 255, 255, .9) !important; }
+
+/* Model finder on the homepage (besjaar-ui-product-story.css was written for
+   product pages): its 5-column grid left an empty column with 4 models, and
+   its tablet rule has a typo (flex:0 0:min(...)) so cards got no width. */
+@media (min-width: 861px) {
+  body[data-page-type="index"] .besjaar-ui-shower-finder__models { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
+@media (max-width: 860px) {
+  body[data-page-type="index"] .besjaar-ui-shower-model-card { flex: 0 0 min(78vw, 315px); }
+}
+@media (max-width: 560px) {
+  body[data-page-type="index"] .besjaar-ui-shower-model-card { flex-basis: 84vw; }
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
   .bjb-intro__grid, .bjb-trust__head, .bjb-about__hero, .bjb-about__story { grid-template-columns: minmax(0, 1fr); }
@@ -179,6 +200,10 @@
   .bjb-trust__help-actions .bjb-btn, .bjb-about__signoff .bjb-btn { flex: 1 1 100%; }
   .bjb-intro__principle { grid-template-columns: 44px minmax(0, 1fr); padding: 18px; }
   .bjb-intro__icon { width: 44px; height: 44px; }
+}
+@media (max-width: 460px) {
+  .bp-model-card__facts { gap: 4px; margin-top: 8px; }
+  .bp-model-card__facts li { min-height: 22px; padding: 0 7px; font-size: .62rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bjb-guide__media img, .bjb-btn { transition: none; }
