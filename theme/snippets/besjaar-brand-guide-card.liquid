@@ -1,0 +1,31 @@
+{%- comment -%}
+  One guide card for sections/besjaar-brand-guides.liquid.
+  Params: guide (article), related (product or blank), read_label, related_label.
+{%- endcomment -%}
+{%- liquid
+  capture guide_url
+    render 'localized-internal-url', url: guide.url
+  endcapture
+  assign guide_url = guide_url | strip
+  assign guide_alt = guide.image.alt | default: guide.title
+  assign guide_excerpt = guide.excerpt_or_content | strip_html | strip_newlines | truncatewords: 22
+-%}
+{%- if guide.image != blank -%}
+  <a class="bjb-guide__media" href="{{ guide_url }}" tabindex="-1" aria-hidden="true">
+    {{ guide.image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '360, 540, 720', sizes: '(min-width: 961px) 30vw, (min-width: 641px) 46vw, 92vw', alt: guide_alt }}
+  </a>
+{%- endif -%}
+<div class="bjb-guide__body">
+  <h3><a href="{{ guide_url }}">{{ guide.title | escape }}</a></h3>
+  {%- if guide_excerpt != blank -%}<p>{{ guide_excerpt | escape }}</p>{%- endif -%}
+  <a class="bjb-guide__read" href="{{ guide_url }}" aria-label="{{ read_label | strip | append: ': ' | append: guide.title | escape }}">{{ read_label | strip | escape }} <span aria-hidden="true">→</span></a>
+</div>
+{%- if related != blank -%}
+  {%- capture related_title -%}{% render 'localized-product-title', product: related %}{%- endcapture -%}
+  <a class="bjb-guide__product" href="{% render 'localized-internal-url', url: related.url %}">
+    {%- if related.featured_image != blank -%}
+      {{ related.featured_image | image_url: width: 120 | image_tag: loading: 'lazy', width: 52, height: 52, alt: '' }}
+    {%- endif -%}
+    <span><small>{{ related_label | strip | escape }}</small><strong>{{ related_title | strip }}</strong></span>
+  </a>
+{%- endif -%}

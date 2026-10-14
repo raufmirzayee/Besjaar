@@ -1,0 +1,147 @@
+{%- comment -%}
+  Besjaar trust & support (2026-10-14): shipping, returns, warranty, payment,
+  fitting help and contact in one calm block.
+
+  Nothing here is hard-coded: the return window and warranty come from the
+  theme settings (return_window_days, warranty_months), the policy links from
+  Shopify's own policies, the payment icons from the payment methods that are
+  actually enabled for the store, and the contact/FAQ pages from the theme
+  settings already used elsewhere in the theme.
+{%- endcomment -%}
+{%- liquid
+  capture v_kicker
+    render 'besjaar-brand-copy', key: 'trust_kicker'
+  endcapture
+  capture v_heading
+    render 'besjaar-brand-copy', key: 'trust_heading'
+  endcapture
+  capture v_text
+    render 'besjaar-brand-copy', key: 'trust_text'
+  endcapture
+
+  assign return_days = settings.return_window_days | default: 0 | plus: 0
+  assign warranty_months = settings.warranty_months | default: 0 | plus: 0
+  assign return_days_label = return_days | append: ''
+  assign warranty_months_label = warranty_months | append: ''
+
+  assign contact_page = settings.contact_page
+  if contact_page == blank
+    assign contact_page = pages['contact-us']
+  endif
+  assign faq_page = settings.faq_page
+  if faq_page == blank
+    assign faq_page = pages['faqs']
+  endif
+  assign guide_blog = blogs[section.settings.blog_handle]
+  if guide_blog == blank
+    assign guide_blog = blogs['gids']
+  endif
+-%}
+{{ 'besjaar-brand.css' | asset_url | stylesheet_tag }}
+<section class="bjb bjb-trust" id="besjaar-brand-trust" aria-labelledby="BjbTrustTitle-{{ section.id }}">
+  <div class="bjb__shell">
+    <header class="bjb-trust__head">
+      <div>
+        <p class="bjb__kicker">{{ v_kicker | strip | escape }}</p>
+        <h2 class="bjb__h2" id="BjbTrustTitle-{{ section.id }}">{{ v_heading | strip | escape }}</h2>
+      </div>
+      <p class="bjb__lead">{{ v_text | strip | escape }}</p>
+    </header>
+
+    <ul class="bjb-trust__grid">
+      <li class="bjb-trust__item">
+        <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>{% render 'besjaar-brand-copy', key: 'ship_title' %}</h3>
+        <p>{% render 'besjaar-brand-copy', key: 'ship_text' %}</p>
+        {%- if shop.shipping_policy != blank -%}
+          <a href="{% render 'localized-internal-url', url: shop.shipping_policy.url %}">{% render 'besjaar-brand-copy', key: 'ship_link' %}</a>
+        {%- endif -%}
+      </li>
+
+      {%- if return_days > 0 -%}
+        {%- capture v_return -%}{% render 'besjaar-brand-copy', key: 'return_text' %}{%- endcapture -%}
+        <li class="bjb-trust__item">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h11a5 5 0 0 1 0 10H9"/><path d="M8 5 4 9l4 4"/></svg>{% render 'besjaar-brand-copy', key: 'return_title' %}</h3>
+          <p>{{ v_return | strip | replace: '[days]', return_days_label }}</p>
+          {%- if shop.refund_policy != blank -%}
+            <a href="{% render 'localized-internal-url', url: shop.refund_policy.url %}">{% render 'besjaar-brand-copy', key: 'return_link' %}</a>
+          {%- endif -%}
+        </li>
+      {%- endif -%}
+
+      {%- if section.settings.show_warranty and warranty_months > 0 -%}
+        {%- capture v_warranty -%}{% render 'besjaar-brand-copy', key: 'warranty_text' %}{%- endcapture -%}
+        <li class="bjb-trust__item">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>{% render 'besjaar-brand-copy', key: 'warranty_title' %}</h3>
+          <p>{{ v_warranty | strip | replace: '[months]', warranty_months_label }}</p>
+        </li>
+      {%- endif -%}
+
+      {%- if shop.enabled_payment_types.size > 0 -%}
+        <li class="bjb-trust__item">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>{% render 'besjaar-brand-copy', key: 'pay_title' %}</h3>
+          <p>{% render 'besjaar-brand-copy', key: 'pay_text' %}</p>
+          <ul class="bjb-trust__payments">
+            {%- for type in shop.enabled_payment_types -%}
+              <li>{{ type | payment_type_svg_tag }}</li>
+            {%- endfor -%}
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- if guide_blog != blank and guide_blog.articles_count > 0 -%}
+        <li class="bjb-trust__item">
+          <h3><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>{% render 'besjaar-brand-copy', key: 'install_title' %}</h3>
+          <p>{% render 'besjaar-brand-copy', key: 'install_text' %}</p>
+          <a href="{% render 'localized-internal-url', url: guide_blog.url %}">{% render 'besjaar-brand-copy', key: 'install_link' %}</a>
+        </li>
+      {%- endif -%}
+    </ul>
+
+    <div class="bjb-trust__help">
+      <div>
+        <h3>{% render 'besjaar-brand-copy', key: 'help_title' %}</h3>
+        <p>{% render 'besjaar-brand-copy', key: 'help_text' %}{% if section.settings.show_contact_details and settings.support_email != blank %} {{ settings.support_email | escape }}{% if settings.support_phone != blank %} · {{ settings.support_phone | escape }}{% endif %}{% endif %}</p>
+      </div>
+      <div class="bjb-trust__help-actions">
+        {%- if contact_page != blank -%}
+          <a class="bjb-btn bjb-btn--light" href="{% render 'localized-internal-url', url: contact_page.url %}">{% render 'besjaar-brand-copy', key: 'contact_cta' %}</a>
+        {%- endif -%}
+        {%- if faq_page != blank -%}
+          <a class="bjb-btn bjb-btn--outline-light" href="{% render 'localized-internal-url', url: faq_page.url %}">{% render 'besjaar-brand-copy', key: 'faq_cta' %}</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Besjaar trust & support",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Return window, warranty and contact details come from Theme settings. Policy links come from Settings › Policies. Payment icons show the payment methods enabled for the store."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_warranty",
+      "label": "Show warranty",
+      "info": "Uses the 'warranty months' theme setting. Only switch on when that period matches your warranty terms.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_details",
+      "label": "Show support e-mail and phone",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "blog_handle",
+      "label": "Guides blog handle",
+      "default": "gids"
+    }
+  ],
+  "presets": [{ "name": "Besjaar trust & support" }]
+}
+{% endschema %}

@@ -1,0 +1,103 @@
+{%- comment -%}
+  Besjaar guides on the homepage (2026-10-14): three guide articles, each
+  linked to the product it helps with, so the educational blog and the shop
+  point at each other.
+
+  Add up to three "Guide" blocks in the theme editor and pick an article and,
+  optionally, a related product for each. Without blocks the section shows
+  the three most recent articles from the guides blog. The section renders
+  nothing when there are no published articles.
+{%- endcomment -%}
+{%- liquid
+  assign guide_blog = blogs[section.settings.blog_handle]
+  if guide_blog == blank
+    assign guide_blog = blogs['gids']
+  endif
+
+  assign guide_total = 0
+  for block in section.blocks
+    if block.settings.article != blank
+      assign guide_total = guide_total | plus: 1
+    endif
+  endfor
+  assign use_blocks = false
+  if guide_total > 0
+    assign use_blocks = true
+  elsif guide_blog != blank
+    assign guide_total = guide_blog.articles_count | at_most: 3
+  endif
+
+  assign bjg_lang = request.locale.iso_code | split: '-' | first | downcase
+  capture v_note
+    render 'besjaar-brand-copy', key: 'guides_note'
+  endcapture
+  assign v_note = v_note | strip
+  capture v_read
+    render 'besjaar-brand-copy', key: 'guides_read'
+  endcapture
+  capture v_related
+    render 'besjaar-brand-copy', key: 'guides_related'
+  endcapture
+-%}
+{%- if guide_total > 0 -%}
+{{ 'besjaar-brand.css' | asset_url | stylesheet_tag }}
+<section class="bjb bjb-guides" id="besjaar-brand-guides" aria-labelledby="BjbGuidesTitle-{{ section.id }}">
+  <div class="bjb__shell">
+    <header class="bjb-guides__head">
+      <div>
+        <p class="bjb__kicker">{% render 'besjaar-brand-copy', key: 'guides_kicker' %}</p>
+        <h2 class="bjb__h2" id="BjbGuidesTitle-{{ section.id }}">{% render 'besjaar-brand-copy', key: 'guides_heading' %}</h2>
+        <p class="bjb__lead">{% render 'besjaar-brand-copy', key: 'guides_text' %}</p>
+        {%- if v_note != blank and bjg_lang != 'nl' -%}<p class="bjb-guides__note">{{ v_note | escape }}</p>{%- endif -%}
+      </div>
+      {%- if guide_blog != blank -%}
+        <a class="bjb__link" href="{% render 'localized-internal-url', url: guide_blog.url %}">{% render 'besjaar-brand-copy', key: 'guides_all' %} <span aria-hidden="true">→</span></a>
+      {%- endif -%}
+    </header>
+
+    <ul class="bjb-guides__grid">
+      {%- if use_blocks -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.article == blank -%}{%- continue -%}{%- endif -%}
+          <li class="bjb-guide" {{ block.shopify_attributes }}>
+            {%- render 'besjaar-brand-guide-card', guide: block.settings.article, related: block.settings.product, read_label: v_read, related_label: v_related -%}
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for guide in guide_blog.articles limit: 3 -%}
+          <li class="bjb-guide">
+            {%- render 'besjaar-brand-guide-card', guide: guide, related: blank, read_label: v_read, related_label: v_related -%}
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  </div>
+</section>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar guides",
+  "tag": "div",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "blog_handle",
+      "label": "Guides blog handle",
+      "info": "Used for the 'All guides' link and when no guide blocks are added.",
+      "default": "gids"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "guide",
+      "name": "Guide",
+      "settings": [
+        { "type": "article", "id": "article", "label": "Article" },
+        { "type": "product", "id": "product", "label": "Related product", "info": "Optional. Shown under the article as a direct link." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Besjaar guides" }]
+}
+{% endschema %}

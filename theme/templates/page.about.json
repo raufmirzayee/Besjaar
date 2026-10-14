@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "main": {
+      "type": "besjaar-brand-about",
+      "settings": {
+        "show_bol": true,
+        "show_answers": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}
