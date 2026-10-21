@@ -13,10 +13,10 @@
   Self-contained: the old besjaar-welcome-offer.css/.js assets are no longer
   loaded.
 
-  2026-10-21: the tab is redesigned as a navy pill with a lime offer badge and
-  a sub-line, and it no longer sits on top of the Google "Top quality store"
-  badge (Google & YouTube app embed, LEFT_BOTTOM, 16px/46px on mobile and
-  36px/36px on desktop). It now stands just above that badge, and a small
+  2026-10-21: the tab now looks and behaves like the Google "Store quality"
+  badge (a white pill that shrinks to a round icon after a few seconds) and no
+  longer sits on top of that badge (Google & YouTube app embed, LEFT_BOTTOM,
+  16px/46px on mobile and 36px/36px on desktop). It stands just above it, and a small
   script lifts it further whenever another fixed widget (cookie banner, sticky
   add-to-cart bar, a larger Google badge) is underneath it.
 {%- endcomment -%}
@@ -77,7 +77,6 @@
   case bjw_lang
     when 'en'
       assign bjw_tab = 'Save ' | append: bjw_pct | append: '% more'
-      assign bjw_tab_sub = 'On your first order'
       assign bjw_title = 'Save ' | append: bjw_pct | append: '% more'
       assign bjw_text = 'Sign up and get ' | append: bjw_pct | append: '% off your first Besjaar order.'
       if bjw_id == 'shipping'
@@ -93,7 +92,6 @@
       assign bjw_error = 'That did not work. Check your email address and try again.'
     when 'de'
       assign bjw_tab = bjw_pct | prepend: '' | append: '% extra sparen'
-      assign bjw_tab_sub = 'Auf deine erste Bestellung'
       assign bjw_title = bjw_pct | prepend: '' | append: '% extra sparen'
       assign bjw_text = 'Melde dich an und erhalte ' | append: bjw_pct | append: '% Rabatt auf deine erste Besjaar-Bestellung.'
       if bjw_id == 'shipping'
@@ -109,7 +107,6 @@
       assign bjw_error = 'Das hat nicht geklappt. Prüfe deine E-Mail-Adresse und versuche es erneut.'
     when 'fr'
       assign bjw_tab = 'Économisez ' | append: bjw_pct | append: ' % de plus'
-      assign bjw_tab_sub = 'Sur votre première commande'
       assign bjw_title = 'Économisez ' | append: bjw_pct | append: ' % de plus'
       assign bjw_text = 'Inscrivez-vous et recevez ' | append: bjw_pct | append: ' % de réduction sur votre première commande Besjaar.'
       if bjw_id == 'shipping'
@@ -125,7 +122,6 @@
       assign bjw_error = 'Cela n’a pas fonctionné. Vérifiez votre adresse e-mail et réessayez.'
     when 'es'
       assign bjw_tab = 'Ahorra un ' | append: bjw_pct | append: ' % más'
-      assign bjw_tab_sub = 'En tu primer pedido'
       assign bjw_title = 'Ahorra un ' | append: bjw_pct | append: ' % más'
       assign bjw_text = 'Suscríbete y recibe un ' | append: bjw_pct | append: ' % de descuento en tu primer pedido de Besjaar.'
       if bjw_id == 'shipping'
@@ -141,7 +137,6 @@
       assign bjw_error = 'No ha funcionado. Comprueba tu correo electrónico e inténtalo de nuevo.'
     else
       assign bjw_tab = 'Bespaar ' | append: bjw_pct | append: '% extra'
-      assign bjw_tab_sub = 'Op je eerste bestelling'
       assign bjw_title = 'Bespaar ' | append: bjw_pct | append: '% extra'
       assign bjw_text = 'Meld je aan en ontvang ' | append: bjw_pct | append: '% korting op je eerste Besjaar-bestelling.'
       if bjw_id == 'shipping'
@@ -158,8 +153,8 @@
   endcase
 
   comment
-    The tab highlights the percentage in lime. French and Spanish write a
-    space before the % sign.
+    The tab highlights the percentage in Besjaar green. French and Spanish
+    write a space before the % sign.
   endcomment
   assign bjw_hl = bjw_pct | append: '%'
   if bjw_lang == 'fr' or bjw_lang == 'es'
@@ -179,28 +174,29 @@
 -%}
 {%- if bjw_allowed -%}
 <style>
-  /* The tab stands above the Google store badge (bottom-left): base bottom =
-     Google's bottom margin + badge height + a gap. --bjw-lift is set by the
-     script when another fixed widget is still underneath. */
-  .bjw-tab{--bjw-lift:0px;position:fixed;left:36px;bottom:calc(108px + var(--bjw-lift));z-index:70;display:flex;align-items:center;gap:4px;max-width:calc(100vw - 32px);padding:6px;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:linear-gradient(135deg,#123456 0%,#0F2947 100%);color:#fff;box-shadow:0 12px 30px rgba(9,31,52,.32),0 2px 6px rgba(9,31,52,.18);font-family:Inter,system-ui,sans-serif;transition:bottom .25s ease;animation:bjw-tab-in .55s cubic-bezier(.2,.8,.2,1) .4s both}
+  /* The tab mirrors the Google store badge it stands above (bottom-left): a
+     white 40px pill that shows its text first and, after a few seconds, shrinks
+     to a round icon, just like Google's. Base bottom = Google's bottom margin +
+     badge height + a gap. --bjw-lift is set by the script when another fixed
+     widget is still underneath. */
+  .bjw-tab{--bjw-lift:0px;position:fixed;left:36px;bottom:calc(108px + var(--bjw-lift));z-index:70;display:flex;max-width:280px;height:40px;border-radius:999px;background:#fff;color:#0F2947;box-shadow:0 1px 3px rgba(60,64,67,.3),0 4px 8px 3px rgba(60,64,67,.15);overflow:hidden;font-family:Inter,system-ui,sans-serif;transition:bottom .25s ease,max-width .45s cubic-bezier(.4,0,.2,1);animation:bjw-tab-in .45s cubic-bezier(.2,.8,.2,1) .4s both}
   .bjw-tab[hidden]{display:none}
-  .bjw-tab button{appearance:none;background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;cursor:pointer;line-height:1}
-  .bjw-tab__open{display:flex;align-items:center;gap:11px;min-width:0;padding:0 6px 0 0;border-radius:999px;text-align:left}
-  .bjw-tab__badge{position:relative;display:grid;place-items:center;flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:#B5E524;color:#0F2947;box-shadow:inset 0 -2px 0 rgba(15,41,71,.12);transition:transform .2s ease}
-  .bjw-tab__badge svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .bjw-tab__badge:after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(181,229,36,.55);opacity:0;animation:bjw-tab-ring 2.4s ease-out 1.2s 3}
-  .bjw-tab__copy{display:flex;flex-direction:column;gap:3px;min-width:0}
-  .bjw-tab__title{font-weight:800;font-size:15px;line-height:1.1;letter-spacing:.005em;white-space:nowrap}
-  .bjw-tab__title b{color:#B5E524;font-weight:800}
-  .bjw-tab__sub{font-weight:500;font-size:11.5px;line-height:1.15;color:rgba(255,255,255,.72);white-space:nowrap}
-  .bjw-tab__x{display:grid;place-items:center;flex:0 0 auto;width:30px;height:30px;margin-left:2px;border-radius:50%;color:rgba(255,255,255,.7);transition:background .18s ease,color .18s ease}
-  .bjw-tab__x svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
-  .bjw-tab__x:hover{background:rgba(255,255,255,.12);color:#fff}
-  .bjw-tab__open:hover .bjw-tab__badge{transform:rotate(-8deg)}
-  .bjw-tab button:focus-visible{outline:2px solid #B5E524;outline-offset:3px}
-  @keyframes bjw-tab-in{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
-  @keyframes bjw-tab-ring{0%{opacity:.9;transform:scale(.9)}80%,100%{opacity:0;transform:scale(1.35)}}
-  @media (prefers-reduced-motion:reduce){.bjw-tab{animation:none;transition:none}.bjw-tab__badge:after{animation:none}.bjw-tab__badge{transition:none}}
+  .bjw-tab__open{appearance:none;display:flex;align-items:center;gap:10px;height:100%;margin:0;padding:0 18px 0 6px;border:0;border-radius:inherit;background:none;color:inherit;font:500 14.5px/1 Inter,system-ui,sans-serif;white-space:nowrap;cursor:pointer;transition:padding .45s cubic-bezier(.4,0,.2,1)}
+  .bjw-tab__badge{display:grid;place-items:center;flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:#B5E524;color:#0F2947}
+  .bjw-tab__badge svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .bjw-tab__label{transition:opacity .3s ease}
+  .bjw-tab__label b{color:#1F5F52;font-weight:700}
+  .bjw-tab__open:focus-visible{outline:2px solid #173B5E;outline-offset:-2px}
+  .bjw-tab.is-collapsed{max-width:40px}
+  .bjw-tab.is-collapsed .bjw-tab__open{padding-right:6px}
+  .bjw-tab.is-collapsed .bjw-tab__label{opacity:0}
+  @media (hover:hover){
+    .bjw-tab.is-collapsed:hover,.bjw-tab.is-collapsed:focus-within{max-width:280px}
+    .bjw-tab.is-collapsed:hover .bjw-tab__open,.bjw-tab.is-collapsed:focus-within .bjw-tab__open{padding-right:18px}
+    .bjw-tab.is-collapsed:hover .bjw-tab__label,.bjw-tab.is-collapsed:focus-within .bjw-tab__label{opacity:1}
+  }
+  @keyframes bjw-tab-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.bjw-tab,.bjw-tab__open,.bjw-tab__label{animation:none;transition:none}}
   dialog.bjw{position:fixed;inset:0;margin:auto;border:0;padding:0;border-radius:16px;width:min(92vw,420px);max-height:90vh;background:#fff;color:#132A3E;box-shadow:0 24px 64px rgba(15,41,71,.35);z-index:1000}
   dialog.bjw::backdrop{background:rgba(15,41,71,.45)}
   dialog.bjw:not([open]){display:none}
@@ -217,14 +213,7 @@
   .bjw__note{margin:14px 0 0;font-size:12px;line-height:1.5;color:#61798E}
   .bjw__error{margin:0 0 10px;font-size:14px;line-height:1.4;color:#B42318}
   @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}}
-  @media (max-width:760px){
-    .bjw-tab{left:16px;bottom:calc(112px + env(safe-area-inset-bottom) + var(--bjw-lift));padding:5px}
-    .bjw-tab__open{gap:10px}
-    .bjw-tab__badge{width:36px;height:36px}
-    .bjw-tab__badge svg{width:18px;height:18px}
-    .bjw-tab__title{font-size:14px}
-    .bjw-tab__sub{font-size:11px}
-  }
+  @media (max-width:760px){.bjw-tab{left:16px;bottom:calc(112px + env(safe-area-inset-bottom) + var(--bjw-lift))}}
 </style>
 
 <div id="BjwTab" class="bjw-tab">
@@ -236,12 +225,8 @@
         <svg viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
       {%- endif -%}
     </span>
-    <span class="bjw-tab__copy">
-      <span class="bjw-tab__title">{% if bjw_id == 'shipping' %}{{ bjw_tab | escape }}{% else %}{{ bjw_tab | escape | replace: bjw_hl, bjw_hl_html }}{% endif %}</span>
-      <span class="bjw-tab__sub">{{ bjw_tab_sub | escape }}</span>
-    </span>
+    <span class="bjw-tab__label">{% if bjw_id == 'shipping' %}{{ bjw_tab | escape }}{% else %}{{ bjw_tab | escape | replace: bjw_hl, bjw_hl_html }}{% endif %}</span>
   </button>
-  <button type="button" class="bjw-tab__x" data-bjw-dismiss aria-label="{{ bjw_close | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
 </div>
 
 <dialog id="BjwDialog" class="bjw"
@@ -275,8 +260,7 @@
     claimed: 'besjaar_welcome_offer_claimed_v3',
     pending: 'besjaar_welcome_offer_pending_session_v3',
     seen: 'besjaar_welcome_offer_seen_session_v3',
-    closed: 'besjaar_welcome_offer_closed_session_v3',
-    tab: 'besjaar_welcome_tab_dismissed_session_v1'
+    closed: 'besjaar_welcome_offer_closed_session_v3'
   };
   var reward = { id: d.getAttribute('data-reward-id'), code: d.getAttribute('data-reward-code') };
   function get(s, k) { try { return JSON.parse(s.getItem(k) || 'null'); } catch (e) { return null; } }
@@ -352,7 +336,7 @@
   function close() {
     if (typeof d.close === 'function') d.close(); else d.removeAttribute('open');
     set(sessionStorage, K.closed, { at: Date.now() });
-    if (tab && !claimed && !get(sessionStorage, K.tab)) { tab.hidden = false; place(); }
+    if (tab && !claimed) { tab.classList.add('is-collapsed'); tab.hidden = false; place(); }
   }
   d.querySelector('[data-bjw-close]').addEventListener('click', close);
   d.addEventListener('click', function (e) { if (e.target === d) close(); });
@@ -365,10 +349,11 @@
   });
   if (tab) {
     tab.querySelector('[data-bjw-open]').addEventListener('click', function () { del(sessionStorage, K.closed); open(); });
-    tab.querySelector('[data-bjw-dismiss]').addEventListener('click', function () { tab.hidden = true; set(sessionStorage, K.tab, { at: Date.now() }); });
+    /* Like the Google badge: show the text first, then shrink to the icon. */
+    setTimeout(function () { tab.classList.add('is-collapsed'); schedulePlace(); }, 6000);
   }
 
-  if (tab && (claimed || get(sessionStorage, K.tab))) tab.hidden = true;
+  if (tab && claimed) tab.hidden = true;
   if (claimed) return;
   if (d.getAttribute('data-has-errors') === 'true') { open(); return; }
   var autoOpen = d.getAttribute('data-auto-open') === 'true' && !get(sessionStorage, K.seen) && !get(sessionStorage, K.closed);
