@@ -350,7 +350,7 @@
   if (tab) {
     tab.querySelector('[data-bjw-open]').addEventListener('click', function () { del(sessionStorage, K.closed); open(); });
     /* Like the Google badge: show the text first, then shrink to the icon. */
-    setTimeout(function () { tab.classList.add('is-collapsed'); schedulePlace(); }, 6000);
+    setTimeout(function () { tab.classList.add('is-collapsed'); schedulePlace(); }, 3000);
   }
 
   if (tab && claimed) tab.hidden = true;
