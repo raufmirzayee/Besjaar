@@ -13,6 +13,11 @@
   Self-contained: the old besjaar-welcome-offer.css/.js assets are no longer
   loaded.
 
+  2026-10-21 (later): two ways to the discount, told as "kies je straal":
+  sign up for the mails and get the main reward (20%, "volle straal"), or
+  take the 10% code without signing up ("een straaltje"). The popup has a
+  navy header with a lime percentage badge and the sign-up card on top.
+
   2026-10-21: the tab now looks and behaves like the Google "Store quality"
   badge (a white pill that shrinks to a round icon after a few seconds) and no
   longer sits on top of that badge (Google & YouTube app embed, LEFT_BOTTOM,
@@ -90,6 +95,22 @@
       assign bjw_note = 'By signing up you agree to receive Besjaar emails. Unsubscribe anytime.'
       assign bjw_close = 'Close'
       assign bjw_error = 'That did not work. Check your email address and try again.'
+      assign bjw_c_off = 'off'
+      assign bjw_c_eyebrow = 'Welcome discount'
+      assign bjw_c_pick = 'Pick your flow'
+      assign bjw_c_sub = 'A trickle of savings or the full flow? You decide.'
+      assign bjw_c_full = 'Full flow'
+      assign bjw_c_full_text = 'Join the Besjaar emails and get [B] off your first order.'
+      assign bjw_c_best = 'Best deal'
+      assign bjw_c_cta = 'Get [B] off'
+      assign bjw_c_or = 'or'
+      assign bjw_c_quick_btn = 'No emails? Take [S] right now'
+      assign bjw_c_quick_title = 'Trickle: [S] off'
+      assign bjw_c_quick_text = 'No sign-up needed. Your code:'
+      assign bjw_c_copy = 'Copy'
+      assign bjw_c_copied = 'Copied'
+      assign bjw_c_apply = 'Use [S] and shop'
+      assign bjw_c_back = 'Want the full flow? Get [B] with your email'
     when 'de'
       assign bjw_tab = bjw_pct | prepend: '' | append: '% extra sparen'
       assign bjw_title = bjw_pct | prepend: '' | append: '% extra sparen'
@@ -105,6 +126,22 @@
       assign bjw_note = 'Mit der Anmeldung erhältst du E-Mails von Besjaar. Abmelden ist jederzeit möglich.'
       assign bjw_close = 'Schließen'
       assign bjw_error = 'Das hat nicht geklappt. Prüfe deine E-Mail-Adresse und versuche es erneut.'
+      assign bjw_c_off = 'Rabatt'
+      assign bjw_c_eyebrow = 'Willkommensrabatt'
+      assign bjw_c_pick = 'Wähl deinen Strahl'
+      assign bjw_c_sub = 'Ein kleiner Strahl Rabatt oder der volle Strahl? Du entscheidest.'
+      assign bjw_c_full = 'Voller Strahl'
+      assign bjw_c_full_text = 'Melde dich für die Besjaar-Mails an und erhalte [B] Rabatt auf deine erste Bestellung.'
+      assign bjw_c_best = 'Bester Deal'
+      assign bjw_c_cta = '[B] Rabatt sichern'
+      assign bjw_c_or = 'oder'
+      assign bjw_c_quick_btn = 'Keine E-Mails? Nimm sofort [S]'
+      assign bjw_c_quick_title = 'Kleiner Strahl: [S] Rabatt'
+      assign bjw_c_quick_text = 'Ohne Anmeldung. Dein Code:'
+      assign bjw_c_copy = 'Kopieren'
+      assign bjw_c_copied = 'Kopiert'
+      assign bjw_c_apply = '[S] nutzen und shoppen'
+      assign bjw_c_back = 'Doch den vollen Strahl? [B] mit deiner E-Mail'
     when 'fr'
       assign bjw_tab = 'Économisez ' | append: bjw_pct | append: ' % de plus'
       assign bjw_title = 'Économisez ' | append: bjw_pct | append: ' % de plus'
@@ -120,6 +157,22 @@
       assign bjw_note = 'En vous inscrivant, vous acceptez de recevoir les e-mails de Besjaar. Désinscription possible à tout moment.'
       assign bjw_close = 'Fermer'
       assign bjw_error = 'Cela n’a pas fonctionné. Vérifiez votre adresse e-mail et réessayez.'
+      assign bjw_c_off = 'remise'
+      assign bjw_c_eyebrow = 'Remise de bienvenue'
+      assign bjw_c_pick = 'Choisissez votre jet'
+      assign bjw_c_sub = 'Un filet de réduction ou le jet complet ? À vous de choisir.'
+      assign bjw_c_full = 'Jet complet'
+      assign bjw_c_full_text = 'Inscrivez-vous aux e-mails Besjaar et recevez [B] de réduction sur votre première commande.'
+      assign bjw_c_best = 'Meilleure offre'
+      assign bjw_c_cta = 'Obtenir [B] de réduction'
+      assign bjw_c_or = 'ou'
+      assign bjw_c_quick_btn = 'Pas d’e-mails ? Prenez [S] tout de suite'
+      assign bjw_c_quick_title = 'Petit jet : [S] de réduction'
+      assign bjw_c_quick_text = 'Sans inscription. Votre code :'
+      assign bjw_c_copy = 'Copier'
+      assign bjw_c_copied = 'Copié'
+      assign bjw_c_apply = 'Utiliser [S] et acheter'
+      assign bjw_c_back = 'Finalement le jet complet ? [B] avec votre e-mail'
     when 'es'
       assign bjw_tab = 'Ahorra un ' | append: bjw_pct | append: ' % más'
       assign bjw_title = 'Ahorra un ' | append: bjw_pct | append: ' % más'
@@ -135,6 +188,22 @@
       assign bjw_note = 'Al suscribirte, aceptas recibir emails de Besjaar. Puedes darte de baja en cualquier momento.'
       assign bjw_close = 'Cerrar'
       assign bjw_error = 'No ha funcionado. Comprueba tu correo electrónico e inténtalo de nuevo.'
+      assign bjw_c_off = 'dto.'
+      assign bjw_c_eyebrow = 'Descuento de bienvenida'
+      assign bjw_c_pick = 'Elige tu chorro'
+      assign bjw_c_sub = '¿Un chorrito de descuento o el chorro completo? Tú decides.'
+      assign bjw_c_full = 'Chorro completo'
+      assign bjw_c_full_text = 'Suscríbete a los emails de Besjaar y recibe un [B] de descuento en tu primer pedido.'
+      assign bjw_c_best = 'Mejor oferta'
+      assign bjw_c_cta = 'Obtener un [B] de descuento'
+      assign bjw_c_or = 'o'
+      assign bjw_c_quick_btn = '¿Sin emails? Llévate un [S] ya'
+      assign bjw_c_quick_title = 'Chorrito: [S] de descuento'
+      assign bjw_c_quick_text = 'Sin suscripción. Tu código:'
+      assign bjw_c_copy = 'Copiar'
+      assign bjw_c_copied = 'Copiado'
+      assign bjw_c_apply = 'Usar el [S] y comprar'
+      assign bjw_c_back = '¿Mejor el chorro completo? [B] con tu email'
     else
       assign bjw_tab = 'Bespaar ' | append: bjw_pct | append: '% extra'
       assign bjw_title = 'Bespaar ' | append: bjw_pct | append: '% extra'
@@ -150,6 +219,22 @@
       assign bjw_note = 'Door je aan te melden ontvang je e-mails van Besjaar. Uitschrijven kan altijd.'
       assign bjw_close = 'Sluiten'
       assign bjw_error = 'Dat lukte niet. Controleer je e-mailadres en probeer het opnieuw.'
+      assign bjw_c_off = 'korting'
+      assign bjw_c_eyebrow = 'Welkomstkorting'
+      assign bjw_c_pick = 'Kies je straal'
+      assign bjw_c_sub = 'Een straaltje korting of de volle straal? Jij bepaalt.'
+      assign bjw_c_full = 'Volle straal'
+      assign bjw_c_full_text = 'Meld je aan voor de Besjaar-mail en krijg [B] korting op je eerste bestelling.'
+      assign bjw_c_best = 'Beste deal'
+      assign bjw_c_cta = 'Geef mij [B] korting'
+      assign bjw_c_or = 'of'
+      assign bjw_c_quick_btn = 'Liever geen e-mail? Neem direct [S]'
+      assign bjw_c_quick_title = 'Een straaltje: [S] korting'
+      assign bjw_c_quick_text = 'Geen aanmelding nodig. Je code:'
+      assign bjw_c_copy = 'Kopieer'
+      assign bjw_c_copied = 'Gekopieerd'
+      assign bjw_c_apply = 'Gebruik [S] en shop'
+      assign bjw_c_back = 'Toch de volle straal? Pak [B] met je e-mail'
   endcase
 
   comment
@@ -162,6 +247,37 @@
   endif
   assign bjw_hl_html = '<b>' | append: bjw_hl | append: '</b>'
 
+  comment
+    2026-10-21: two ways to the welcome discount. Signing up for the mails gets
+    the main reward above (WELKOM20, "volle straal"); a shopper who does not
+    want to sign up can take the 10% code straight away ("een straaltje").
+    The quick option only shows when the main reward is a bigger percentage.
+  endcomment
+  assign bjw_q_id = '10'
+  assign bjw_q_pct = 10
+  assign bjw_q_code = settings.welcome_offer_code_10 | default: 'WELKOM10'
+  assign bjw_quick = false
+  if bjw_id != 'shipping' and bjw_pct > bjw_q_pct and bjw_q_code != blank
+    assign bjw_quick = true
+  endif
+  assign bjw_big = bjw_pct | append: '%'
+  assign bjw_small = bjw_q_pct | append: '%'
+  if bjw_lang == 'fr' or bjw_lang == 'es'
+    assign bjw_big = bjw_pct | append: ' %'
+    assign bjw_small = bjw_q_pct | append: ' %'
+  endif
+  assign bjw_c_full_text = bjw_c_full_text | replace: '[B]', bjw_big
+  assign bjw_c_cta = bjw_c_cta | replace: '[B]', bjw_big
+  assign bjw_c_back = bjw_c_back | replace: '[B]', bjw_big
+  assign bjw_c_quick_btn = bjw_c_quick_btn | replace: '[S]', bjw_small
+  assign bjw_c_quick_title = bjw_c_quick_title | replace: '[S]', bjw_small
+  assign bjw_c_apply = bjw_c_apply | replace: '[S]', bjw_small
+  unless bjw_quick
+    assign bjw_c_pick = bjw_title
+    assign bjw_c_sub = bjw_text
+    assign bjw_c_cta = bjw_button
+  endunless
+
   assign bjw_target = routes.all_products_collection_url | append: '?besjaar_offer_claimed=' | append: bjw_id | url_encode
   comment
     2026-10-09: routes.root_url is '/' on the Dutch storefront but '/en', '/de',
@@ -171,6 +287,8 @@
   endcomment
   assign bjw_root = routes.root_url | append: '/' | replace: '//', '/'
   assign bjw_return_to = bjw_root | append: 'discount/' | append: bjw_code | append: '?redirect=' | append: bjw_target
+  assign bjw_q_target = routes.all_products_collection_url | append: '?besjaar_offer_claimed=' | append: bjw_q_id | url_encode
+  assign bjw_q_url = bjw_root | append: 'discount/' | append: bjw_q_code | append: '?redirect=' | append: bjw_q_target
 -%}
 {%- if bjw_allowed -%}
 <style>
@@ -197,22 +315,78 @@
   }
   @keyframes bjw-tab-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){.bjw-tab,.bjw-tab__open,.bjw-tab__label{animation:none;transition:none}}
-  dialog.bjw{position:fixed;inset:0;margin:auto;border:0;padding:0;border-radius:16px;width:min(92vw,420px);max-height:90vh;background:#fff;color:#132A3E;box-shadow:0 24px 64px rgba(15,41,71,.35);z-index:1000}
-  dialog.bjw::backdrop{background:rgba(15,41,71,.45)}
+  /* Welcome popup, 2026-10-21: navy "water" header with a lime percentage
+     badge, the sign-up card ("volle straal", the bigger discount) lifted over
+     it, and below that the no-sign-up option ("een straaltje"), which swaps
+     the card for the 10% code. */
+  dialog.bjw{position:fixed;inset:0;margin:auto;border:0;padding:0;border-radius:24px;width:min(calc(100vw - 24px),440px);max-height:calc(100dvh - 24px);overflow:auto;background:#fff;color:#132A3E;box-shadow:0 30px 80px rgba(9,31,52,.45);z-index:1000;font-family:Inter,system-ui,sans-serif}
+  dialog.bjw::backdrop{background:rgba(9,27,44,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
   dialog.bjw:not([open]){display:none}
-  .bjw__inner{position:relative;padding:40px 28px 24px;text-align:center;font-family:Inter,system-ui,sans-serif}
-  .bjw__close{position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:#61798E;font-size:24px;line-height:1;cursor:pointer}
-  .bjw__close:hover{background:#EEF6FB;color:#132A3E}
-  .bjw__title{margin:0 0 8px;font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.01em;color:#132A3E}
-  .bjw__text{margin:0 0 20px;font-size:16px;line-height:1.5;color:#3F5670}
+  dialog.bjw[open]{animation:bjw-pop .42s cubic-bezier(.2,.8,.2,1)}
+  @keyframes bjw-pop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+  .bjw__close{position:absolute;z-index:3;top:12px;right:12px;display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;transition:background .18s ease}
+  .bjw__close:hover{background:rgba(255,255,255,.26)}
+  .bjw__close svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+  .bjw__hero{position:relative;overflow:hidden;padding:30px 24px 58px;background:linear-gradient(150deg,#0F2947 0%,#173F66 58%,#1F5F52 125%);color:#fff;text-align:left}
+  .bjw__hero:before{content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(127,194,231,.35),rgba(127,194,231,0) 68%)}
+  .bjw__waves{position:absolute;left:-10%;right:-10%;bottom:20px;height:44px;opacity:.22}
+  .bjw__waves path{fill:none;stroke:#fff;stroke-width:1.4;stroke-linecap:round;animation:bjw-wave 5s ease-in-out infinite}
+  .bjw__waves path:nth-child(2){animation-delay:-1.6s;opacity:.7}
+  .bjw__waves path:nth-child(3){animation-delay:-3.2s;opacity:.45}
+  @keyframes bjw-wave{0%,100%{transform:translateX(-3%)}50%{transform:translateX(3%)}}
+  .bjw__eyebrow{position:relative;display:inline-flex;align-items:center;gap:8px;margin:0 0 10px;color:#B5E524;font:700 11px/1.2 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+  .bjw__eyebrow:before{content:"";width:18px;height:2px;border-radius:2px;background:currentColor}
+  .bjw__title{position:relative;margin:0 0 8px;max-width:11ch;padding-right:96px;color:#fff;font:600 34px/1.02 Jost,Inter,system-ui,sans-serif;letter-spacing:-.025em;box-sizing:content-box}
+  .bjw__sub{position:relative;margin:0;max-width:min(30ch,calc(100% - 104px));color:rgba(255,255,255,.78);font-size:14.5px;line-height:1.45}
+  .bjw__badge{position:absolute;z-index:2;top:52px;right:20px;display:grid;place-items:center;align-content:center;width:92px;height:92px;border-radius:50%;background:#B5E524;color:#0F2947;box-shadow:0 12px 28px rgba(0,0,0,.28),inset 0 -3px 0 rgba(15,41,71,.12);transform:rotate(-8deg);animation:bjw-badge .6s cubic-bezier(.2,1.4,.4,1) .25s both}
+  .bjw__badge:after{content:"";position:absolute;inset:5px;border:1.5px dashed rgba(15,41,71,.35);border-radius:50%}
+  .bjw__badge b{font:800 30px/1 Jost,Inter,system-ui,sans-serif;letter-spacing:-.03em}
+  .bjw__badge small{margin-top:3px;font:800 9px/1 Inter,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+  .bjw__badge-in{display:grid;justify-items:center}
+  .bjw__badge [data-badge-quick]{display:none}
+  dialog.bjw[data-stage="quick"] .bjw__badge{background:#fff}
+  dialog.bjw[data-stage="quick"] .bjw__badge [data-badge-full]{display:none}
+  dialog.bjw[data-stage="quick"] .bjw__badge [data-badge-quick]{display:grid}
+  dialog.bjw[data-stage="quick"] .bjw__note{display:none}
+  @keyframes bjw-badge{from{opacity:0;transform:rotate(-30deg) scale(.4)}to{opacity:1;transform:rotate(-8deg) scale(1)}}
+  .bjw__body{position:relative;padding:0 18px 18px}
+  .bjw__card{position:relative;margin-top:-34px;padding:22px 16px 16px;border:2px solid #B5E524;border-radius:18px;background:#fff;box-shadow:0 14px 34px rgba(15,41,71,.14)}
+  .bjw__card[hidden]{display:none}
+  .bjw__ribbon{position:absolute;top:-12px;left:16px;padding:5px 10px;border-radius:999px;background:#B5E524;color:#0F2947;font:800 10.5px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+  .bjw__plan{display:flex;align-items:center;gap:12px;margin:0 0 6px}
+  .bjw__plan-icon{display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border-radius:12px;background:#EEF6FB;color:#173F66}
+  .bjw__plan-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .bjw__plan-name{margin:0;color:#0F2947;font:700 18px/1.15 Inter,system-ui,sans-serif}
+  .bjw__plan-text{margin:0 0 14px;color:#4A6178;font-size:14px;line-height:1.45}
   .bjw__form{margin:0}
-  .bjw__field{display:block;width:100%;box-sizing:border-box;height:50px;margin:0 0 10px;padding:0 14px;border:1px solid #CFD8E2;border-radius:10px;background:#fff;font:16px Inter,system-ui,sans-serif;color:#132A3E}
-  .bjw__field:focus{outline:2px solid #173B5E;outline-offset:1px;border-color:#173B5E}
-  .bjw__btn{display:block;width:100%;height:52px;margin-top:4px;border:0;border-radius:10px;background:#173B5E;color:#fff;font:600 16px Inter,system-ui,sans-serif;letter-spacing:.01em;cursor:pointer}
-  .bjw__btn:hover{background:#102D49}
-  .bjw__note{margin:14px 0 0;font-size:12px;line-height:1.5;color:#61798E}
+  .bjw__field{display:block;width:100%;box-sizing:border-box;height:48px;margin:0 0 9px;padding:0 14px;border:1.5px solid #CFDCE6;border-radius:12px;background:#F8FBFD;font:16px Inter,system-ui,sans-serif;color:#132A3E;transition:border-color .18s ease,background .18s ease,box-shadow .18s ease}
+  .bjw__field::placeholder{color:#7E93A6}
+  .bjw__field:focus{outline:0;border-color:#173F66;background:#fff;box-shadow:0 0 0 3px rgba(23,63,102,.14)}
+  .bjw__btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;margin-top:4px;border:0;border-radius:12px;background:#B5E524;color:#0F2947;font:800 16.5px/1 Inter,system-ui,sans-serif;letter-spacing:.005em;text-decoration:none;cursor:pointer;box-shadow:0 8px 18px rgba(130,170,10,.35);transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+  .bjw__btn:hover{background:#A9D91B;transform:translateY(-1px);box-shadow:0 12px 22px rgba(130,170,10,.4)}
+  .bjw__btn:active{transform:translateY(1px)}
+  .bjw__btn:after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:bjw-shine 3.2s ease-in-out 1s infinite}
+  @keyframes bjw-shine{0%,70%{left:-40%}100%{left:130%}}
+  .bjw__btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  .bjw__btn--navy{background:#0F2947;color:#fff;box-shadow:0 8px 18px rgba(15,41,71,.25)}
+  .bjw__btn--navy:hover{background:#173F66;box-shadow:0 12px 22px rgba(15,41,71,.3)}
+  .bjw__or{display:flex;align-items:center;gap:12px;margin:14px 0 12px;color:#8A9DAE;font:600 12px/1 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.12em}
+  .bjw__or:before,.bjw__or:after{content:"";flex:1;height:1px;background:#E1E9F0}
+  .bjw__quick{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:1.5px dashed #A9C3D6;border-radius:14px;background:#F6FAFD;color:#173F66;font:600 14px/1.3 Inter,system-ui,sans-serif;text-align:left;cursor:pointer;transition:border-color .18s ease,background .18s ease}
+  .bjw__quick:hover{border-color:#173F66;background:#EEF6FB}
+  .bjw__quick-pct{display:grid;place-items:center;flex:0 0 auto;min-width:46px;height:30px;padding:0 8px;border-radius:999px;background:#0F2947;color:#fff;font:800 13px/1 Inter,system-ui,sans-serif}
+  .bjw__quick-label{flex:1 1 auto}
+  .bjw__quick svg{flex:0 0 auto;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .bjw__code{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;padding:12px 12px 12px 16px;border:2px dashed #9DB9CB;border-radius:14px;background:#F6FBFE}
+  .bjw__code strong{color:#0F2947;font:800 22px/1 Inter,system-ui,sans-serif;letter-spacing:.12em}
+  .bjw__copy{flex:0 0 auto;height:36px;padding:0 14px;border:0;border-radius:999px;background:#0F2947;color:#fff;font:700 13px/1 Inter,system-ui,sans-serif;cursor:pointer}
+  .bjw__copy:hover{background:#173F66}
+  .bjw__back{display:block;width:100%;margin:12px 0 0;padding:6px;border:0;background:none;color:#1F5F52;font:700 13.5px/1.35 Inter,system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  .bjw__note{margin:14px 4px 0;color:#7A8FA2;font-size:11.5px;line-height:1.5;text-align:center}
   .bjw__error{margin:0 0 10px;font-size:14px;line-height:1.4;color:#B42318}
-  @media (max-width:600px){.bjw__inner{padding:36px 20px 20px}.bjw__title{font-size:28px}}
+  .bjw button:focus-visible,.bjw a:focus-visible{outline:3px solid #7FC2E7;outline-offset:2px}
+  @media (max-width:420px){.bjw__hero{padding:26px 18px 54px}.bjw__title{font-size:29px;padding-right:84px}.bjw__badge{top:50px;right:14px;width:80px;height:80px}.bjw__sub{max-width:calc(100% - 90px)}.bjw__badge b{font-size:26px}.bjw__body{padding:0 14px 14px}.bjw__code strong{font-size:19px}}
+  @media (prefers-reduced-motion:reduce){dialog.bjw[open],.bjw__badge,.bjw__waves path,.bjw__btn:after{animation:none}.bjw__btn,.bjw__field{transition:none}}
   @media (max-width:760px){.bjw-tab{left:16px;bottom:calc(112px + env(safe-area-inset-bottom) + var(--bjw-lift))}}
 </style>
 
@@ -230,23 +404,70 @@
 </div>
 
 <dialog id="BjwDialog" class="bjw"
+  data-stage="signup"
   data-reward-id="{{ bjw_id }}"
   data-reward-code="{{ bjw_code | escape }}"
+  data-quick-id="{{ bjw_q_id }}"
+  data-quick-code="{{ bjw_q_code | escape }}"
+  data-copied="{{ bjw_c_copied | escape }}"
   data-auto-open="{% if bjw_auto %}true{% else %}false{% endif %}"
   data-delay="15"
   data-has-errors="{% if form.errors %}true{% else %}false{% endif %}"
   aria-labelledby="BjwTitle">
-  <div class="bjw__inner">
-    <button type="button" class="bjw__close" data-bjw-close aria-label="{{ bjw_close | escape }}">&times;</button>
-    <h2 id="BjwTitle" class="bjw__title">{{ bjw_title | escape }}</h2>
-    <p class="bjw__text">{{ bjw_text | escape }}</p>
-    {% form 'customer', return_to: bjw_return_to, id: 'BjwForm', class: 'bjw__form' %}
-      <input type="hidden" name="contact[tags]" value="newsletter,besjaar-welcome-offer,besjaar-welcome-simple-v2,besjaar-welcome-{{ bjw_id }},besjaar-welcome-code-{{ bjw_code | escape }},besjaar-locale-{{ bjw_lang }}">
-      {% if form.errors %}<p class="bjw__error" role="alert">{{ bjw_error | escape }}</p>{% endif %}
-      <input class="bjw__field" type="text" name="contact[first_name]" placeholder="{{ bjw_first | escape }}" autocomplete="given-name" aria-label="{{ bjw_first | escape }}">
-      <input class="bjw__field" type="email" name="contact[email]" placeholder="{{ bjw_email | escape }}" autocomplete="email" required aria-label="{{ bjw_email | escape }}">
-      <button class="bjw__btn" type="submit">{{ bjw_button | escape }}</button>
-    {% endform %}
+  <button type="button" class="bjw__close" data-bjw-close aria-label="{{ bjw_close | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <div class="bjw__hero">
+    <svg class="bjw__waves" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 10 Q50 0 100 10 T200 10 T300 10 T400 10"/><path d="M0 24 Q50 14 100 24 T200 24 T300 24 T400 24"/><path d="M0 38 Q50 28 100 38 T200 38 T300 38 T400 38"/></svg>
+    {%- if bjw_id != 'shipping' %}
+    <div class="bjw__badge" aria-hidden="true">
+      <span class="bjw__badge-in" data-badge-full><b>{{ bjw_big }}</b><small>{{ bjw_c_off | escape }}</small></span>
+      {%- if bjw_quick %}<span class="bjw__badge-in" data-badge-quick><b>{{ bjw_small }}</b><small>{{ bjw_c_off | escape }}</small></span>{% endif %}
+    </div>
+    {%- endif %}
+    <p class="bjw__eyebrow">{{ bjw_c_eyebrow | escape }}</p>
+    <h2 id="BjwTitle" class="bjw__title">{{ bjw_c_pick | escape }}</h2>
+    <p class="bjw__sub">{{ bjw_c_sub | escape }}</p>
+  </div>
+  <div class="bjw__body">
+    <div class="bjw__card" data-bjw-stage="signup">
+      {%- if bjw_quick %}
+      <span class="bjw__ribbon">{{ bjw_c_best | escape }}</span>
+      <div class="bjw__plan">
+        <span class="bjw__plan-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 10a7 7 0 0 1 14 0z"/><path d="M8 13.5v1.5M12 13.5v3M16 13.5v1.5M7 18.5v1M12 19.5v1M17 18.5v1"/></svg></span>
+        <p class="bjw__plan-name">{{ bjw_c_full | escape }}</p>
+      </div>
+      <p class="bjw__plan-text">{{ bjw_c_full_text | escape }}</p>
+      {%- endif %}
+      {% form 'customer', return_to: bjw_return_to, id: 'BjwForm', class: 'bjw__form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter,besjaar-welcome-offer,besjaar-welcome-simple-v2,besjaar-welcome-{{ bjw_id }},besjaar-welcome-code-{{ bjw_code | escape }},besjaar-locale-{{ bjw_lang }}">
+        {% if form.errors %}<p class="bjw__error" role="alert">{{ bjw_error | escape }}</p>{% endif %}
+        <input class="bjw__field" type="text" name="contact[first_name]" placeholder="{{ bjw_first | escape }}" autocomplete="given-name" aria-label="{{ bjw_first | escape }}">
+        <input class="bjw__field" type="email" name="contact[email]" placeholder="{{ bjw_email | escape }}" autocomplete="email" required aria-label="{{ bjw_email | escape }}">
+        <button class="bjw__btn" type="submit">{{ bjw_c_cta | escape }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      {% endform %}
+      {%- if bjw_quick %}
+      <p class="bjw__or">{{ bjw_c_or | escape }}</p>
+      <button type="button" class="bjw__quick" data-bjw-quick>
+        <span class="bjw__quick-pct">{{ bjw_small }}</span>
+        <span class="bjw__quick-label">{{ bjw_c_quick_btn | escape }}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </button>
+      {%- endif %}
+    </div>
+    {%- if bjw_quick %}
+    <div class="bjw__card" data-bjw-stage="quick" hidden>
+      <div class="bjw__plan">
+        <span class="bjw__plan-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5s6 6.4 6 10.8a6 6 0 0 1-12 0C6 9.9 12 3.5 12 3.5z"/></svg></span>
+        <p class="bjw__plan-name">{{ bjw_c_quick_title | escape }}</p>
+      </div>
+      <p class="bjw__plan-text">{{ bjw_c_quick_text | escape }}</p>
+      <div class="bjw__code">
+        <strong data-bjw-code>{{ bjw_q_code | escape }}</strong>
+        <button type="button" class="bjw__copy" data-bjw-copy>{{ bjw_c_copy | escape }}</button>
+      </div>
+      <a class="bjw__btn bjw__btn--navy" href="{{ bjw_q_url }}" data-bjw-apply>{{ bjw_c_apply | escape }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <button type="button" class="bjw__back" data-bjw-back>{{ bjw_c_back | escape }}</button>
+    </div>
+    {%- endif %}
     <p class="bjw__note">{{ bjw_note | escape }}</p>
   </div>
 </dialog>
@@ -263,6 +484,7 @@
     closed: 'besjaar_welcome_offer_closed_session_v3'
   };
   var reward = { id: d.getAttribute('data-reward-id'), code: d.getAttribute('data-reward-code') };
+  var quick = { id: d.getAttribute('data-quick-id'), code: d.getAttribute('data-quick-code') };
   function get(s, k) { try { return JSON.parse(s.getItem(k) || 'null'); } catch (e) { return null; } }
   function set(s, k, v) { try { s.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function del(s, k) { try { s.removeItem(k); } catch (e) {} }
@@ -314,8 +536,10 @@
 
   /* Landed here after Shopify's /discount/CODE redirect: the code is saved for this shopper. */
   var p = new URLSearchParams(location.search);
-  if (p.get('besjaar_offer_claimed')) {
-    set(localStorage, K.claimed, { at: Date.now(), reward: reward.id, code: reward.code, status: 'active' });
+  var marker = p.get('besjaar_offer_claimed');
+  if (marker) {
+    var landed = marker === quick.id ? quick : reward;
+    set(localStorage, K.claimed, { at: Date.now(), reward: landed.id, code: landed.code, status: 'active' });
     del(sessionStorage, K.pending);
     p.delete('besjaar_offer_claimed');
     var q = p.toString();
@@ -325,8 +549,16 @@
   var ttl = claim && claim.status === 'pending' ? 10 * 60 * 1000 : 2 * 24 * 60 * 60 * 1000;
   var claimed = !!(claim && claim.at && (Date.now() - Number(claim.at)) < ttl);
 
+  /* "signup" shows the sign-up card, "quick" the no-sign-up code. */
+  function stage(name) {
+    d.setAttribute('data-stage', name);
+    Array.prototype.forEach.call(d.querySelectorAll('[data-bjw-stage]'), function (card) {
+      card.hidden = card.getAttribute('data-bjw-stage') !== name;
+    });
+  }
   function open() {
     if (d.open) return;
+    stage('signup');
     if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
     set(sessionStorage, K.seen, { at: Date.now() });
     if (tab) tab.hidden = true;
@@ -346,6 +578,33 @@
     /* Shopify posts the form natively and redirects to /discount/CODE. Mark the claim as pending so nothing reopens meanwhile. */
     set(sessionStorage, K.pending, { at: Date.now(), reward: reward.id, code: reward.code });
     set(localStorage, K.claimed, { at: Date.now(), reward: reward.id, code: reward.code, status: 'pending' });
+  });
+  var quickBtn = d.querySelector('[data-bjw-quick]');
+  if (quickBtn) quickBtn.addEventListener('click', function () {
+    stage('quick');
+    var apply = d.querySelector('[data-bjw-apply]');
+    if (apply) apply.focus();
+  });
+  var back = d.querySelector('[data-bjw-back]');
+  if (back) back.addEventListener('click', function () {
+    stage('signup');
+    var f = d.querySelector('input[type="email"]');
+    if (f) f.focus();
+  });
+  var copy = d.querySelector('[data-bjw-copy]');
+  if (copy) copy.addEventListener('click', function () {
+    var label = copy.textContent;
+    function done() { copy.textContent = d.getAttribute('data-copied') || label; setTimeout(function () { copy.textContent = label; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(quick.code).then(done, function () {});
+    else {
+      var t = document.createElement('textarea'); t.value = quick.code; t.setAttribute('readonly', ''); t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select(); try { document.execCommand('copy'); done(); } catch (e) {} t.remove();
+    }
+  });
+  var applyLink = d.querySelector('[data-bjw-apply]');
+  if (applyLink) applyLink.addEventListener('click', function () {
+    /* Shopify applies the code through /discount/CODE and lands on the shop with ?besjaar_offer_claimed=10. */
+    set(localStorage, K.claimed, { at: Date.now(), reward: quick.id, code: quick.code, status: 'pending' });
   });
   if (tab) {
     tab.querySelector('[data-bjw-open]').addEventListener('click', function () { del(sessionStorage, K.closed); open(); });
