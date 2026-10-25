@@ -10,6 +10,12 @@
   The section only renders on products whose type is in "Product types" and
   only when at least one video applies, so the filter refill and the hose
   pages stay unchanged and an empty section never shows.
+
+  Layout: copy on the left, a row of portrait video cards on the right
+  (stacked on mobile, where the row scrolls edge to edge). Each card shows
+  the poster with a play button, the duration and the block's title; the
+  overlay hides while the video plays with native controls. Without
+  JavaScript the videos simply keep their native controls.
 {%- endcomment -%}
 {%- liquid
   assign ptype = product.type | downcase | strip
@@ -49,114 +55,293 @@
   endif
 
   assign v_lang = request.locale.iso_code | split: '-' | first | downcase
-  if section.settings.use_localized_copy
-    case v_lang
-      when 'en'
-        assign v_kicker = 'IN ACTION'
-        assign v_heading = 'See the difference in the shower.'
-        assign v_note = 'The spray, the modes and everyday use, on video.'
-        assign v_play = 'Video'
-      when 'de'
-        assign v_kicker = 'IN AKTION'
-        assign v_heading = 'Sieh den Unterschied unter der Dusche.'
-        assign v_note = 'Der Strahl, die Strahlarten und die Anwendung im Video.'
-        assign v_play = 'Video'
-      when 'fr'
-        assign v_kicker = 'EN ACTION'
-        assign v_heading = 'Voyez la différence sous la douche.'
-        assign v_note = 'Le jet, les modes et l’utilisation au quotidien, en vidéo.'
-        assign v_play = 'Vidéo'
-      when 'es'
-        assign v_kicker = 'EN ACCIÓN'
-        assign v_heading = 'Mira la diferencia en la ducha.'
-        assign v_note = 'El chorro, los modos y el uso diario, en vídeo.'
-        assign v_play = 'Vídeo'
-      else
-        assign v_kicker = 'IN ACTIE'
-        assign v_heading = 'Zie het verschil onder de douche.'
-        assign v_note = 'De straal, de standen en het dagelijks gebruik in beeld.'
-        assign v_play = 'Video'
-    endcase
-  else
+  case v_lang
+    when 'en'
+      assign v_kicker = 'IN ACTION'
+      assign v_heading = 'See the difference in the shower.'
+      assign v_note = 'The spray, the modes and everyday use, on video.'
+      assign v_one = 'video'
+      assign v_many = 'videos'
+      assign v_hint = 'Tap to play with sound'
+      assign v_play = 'Play video'
+      assign v_prev = 'Previous video'
+      assign v_next = 'Next video'
+    when 'de'
+      assign v_kicker = 'IN AKTION'
+      assign v_heading = 'Sieh den Unterschied unter der Dusche.'
+      assign v_note = 'Der Strahl, die Strahlarten und die Anwendung im Video.'
+      assign v_one = 'Video'
+      assign v_many = 'Videos'
+      assign v_hint = 'Tippen zum Abspielen mit Ton'
+      assign v_play = 'Video abspielen'
+      assign v_prev = 'Vorheriges Video'
+      assign v_next = 'Nächstes Video'
+    when 'fr'
+      assign v_kicker = 'EN ACTION'
+      assign v_heading = 'Voyez la différence sous la douche.'
+      assign v_note = 'Le jet, les modes et l’utilisation au quotidien, en vidéo.'
+      assign v_one = 'vidéo'
+      assign v_many = 'vidéos'
+      assign v_hint = 'Touchez pour lire avec le son'
+      assign v_play = 'Lire la vidéo'
+      assign v_prev = 'Vidéo précédente'
+      assign v_next = 'Vidéo suivante'
+    when 'es'
+      assign v_kicker = 'EN ACCIÓN'
+      assign v_heading = 'Mira la diferencia en la ducha.'
+      assign v_note = 'El chorro, los modos y el uso diario, en vídeo.'
+      assign v_one = 'vídeo'
+      assign v_many = 'vídeos'
+      assign v_hint = 'Toca para reproducir con sonido'
+      assign v_play = 'Reproducir vídeo'
+      assign v_prev = 'Vídeo anterior'
+      assign v_next = 'Vídeo siguiente'
+    else
+      assign v_kicker = 'IN ACTIE'
+      assign v_heading = 'Zie het verschil onder de douche.'
+      assign v_note = 'De straal, de standen en het dagelijks gebruik in beeld.'
+      assign v_one = 'video'
+      assign v_many = "video's"
+      assign v_hint = 'Tik om af te spelen met geluid'
+      assign v_play = 'Video afspelen'
+      assign v_prev = 'Vorige video'
+      assign v_next = 'Volgende video'
+  endcase
+  unless section.settings.use_localized_copy
     assign v_kicker = section.settings.kicker
     assign v_heading = section.settings.heading
     assign v_note = section.settings.note
-    assign v_play = 'Video'
+  endunless
+  if shown == 1
+    assign v_count = v_one
+  else
+    assign v_count = v_many
   endif
 -%}
 {%- if render_section -%}
-<section class="besjaar-store bj-cvid" id="bj-cvid-{{ section.id }}" aria-labelledby="BjCvid-{{ section.id }}">
-  <div class="besjaar-store-shell">
-    <div class="bj-cvid__copy">
-      <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
-      <h2 class="besjaar-store-h2" id="BjCvid-{{ section.id }}">{{ v_heading | escape }}</h2>
-      {%- if v_note != blank -%}<p class="bj-cvid__note">{{ v_note | escape }}</p>{%- endif -%}
+<section class="bj-vid" id="bj-vid-{{ section.id }}" aria-labelledby="BjVid-{{ section.id }}">
+  <div class="bj-vid__inner">
+    <div class="bj-vid__copy">
+      {%- if v_kicker != blank -%}<span class="bj-vid__kicker">{{ v_kicker | escape }}</span>{%- endif -%}
+      <h2 class="bj-vid__heading" id="BjVid-{{ section.id }}">{{ v_heading | escape }}</h2>
+      {%- if v_note != blank -%}<p class="bj-vid__note">{{ v_note | escape }}</p>{%- endif -%}
+      {%- if shown > 0 -%}
+        <div class="bj-vid__meta">
+          <span class="bj-vid__count">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            {{ shown }} {{ v_count }}
+          </span>
+          <span class="bj-vid__hint">{{ v_hint }}</span>
+        </div>
+        <div class="bj-vid__nav" data-bj-vid-nav hidden>
+          <button type="button" class="bj-vid__arrow" data-bj-vid-prev aria-label="{{ v_prev }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <button type="button" class="bj-vid__arrow" data-bj-vid-next aria-label="{{ v_next }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      {%- endif -%}
     </div>
 
-    <ul class="bj-cvid__list" role="list">
-      {%- for block in section.blocks -%}
-        {%- if block.settings.video == blank -%}{%- continue -%}{%- endif -%}
-        {%- case block.settings.show_on -%}
-          {%- when '3-standen' -%}
-            {%- unless product.tags contains '3-standen' -%}{%- continue -%}{%- endunless -%}
-          {%- when '10-standen' -%}
-            {%- unless product.tags contains '10-standen' -%}{%- continue -%}{%- endunless -%}
-        {%- endcase -%}
-        {%- liquid
-          assign v_label = v_play
-          if block.settings.title != blank
-            assign v_label = v_play | append: ' — ' | append: block.settings.title
-          endif
-        -%}
-        <li class="bj-cvid__item" {{ block.shopify_attributes }}>
-          <figure class="bj-cvid__card">
-            <div class="bj-cvid__media" role="group" aria-label="{{ v_label | escape }}">
-              {{ block.settings.video | video_tag: controls: true, playsinline: true, preload: 'metadata', image_size: '720x' }}
-            </div>
-            {%- if block.settings.title != blank or block.settings.text != blank -%}
-              <figcaption class="bj-cvid__caption">
-                {%- if block.settings.title != blank -%}<span class="bj-cvid__title">{{ block.settings.title | escape }}</span>{%- endif -%}
-                {%- if block.settings.text != blank -%}<p class="bj-cvid__text">{{ block.settings.text | escape }}</p>{%- endif -%}
-              </figcaption>
-            {%- endif -%}
-          </figure>
-        </li>
-      {%- endfor -%}
-      {%- if shown == 0 -%}
-        <li class="bj-cvid__empty">Voeg een blok "Video" toe en kies een video. Klanten zien deze sectie pas als er een video in staat.</li>
-      {%- endif -%}
-    </ul>
+    <div class="bj-vid__rail" data-bj-vid-rail>
+      <ul class="bj-vid__list" role="list">
+        {%- for block in section.blocks -%}
+          {%- if block.settings.video == blank -%}{%- continue -%}{%- endif -%}
+          {%- case block.settings.show_on -%}
+            {%- when '3-standen' -%}
+              {%- unless product.tags contains '3-standen' -%}{%- continue -%}{%- endunless -%}
+            {%- when '10-standen' -%}
+              {%- unless product.tags contains '10-standen' -%}{%- continue -%}{%- endunless -%}
+          {%- endcase -%}
+          {%- liquid
+            assign vid = block.settings.video
+            assign secs = vid.duration | plus: 500 | divided_by: 1000
+            assign mins = secs | divided_by: 60
+            assign rest = secs | modulo: 60
+            if rest < 10
+              assign rest = rest | prepend: '0'
+            endif
+            assign v_label = v_play
+            if block.settings.title != blank
+              assign v_label = v_play | append: ': ' | append: block.settings.title
+            endif
+          -%}
+          <li class="bj-vid__item" {{ block.shopify_attributes }}>
+            <figure class="bj-vid__card">
+              <div class="bj-vid__media">
+                {{ vid | video_tag: controls: true, playsinline: true, preload: 'none', image_size: '720x' }}
+              </div>
+              {%- if secs > 0 -%}
+                <span class="bj-vid__time" aria-hidden="true">{{ mins }}:{{ rest }}</span>
+              {%- endif -%}
+              {%- if block.settings.title != blank or block.settings.text != blank -%}
+                <figcaption class="bj-vid__caption">
+                  {%- if block.settings.title != blank -%}<span class="bj-vid__title">{{ block.settings.title | escape }}</span>{%- endif -%}
+                  {%- if block.settings.text != blank -%}<span class="bj-vid__text">{{ block.settings.text | escape }}</span>{%- endif -%}
+                </figcaption>
+              {%- endif -%}
+              <button type="button" class="bj-vid__play" aria-label="{{ v_label | escape }}" hidden>
+                <span class="bj-vid__play-icon">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+                </span>
+              </button>
+            </figure>
+          </li>
+        {%- endfor -%}
+        {%- if shown == 0 -%}
+          <li class="bj-vid__empty">Voeg een blok "Video" toe en kies een video. Klanten zien deze sectie pas als er een video in staat.</li>
+        {%- endif -%}
+      </ul>
+    </div>
   </div>
 </section>
 <style>
-  .bj-cvid__copy{max-width:44ch}
-  .bj-cvid__note{margin:8px 0 0;color:var(--bj-muted,#49627D)}
-  .bj-cvid__list{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,72%);gap:14px;margin:22px 0 0;padding:0 0 8px;list-style:none;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
-  .bj-cvid__empty{padding:24px;border:1px dashed var(--bj-line,rgba(21,50,82,.24));border-radius:20px;color:var(--bj-muted,#49627D)}
-  .bj-cvid__item{scroll-snap-align:start;min-width:0}
-  .bj-cvid__card{display:flex;flex-direction:column;height:100%;margin:0;border:1px solid var(--bj-line,rgba(21,50,82,.12));border-radius:20px;background:#FFFFFF;overflow:hidden;box-shadow:0 18px 40px rgba(15,41,71,.08)}
-  .bj-cvid__media{position:relative;aspect-ratio:9/16;background:var(--bj-navy-deep,#0F2947)}
-  .bj-cvid__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-  .bj-cvid__caption{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px}
-  .bj-cvid__title{color:var(--bj-navy-deep,#0F2947);font-size:.98rem;font-weight:700;line-height:1.3}
-  .bj-cvid__text{margin:0;color:var(--bj-muted,#49627D);font-size:.9rem;line-height:1.45}
-  @media (min-width:560px){
-    .bj-cvid__list{grid-auto-columns:minmax(220px,42%)}
+  .bj-vid{--bjv-ink:#10231c;--bjv-navy:#173555;--bjv-deep:#102b48;--bjv-night:#04121f;--bjv-muted:#55636f;--bjv-line:#dfe6ec;--bjv-sky:#38bdf8;--bjv-sky-ink:#0369a1;--bjv-pad:clamp(16px,4vw,48px);--bjv-fade:72px;
+    position:relative;isolation:isolate;overflow:hidden;padding:clamp(56px,7vw,104px) 0;color:var(--bjv-ink);
+    background:radial-gradient(760px 420px at 100% 0%,rgba(56,189,248,.14),transparent 65%),radial-gradient(620px 380px at 0% 100%,rgba(23,53,85,.06),transparent 60%),linear-gradient(180deg,#f2f6f9 0%,#ffffff 100%)}
+  .bj-vid *,.bj-vid *::before,.bj-vid *::after{box-sizing:border-box}
+  .bj-vid__inner{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:clamp(28px,5vw,72px);max-width:1320px;margin:0 auto;padding:0 var(--bjv-pad)}
+  .bj-vid__copy{max-width:30rem}
+  .bj-vid .bj-vid__kicker{display:inline-flex;align-items:center;gap:10px;color:var(--bjv-sky-ink);font:700 .76rem/1.2 Inter,'Inter Fallback',sans-serif;letter-spacing:.16em;text-transform:uppercase}
+  .bj-vid .bj-vid__kicker::before{content:"";width:28px;height:2px;border-radius:2px;background:currentColor}
+  .bj-vid .bj-vid__heading{margin:16px 0 0;color:var(--bjv-deep);font:600 clamp(2rem,3.6vw,3.2rem)/1.04 'Jost','Jost Fallback',Inter,sans-serif;letter-spacing:-.03em;text-wrap:balance}
+  .bj-vid .bj-vid__note{margin:18px 0 0;max-width:38ch;color:var(--bjv-muted);font:400 1rem/1.65 Inter,'Inter Fallback',sans-serif}
+  .bj-vid__meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:26px}
+  .bj-vid__count{display:inline-flex;align-items:center;gap:8px;padding:7px 14px 7px 8px;border-radius:999px;background:var(--bjv-deep);color:#fff;font:600 .84rem/1.2 Inter,'Inter Fallback',sans-serif}
+  .bj-vid__count svg{width:22px;height:22px;padding:5px;border-radius:50%;background:linear-gradient(140deg,#7dd3fc,#0ea5e9);fill:var(--bjv-night)}
+  .bj-vid__hint{color:var(--bjv-muted);font:500 .84rem/1.3 Inter,'Inter Fallback',sans-serif}
+  .bj-vid__nav{display:flex;gap:10px;margin-top:28px}
+  .bj-vid__nav[hidden]{display:none}
+  .bj-vid__arrow{display:grid;place-items:center;width:48px;height:48px;padding:0;border:1px solid var(--bjv-line);border-radius:50%;background:#fff;color:var(--bjv-deep);cursor:pointer;box-shadow:0 8px 20px -12px rgba(16,43,72,.35);transition:background-color .2s ease,border-color .2s ease,color .2s ease,opacity .2s ease}
+  .bj-vid__arrow svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .bj-vid__arrow:hover:not(:disabled){border-color:var(--bjv-deep);background:var(--bjv-deep);color:#fff}
+  .bj-vid__arrow:disabled{opacity:.4;cursor:default}
+  /* The rail scrolls, so it clips; the padding leaves room for the card shadows. */
+  .bj-vid__rail{min-width:0;margin:-24px -36px -72px;padding:24px 36px 72px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:36px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .bj-vid__rail.is-more-right{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - var(--bjv-fade)),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - var(--bjv-fade)),transparent)}
+  .bj-vid__rail.is-more-left{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--bjv-fade));mask-image:linear-gradient(90deg,transparent,#000 var(--bjv-fade))}
+  .bj-vid__rail.is-more-left.is-more-right{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--bjv-fade),#000 calc(100% - var(--bjv-fade)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--bjv-fade),#000 calc(100% - var(--bjv-fade)),transparent)}
+  .bj-vid__rail::-webkit-scrollbar{display:none}
+  .bj-vid__list{display:flex;gap:clamp(14px,1.6vw,22px);width:max-content;max-width:none;margin:0 auto;padding:0;list-style:none}
+  .bj-vid__item{flex:0 0 clamp(240px,23vw,320px);margin:0;scroll-snap-align:start}
+  .bj-vid__card{position:relative;margin:0;aspect-ratio:9/16;border-radius:26px;overflow:hidden;background:var(--bjv-night);transform:translateZ(0);box-shadow:0 34px 60px -30px rgba(16,43,72,.55),0 0 0 1px rgba(16,43,72,.06);transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .45s ease}
+  .bj-vid__media{position:absolute;inset:0}
+  .bj-vid__media video{display:block;width:100%;height:100%;object-fit:cover;background:var(--bjv-night)}
+  .bj-vid__media::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(4,18,31,.38) 0%,rgba(4,18,31,0) 24%,rgba(4,18,31,0) 48%,rgba(4,18,31,.88) 100%);transition:opacity .3s ease}
+  .bj-vid__time{position:absolute;z-index:1;top:14px;left:14px;padding:6px 11px;border-radius:999px;background:rgba(4,18,31,.55);color:#fff;font:600 .76rem/1 Inter,'Inter Fallback',sans-serif;letter-spacing:.02em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s ease}
+  .bj-vid__caption{position:absolute;z-index:1;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:6px;padding:22px 20px 22px;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+  .bj-vid .bj-vid__title{color:#fff;font:600 1.16rem/1.2 'Jost','Jost Fallback',Inter,sans-serif;letter-spacing:-.01em;text-wrap:balance}
+  .bj-vid .bj-vid__text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:rgba(224,242,254,.84);font:400 .88rem/1.45 Inter,'Inter Fallback',sans-serif}
+  .bj-vid__play{position:absolute;z-index:2;inset:0;display:grid;place-items:center;width:100%;height:100%;margin:0;padding:0 0 18%;border:0;border-radius:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
+  .bj-vid__play[hidden]{display:none}
+  .bj-vid__play-icon{position:relative;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 18px 40px -12px rgba(4,18,31,.6);transition:transform .35s cubic-bezier(.2,.7,.2,1),background-color .25s ease}
+  .bj-vid__play-icon::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1.5px solid rgba(255,255,255,.55);animation:bj-vid-ring 2.4s ease-out infinite}
+  .bj-vid__play-icon svg{width:28px;height:28px;margin-left:4px;fill:var(--bjv-deep)}
+  .bj-vid__play:focus-visible{outline:none}
+  .bj-vid__play:focus-visible .bj-vid__play-icon{outline:3px solid var(--bjv-sky);outline-offset:6px}
+  @keyframes bj-vid-ring{0%{opacity:.9;transform:scale(.9)}80%,100%{opacity:0;transform:scale(1.25)}}
+  @media (hover:hover){
+    .bj-vid__card:hover{transform:translateY(-6px);box-shadow:0 44px 70px -30px rgba(16,43,72,.6),0 0 0 1px rgba(16,43,72,.06)}
+    .bj-vid__card:hover .bj-vid__play-icon{transform:scale(1.08);background:#fff}
   }
-  @media (min-width:901px){
-    .bj-cvid__list{grid-auto-flow:row;grid-auto-columns:auto;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;overflow:visible;scroll-snap-type:none}
+  .bj-vid__card.is-playing{transform:none}
+  .bj-vid__card.is-playing .bj-vid__play,.bj-vid__card.is-playing .bj-vid__time,.bj-vid__card.is-playing .bj-vid__media::after{opacity:0;visibility:hidden;pointer-events:none}
+  .bj-vid__card.is-playing .bj-vid__caption{opacity:0;transform:translateY(8px)}
+  .bj-vid:not(.bj-vid--js) .bj-vid__caption,.bj-vid:not(.bj-vid--js) .bj-vid__time,.bj-vid:not(.bj-vid--js) .bj-vid__media::after{display:none}
+  .bj-vid__empty{flex:0 0 min(100%,420px);padding:28px;border:1px dashed #b9c6d1;border-radius:24px;background:#fff;color:var(--bjv-muted);font:500 .92rem/1.6 Inter,'Inter Fallback',sans-serif}
+  @media (max-width:989px){
+    .bj-vid{--bjv-fade:20px}
+    .bj-vid__inner{grid-template-columns:minmax(0,1fr);gap:28px}
+    .bj-vid__copy{max-width:36rem}
+    .bj-vid .bj-vid__heading{font-size:clamp(1.9rem,7.4vw,2.5rem)}
+    .bj-vid__nav{display:none}
+    .bj-vid__rail{margin-inline:calc(-1 * var(--bjv-pad));padding-inline:var(--bjv-pad);scroll-padding-inline:var(--bjv-pad)}
+    .bj-vid__list{margin:0}
+    .bj-vid__item{flex-basis:min(68vw,300px)}
+    .bj-vid__card{border-radius:22px}
+    .bj-vid__play-icon{width:64px;height:64px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .bj-vid *{animation:none!important;transition:none!important}
+    .bj-vid__card:hover{transform:none}
   }
 </style>
 <script>
   (function () {
-    var root = document.getElementById('bj-cvid-{{ section.id }}');
+    var root = document.getElementById('bj-vid-{{ section.id }}');
     if (!root) return;
-    // One video at a time: starting one pauses the others.
-    root.addEventListener('play', function (e) {
-      root.querySelectorAll('video').forEach(function (v) {
-        if (v !== e.target) v.pause();
+    root.classList.add('bj-vid--js');
+    var cards = Array.prototype.slice.call(root.querySelectorAll('.bj-vid__card'));
+
+    cards.forEach(function (card) {
+      var video = card.querySelector('video');
+      var button = card.querySelector('.bj-vid__play');
+      if (!video || !button) return;
+      // The overlay button takes over from the native controls until the video plays.
+      video.controls = false;
+      button.hidden = false;
+      button.addEventListener('click', function () {
+        video.controls = true;
+        var playing = video.play();
+        if (playing && playing.catch) playing.catch(function () {});
       });
-    }, true);
+      video.addEventListener('play', function () {
+        // One video at a time: starting one pauses the others.
+        cards.forEach(function (other) {
+          var v = other.querySelector('video');
+          if (v && v !== video && !v.paused) v.pause();
+        });
+        card.classList.add('is-playing');
+      });
+      video.addEventListener('pause', function () {
+        if (!video.seeking) card.classList.remove('is-playing');
+      });
+      video.addEventListener('ended', function () {
+        video.controls = false;
+        card.classList.remove('is-playing');
+      });
+    });
+
+    // Pause a playing video once it scrolls out of view.
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting && !entry.target.paused) entry.target.pause();
+        });
+      }, { threshold: 0.25 });
+      cards.forEach(function (card) {
+        var v = card.querySelector('video');
+        if (v) io.observe(v);
+      });
+    }
+
+    // Arrow buttons, only when the row is wider than its column.
+    var rail = root.querySelector('[data-bj-vid-rail]');
+    var nav = root.querySelector('[data-bj-vid-nav]');
+    if (!rail || !nav) return;
+    var list = rail.firstElementChild;
+    var prev = nav.querySelector('[data-bj-vid-prev]');
+    var next = nav.querySelector('[data-bj-vid-next]');
+    function update() {
+      var max = rail.scrollWidth - rail.clientWidth;
+      nav.hidden = max <= 4;
+      prev.disabled = rail.scrollLeft <= 4;
+      next.disabled = rail.scrollLeft >= max - 4;
+      rail.classList.toggle('is-more-left', max > 4 && !prev.disabled);
+      rail.classList.toggle('is-more-right', max > 4 && !next.disabled);
+    }
+    function step(dir) {
+      var item = list.querySelector('.bj-vid__item');
+      var gap = parseFloat(getComputedStyle(list).columnGap) || 0;
+      var width = item ? item.getBoundingClientRect().width + gap : rail.clientWidth * 0.8;
+      rail.scrollBy({ left: dir * width, behavior: 'smooth' });
+    }
+    prev.addEventListener('click', function () { step(-1); });
+    next.addEventListener('click', function () { step(1); });
+    rail.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   })();
 </script>
 {%- endif -%}
