@@ -16,6 +16,12 @@
   the poster with a play button, the duration and the block's title; the
   overlay hides while the video plays with native controls. Without
   JavaScript the videos simply keep their native controls.
+
+  So shoppers see the videos before scrolling, the script also puts a
+  "watch it in action" button on the main product photo (the gallery stage
+  of besjaar-store-product). It only exists when this section renders, so
+  products without videos get no button; it scrolls here and starts the
+  first video.
 {%- endcomment -%}
 {%- liquid
   assign ptype = product.type | downcase | strip
@@ -66,6 +72,7 @@
       assign v_play = 'Play video'
       assign v_prev = 'Previous video'
       assign v_next = 'Next video'
+      assign v_jump = 'Watch it in action'
     when 'de'
       assign v_kicker = 'IN AKTION'
       assign v_heading = 'Sieh den Unterschied unter der Dusche.'
@@ -76,6 +83,7 @@
       assign v_play = 'Video abspielen'
       assign v_prev = 'Vorheriges Video'
       assign v_next = 'Nächstes Video'
+      assign v_jump = 'In Aktion ansehen'
     when 'fr'
       assign v_kicker = 'EN ACTION'
       assign v_heading = 'Voyez la différence sous la douche.'
@@ -86,6 +94,7 @@
       assign v_play = 'Lire la vidéo'
       assign v_prev = 'Vidéo précédente'
       assign v_next = 'Vidéo suivante'
+      assign v_jump = 'Voir en action'
     when 'es'
       assign v_kicker = 'EN ACCIÓN'
       assign v_heading = 'Mira la diferencia en la ducha.'
@@ -96,6 +105,7 @@
       assign v_play = 'Reproducir vídeo'
       assign v_prev = 'Vídeo anterior'
       assign v_next = 'Vídeo siguiente'
+      assign v_jump = 'Ver en acción'
     else
       assign v_kicker = 'IN ACTIE'
       assign v_heading = 'Zie het verschil onder de douche.'
@@ -106,12 +116,35 @@
       assign v_play = 'Video afspelen'
       assign v_prev = 'Vorige video'
       assign v_next = 'Volgende video'
+      assign v_jump = 'Bekijk in actie'
   endcase
   unless section.settings.use_localized_copy
     assign v_kicker = section.settings.kicker
     assign v_heading = section.settings.heading
     assign v_note = section.settings.note
   endunless
+  assign v_jump_poster = ''
+  if shown > 0
+    for block in section.blocks
+      if block.settings.video == blank
+        continue
+      endif
+      case block.settings.show_on
+        when '3-standen'
+          unless product.tags contains '3-standen'
+            continue
+          endunless
+        when '10-standen'
+          unless product.tags contains '10-standen'
+            continue
+          endunless
+      endcase
+      if block.settings.video.preview_image
+        assign v_jump_poster = block.settings.video.preview_image | image_url: width: 96
+      endif
+      break
+    endfor
+  endif
   if shown == 1
     assign v_count = v_one
   else
@@ -119,7 +152,8 @@
   endif
 -%}
 {%- if render_section -%}
-<section class="bj-vid" id="bj-vid-{{ section.id }}" aria-labelledby="BjVid-{{ section.id }}">
+<section class="bj-vid" id="bj-vid-{{ section.id }}" aria-labelledby="BjVid-{{ section.id }}" data-jump-label="{{ v_jump | escape }}" data-jump-count="{{ shown }}" data-jump-poster="{{ v_jump_poster }}">
+  <span class="bj-vid__anchor" id="besjaar-videos" aria-hidden="true"></span>
   <div class="bj-vid__inner">
     <div class="bj-vid__copy">
       {%- if v_kicker != blank -%}<span class="bj-vid__kicker">{{ v_kicker | escape }}</span>{%- endif -%}
@@ -201,6 +235,18 @@
     position:relative;isolation:isolate;overflow:hidden;padding:clamp(56px,7vw,104px) 0;color:var(--bjv-ink);
     background:radial-gradient(760px 420px at 100% 0%,rgba(56,189,248,.14),transparent 65%),radial-gradient(620px 380px at 0% 100%,rgba(23,53,85,.06),transparent 60%),linear-gradient(180deg,#f2f6f9 0%,#ffffff 100%)}
   .bj-vid *,.bj-vid *::before,.bj-vid *::after{box-sizing:border-box}
+  .bj-vid__anchor{position:absolute;top:0;scroll-margin-top:84px}
+  /* Button on the product photo; lives outside .bj-vid, so it carries its own tokens. */
+  .bj-vid-jump{position:absolute;z-index:4;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:10px;max-width:calc(100% - 96px);padding:5px 16px 5px 5px;border:0;border-radius:999px;background:rgba(255,255,255,.96);color:#102b48;font:700 .84rem/1.2 Inter,'Inter Fallback',sans-serif;text-decoration:none;box-shadow:0 12px 28px -10px rgba(4,18,31,.45),0 0 0 1px rgba(16,43,72,.08);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s ease}
+  .bj-vid-jump:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(4,18,31,.5),0 0 0 1px rgba(16,43,72,.1)}
+  .bj-vid-jump:focus-visible{outline:3px solid #38bdf8;outline-offset:3px}
+  .bj-vid-jump__thumb{position:relative;flex:0 0 38px;width:38px;height:38px;border-radius:50%;overflow:hidden;background:linear-gradient(140deg,#7dd3fc,#0ea5e9)}
+  .bj-vid-jump__thumb img{display:block;width:100%;height:100%;object-fit:cover}
+  .bj-vid-jump__thumb::after{content:"";position:absolute;inset:0;background:rgba(4,18,31,.32)}
+  .bj-vid-jump__thumb svg{position:absolute;z-index:1;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -6px;fill:#fff}
+  .bj-vid-jump__label{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .bj-vid-jump__count{flex:0 0 auto;display:grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#102b48;color:#fff;font-size:.72rem}
+  @media (max-width:760px){.bj-vid-jump{left:12px;bottom:12px;gap:8px;padding:4px 13px 4px 4px;font-size:.78rem}.bj-vid-jump__thumb{flex-basis:34px;width:34px;height:34px}}
   .bj-vid__inner{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:clamp(28px,5vw,72px);max-width:1320px;margin:0 auto;padding:0 var(--bjv-pad)}
   .bj-vid__copy{max-width:30rem}
   .bj-vid .bj-vid__kicker{display:inline-flex;align-items:center;gap:10px;color:var(--bjv-sky-ink);font:700 .76rem/1.2 Inter,'Inter Fallback',sans-serif;letter-spacing:.16em;text-transform:uppercase}
@@ -263,7 +309,7 @@
     .bj-vid__play-icon{width:64px;height:64px}
   }
   @media (prefers-reduced-motion:reduce){
-    .bj-vid *{animation:none!important;transition:none!important}
+    .bj-vid *,.bj-vid-jump{animation:none!important;transition:none!important}
     .bj-vid__card:hover{transform:none}
   }
 </style>
@@ -314,6 +360,50 @@
         var v = card.querySelector('video');
         if (v) io.observe(v);
       });
+    }
+
+    // "Watch it in action" button on the main product photo.
+    var stage = document.querySelector('[data-besjaar-product-section] .besjaar-store-premium-pd__stage');
+    if (stage && cards.length && !stage.querySelector('.bj-vid-jump')) {
+      var jump = document.createElement('a');
+      jump.className = 'bj-vid-jump';
+      jump.href = '#besjaar-videos';
+      var thumb = document.createElement('span');
+      thumb.className = 'bj-vid-jump__thumb';
+      thumb.setAttribute('aria-hidden', 'true');
+      if (root.dataset.jumpPoster) {
+        var img = document.createElement('img');
+        img.src = root.dataset.jumpPoster;
+        img.alt = '';
+        img.width = 38;
+        img.height = 38;
+        img.loading = 'lazy';
+        thumb.appendChild(img);
+      }
+      thumb.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l10.5-6.5z"/></svg>');
+      var label = document.createElement('span');
+      label.className = 'bj-vid-jump__label';
+      label.textContent = root.dataset.jumpLabel;
+      jump.appendChild(thumb);
+      jump.appendChild(label);
+      if (Number(root.dataset.jumpCount) > 1) {
+        var count = document.createElement('span');
+        count.className = 'bj-vid-jump__count';
+        count.setAttribute('aria-hidden', 'true');
+        count.textContent = root.dataset.jumpCount;
+        jump.appendChild(count);
+      }
+      jump.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var anchor = document.getElementById('besjaar-videos') || root;
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        anchor.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        // Still inside the tap, so the browser allows playing with sound.
+        var first = cards[0].querySelector('.bj-vid__play');
+        if (first && !first.hidden) first.click();
+      });
+      stage.appendChild(jump);
     }
 
     // Arrow buttons, only when the row is wider than its column.
