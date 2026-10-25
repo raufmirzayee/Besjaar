@@ -1,7 +1,10 @@
 {%- comment -%}
-  Besjaar 25 Oct 2026 — "see it in action" videos on the product page.
+  Besjaar 25 Oct 2026 — customer videos on the product page.
 
-  Each block is one video, picked from Content > Files in the theme editor.
+  Each block is one video a customer sent in, picked from Content > Files in
+  the theme editor. The copy says so plainly: these are phone videos from
+  customers, not studio footage. Each card carries a "customer video" badge
+  and, optionally, the customer's name (only with their permission).
   Because every showerhead uses the default product template, one set of
   blocks covers all of them; the "Show on" setting keeps a 10-mode filter
   video off the 3-mode pages and the other way round (matched on the
@@ -63,60 +66,70 @@
   assign v_lang = request.locale.iso_code | split: '-' | first | downcase
   case v_lang
     when 'en'
-      assign v_kicker = 'IN ACTION'
-      assign v_heading = 'See the difference in the shower.'
-      assign v_note = 'The spray, the modes and everyday use, on video.'
-      assign v_one = 'video'
-      assign v_many = 'videos'
+      assign v_kicker = 'CUSTOMER VIDEOS'
+      assign v_heading = 'Real customers, real showers.'
+      assign v_note = 'Customers sent us these videos, filmed on their own phone in their own bathroom.'
+      assign v_one = 'customer video'
+      assign v_many = 'customer videos'
+      assign v_badge = 'Customer video'
+      assign v_by = 'Filmed by'
       assign v_hint = 'Tap to play with sound'
       assign v_play = 'Play video'
       assign v_prev = 'Previous video'
       assign v_next = 'Next video'
-      assign v_jump = 'Watch it in action'
+      assign v_jump = 'Watch customer videos'
     when 'de'
-      assign v_kicker = 'IN AKTION'
-      assign v_heading = 'Sieh den Unterschied unter der Dusche.'
-      assign v_note = 'Der Strahl, die Strahlarten und die Anwendung im Video.'
-      assign v_one = 'Video'
-      assign v_many = 'Videos'
+      assign v_kicker = 'KUNDENVIDEOS'
+      assign v_heading = 'Echte Kunden, echte Duschen.'
+      assign v_note = 'Diese Videos haben uns Kunden geschickt, mit dem eigenen Handy im eigenen Bad gefilmt.'
+      assign v_one = 'Kundenvideo'
+      assign v_many = 'Kundenvideos'
+      assign v_badge = 'Kundenvideo'
+      assign v_by = 'Gefilmt von'
       assign v_hint = 'Tippen zum Abspielen mit Ton'
       assign v_play = 'Video abspielen'
       assign v_prev = 'Vorheriges Video'
       assign v_next = 'Nächstes Video'
-      assign v_jump = 'In Aktion ansehen'
+      assign v_jump = 'Kundenvideos ansehen'
     when 'fr'
-      assign v_kicker = 'EN ACTION'
-      assign v_heading = 'Voyez la différence sous la douche.'
-      assign v_note = 'Le jet, les modes et l’utilisation au quotidien, en vidéo.'
-      assign v_one = 'vidéo'
-      assign v_many = 'vidéos'
+      assign v_kicker = 'VIDÉOS CLIENTS'
+      assign v_heading = 'De vrais clients, de vraies douches.'
+      assign v_note = 'Des clients nous ont envoyé ces vidéos, filmées avec leur téléphone dans leur propre salle de bain.'
+      assign v_one = 'vidéo client'
+      assign v_many = 'vidéos clients'
+      assign v_badge = 'Vidéo client'
+      assign v_by = 'Filmé par'
       assign v_hint = 'Touchez pour lire avec le son'
       assign v_play = 'Lire la vidéo'
       assign v_prev = 'Vidéo précédente'
       assign v_next = 'Vidéo suivante'
-      assign v_jump = 'Voir en action'
+      assign v_jump = 'Voir les vidéos clients'
     when 'es'
-      assign v_kicker = 'EN ACCIÓN'
-      assign v_heading = 'Mira la diferencia en la ducha.'
-      assign v_note = 'El chorro, los modos y el uso diario, en vídeo.'
-      assign v_one = 'vídeo'
-      assign v_many = 'vídeos'
+      assign v_kicker = 'VÍDEOS DE CLIENTES'
+      assign v_heading = 'Clientes reales, duchas reales.'
+      assign v_note = 'Estos vídeos nos los enviaron clientes, grabados con su propio móvil en su propio baño.'
+      assign v_one = 'vídeo de cliente'
+      assign v_many = 'vídeos de clientes'
+      assign v_badge = 'Vídeo de cliente'
+      assign v_by = 'Grabado por'
       assign v_hint = 'Toca para reproducir con sonido'
       assign v_play = 'Reproducir vídeo'
       assign v_prev = 'Vídeo anterior'
       assign v_next = 'Vídeo siguiente'
-      assign v_jump = 'Ver en acción'
+      assign v_jump = 'Ver vídeos de clientes'
     else
-      assign v_kicker = 'IN ACTIE'
-      assign v_heading = 'Zie het verschil onder de douche.'
-      assign v_note = 'De straal, de standen en het dagelijks gebruik in beeld.'
-      assign v_one = 'video'
-      assign v_many = "video's"
+      assign v_kicker = "KLANTVIDEO'S"
+      assign v_heading = 'Echte klanten, echte douches.'
+      assign v_note = "Deze video's kregen we van klanten, gefilmd met hun eigen telefoon in hun eigen badkamer."
+      assign v_one = 'klantvideo'
+      assign v_many = "klantvideo's"
+      assign v_badge = 'Klantvideo'
+      assign v_by = 'Gefilmd door'
       assign v_hint = 'Tik om af te spelen met geluid'
       assign v_play = 'Video afspelen'
       assign v_prev = 'Vorige video'
       assign v_next = 'Volgende video'
-      assign v_jump = 'Bekijk in actie'
+      assign v_jump = "Bekijk klantvideo's"
   endcase
   unless section.settings.use_localized_copy
     assign v_kicker = section.settings.kicker
@@ -206,15 +219,18 @@
               <div class="bj-vid__media">
                 {{ vid | video_tag: controls: true, playsinline: true, preload: 'none', image_size: '720x' }}
               </div>
+              <span class="bj-vid__badge">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+                {{ v_badge }}
+              </span>
               {%- if secs > 0 -%}
                 <span class="bj-vid__time" aria-hidden="true">{{ mins }}:{{ rest }}</span>
               {%- endif -%}
-              {%- if block.settings.title != blank or block.settings.text != blank -%}
-                <figcaption class="bj-vid__caption">
-                  {%- if block.settings.title != blank -%}<span class="bj-vid__title">{{ block.settings.title | escape }}</span>{%- endif -%}
-                  {%- if block.settings.text != blank -%}<span class="bj-vid__text">{{ block.settings.text | escape }}</span>{%- endif -%}
-                </figcaption>
-              {%- endif -%}
+              <figcaption class="bj-vid__caption">
+                {%- if block.settings.title != blank -%}<span class="bj-vid__title">{{ block.settings.title | escape }}</span>{%- endif -%}
+                {%- if block.settings.text != blank -%}<span class="bj-vid__text">{{ block.settings.text | escape }}</span>{%- endif -%}
+                {%- if block.settings.customer != blank -%}<span class="bj-vid__by">{{ v_by }} {{ block.settings.customer | escape }}</span>{%- endif -%}
+              </figcaption>
               <button type="button" class="bj-vid__play" aria-label="{{ v_label | escape }}" hidden>
                 <span class="bj-vid__play-icon">
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10.5-6.5z"/></svg>
@@ -224,7 +240,7 @@
           </li>
         {%- endfor -%}
         {%- if shown == 0 -%}
-          <li class="bj-vid__empty">Voeg een blok "Video" toe en kies een video. Klanten zien deze sectie pas als er een video in staat.</li>
+          <li class="bj-vid__empty">Voeg een blok "Klantvideo" toe en kies een video. Klanten zien deze sectie pas als er een video in staat.</li>
         {%- endif -%}
       </ul>
     </div>
@@ -275,9 +291,13 @@
   .bj-vid__media{position:absolute;inset:0}
   .bj-vid__media video{display:block;width:100%;height:100%;object-fit:cover;background:var(--bjv-night)}
   .bj-vid__media::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(4,18,31,.38) 0%,rgba(4,18,31,0) 24%,rgba(4,18,31,0) 48%,rgba(4,18,31,.88) 100%);transition:opacity .3s ease}
-  .bj-vid__time{position:absolute;z-index:1;top:14px;left:14px;padding:6px 11px;border-radius:999px;background:rgba(4,18,31,.55);color:#fff;font:600 .76rem/1 Inter,'Inter Fallback',sans-serif;letter-spacing:.02em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s ease}
+  .bj-vid__badge{position:absolute;z-index:1;top:14px;left:14px;display:inline-flex;align-items:center;gap:6px;padding:6px 11px 6px 8px;border-radius:999px;background:rgba(255,255,255,.94);color:var(--bjv-deep);font:700 .72rem/1 Inter,'Inter Fallback',sans-serif;letter-spacing:.01em;box-shadow:0 6px 16px -8px rgba(4,18,31,.5);transition:opacity .3s ease}
+  .bj-vid__badge svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .bj-vid__time{position:absolute;z-index:1;top:14px;right:14px;padding:6px 11px;border-radius:999px;background:rgba(4,18,31,.55);color:#fff;font:600 .76rem/1 Inter,'Inter Fallback',sans-serif;letter-spacing:.02em;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s ease}
   .bj-vid__caption{position:absolute;z-index:1;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:6px;padding:22px 20px 22px;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
   .bj-vid .bj-vid__title{color:#fff;font:600 1.16rem/1.2 'Jost','Jost Fallback',Inter,sans-serif;letter-spacing:-.01em;text-wrap:balance}
+  .bj-vid .bj-vid__by{display:inline-flex;align-items:center;gap:6px;margin-top:2px;color:rgba(224,242,254,.78);font:600 .74rem/1.3 Inter,'Inter Fallback',sans-serif;letter-spacing:.02em}
+  .bj-vid .bj-vid__by::before{content:"";width:16px;height:1.5px;border-radius:2px;background:currentColor;opacity:.7}
   .bj-vid .bj-vid__text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:rgba(224,242,254,.84);font:400 .88rem/1.45 Inter,'Inter Fallback',sans-serif}
   .bj-vid__play{position:absolute;z-index:2;inset:0;display:grid;place-items:center;width:100%;height:100%;margin:0;padding:0 0 18%;border:0;border-radius:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .3s ease}
   .bj-vid__play[hidden]{display:none}
@@ -292,9 +312,9 @@
     .bj-vid__card:hover .bj-vid__play-icon{transform:scale(1.08);background:#fff}
   }
   .bj-vid__card.is-playing{transform:none}
-  .bj-vid__card.is-playing .bj-vid__play,.bj-vid__card.is-playing .bj-vid__time,.bj-vid__card.is-playing .bj-vid__media::after{opacity:0;visibility:hidden;pointer-events:none}
+  .bj-vid__card.is-playing .bj-vid__play,.bj-vid__card.is-playing .bj-vid__time,.bj-vid__card.is-playing .bj-vid__badge,.bj-vid__card.is-playing .bj-vid__media::after{opacity:0;visibility:hidden;pointer-events:none}
   .bj-vid__card.is-playing .bj-vid__caption{opacity:0;transform:translateY(8px)}
-  .bj-vid:not(.bj-vid--js) .bj-vid__caption,.bj-vid:not(.bj-vid--js) .bj-vid__time,.bj-vid:not(.bj-vid--js) .bj-vid__media::after{display:none}
+  .bj-vid:not(.bj-vid--js) .bj-vid__caption,.bj-vid:not(.bj-vid--js) .bj-vid__time,.bj-vid:not(.bj-vid--js) .bj-vid__badge,.bj-vid:not(.bj-vid--js) .bj-vid__media::after{display:none}
   .bj-vid__empty{flex:0 0 min(100%,420px);padding:28px;border:1px dashed #b9c6d1;border-radius:24px;background:#fff;color:var(--bjv-muted);font:500 .92rem/1.6 Inter,'Inter Fallback',sans-serif}
   @media (max-width:989px){
     .bj-vid{--bjv-fade:20px}
@@ -437,21 +457,21 @@
 {%- endif -%}
 {% schema %}
 {
-  "name": "Video's",
+  "name": "Klantvideo's",
   "max_blocks": 12,
   "settings": [
     {"type": "text", "id": "product_types", "label": "Producttypes", "info": "Komma-gescheiden. De sectie verschijnt alleen op producten met dit producttype.", "default": "showerhead"},
     {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik ingebouwde vertalingen (NL/EN/DE/FR/ES)", "default": true},
     {"type": "header", "content": "Eigen teksten"},
     {"type": "paragraph", "content": "Alleen gebruikt als de ingebouwde vertalingen hierboven uit staan."},
-    {"type": "text", "id": "kicker", "label": "Kicker", "default": "IN ACTIE"},
-    {"type": "text", "id": "heading", "label": "Kop", "default": "Zie het verschil onder de douche."},
-    {"type": "textarea", "id": "note", "label": "Tekst", "default": "De straal, de standen en het dagelijks gebruik in beeld."}
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "KLANTVIDEO'S"},
+    {"type": "text", "id": "heading", "label": "Kop", "default": "Echte klanten, echte douches."},
+    {"type": "textarea", "id": "note", "label": "Tekst", "default": "Deze video's kregen we van klanten, gefilmd met hun eigen telefoon in hun eigen badkamer."}
   ],
   "blocks": [
     {
       "type": "video",
-      "name": "Video",
+      "name": "Klantvideo",
       "settings": [
         {"type": "video", "id": "video", "label": "Video", "info": "Upload hier of kies uit Content > Bestanden. Staande video's (9:16) passen het best."},
         {
@@ -466,10 +486,11 @@
           "default": "all"
         },
         {"type": "text", "id": "title", "label": "Titel (optioneel)", "info": "Bijv. 'Massagestand' of 'Installatie in 1 minuut'."},
-        {"type": "textarea", "id": "text", "label": "Korte tekst (optioneel)"}
+        {"type": "textarea", "id": "text", "label": "Korte tekst (optioneel)"},
+        {"type": "text", "id": "customer", "label": "Naam klant (optioneel)", "info": "Bijv. 'Sanne, Utrecht'. Alleen invullen als de klant daar toestemming voor gaf. Verschijnt als 'Gefilmd door …'."}
       ]
     }
   ],
-  "presets": [{"name": "Video's"}]
+  "presets": [{"name": "Klantvideo's"}]
 }
 {% endschema %}
