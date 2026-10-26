@@ -1312,6 +1312,10 @@
       var pointerId = null;
       stage.addEventListener('pointerdown', function (event) {
         if (event.pointerType === 'mouse' && event.button !== 0) return;
+        // 2026-10-26: buttons and links on the photo (zoom, "watch customer
+        // videos") get their own click; capturing the pointer here would send
+        // that click to the stage instead.
+        if (event.target.closest && event.target.closest('a, button')) return;
         pointerId = event.pointerId;
         startX = event.clientX;
         startY = event.clientY;
