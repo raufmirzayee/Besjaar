@@ -1,0 +1,164 @@
+{{ 'besjaar-product-wow.css' | asset_url | stylesheet_tag: preload: true }}
+{%- liquid
+  comment
+    Besjaar 15 Oct 2026: dark "why this product" band under the product page.
+    The four facts per product come from that product's own description:
+    ten  = 10-mode filter showerheads, three = 3-mode showerheads,
+    refill = the replacement filter set. "hose" swaps in the 1.5 m hose fact.
+  endcomment
+  assign kind = 'three'
+  assign ptype = product.type | downcase
+  if ptype contains 'filter' or product.handle contains 'douchefilter'
+    assign kind = 'refill'
+  elsif product.tags contains '10-standen'
+    assign kind = 'ten'
+  endif
+  assign hose = false
+  if product.tags contains 'Doucheset'
+    assign hose = true
+  endif
+  assign rdays = settings.return_window_days | default: 30
+
+  assign wl = request.locale.iso_code | split: '-' | first | downcase
+  case wl
+    when 'en'
+      assign k_head = 'Why this showerhead'
+      assign k_refill = 'Why these filters'
+      assign h_ten = 'Filtered, powerful and smart.'
+      assign h_three = 'A full spray, every day.'
+      assign h_refill = 'Fresh filter, swapped in no time.'
+      assign ten = '8-stage filter|In the handle: stops particles and breaks down free chlorine.|8 wellness + 2 PowerWash|From soft rain to massage and mist, plus two powerful jets.|Pause button|Stop the water for a moment while you lather up.|G½ connection|Fits standard shower hoses, no tools needed.|1.5 m shower hose|Replace everything in one go.'
+      assign three = 'Max. 8 litres per minute|An air-enriched, full spray.|3 spray modes|Soft rain, massage and a powerful power jet.|Extra-wide 13 cm head|A broad, even spray.|Silicone nozzles|Rub limescale off with a finger.|1.5 m flexible hose|With anti-twist protection.'
+      assign refill = '8-stage filtration|With calcium sulfite, maifan stone and ceramic balls, among others.|Hot and cold water|The filter works at any shower temperature.|3–5 months per filter|Up to 10 months with two filters.|Swap without tools|Hose off, old filter out, new filter in.|x|x'
+      capture c1
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign c1 = c1 | strip
+      assign c2 = rdays | append: ' days to change your mind'
+      assign c3 = '12-month warranty'
+    when 'de'
+      assign k_head = 'Warum dieser Duschkopf'
+      assign k_refill = 'Warum diese Filter'
+      assign h_ten = 'Gefiltert, kräftig und clever.'
+      assign h_three = 'Ein voller Strahl, jeden Tag.'
+      assign h_refill = 'Frischer Filter, schnell gewechselt.'
+      assign ten = '8-stufiger Filter|Im Griff: hält Partikel zurück und baut freies Chlor ab.|8 Wellness + 2 PowerWash|Vom sanften Regen bis zu Massage und Nebel, plus zwei kräftige Jets.|Pausentaste|Stoppt das Wasser kurz, während du dich einseifst.|G½-Anschluss|Passt auf Standard-Duschschläuche, ohne Werkzeug.|Duschschlauch 1,5 m|Alles auf einmal ersetzen.'
+      assign three = 'Max. 8 Liter pro Minute|Ein luftangereicherter, voller Strahl.|3 Strahlarten|Sanfter Regen, Massage und ein kräftiger Power-Strahl.|Extra breiter 13-cm-Kopf|Ein breiter, gleichmäßiger Strahl.|Silikondüsen|Kalk reibst du mit dem Finger ab.|1,5 m flexibler Schlauch|Mit Knickschutz.'
+      assign refill = '8-stufige Filterung|Unter anderem mit Calciumsulfit, Maifanstein und Keramikkugeln.|Warmes und kaltes Wasser|Der Filter wirkt bei jeder Duschtemperatur.|3–5 Monate pro Filter|Mit zwei Filtern bis zu 10 Monate.|Wechsel ohne Werkzeug|Schlauch ab, alter Filter raus, neuer rein.|x|x'
+      capture c1
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign c1 = c1 | strip
+      assign c2 = rdays | append: ' Tage Rückgaberecht'
+      assign c3 = '12 Monate Garantie'
+    when 'fr'
+      assign k_head = 'Pourquoi ce pommeau'
+      assign k_refill = 'Pourquoi ces filtres'
+      assign h_ten = 'Filtré, puissant et malin.'
+      assign h_three = 'Un jet généreux, chaque jour.'
+      assign h_refill = 'Un filtre neuf, changé en un instant.'
+      assign ten = 'Filtre 8 étapes|Dans la poignée : retient les particules et décompose le chlore libre.|8 bien-être + 2 PowerWash|De la pluie douce au massage et à la brume, plus deux jets puissants.|Bouton pause|Coupez l’eau un instant pendant que vous vous savonnez.|Raccord G½|S’adapte aux flexibles standard, sans outils.|Flexible de 1,5 m|Tout remplacer en une fois.'
+      assign three = '8 litres par minute max.|Un jet généreux enrichi en air.|3 types de jet|Pluie douce, massage et jet puissant.|Tête extra-large de 13 cm|Un jet large et régulier.|Buses en silicone|Le calcaire part d’un coup de doigt.|Flexible de 1,5 m|Avec protection anti-torsion.'
+      assign refill = 'Filtration 8 étapes|Avec notamment du sulfite de calcium, de la pierre de maifan et des billes céramiques.|Eau chaude et froide|Le filtre fonctionne à toute température.|3 à 5 mois par filtre|Jusqu’à 10 mois avec deux filtres.|Remplacement sans outils|Flexible dévissé, ancien filtre retiré, nouveau filtre en place.|x|x'
+      capture c1
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign c1 = c1 | strip
+      assign c2 = rdays | append: " jours pour changer d'avis"
+      assign c3 = 'Garantie 12 mois'
+    when 'es'
+      assign k_head = 'Por qué esta alcachofa'
+      assign k_refill = 'Por qué estos filtros'
+      assign h_ten = 'Filtrada, potente e inteligente.'
+      assign h_three = 'Un chorro pleno, cada día.'
+      assign h_refill = 'Filtro nuevo, cambiado en un momento.'
+      assign ten = 'Filtro de 8 etapas|En el mango: retiene partículas y descompone el cloro libre.|8 bienestar + 2 PowerWash|De lluvia suave a masaje y niebla, más dos chorros potentes.|Botón de pausa|Detén el agua un momento mientras te enjabonas.|Conexión G½|Compatible con mangueras estándar, sin herramientas.|Manguera de 1,5 m|Cámbialo todo de una vez.'
+      assign three = 'Máx. 8 litros por minuto|Un chorro pleno enriquecido con aire.|3 modos de chorro|Lluvia suave, masaje y un chorro potente.|Cabezal extra ancho de 13 cm|Un chorro amplio y uniforme.|Boquillas de silicona|La cal se quita con un dedo.|Manguera flexible de 1,5 m|Con protección antitorsión.'
+      assign refill = 'Filtración de 8 etapas|Con sulfito de calcio, piedra maifan y bolas cerámicas, entre otros.|Agua caliente y fría|El filtro funciona a cualquier temperatura.|3–5 meses por filtro|Hasta 10 meses con dos filtros.|Cambio sin herramientas|Manguera fuera, filtro viejo fuera, filtro nuevo dentro.|x|x'
+      capture c1
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign c1 = c1 | strip
+      assign c2 = rdays | append: ' días para cambiar de opinión'
+      assign c3 = '12 meses de garantía'
+    else
+      assign k_head = 'Waarom deze douchekop'
+      assign k_refill = 'Waarom deze filters'
+      assign h_ten = 'Gefilterd, krachtig en slim.'
+      assign h_three = 'Een volle straal, elke dag.'
+      assign h_refill = 'Vers filter, zo gewisseld.'
+      assign ten = '8-traps filter|In de handgreep: houdt deeltjes tegen en breekt vrij chloor af.|8 wellness + 2 PowerWash|Van zachte regen tot massage en mist, plus twee krachtige jets.|Pauzeknop|Zet het water even stil terwijl je inzeept.|G½-aansluiting|Past op standaard doucheslangen, zonder gereedschap.|Doucheslang 1,5 m|Alles in één keer vervangen.'
+      assign three = 'Max. 8 liter per minuut|Een lucht-verrijkte, volle straal.|3 standen|Zachte regen, massage en een krachtige power-straal.|Extra brede kop van 13 cm|Een brede, gelijkmatige straal.|Siliconen sproeiers|Kalk wrijf je met een vinger weg.|1,5 m flexibele slang|Met anti-draai bescherming.'
+      assign refill = '8-traps filtratie|Met o.a. calciumsulfiet, maifansteen en keramische bollen.|Warm én koud water|Het filter werkt bij elke douchetemperatuur.|3–5 maanden per filter|Met twee filters tot 10 maanden.|Wisselen zonder gereedschap|Slang los, oude filter eruit, nieuwe erin.|x|x'
+      capture c1
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign c1 = c1 | strip
+      assign c2 = rdays | append: ' dagen bedenktijd'
+      assign c3 = '12 maanden garantie'
+  endcase
+
+  case kind
+    when 'ten'
+      assign facts = ten | split: '|'
+      assign w_kicker = k_head
+      assign w_heading = h_ten
+      assign w_image = 'besjaar-web-real-modes.webp'
+      assign w_w = 1000
+      assign w_h = 815
+    when 'refill'
+      assign facts = refill | split: '|'
+      assign w_kicker = k_refill
+      assign w_heading = h_refill
+      assign w_image = 'besjaar-web-real-water.webp'
+      assign w_w = 900
+      assign w_h = 1200
+    else
+      assign facts = three | split: '|'
+      assign w_kicker = k_head
+      assign w_heading = h_three
+      assign w_image = 'besjaar-lifestyle-shower.webp'
+      assign w_w = 1672
+      assign w_h = 941
+  endcase
+  comment
+    facts holds five title|text pairs; the fifth (the hose) replaces the
+    fourth on the sets that come with a hose.
+  endcomment
+  assign last_title = facts[6]
+  assign last_text = facts[7]
+  if hose and kind != 'refill'
+    assign last_title = facts[8]
+    assign last_text = facts[9]
+  endif
+-%}
+<section class="bjp-why" aria-labelledby="BjpWhy-{{ section.id }}">
+  <div class="bjp-why__inner">
+    <figure class="bjp-why__media">
+      <img src="{{ w_image | asset_url }}" width="{{ w_w }}" height="{{ w_h }}" loading="lazy" decoding="async" alt="">
+    </figure>
+    <div class="bjp-why__copy">
+      <span class="bjp-why__kicker">{{ w_kicker }}</span>
+      <h2 class="bjp-why__title" id="BjpWhy-{{ section.id }}">{{ w_heading }}</h2>
+      <ul class="bjp-why__facts" role="list">
+        <li><span class="bjp-why__num" aria-hidden="true">01</span><div><h3>{{ facts[0] }}</h3><p>{{ facts[1] }}</p></div></li>
+        <li><span class="bjp-why__num" aria-hidden="true">02</span><div><h3>{{ facts[2] }}</h3><p>{{ facts[3] }}</p></div></li>
+        <li><span class="bjp-why__num" aria-hidden="true">03</span><div><h3>{{ facts[4] }}</h3><p>{{ facts[5] }}</p></div></li>
+        <li><span class="bjp-why__num" aria-hidden="true">04</span><div><h3>{{ last_title }}</h3><p>{{ last_text }}</p></div></li>
+      </ul>
+      <ul class="bjp-why__chips" role="list">
+        <li>{{ c1 }}</li>
+        <li>{{ c2 }}</li>
+        <li>{{ c3 }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Besjaar why this product",
+  "settings": [],
+  "presets": [{ "name": "Besjaar why this product" }]
+}
+{% endschema %}

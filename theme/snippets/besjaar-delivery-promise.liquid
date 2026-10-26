@@ -1,0 +1,82 @@
+{%- comment -%}
+  Besjaar — delivery promise per shopper country (2026-10-26).
+
+  Netherlands: order before the cut-off, delivered tomorrow.
+  Every other country: delivered within 2 business days.
+  The country comes from besjaar-shipping-zone (localization.country), the
+  language from request.locale, the cut-off hour from the theme settings.
+
+  Usage: {% render 'besjaar-delivery-promise' %}
+  field: text (default) | prefix | transit_days
+    text         = "Voor 16:00 besteld, morgen in huis"
+    prefix       = label before a delivery date ("In huis op")
+    transit_days = business days from dispatch to delivery (1 or 2)
+  Output is plain text (no whitespace) so callers can capture + strip it.
+{%- endcomment -%}
+{%- liquid
+  assign bdp_field = field | default: 'text'
+  capture bdp_country
+    render 'besjaar-shipping-zone', field: 'country_code'
+  endcapture
+  assign bdp_country = bdp_country | strip
+  assign bdp_nl = false
+  if bdp_country == 'NL'
+    assign bdp_nl = true
+  endif
+  assign bdp_cutoff = settings.order_cutoff_hour | default: 16
+  assign bdp_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  case bdp_lang
+    when 'de'
+      assign bdp_before = 'Vor ' | append: bdp_cutoff | append: ':00 bestellt, '
+      assign bdp_tomorrow = 'morgen geliefert'
+      assign bdp_days = 'in 2 Werktagen geliefert'
+      assign bdp_prefix_nl = 'Geliefert am'
+      assign bdp_prefix = 'Geliefert bis'
+    when 'fr'
+      assign bdp_before = 'Commandé avant ' | append: bdp_cutoff | append: 'h, '
+      assign bdp_tomorrow = 'livré demain'
+      assign bdp_days = 'livré sous 2 jours ouvrés'
+      assign bdp_prefix_nl = 'Livré le'
+      assign bdp_prefix = 'Livré au plus tard le'
+    when 'es'
+      assign bdp_before = 'Pedido antes de las ' | append: bdp_cutoff | append: ':00, '
+      assign bdp_tomorrow = 'entregado mañana'
+      assign bdp_days = 'entregado en 2 días laborables'
+      assign bdp_prefix_nl = 'Entregado el'
+      assign bdp_prefix = 'Entregado como tarde el'
+    when 'en'
+      assign bdp_before = 'Order before ' | append: bdp_cutoff | append: ':00, '
+      assign bdp_tomorrow = 'delivered tomorrow'
+      assign bdp_days = 'delivered within 2 business days'
+      assign bdp_prefix_nl = 'Delivered on'
+      assign bdp_prefix = 'Delivered by'
+    else
+      assign bdp_before = 'Voor ' | append: bdp_cutoff | append: ':00 besteld, '
+      assign bdp_tomorrow = 'morgen in huis'
+      assign bdp_days = 'binnen 2 werkdagen in huis'
+      assign bdp_prefix_nl = 'In huis op'
+      assign bdp_prefix = 'Uiterlijk in huis op'
+  endcase
+
+  case bdp_field
+    when 'prefix'
+      if bdp_nl
+        echo bdp_prefix_nl
+      else
+        echo bdp_prefix
+      endif
+    when 'transit_days'
+      if bdp_nl
+        echo 1
+      else
+        echo 2
+      endif
+    else
+      if bdp_nl
+        echo bdp_before | append: bdp_tomorrow
+      else
+        echo bdp_before | append: bdp_days
+      endif
+  endcase
+-%}

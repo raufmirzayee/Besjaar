@@ -1,0 +1,180 @@
+{{ 'besjaar-home-wow.css' | asset_url | stylesheet_tag: preload: true }}
+{%- liquid
+  comment
+    Besjaar 15 Oct 2026: eye-catching homepage hero. Same h1 copy as the
+    previous Besjaar-style hero (brand copy snippet, five languages); new
+    full-bleed ocean design with the lifestyle photo and floating proof chips.
+  endcomment
+  capture v_eyebrow
+    render 'besjaar-brand-copy', key: 'hero_eyebrow'
+  endcapture
+  capture v_heading
+    render 'besjaar-brand-copy', key: 'hero_heading'
+  endcapture
+  capture v_accent
+    render 'besjaar-brand-copy', key: 'hero_accent'
+  endcapture
+  assign v_eyebrow = v_eyebrow | strip
+  assign v_heading = v_heading | strip
+  assign v_accent = v_accent | strip
+
+  assign wl = request.locale.iso_code | split: '-' | first | downcase
+  case wl
+    when 'en'
+      assign v_text = 'Showerheads with 3 or 10 spray modes and an optional filter in the handle.'
+      assign v_primary = 'Shop showerheads'
+      assign v_secondary = 'Why Besjaar'
+      assign v_chip_modes = 'Up to 10 spray modes'
+      assign v_chip_filter = 'Filter in the handle'
+      capture v_chip_ship
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign v_chip_ship = v_chip_ship | strip
+      assign v_reviews = 'reviews on bol.com'
+      assign v_alt = 'Woman enjoying a strong, soft spray from a Besjaar chrome hand shower'
+    when 'de'
+      assign v_text = 'Duschköpfe mit 3 oder 10 Strahlarten und optional einem Filter im Griff.'
+      assign v_primary = 'Duschköpfe ansehen'
+      assign v_secondary = 'Warum Besjaar'
+      assign v_chip_modes = 'Bis zu 10 Strahlarten'
+      assign v_chip_filter = 'Filter im Griff'
+      capture v_chip_ship
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign v_chip_ship = v_chip_ship | strip
+      assign v_reviews = 'Bewertungen auf bol.com'
+      assign v_alt = 'Frau genießt den kräftigen, weichen Strahl einer Besjaar Handbrause in Chrom'
+    when 'fr'
+      assign v_text = 'Des pommeaux à 3 ou 10 types de jet, avec filtre en option dans la poignée.'
+      assign v_primary = 'Voir les pommeaux'
+      assign v_secondary = 'Pourquoi Besjaar'
+      assign v_chip_modes = "Jusqu'à 10 types de jet"
+      assign v_chip_filter = 'Filtre dans la poignée'
+      capture v_chip_ship
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign v_chip_ship = v_chip_ship | strip
+      assign v_reviews = 'avis sur bol.com'
+      assign v_alt = "Femme profitant du jet puissant et doux d'une douchette chromée Besjaar"
+    when 'es'
+      assign v_text = 'Alcachofas con 3 o 10 modos de chorro y filtro opcional en el mango.'
+      assign v_primary = 'Ver alcachofas'
+      assign v_secondary = 'Por qué Besjaar'
+      assign v_chip_modes = 'Hasta 10 modos de chorro'
+      assign v_chip_filter = 'Filtro en el mango'
+      capture v_chip_ship
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign v_chip_ship = v_chip_ship | strip
+      assign v_reviews = 'reseñas en bol.com'
+      assign v_alt = 'Mujer disfrutando del chorro potente y suave de una ducha de mano cromada Besjaar'
+    else
+      assign v_text = 'Douchekoppen met 3 of 10 sproeistanden en optioneel een filter in de handgreep.'
+      assign v_primary = 'Bekijk douchekoppen'
+      assign v_secondary = 'Waarom Besjaar'
+      assign v_chip_modes = 'Tot 10 sproeistanden'
+      assign v_chip_filter = 'Filter in de handgreep'
+      capture v_chip_ship
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign v_chip_ship = v_chip_ship | strip
+      assign v_reviews = 'reviews op bol.com'
+      assign v_alt = 'Vrouw geniet van de krachtige, zachte straal van een Besjaar chromen handdouche'
+  endcase
+  if wl == 'nl'
+    if section.settings.heading_nl != blank
+      assign v_heading = section.settings.heading_nl
+    endif
+    if section.settings.heading_accent_nl != blank
+      assign v_accent = section.settings.heading_accent_nl
+    endif
+    if section.settings.text_nl != blank
+      assign v_text = section.settings.text_nl
+    endif
+  endif
+
+  comment
+    Rating line: the store-wide Judge.me rating when there are reviews,
+    otherwise the public bol.com figures set in this section (the same
+    figures as the bol.com proof card further down the page).
+  endcomment
+  assign proof_value = ''
+  assign proof_label = ''
+  assign proof_url = ''
+  assign jm_header = shop.metafields.judgeme.all_reviews_header
+  if jm_header contains "data-average-rating='" and jm_header contains "data-number-of-reviews='"
+    assign jm_rating = jm_header | split: "data-average-rating='" | last | split: "'" | first | times: 1.0 | round: 1
+    assign jm_count = jm_header | split: "data-number-of-reviews='" | last | split: "'" | first | plus: 0
+    if jm_count > 0 and jm_rating > 0
+      assign proof_value = jm_rating | append: '/5' | replace: '.', ','
+      assign proof_label = 'besjaar_ui.reviews.based_on' | t: count: jm_count
+    endif
+  endif
+  if proof_value == '' and section.settings.bol_rating != blank and section.settings.bol_count != blank
+    assign proof_value = section.settings.bol_rating | append: '/5'
+    assign proof_label = section.settings.bol_count | append: ' ' | append: v_reviews
+    assign proof_url = section.settings.bol_url
+  endif
+-%}
+{% capture wow_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+{%- assign wow_shop_url = wow_shop_url | strip -%}
+<section class="bjx-hero" aria-labelledby="BjxHeroTitle-{{ section.id }}">
+  <div class="bjx-hero__glow bjx-hero__glow--a" aria-hidden="true"></div>
+  <div class="bjx-hero__glow bjx-hero__glow--b" aria-hidden="true"></div>
+  <div class="bjx-hero__bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+  <div class="bjx-hero__inner">
+    <div class="bjx-hero__copy">
+      {%- if v_eyebrow != blank -%}<span class="bjx-hero__eyebrow"><span class="bjx-hero__pulse" aria-hidden="true"></span>{{ v_eyebrow | escape }}</span>{%- endif -%}
+      <h1 class="bjx-hero__title" id="BjxHeroTitle-{{ section.id }}"><span>{{ v_heading | escape }}</span> <em>{{ v_accent | escape }}</em></h1>
+      <p class="bjx-hero__text">{{ v_text | escape }}</p>
+      <div class="bjx-hero__actions">
+        <a class="bjx-btn bjx-btn--primary" href="{{ wow_shop_url }}">{{ v_primary | escape }} <span aria-hidden="true">→</span></a>
+        <a class="bjx-btn bjx-btn--glass" href="#besjaar-brand-intro">{{ v_secondary | escape }}</a>
+      </div>
+      {%- if proof_value != '' -%}
+        {%- if proof_url != blank -%}<a class="bjx-hero__proof" href="{{ proof_url }}" target="_blank" rel="noopener">{%- else -%}<p class="bjx-hero__proof">{%- endif -%}
+          <span class="bjx-hero__stars" aria-hidden="true">★★★★★</span>
+          <strong>{{ proof_value }}</strong>
+          <span>{{ proof_label }}</span>
+        {%- if proof_url != blank -%}</a>{%- else -%}</p>{%- endif -%}
+      {%- endif -%}
+    </div>
+
+    <figure class="bjx-hero__media">
+      <div class="bjx-hero__frame">
+        {%- if section.settings.image != blank -%}
+          {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', sizes: '(max-width: 989px) 100vw, 50vw', loading: 'eager', fetchpriority: 'high', alt: v_alt }}
+        {%- else -%}
+          <img src="{{ 'besjaar-lifestyle-shower.webp' | asset_url }}" width="1672" height="941" loading="eager" decoding="async" fetchpriority="high" alt="{{ v_alt | escape }}">
+        {%- endif -%}
+      </div>
+      <figcaption class="bjx-hero__chips">
+        <span class="bjx-chip bjx-chip--a"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/></svg>{{ v_chip_modes }}</span>
+        <span class="bjx-chip bjx-chip--b"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/></svg>{{ v_chip_filter }}</span>
+        <span class="bjx-chip bjx-chip--c"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg>{{ v_chip_ship }}</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <svg class="bjx-hero__wave" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path d="M0 38c120-22 240-30 360-18s240 40 360 40 240-34 360-42 240 10 360 22v30H0z"/></svg>
+</section>
+
+{% schema %}
+{
+  "name": "Besjaar wow hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photo", "info": "Leave empty to use the Besjaar lifestyle shower photo." },
+    { "type": "header", "content": "Rating line" },
+    { "type": "paragraph", "content": "Shows the Judge.me store rating when there are reviews; otherwise the public bol.com figures below." },
+    { "type": "text", "id": "bol_rating", "label": "bol.com rating", "default": "4,7" },
+    { "type": "text", "id": "bol_count", "label": "bol.com review count", "default": "391" },
+    { "type": "text", "id": "bol_url", "label": "bol.com link", "default": "https://www.bol.com/nl/nl/b/besjaar/603580876/" },
+    { "type": "header", "content": "Nederlandse tekst (alleen op /nl)" },
+    { "type": "text", "id": "heading_nl", "label": "Kop (NL)" },
+    { "type": "text", "id": "heading_accent_nl", "label": "Kop tweede regel (NL)" },
+    { "type": "textarea", "id": "text_nl", "label": "Subkop (NL)" }
+  ],
+  "presets": [{ "name": "Besjaar wow hero" }]
+}
+{% endschema %}

@@ -1,0 +1,108 @@
+{%- comment -%}
+  2026-10-15: trust row at the foot of the shop page, redesigned. Three
+  white cards (icon in a soft circle, bold line, short sub-line) instead
+  of the thin pale strip with tiny text. On phones the three items stay
+  on one line inside one card (icon above a short title, no sub-line).
+  Rendered by sections/besjaar-shower-collection.liquid. The free-shipping
+  line shows the exact threshold (e.g. 20,99), not a rounded euro amount.
+{%- endcomment -%}
+{%- liquid
+  capture sc_thr_cents
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  assign sc_thr_cents = sc_thr_cents | strip | plus: 0
+  capture sc_free
+    render 'besjaar-shipping-zone', field: 'free_always'
+  endcapture
+  assign sc_free = sc_free | strip
+  if sc_free contains 'true'
+    assign sc_ship_title = 'besjaar_ui.product.free_shipping' | t
+  elsif sc_thr_cents > 0
+    assign sc_thr_money = sc_thr_cents | money_without_trailing_zeros
+    assign sc_ship_title = 'besjaar_ui.product.free_shipping_from' | t: amount: sc_thr_money
+  else
+    assign sc_ship_title = 'besjaar_ui.footer.nl_shipping' | t
+  endif
+  assign sc_cutoff = settings.order_cutoff_hour | default: 16
+  assign sc_lang = request.locale.iso_code | split: '-' | first | downcase
+  case sc_lang
+    when 'en'
+      capture sc_ship_sub
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign sc_ship_sub = sc_ship_sub | strip
+      assign sc_ret_sub = 'Not happy? Send it back easily'
+      assign sc_sec_sub = 'Protected payment via Shopify'
+    when 'de'
+      capture sc_ship_sub
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign sc_ship_sub = sc_ship_sub | strip
+      assign sc_ret_sub = 'Nicht zufrieden? Einfach zurücksenden'
+      assign sc_sec_sub = 'Geschützte Zahlung über Shopify'
+    when 'fr'
+      capture sc_ship_sub
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign sc_ship_sub = sc_ship_sub | strip
+      assign sc_ret_sub = 'Pas satisfait ? Retour facile'
+      assign sc_sec_sub = 'Paiement protégé via Shopify'
+    when 'es'
+      capture sc_ship_sub
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign sc_ship_sub = sc_ship_sub | strip
+      assign sc_ret_sub = '¿No te convence? Devuélvelo fácilmente'
+      assign sc_sec_sub = 'Pago protegido con Shopify'
+    else
+      capture sc_ship_sub
+        render 'besjaar-delivery-promise'
+      endcapture
+      assign sc_ship_sub = sc_ship_sub | strip
+      assign sc_ret_sub = 'Niet tevreden? Eenvoudig terugsturen'
+      assign sc_sec_sub = 'Beschermde betaling via Shopify'
+  endcase
+  assign sc_cutoff_text = sc_cutoff | append: ''
+  assign sc_ship_sub = sc_ship_sub | replace: '16', sc_cutoff_text
+  if settings.processing_business_days > 0
+    assign sc_ship_sub = ''
+  endif
+-%}
+<style>
+  .bjc-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:clamp(56px,7vw,92px) 0 0;padding:0;list-style:none}
+  .bjc-trust__item{list-style:none;display:flex;align-items:center;gap:16px;min-width:0;margin:0;padding:22px 24px;border:1px solid #E3E9EE;border-radius:20px;background:#fff;box-shadow:0 1px 2px rgba(15,41,71,.04)}
+  .bjc-trust__item::before{content:none}
+  .bjc-trust__icon{display:grid;place-items:center;flex:0 0 48px;width:48px;height:48px;border-radius:50%;background:#EEF5FA;color:#173555}
+  .bjc-trust__icon svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .bjc-trust__text{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .bjc-trust__title{color:#132A3E;font-size:.98rem;font-weight:650;line-height:1.3;letter-spacing:-.01em}
+  .bjc-trust__sub{color:#61798E;font-size:.82rem;font-weight:450;line-height:1.4}
+  @media (max-width:900px){
+    .bjc-trust{gap:10px}
+    .bjc-trust__item{flex-direction:column;align-items:flex-start;gap:12px;padding:18px}
+  }
+  @media (max-width:640px){
+    .bjc-trust{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:44px;border:1px solid #E3E9EE;border-radius:18px;background:#fff;overflow:hidden}
+    .bjc-trust__item{flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;padding:16px 6px 15px;border:0;border-radius:0;box-shadow:none;text-align:center}
+    .bjc-trust__item+.bjc-trust__item{border-left:1px solid #E3E9EE}
+    .bjc-trust__icon{flex:0 0 38px;width:38px;height:38px}
+    .bjc-trust__icon svg{width:18px;height:18px}
+    .bjc-trust__text{align-items:center}
+    .bjc-trust__title{font-size:.74rem;line-height:1.25;letter-spacing:0;text-wrap:balance}
+    .bjc-trust__sub{display:none}
+  }
+</style>
+<ul class="bjc-trust" role="list" aria-label="{{ 'besjaar_shower_collection.trust_label' | t | escape }}">
+  <li class="bjc-trust__item">
+    <span class="bjc-trust__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 6h11v9H3zM14 9h3l4 4v2h-7zM6 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM18 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg></span>
+    <span class="bjc-trust__text"><strong class="bjc-trust__title">{{ sc_ship_title }}</strong>{% if sc_ship_sub != blank %}<span class="bjc-trust__sub">{{ sc_ship_sub | escape }}</span>{% endif %}</span>
+  </li>
+  <li class="bjc-trust__item">
+    <span class="bjc-trust__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h10a6 6 0 1 1-5.2 9M4 7l3-3M4 7l3 3"/></svg></span>
+    <span class="bjc-trust__text"><strong class="bjc-trust__title">{{ 'besjaar_shower_collection.returns' | t: days: settings.return_window_days }}</strong><span class="bjc-trust__sub">{{ sc_ret_sub | escape }}</span></span>
+  </li>
+  <li class="bjc-trust__item">
+    <span class="bjc-trust__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3M5 10h14v11H5zM12 14v3"/></svg></span>
+    <span class="bjc-trust__text"><strong class="bjc-trust__title">{{ 'besjaar_shower_collection.secure' | t }}</strong><span class="bjc-trust__sub">{{ sc_sec_sub | escape }}</span></span>
+  </li>
+</ul>
