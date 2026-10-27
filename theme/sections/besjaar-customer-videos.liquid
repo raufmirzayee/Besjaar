@@ -418,7 +418,35 @@
         event.stopPropagation();
         var anchor = document.getElementById('besjaar-videos') || root;
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        anchor.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+        anchor.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth', block: 'start' });
+        // 2026-10-27: images and review widgets above load while the page
+        // scrolls and push the videos down, so a smooth scroll stopped short
+        // (on the white space under the FAQ). Once scrolling ends, jump the
+        // rest of the way; a visitor who starts scrolling themselves wins.
+        var settled = false;
+        var settle = function () {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          window.removeEventListener('scrollend', settle);
+          window.removeEventListener('touchstart', cancel);
+          window.removeEventListener('wheel', cancel);
+          var margin = parseFloat(getComputedStyle(anchor).scrollMarginTop) || 0;
+          if (Math.abs(anchor.getBoundingClientRect().top - margin) > 8) {
+            anchor.scrollIntoView({ behavior: 'instant', block: 'start' });
+          }
+        };
+        var cancel = function () {
+          settled = true;
+          clearTimeout(timer);
+          window.removeEventListener('scrollend', settle);
+          window.removeEventListener('touchstart', cancel);
+          window.removeEventListener('wheel', cancel);
+        };
+        var timer = setTimeout(settle, 1600);
+        window.addEventListener('scrollend', settle);
+        window.addEventListener('touchstart', cancel, { passive: true });
+        window.addEventListener('wheel', cancel, { passive: true });
         // Still inside the tap, so the browser allows playing with sound.
         var first = cards[0].querySelector('.bj-vid__play');
         if (first && !first.hidden) first.click();
