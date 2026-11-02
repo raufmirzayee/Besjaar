@@ -31,11 +31,15 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-badge--green{background:#1F5F52}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price__vat{color:#8A9194;font-size:.68rem}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price__vat a{color:inherit;text-decoration:underline;text-underline-offset:2px}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:18px 0 0;padding:0;list-style:none;max-width:580px}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{display:flex;align-items:center;gap:11px;min-height:64px;margin:0;padding:10px 14px;border-radius:12px;background:#F5F2EC}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;color:#2B3437}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon svg{width:24px;height:24px;stroke-width:1.6}
-  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{color:#1C2326;font-size:.8rem;font-weight:700;line-height:1.3}
+  /* 2026-11-02: the four highlights are a light checklist now (they were beige tiles with two or
+     three lines of bold text each): a small green icon and a short label, two columns on larger
+     screens and one on phones. The label is the highlight's text up to its first colon, so
+     "Filter tegen kalk en chloor: zachter voor huid en haar" reads "Filter tegen kalk en chloor". */
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px;margin:16px 0 0;padding:0;list-style:none;max-width:580px}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{display:flex;align-items:center;gap:9px;margin:0;padding:0}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon{display:grid;place-items:center;flex:0 0 18px;width:18px;height:18px;color:#1F5F52}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon svg{width:18px;height:18px;stroke-width:2}
+  body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{color:#2B3437;font-size:.84rem;font-weight:600;line-height:1.3}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__label{margin:20px 0 10px;color:#1C2326;font-size:.9rem;font-weight:700}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__label span{font-weight:400}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-variant__pills{display:flex;flex-wrap:wrap;gap:10px}
@@ -138,10 +142,8 @@
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{right:12px;bottom:12px}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-rating{font-size:.84rem;margin-bottom:8px}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-price .besjaar-store-premium-pd__price{font-size:1.55rem}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{gap:7px;margin-top:14px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles li{min-height:58px;gap:9px;padding:9px 10px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon,body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__icon svg{flex-basis:20px;width:20px;height:20px}
-    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{font-size:.72rem}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles{grid-template-columns:minmax(0,1fr);gap:8px;margin-top:14px}
+    body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-tiles__text{font-size:.82rem}
     body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-ship{border-radius:16px;padding:11px 14px;font-size:.76rem}
     body[data-page-type="product"] .besjaar-store-premium-pd__description-group .besjaar-store-premium-pd__lede{font-size:.86rem!important;line-height:1.55!important}
     body[data-page-type="product"] .besjaar-store-premium-pd__purchase{grid-template-columns:100px minmax(0,1fr)!important;gap:8px!important}
@@ -801,7 +803,9 @@
                   {%- else -%}
                     {%- assign bj_icon = bj_icon_heart -%}
                   {%- endif -%}
-                  <li><span class="bj-pd-tiles__icon">{{ bj_icon }}</span><span class="bj-pd-tiles__text">{{ bj_item_text | escape }}</span></li>
+                  {%- assign bj_item_label = bj_item_text | split: ':' | first | strip -%}
+                  {%- if bj_item_label == '' -%}{%- assign bj_item_label = bj_item_text -%}{%- endif -%}
+                  <li><span class="bj-pd-tiles__icon">{{ bj_icon }}</span><span class="bj-pd-tiles__text">{{ bj_item_label | escape }}</span></li>
                 {%- endfor -%}
               </ul>
             {%- endif -%}
