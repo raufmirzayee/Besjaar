@@ -27,7 +27,7 @@
   first video.
 
   2 Nov 2026: like the Google store-score widget and the discount chip on
-  the same photo, the button folds into its round play thumbnail 5 seconds
+  the same photo, the button folds into its round play thumbnail 3 seconds
   after it comes into view (the video count stays as a corner badge), so it
   stops covering the product. A mouse hover or keyboard focus opens it
   again; on touch it stays round and a tap still jumps to the videos.
@@ -268,7 +268,7 @@
   .bj-vid-jump__thumb svg{position:absolute;z-index:1;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -6px;fill:#fff}
   .bj-vid-jump__label{max-width:var(--bjv-jump-label,none);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:max-width .45s cubic-bezier(.2,.7,.2,1),opacity .3s ease}
   .bj-vid-jump__count{flex:0 0 auto;display:grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#102b48;color:#fff;font-size:.72rem}
-  /* Folded (the script sets this 5 s after the button comes into view): only the round thumbnail stays, with the count as a corner badge. */
+  /* Folded (the script sets this 3 s after the button comes into view): only the round thumbnail stays, with the count as a corner badge. */
   .bj-vid-jump.is-collapsed{gap:0;padding:5px}
   .bj-vid-jump.is-collapsed .bj-vid-jump__label{max-width:0;opacity:0}
   .bj-vid-jump.is-collapsed .bj-vid-jump__count{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;font-size:.68rem;box-shadow:0 0 0 2px #fff}
@@ -435,7 +435,7 @@
       });
       stage.appendChild(jump);
 
-      // Fold into the round thumbnail 5 s after the button comes into view,
+      // Fold into the round thumbnail 3 s after the button comes into view,
       // like the other badges on the photo. The label stays in the DOM (only
       // squeezed to zero width), so the link keeps its accessible name.
       var foldDue = false;
@@ -453,7 +453,7 @@
         jump.classList.remove('is-collapsed');
       }
       function armFold() {
-        setTimeout(function () { foldDue = true; fold(); }, 5000);
+        setTimeout(function () { foldDue = true; fold(); }, 3000);
       }
       if ('IntersectionObserver' in window) {
         var seen = new IntersectionObserver(function (entries) {
