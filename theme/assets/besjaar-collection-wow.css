@@ -1,0 +1,107 @@
+/* Besjaar collection "wow" layer — 15 Oct 2026.
+   Ocean hero (snippets/besjaar-collection-wow-hero.liquid) and a brighter treatment of the
+   collection groups, product cards and trust row, matching the homepage hero and bento.
+   Older collection stylesheets use !important heavily, so rules on their classes use the
+   theme's usual `:not(#id)` specificity lift; the new bjc- classes are scoped to .bjc-wow. */
+
+.bjc-wow{
+  --bjc-ink:#04121f;
+  --bjc-navy:#0b2a47;
+  --bjc-deep:#061a2e;
+  --bjc-aqua:#38bdf8;
+  --bjc-aqua-2:#7dd3fc;
+  --bjc-ice:#e0f2fe;
+  --bjc-ease:cubic-bezier(.2,.7,.2,1);
+  --bjc-display:'Jost','Jost Fallback',Inter,'Inter Fallback',ui-sans-serif,system-ui,sans-serif;
+  --bjc-text:Inter,'Inter Fallback',ui-sans-serif,system-ui,sans-serif;
+  overflow-x:clip;
+}
+html body .bjc-wow .besjaar-collection-collection__shell:not(#bjc1):not(#bjc2){padding-top:0!important}
+html body .bjc-wow.besjaar-collection-collection:not(#bjc1):not(#bjc2){padding-top:0!important;background:linear-gradient(180deg,#f3f9fe 0,#fff 520px)!important}
+
+/* ---------- hero ---------- */
+.bjc-wow .bjc-hero{position:relative;isolation:isolate;overflow:hidden;width:100vw;margin:0 0 clamp(28px,4vw,48px) calc(50% - 50vw);color:#fff;
+  background:radial-gradient(900px 520px at 88% 0%,rgba(56,189,248,.3),transparent 62%),radial-gradient(700px 500px at 0% 100%,rgba(14,165,233,.18),transparent 60%),linear-gradient(160deg,var(--bjc-ink) 0%,var(--bjc-deep) 50%,#0d3a5c 100%)}
+.bjc-wow .bjc-hero__glow{position:absolute;z-index:-1;right:-120px;top:-180px;width:460px;height:460px;border-radius:50%;background:#0ea5e9;filter:blur(80px);opacity:.45;animation:bjc-glow 14s ease-in-out infinite alternate;pointer-events:none}
+.bjc-wow .bjc-hero__inner{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(24px,5vw,72px);max-width:1320px;margin:0 auto;padding:clamp(28px,4vw,44px) clamp(16px,4vw,48px) clamp(72px,8vw,108px)}
+.bjc-wow .bjc-hero--all .bjc-hero__inner{grid-template-columns:minmax(0,1fr) minmax(0,.95fr);padding-top:clamp(44px,6vw,76px)}
+.bjc-wow .bjc-hero__crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 clamp(22px,3vw,34px);font:500 .86rem/1.3 var(--bjc-text);color:rgba(224,242,254,.7)}
+.bjc-wow .bjc-hero__crumbs a{color:rgba(224,242,254,.85)!important;text-decoration:none!important}
+.bjc-wow .bjc-hero__crumbs a:hover{color:#fff!important;text-decoration:underline!important}
+.bjc-wow .bjc-hero__crumbs [aria-current]{color:#fff}
+.bjc-wow .bjc-hero__eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0;font:700 .76rem/1.2 var(--bjc-text);letter-spacing:.16em;text-transform:uppercase;color:var(--bjc-aqua-2)}
+.bjc-wow .bjc-hero__eyebrow span{width:28px;height:2px;border-radius:2px;background:currentColor}
+.bjc-wow .bjc-hero .bjc-hero__title{margin:14px 0 0;font:600 clamp(2.6rem,6vw,5rem)/.98 var(--bjc-display);letter-spacing:-.035em;color:#fff;text-wrap:balance;background:linear-gradient(100deg,#fff 0%,#fff 45%,#bae6fd 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.bjc-wow .bjc-hero .bjc-hero__intro{max-width:36em;margin:18px 0 0;font:400 clamp(1rem,1.3vw,1.14rem)/1.6 var(--bjc-text);color:rgba(224,242,254,.82)}
+.bjc-wow .bjc-hero__chips{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0;padding:0;list-style:none}
+.bjc-wow .bjc-hero__chips li{display:inline-flex;align-items:center;gap:8px;margin:0;padding:9px 15px 9px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);font:600 .88rem/1.2 var(--bjc-text);color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.bjc-wow .bjc-hero__chips svg{flex:none;width:20px;height:20px;padding:3px;border-radius:50%;background:linear-gradient(135deg,#7dd3fc,#0ea5e9);fill:none;stroke:var(--bjc-ink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.bjc-wow .bjc-hero__media{position:relative;width:clamp(260px,30vw,400px);aspect-ratio:1;margin:0;border-radius:32px;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#fff 0%,#e0f2fe 100%);box-shadow:0 50px 90px -40px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.14);transform:rotate(2deg)}
+.bjc-wow .bjc-hero__media img{display:block;width:100%;height:100%;object-fit:contain;padding:8%;mix-blend-mode:multiply;animation:bjc-bob 7s ease-in-out infinite}
+.bjc-wow .bjc-hero__wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:clamp(28px,4vw,60px);fill:#f3f9fe}
+
+/* category jump tiles on /collections/all */
+.bjc-wow .bjc-cats{display:grid;gap:12px}
+.bjc-wow .bjc-cat{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px;padding:12px 20px 12px 12px;border-radius:22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff!important;text-decoration:none!important;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .3s var(--bjc-ease),background-color .3s ease,border-color .3s ease}
+.bjc-wow .bjc-cat:hover{transform:translateX(6px);background:rgba(255,255,255,.13);border-color:rgba(125,211,252,.5)}
+.bjc-wow .bjc-cat__media{display:block;width:84px;height:84px;border-radius:16px;overflow:hidden;background:radial-gradient(120% 100% at 50% 0%,#fff 0%,#e0f2fe 100%)}
+.bjc-wow .bjc-cat__media img{display:block;width:100%;height:100%;object-fit:contain;padding:8px;mix-blend-mode:multiply}
+.bjc-wow .bjc-cat__text{display:grid;gap:4px}
+.bjc-wow .bjc-cat__text strong{font:600 1.3rem/1.15 var(--bjc-display);letter-spacing:-.01em;color:#fff}
+.bjc-wow .bjc-cat__text small{font:600 .74rem/1.2 var(--bjc-text);letter-spacing:.12em;text-transform:uppercase;color:var(--bjc-aqua-2)}
+.bjc-wow .bjc-cat__arrow{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7dd3fc,#0ea5e9);color:var(--bjc-ink);font-weight:800}
+
+@keyframes bjc-glow{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-60px,40px,0) scale(1.15)}}
+@keyframes bjc-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+@media (max-width:989px){
+  .bjc-wow .bjc-hero__inner,.bjc-wow .bjc-hero--all .bjc-hero__inner{grid-template-columns:1fr;padding:22px 16px 64px}
+  .bjc-wow .bjc-hero--all .bjc-hero__inner{padding-top:34px}
+  .bjc-wow .bjc-hero__media{display:none}
+  .bjc-wow .bjc-hero__crumbs{margin-bottom:20px}
+  .bjc-wow .bjc-hero .bjc-hero__title{font-size:clamp(2.3rem,10.5vw,3.2rem)}
+  .bjc-wow .bjc-hero__chips{gap:8px;margin-top:20px}
+  .bjc-wow .bjc-hero__chips li{padding:7px 12px 7px 8px;font-size:.8rem}
+  .bjc-wow .bjc-cat{padding:10px 16px 10px 10px;gap:14px}
+  .bjc-wow .bjc-cat__media{width:64px;height:64px}
+  .bjc-wow .bjc-cat__text strong{font-size:1.12rem}
+}
+
+/* ---------- collection groups (hub) ---------- */
+html body .bjc-wow .besjaar-collection-collection-group__head:not(#bjc1):not(#bjc2){border-bottom:0!important;padding-bottom:0!important;align-items:center!important}
+html body .bjc-wow .besjaar-collection-collection-group__index:not(#bjc1):not(#bjc2){display:grid!important;place-items:center!important;width:64px!important;height:64px!important;border:0!important;border-radius:20px!important;background:linear-gradient(140deg,#7dd3fc 0%,#38bdf8 45%,#0284c7 100%)!important;color:var(--bjc-ink)!important;font:700 1.45rem/1 var(--bjc-display)!important;letter-spacing:-.03em!important;box-shadow:0 16px 30px -16px rgba(14,165,233,.9)!important}
+html body .bjc-wow .besjaar-collection-collection-group__count:not(#bjc1):not(#bjc2){color:#0284c7!important;letter-spacing:.14em!important}
+html body .bjc-wow .besjaar-collection-collection-group__link:not(#bjc1):not(#bjc2){background:var(--bjc-navy)!important;color:#fff!important;border-color:var(--bjc-navy)!important;transition:background-color .25s ease,transform .25s var(--bjc-ease)!important}
+html body .bjc-wow .besjaar-collection-collection-group__link:not(#bjc1):not(#bjc2):hover{background:#0ea5e9!important;border-color:#0ea5e9!important;transform:translateY(-2px)!important}
+.bjc-wow .besjaar-collection-collection-group{scroll-margin-top:110px}
+
+/* ---------- product cards ---------- */
+html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2){border:0!important;border-radius:24px!important;background:#fff!important;box-shadow:0 1px 0 rgba(11,42,71,.06),0 18px 40px -26px rgba(11,42,71,.45)!important;overflow:hidden!important;transition:opacity .6s var(--bjc-ease),transform .35s var(--bjc-ease),box-shadow .35s var(--bjc-ease)!important}
+html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2):hover{transform:translateY(-6px)!important;box-shadow:0 1px 0 rgba(11,42,71,.06),0 34px 60px -28px rgba(11,42,71,.55)!important}
+html body .bjc-wow .besjaar-collection-product-card__media:not(#bjc1):not(#bjc2){border:0!important;border-radius:0!important;background:radial-gradient(130% 100% at 50% 0%,#ffffff 0%,#f0f9ff 65%,#e0f2fe 100%)!important;overflow:hidden!important}
+html body .bjc-wow .besjaar-collection-product-card__media:not(#bjc1):not(#bjc2) img{mix-blend-mode:multiply;transition:transform .6s var(--bjc-ease)!important}
+html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2):hover .besjaar-collection-product-card__media img{transform:scale(1.06)!important}
+html body .bjc-wow .besjaar-collection-badge:not(#bjc1):not(#bjc2){background:linear-gradient(135deg,#ef4444,#f97316)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:0 10px 20px -10px rgba(239,68,68,.8)!important;font-weight:800!important}
+html body .bjc-wow .besjaar-collection-product-card__quick:not(#bjc1):not(#bjc2),
+html body .bjc-wow .besjaar-collection-product-card__view:not(#bjc1):not(#bjc2){background:var(--bjc-navy)!important;color:#fff!important;border-color:var(--bjc-navy)!important;transition:background-color .25s ease!important}
+html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2):hover .besjaar-collection-product-card__quick,
+html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2):hover .besjaar-collection-product-card__view{background:#0ea5e9!important;border-color:#0ea5e9!important}
+
+/* ---------- trust row ---------- */
+html body .bjc-wow .bjc-trust__item:not(#bjc1):not(#bjc2){border:0!important;border-radius:20px!important;background:#fff!important;box-shadow:0 18px 40px -30px rgba(11,42,71,.5)!important}
+html body .bjc-wow .bjc-trust__icon:not(#bjc1):not(#bjc2){background:linear-gradient(135deg,#7dd3fc,#0ea5e9)!important;color:#fff!important}
+html body .bjc-wow .bjc-trust__icon:not(#bjc1):not(#bjc2) svg{stroke:#fff!important}
+
+@media (prefers-reduced-motion:reduce){
+  .bjc-wow *{animation:none!important;transition:none!important}
+}
+
+/* 2026-10-16: the cards are white tiles now, so the body gets real inner spacing (the older
+   stylesheets give it 1–3px because the cards used to have no background). On phones the quick-add
+   label stays on one line. */
+html body .bjc-wow .besjaar-collection-product-card__body:not(#bjc1):not(#bjc2){padding:18px 20px 20px!important}
+@media (max-width:700px){
+  html body .bjc-wow .besjaar-collection-product-card__body:not(#bjc1):not(#bjc2){padding:12px 12px 14px!important}
+  html body .bjc-wow .besjaar-collection-product-card__quick:not(#bjc1):not(#bjc2),
+  html body .bjc-wow .besjaar-collection-product-card__view:not(#bjc1):not(#bjc2){padding-left:10px!important;padding-right:10px!important;font-size:.8rem!important;white-space:nowrap!important;gap:6px!important}
+}
