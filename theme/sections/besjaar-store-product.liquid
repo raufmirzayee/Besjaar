@@ -108,6 +108,20 @@
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-quotes__all{display:inline-block;margin-top:8px;color:#1F5F52;font-size:.78rem;font-weight:700;text-decoration:underline;text-underline-offset:3px}
   body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-counter{position:absolute;z-index:3;right:14px;bottom:14px;padding:5px 10px;border-radius:999px;background:rgba(17,22,28,.72);color:#fff;font-size:.68rem;font-weight:700;letter-spacing:.04em;pointer-events:none}
   body[data-page-type="product"] .besjaar-store-premium-pd__swipe{display:none!important}
+  /* 2026-11-02: arrows on the photo, so shoppers see it swipes to the next image (the counter
+     alone did not say so). Vertically centred, clear of the sale badge, the video button and the
+     counter in the corners. The previous arrow only shows from the second photo on; the next
+     arrow glides right twice when the photo first comes into view. */
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow{position:absolute;z-index:3;top:50%;display:grid;place-items:center;width:40px;height:40px;margin:-20px 0 0;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#0F2947;box-shadow:0 6px 18px -6px rgba(15,41,71,.45),0 0 0 1px rgba(15,41,71,.06);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .18s ease,transform .18s ease}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow[hidden]{display:none}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow--prev{left:12px}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow--next{right:12px}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow:focus-visible{outline:3px solid #7FC2E7;outline-offset:2px}
+  html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow--next.is-nudging{animation:bj-pd-nudge 1.2s ease-in-out 2}
+  @keyframes bj-pd-nudge{0%,100%{transform:translateX(0)}35%{transform:translateX(7px)}70%{transform:translateX(0)}}
+  @media (hover:hover){html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow:hover{background:#fff;transform:scale(1.06)}}
+  @media (prefers-reduced-motion:reduce){html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow{transition:none}html body[data-page-type="product"] .besjaar-store-premium-pd .bj-pd-arrow--next.is-nudging{animation:none}}
   body[data-page-type="product"] .besjaar-store-premium-pd__details{margin-top:24px!important;border-top:1px solid #E4E1DB!important}
   body[data-page-type="product"] .besjaar-store-premium-pd__details summary{padding:18px 2px!important;color:#1C2326!important;font-size:.86rem!important;font-weight:750!important}
   body[data-page-type="product"] .besjaar-store-premium-pd__details summary::after{display:grid!important;place-items:center!important;width:26px!important;height:26px!important;border:1px solid #D6D1C7!important;border-radius:50%!important;color:#1C2326!important;font-size:1rem!important;line-height:1!important}
@@ -242,6 +256,8 @@
       assign ui_care_body = 'Controleer de modelspecificaties voor filter, slang en sproeistanden. Spoel het douchevlak regelmatig schoon en droog de afwerking met een zachte doek.'
       assign ui_gallery = 'Productfoto'
       assign ui_swipe = 'Veeg om meer foto’s te bekijken'
+      assign ui_prev_image = 'Vorige foto'
+      assign ui_next_image = 'Volgende foto'
       assign ui_secure = 'Veilig afrekenen'
       assign ui_lede = 'Een premium Besjaar handdouche voor een krachtige, comfortabele dagelijkse douche. Ontworpen voor een standaard ½″ aansluiting, eenvoudige bediening en een verzorgde badkamerlook.'
     when 'de'
@@ -260,6 +276,8 @@
       assign ui_care_body = 'Modellspezifische Angaben zu Filter, Schlauch und Strahlarten findest du in den Spezifikationen. Brausefläche regelmäßig abspülen und die Oberfläche mit einem weichen Tuch trocknen.'
       assign ui_gallery = 'Produktbild'
       assign ui_swipe = 'Wischen, um weitere Bilder anzusehen'
+      assign ui_prev_image = 'Vorheriges Bild'
+      assign ui_next_image = 'Nächstes Bild'
       assign ui_secure = 'Sicher bezahlen'
       assign ui_lede = 'Eine hochwertige Besjaar Handbrause für einen kräftigen, angenehmen Duschstrahl im Alltag. Für Standard-½″-Anschlüsse, einfache Bedienung und ein klares Badezimmerdesign.'
     when 'fr'
@@ -278,6 +296,8 @@
       assign ui_care_body = 'Consultez les spécifications du modèle pour le filtre, le flexible et les modes de jet. Rincez régulièrement la face du pommeau et séchez la finition avec un chiffon doux.'
       assign ui_gallery = 'Photo produit'
       assign ui_swipe = 'Balayez pour voir plus de photos'
+      assign ui_prev_image = 'Photo précédente'
+      assign ui_next_image = 'Photo suivante'
       assign ui_secure = 'Paiement sécurisé'
       assign ui_lede = 'Une douchette Besjaar haut de gamme conçue pour un jet puissant et confortable au quotidien. Compatible avec un raccord standard ½″, simple à utiliser et facile à intégrer dans la salle de bains.'
     when 'es'
@@ -296,6 +316,8 @@
       assign ui_care_body = 'Consulta las especificaciones del modelo para el filtro, la manguera y los modos de chorro. Aclara regularmente la cara de la alcachofa y seca el acabado con un paño suave.'
       assign ui_gallery = 'Foto del producto'
       assign ui_swipe = 'Desliza para ver más fotos'
+      assign ui_prev_image = 'Foto anterior'
+      assign ui_next_image = 'Foto siguiente'
       assign ui_secure = 'Pago seguro'
       assign ui_lede = 'Una ducha de mano Besjaar premium diseñada para un chorro potente y cómodo cada día. Compatible con una conexión estándar de ½″, fácil de usar y de integrar en tu baño.'
     else
@@ -314,6 +336,8 @@
       assign ui_care_body = 'Check the model specifications for filter, hose and spray-mode details. Rinse the shower face regularly and dry the finish with a soft cloth.'
       assign ui_gallery = 'Product image'
       assign ui_swipe = 'Swipe to explore more images'
+      assign ui_prev_image = 'Previous image'
+      assign ui_next_image = 'Next image'
       assign ui_secure = 'Secure checkout'
       assign ui_lede = 'A premium Besjaar hand shower designed for a strong, comfortable everyday shower. Made for a standard ½″ connection, simple operation and a clean modern bathroom setup.'
   endcase
@@ -570,6 +594,10 @@
         {%- for media in product.media limit: 10 -%}{%- if media.preview_image -%}{%- assign bj_img_total = bj_img_total | plus: 1 -%}{%- endif -%}{%- endfor -%}
         <div class="besjaar-store-premium-pd__stage" id="BesjaarStage-{{ section.id }}">
           {%- if bj_img_total > 1 -%}<span class="bj-pd-counter" data-bj-counter aria-hidden="true">1 / {{ bj_img_total }}</span>{%- endif -%}
+          {%- if bj_img_total > 1 -%}
+            <button type="button" class="bj-pd-arrow bj-pd-arrow--prev" data-bj-gallery-prev aria-label="{{ ui_prev_image | escape }}" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m15 6-6 6 6 6"/></svg></button>
+            <button type="button" class="bj-pd-arrow bj-pd-arrow--next" data-bj-gallery-next aria-label="{{ ui_next_image | escape }}" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg></button>
+          {%- endif -%}
           {%- if selected_image -%}
             <img
               id="BesjaarMainImage-{{ section.id }}"
@@ -1269,6 +1297,20 @@
   var thumbs = document.getElementById('BesjaarThumbs-{{ section.id }}');
   if (thumbs && mainImage) {
     var thumbButtons = Array.prototype.slice.call(thumbs.querySelectorAll('.besjaar-store-premium-pd__thumb'));
+    // 2026-11-02: arrows on the photo. The previous arrow shows from the
+    // second photo on; any gallery change ends the one-time nudge.
+    var prevArrow = root.querySelector('[data-bj-gallery-prev]');
+    var nextArrow = root.querySelector('[data-bj-gallery-next]');
+    var nudgeDone = false;
+    var syncArrows = function (index) {
+      if (!prevArrow || !nextArrow || thumbButtons.length < 2) return;
+      prevArrow.hidden = index <= 0;
+      nextArrow.hidden = false;
+    };
+    var stopNudge = function () {
+      nudgeDone = true;
+      if (nextArrow) nextArrow.classList.remove('is-nudging');
+    };
     var showThumb = function (btn) {
       if (!btn) return;
       mainImage.src = btn.dataset.src;
@@ -1279,6 +1321,8 @@
       });
       var bjCounter = root.querySelector('[data-bj-counter]');
       if (bjCounter) bjCounter.textContent = (thumbButtons.indexOf(btn) + 1) + ' / ' + thumbButtons.length;
+      syncArrows(thumbButtons.indexOf(btn));
+      stopNudge();
       try {
         var besjaarReduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         btn.scrollIntoView({ behavior: besjaarReduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'nearest' });
@@ -1296,6 +1340,27 @@
       if (!btn) return;
       showThumb(btn);
     });
+    if (prevArrow && nextArrow && thumbButtons.length > 1) {
+      var startIndex = thumbButtons.findIndex(function (item) { return item.getAttribute('aria-current') === 'true'; });
+      syncArrows(startIndex < 0 ? 0 : startIndex);
+      // stopPropagation: an arrow tap must not also reach the photo's own tap handling.
+      prevArrow.addEventListener('click', function (event) { event.stopPropagation(); moveGallery(-1); });
+      nextArrow.addEventListener('click', function (event) { event.stopPropagation(); moveGallery(1); });
+      nextArrow.addEventListener('animationend', function () { nextArrow.classList.remove('is-nudging'); });
+      var nudgeReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!nudgeReduce && 'IntersectionObserver' in window) {
+        var nudgeSeen = new IntersectionObserver(function (entries) {
+          if (!entries[0].isIntersecting) return;
+          nudgeSeen.disconnect();
+          setTimeout(function () {
+            if (nudgeDone || nextArrow.hidden) return;
+            nudgeDone = true;
+            nextArrow.classList.add('is-nudging');
+          }, 900);
+        }, { threshold: 0.6 });
+        nudgeSeen.observe(nextArrow);
+      }
+    }
     thumbs.addEventListener('keydown', function (event) {
       var btn = event.target.closest('.besjaar-store-premium-pd__thumb');
       if (!btn) return;
@@ -1329,7 +1394,11 @@
         try { stage.setPointerCapture(pointerId); } catch (e) {}
       });
       stage.addEventListener('pointerup', function (event) {
-        if (pointerId !== null && event.pointerId !== pointerId) return;
+        // 2026-11-02: only a drag that started on the photo counts. Lifting a
+        // finger from a button on the photo (the arrows, the video button) used
+        // to be read as a swipe measured from the corner of the screen, which
+        // flipped the photo back one.
+        if (pointerId === null || event.pointerId !== pointerId) return;
         var dx = event.clientX - startX;
         var dy = event.clientY - startY;
         stage.classList.remove('is-dragging');
