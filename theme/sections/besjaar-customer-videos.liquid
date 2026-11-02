@@ -25,6 +25,12 @@
   of besjaar-store-product). It only exists when this section renders, so
   products without videos get no button; it scrolls here and starts the
   first video.
+
+  2 Nov 2026: like the Google store-score widget and the discount chip on
+  the same photo, the button folds into its round play thumbnail 5 seconds
+  after it comes into view (the video count stays as a corner badge), so it
+  stops covering the product. A mouse hover or keyboard focus opens it
+  again; on touch it stays round and a tap still jumps to the videos.
 {%- endcomment -%}
 {%- liquid
   assign ptype = product.type | downcase | strip
@@ -253,16 +259,20 @@
   .bj-vid *,.bj-vid *::before,.bj-vid *::after{box-sizing:border-box}
   .bj-vid__anchor{position:absolute;top:0;scroll-margin-top:84px}
   /* Button on the product photo; lives outside .bj-vid, so it carries its own tokens. */
-  .bj-vid-jump{position:absolute;z-index:4;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:10px;max-width:calc(100% - 96px);padding:5px 16px 5px 5px;border:0;border-radius:999px;background:rgba(255,255,255,.96);color:#102b48;font:700 .84rem/1.2 Inter,'Inter Fallback',sans-serif;text-decoration:none;box-shadow:0 12px 28px -10px rgba(4,18,31,.45),0 0 0 1px rgba(16,43,72,.08);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s ease}
+  .bj-vid-jump{position:absolute;z-index:4;left:14px;bottom:14px;display:inline-flex;align-items:center;gap:10px;max-width:calc(100% - 96px);padding:5px 16px 5px 5px;border:0;border-radius:999px;background:rgba(255,255,255,.96);color:#102b48;font:700 .84rem/1.2 Inter,'Inter Fallback',sans-serif;text-decoration:none;box-shadow:0 12px 28px -10px rgba(4,18,31,.45),0 0 0 1px rgba(16,43,72,.08);cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s ease,padding .45s cubic-bezier(.2,.7,.2,1),gap .45s cubic-bezier(.2,.7,.2,1)}
   .bj-vid-jump:hover{transform:translateY(-2px);box-shadow:0 16px 32px -12px rgba(4,18,31,.5),0 0 0 1px rgba(16,43,72,.1)}
   .bj-vid-jump:focus-visible{outline:3px solid #38bdf8;outline-offset:3px}
   .bj-vid-jump__thumb{position:relative;flex:0 0 38px;width:38px;height:38px;border-radius:50%;overflow:hidden;background:linear-gradient(140deg,#7dd3fc,#0ea5e9)}
   .bj-vid-jump__thumb img{display:block;width:100%;height:100%;object-fit:cover}
   .bj-vid-jump__thumb::after{content:"";position:absolute;inset:0;background:rgba(4,18,31,.32)}
   .bj-vid-jump__thumb svg{position:absolute;z-index:1;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -6px;fill:#fff}
-  .bj-vid-jump__label{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .bj-vid-jump__label{max-width:var(--bjv-jump-label,none);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:max-width .45s cubic-bezier(.2,.7,.2,1),opacity .3s ease}
   .bj-vid-jump__count{flex:0 0 auto;display:grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#102b48;color:#fff;font-size:.72rem}
-  @media (max-width:760px){.bj-vid-jump{left:12px;bottom:12px;gap:8px;padding:4px 13px 4px 4px;font-size:.78rem}.bj-vid-jump__thumb{flex-basis:34px;width:34px;height:34px}}
+  /* Folded (the script sets this 5 s after the button comes into view): only the round thumbnail stays, with the count as a corner badge. */
+  .bj-vid-jump.is-collapsed{gap:0;padding:5px}
+  .bj-vid-jump.is-collapsed .bj-vid-jump__label{max-width:0;opacity:0}
+  .bj-vid-jump.is-collapsed .bj-vid-jump__count{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;font-size:.68rem;box-shadow:0 0 0 2px #fff}
+  @media (max-width:760px){.bj-vid-jump{left:12px;bottom:12px;gap:8px;padding:4px 13px 4px 4px;font-size:.78rem}.bj-vid-jump__thumb{flex-basis:34px;width:34px;height:34px}.bj-vid-jump.is-collapsed{gap:0;padding:4px}}
   .bj-vid__inner{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:clamp(28px,5vw,72px);max-width:1320px;margin:0 auto;padding:0 var(--bjv-pad)}
   .bj-vid__copy{max-width:30rem}
   .bj-vid .bj-vid__kicker{display:inline-flex;align-items:center;gap:10px;color:var(--bjv-sky-ink);font:700 .76rem/1.2 Inter,'Inter Fallback',sans-serif;letter-spacing:.16em;text-transform:uppercase}
@@ -329,7 +339,7 @@
     .bj-vid__play-icon{width:64px;height:64px}
   }
   @media (prefers-reduced-motion:reduce){
-    .bj-vid *,.bj-vid-jump{animation:none!important;transition:none!important}
+    .bj-vid *,.bj-vid-jump,.bj-vid-jump *{animation:none!important;transition:none!important}
     .bj-vid__card:hover{transform:none}
   }
 </style>
@@ -424,6 +434,57 @@
         if (first && !first.hidden) first.click();
       });
       stage.appendChild(jump);
+
+      // Fold into the round thumbnail 5 s after the button comes into view,
+      // like the other badges on the photo. The label stays in the DOM (only
+      // squeezed to zero width), so the link keeps its accessible name.
+      var foldDue = false;
+      var hovering = false;
+      var keyboardFocus = false;
+      function fold() {
+        if (!foldDue || hovering || keyboardFocus) return;
+        // max-width can't animate from "none", so pin it to the text width first.
+        jump.style.setProperty('--bjv-jump-label', label.scrollWidth + 'px');
+        label.getBoundingClientRect();
+        jump.classList.add('is-collapsed');
+      }
+      function unfold() {
+        jump.style.setProperty('--bjv-jump-label', label.scrollWidth + 'px');
+        jump.classList.remove('is-collapsed');
+      }
+      function armFold() {
+        setTimeout(function () { foldDue = true; fold(); }, 5000);
+      }
+      if ('IntersectionObserver' in window) {
+        var seen = new IntersectionObserver(function (entries) {
+          if (!entries[0].isIntersecting) return;
+          seen.disconnect();
+          armFold();
+        }, { threshold: 0.6 });
+        seen.observe(jump);
+      } else {
+        armFold();
+      }
+      // Mouse hover and keyboard focus open it again; touch taps don't, so
+      // the button never sticks open after a tap.
+      jump.addEventListener('pointerenter', function (event) {
+        if (event.pointerType !== 'mouse') return;
+        hovering = true;
+        unfold();
+      });
+      jump.addEventListener('pointerleave', function (event) {
+        if (event.pointerType !== 'mouse') return;
+        hovering = false;
+        fold();
+      });
+      jump.addEventListener('focus', function () {
+        try { keyboardFocus = jump.matches(':focus-visible'); } catch (error) { keyboardFocus = true; }
+        if (keyboardFocus) unfold();
+      });
+      jump.addEventListener('blur', function () {
+        keyboardFocus = false;
+        fold();
+      });
     }
 
     // Arrow buttons, only when the row is wider than its column.
