@@ -74,6 +74,19 @@ html body .bjc-wow .besjaar-collection-collection-group__count:not(#bjc1):not(#b
 html body .bjc-wow .besjaar-collection-collection-group__link:not(#bjc1):not(#bjc2){background:var(--bjc-navy)!important;color:#fff!important;border-color:var(--bjc-navy)!important;transition:background-color .25s ease,transform .25s var(--bjc-ease)!important}
 html body .bjc-wow .besjaar-collection-collection-group__link:not(#bjc1):not(#bjc2):hover{background:#0ea5e9!important;border-color:#0ea5e9!important;transform:translateY(-2px)!important}
 .bjc-wow .besjaar-collection-collection-group{scroll-margin-top:110px}
+/* 2026-11-02: the number tile above is 64px, but besjaar-collection-step3.css still sizes its
+   column for the old 42px circle (48px column) and, on phones, for a 31px one (34px column,
+   with "Bekijk collectie" indented 44px to line up with the title). On phones the tile ran
+   20px into the "N producten" line and the heading. The column now fits the tile: 64px on
+   larger screens, a 52px tile on phones, the text centred beside it and the button full
+   width underneath. */
+html body .bjc-wow .besjaar-collection-collection-group__identity:not(#bjc1):not(#bjc2){grid-template-columns:64px minmax(0,1fr)!important;gap:20px!important;align-items:center!important}
+html body .bjc-wow .besjaar-collection-collection-group__index:not(#bjc1):not(#bjc2){margin-top:0!important}
+@media (max-width:760px){
+  html body .bjc-wow .besjaar-collection-collection-group__identity:not(#bjc1):not(#bjc2){grid-template-columns:52px minmax(0,1fr)!important;gap:14px!important}
+  html body .bjc-wow .besjaar-collection-collection-group__index:not(#bjc1):not(#bjc2){width:52px!important;height:52px!important;border-radius:16px!important;font-size:1.2rem!important}
+  html body .bjc-wow .besjaar-collection-collection-group__link:not(#bjc1):not(#bjc2){margin-left:0!important}
+}
 
 /* ---------- product cards ---------- */
 html body .bjc-wow .besjaar-collection-product-card:not(#bjc1):not(#bjc2){border:0!important;border-radius:24px!important;background:#fff!important;box-shadow:0 1px 0 rgba(11,42,71,.06),0 18px 40px -26px rgba(11,42,71,.45)!important;overflow:hidden!important;transition:opacity .6s var(--bjc-ease),transform .35s var(--bjc-ease),box-shadow .35s var(--bjc-ease)!important}
