@@ -1,0 +1,14 @@
+{%- comment -%}
+  2026-11-04 — accelerated checkout buttons (Apple Pay, Google Pay, Shop Pay)
+  for the cart drawer, on their own so sections/besjaar-cart-mobile-1176.liquid
+  can refresh them through the Section Rendering API
+  (/?sections=besjaar-express-checkout) after the cart changes, as Shopify
+  recommends for cart drawers. Not placed in any template.
+{%- endcomment -%}
+{%- if additional_checkout_buttons and cart.item_count > 0 -%}{{ content_for_additional_checkout_buttons }}{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar express checkout",
+  "settings": []
+}
+{% endschema %}
