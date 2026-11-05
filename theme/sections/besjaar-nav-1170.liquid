@@ -1,0 +1,83 @@
+{%- comment -%}
+  Besjaar 11.6.18 — "Zakelijk" navigation link.
+
+  The header and footer of this theme build their links in Liquid; neither
+  reads Shopify's Main Menu, so adding the page there surfaces nothing. The
+  footer carries the real crawlable link (besjaar-store-footer.liquid). This
+  section adds the same link to the header nav and the mobile menu, where the
+  markup lives inside a 41KB section that is safer left alone.
+
+  The mobile menu is rebuilt into tiles by the runtime section, which would
+  discard a plain injected link. So instead of inserting our own markup we
+  wait for the rebuild, clone the finished "Over ons" row and retarget the
+  clone — it therefore inherits whatever styling that row ends up with, now
+  and after any future menu change. Retries briefly, then gives up quietly.
+
+  Localised NL/EN/DE/FR.
+{%- endcomment -%}
+{%- liquid
+  assign bj_z_page = pages['zakelijk']
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_z_label = 'Business'
+    when 'de'
+      assign bj_z_label = 'Geschäftskunden'
+    when 'fr'
+      assign bj_z_label = 'Professionnels'
+    when 'es'
+      assign bj_z_label = 'Empresas'
+    else
+      assign bj_z_label = 'Zakelijk'
+  endcase
+  capture bj_z_url
+    if bj_z_page != blank
+      render 'localized-internal-url', url: bj_z_page.url
+    else
+      render 'localized-internal-url', url: '/pages/zakelijk'
+    endif
+  endcapture
+  assign bj_z_url = bj_z_url | strip
+  assign bj_z_current = false
+  if request.page_type == 'page' and page != blank and page.handle == 'zakelijk'
+    assign bj_z_current = true
+  endif
+
+  comment
+    Mirror the header's own about-page lookup so we can find its row to clone.
+  endcomment
+  assign bj_about_page = pages['over-ons']
+  if bj_about_page == blank
+    assign bj_about_page = pages['overons']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about-us']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about']
+  endif
+  capture bj_about_url
+    if bj_about_page != blank
+      render 'localized-internal-url', url: bj_about_page.url
+    else
+      render 'localized-internal-url', url: '/pages/about-us'
+    endif
+  endcapture
+  assign bj_about_url = bj_about_url | strip
+-%}
+<script type="application/json" id="bj-nav-zakelijk">{"url":{{ bj_z_url | json }},"label":{{ bj_z_label | json }},"current":{{ bj_z_current | json }},"about":{{ bj_about_url | json }}}</script>
+<script src="{{ 'besjaar-x-nav-1.js' | asset_url }}"></script>
+{% schema %}
+{
+  "name": "Besjaar zakelijk link",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: adds the Zakelijk page to the header nav and to the mobile menu (by cloning the Over ons row after the menu is rebuilt, so the styling always matches). The crawlable link lives in the footer section. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

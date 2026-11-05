@@ -1,0 +1,36 @@
+{%- comment -%}
+  Besjaar 11.6.18 — page-template polish (About + Zakelijk).
+
+  ABOUT, phones:
+  1. Overflow. The hero is a two-column grid with no mobile breakpoint, and
+     grid items default to min-width:auto, so a long word ("Douchekoppen.")
+     at display size forces its column wider than the viewport. One column
+     below 901px, min-width:0 on the items, a headline size that fits, and
+     word breaking as a backstop.
+  2. Parity with desktop — pill kickers, white photo cards, navy numbers,
+     laid out two-up instead of four-up, replacing the original
+     green-and-black sideways-scrolling cards.
+
+  ZAKELIJK, every width: the same min-width:auto trap. The hero photo's
+  natural width pushed its grid item past the viewport, which scrolled the
+  whole page sideways and left the content pinned to the left with an uneven
+  margin. The shell width is also pinned here rather than inherited, so the
+  section cannot drift out of the page grid.
+{%- endcomment -%}
+{%- if request.page_type == 'page' -%}
+
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar page polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.18: About page on phones (hero fits the screen, navy/ice cards two-up) and the Zakelijk page at every width (stops the hero photo overflowing sideways and pinning the content to the left). Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

@@ -1,0 +1,146 @@
+{{ 'besjaar-home-wow.css' | asset_url | stylesheet_tag: preload: true }}
+{%- liquid
+  comment
+    Besjaar 15 Oct 2026: photo bento on the homepage. Every claim here is one
+    the product pages and photos already make (3 or 10 spray modes, high
+    pressure / low use, silicone nozzles, universal ½" connection, filter in
+    the handle, 30-day returns, 12-month warranty).
+  endcomment
+  assign wl = request.locale.iso_code | split: '-' | first | downcase
+  case wl
+    when 'en'
+      assign k = 'One showerhead, more ways to shower'
+      assign h = 'Your shower, the way you like it.'
+      assign a_t = 'High pressure, low use'
+      assign a_p = 'A strong, full spray that still saves water.'
+      assign b_t = '3 or 10 spray modes'
+      assign b_p = 'From soft rain to a firm massage jet.'
+      assign c_t = 'Silicone nozzles'
+      assign c_p = 'Easy to keep clean.'
+      assign d_t = 'Filter in the handle'
+      assign d_p = 'Available on the 10-mode models.'
+      assign e_v = '30'
+      assign e_t = 'days to change your mind'
+      assign e_p = 'Plus a 12-month warranty on every showerhead.'
+      assign f_t = 'Universal ½″ connection'
+      assign f_p = 'Fits standard shower hoses.'
+      assign cta = 'Compare the models'
+    when 'de'
+      assign k = 'Ein Duschkopf, mehr Möglichkeiten'
+      assign h = 'Deine Dusche, so wie du sie magst.'
+      assign a_t = 'Hoher Druck, wenig Verbrauch'
+      assign a_p = 'Ein kräftiger, voller Strahl, der trotzdem Wasser spart.'
+      assign b_t = '3 oder 10 Strahlarten'
+      assign b_p = 'Vom sanften Regen bis zum kräftigen Massagestrahl.'
+      assign c_t = 'Silikondüsen'
+      assign c_p = 'Leicht sauber zu halten.'
+      assign d_t = 'Filter im Griff'
+      assign d_p = 'Bei den Modellen mit 10 Strahlarten.'
+      assign e_v = '30'
+      assign e_t = 'Tage Rückgaberecht'
+      assign e_p = 'Dazu 12 Monate Garantie auf jeden Duschkopf.'
+      assign f_t = 'Universeller ½″-Anschluss'
+      assign f_p = 'Passt auf Standard-Duschschläuche.'
+      assign cta = 'Modelle vergleichen'
+    when 'fr'
+      assign k = 'Un pommeau, plus de façons de se doucher'
+      assign h = 'Votre douche, comme vous l’aimez.'
+      assign a_t = 'Haute pression, faible consommation'
+      assign a_p = 'Un jet puissant et généreux qui économise l’eau.'
+      assign b_t = '3 ou 10 types de jet'
+      assign b_p = 'De la pluie douce au jet massant.'
+      assign c_t = 'Buses en silicone'
+      assign c_p = 'Faciles à garder propres.'
+      assign d_t = 'Filtre dans la poignée'
+      assign d_p = 'Sur les modèles à 10 types de jet.'
+      assign e_v = '30'
+      assign e_t = 'jours pour changer d’avis'
+      assign e_p = 'Et 12 mois de garantie sur chaque pommeau.'
+      assign f_t = 'Raccord universel ½″'
+      assign f_p = 'S’adapte aux flexibles de douche standard.'
+      assign cta = 'Comparer les modèles'
+    when 'es'
+      assign k = 'Una alcachofa, más formas de ducharte'
+      assign h = 'Tu ducha, como a ti te gusta.'
+      assign a_t = 'Alta presión, bajo consumo'
+      assign a_p = 'Un chorro fuerte y amplio que ahorra agua.'
+      assign b_t = '3 o 10 modos de chorro'
+      assign b_p = 'De lluvia suave a chorro de masaje.'
+      assign c_t = 'Boquillas de silicona'
+      assign c_p = 'Fáciles de mantener limpias.'
+      assign d_t = 'Filtro en el mango'
+      assign d_p = 'En los modelos de 10 modos.'
+      assign e_v = '30'
+      assign e_t = 'días para cambiar de opinión'
+      assign e_p = 'Y 12 meses de garantía en cada alcachofa.'
+      assign f_t = 'Conexión universal ½″'
+      assign f_p = 'Compatible con mangueras de ducha estándar.'
+      assign cta = 'Comparar modelos'
+    else
+      assign k = 'Eén douchekop, meer manieren om te douchen'
+      assign h = 'Jouw douche, precies zoals jij hem wilt.'
+      assign a_t = 'Hoge druk, laag verbruik'
+      assign a_p = 'Een krachtige, volle straal die toch water bespaart.'
+      assign b_t = '3 of 10 sproeistanden'
+      assign b_p = 'Van zachte regen tot stevige massagestraal.'
+      assign c_t = 'Siliconen nozzles'
+      assign c_p = 'Makkelijk schoon te houden.'
+      assign d_t = 'Filter in de handgreep'
+      assign d_p = 'Bij de modellen met 10 standen.'
+      assign e_v = '30'
+      assign e_t = 'dagen bedenktijd'
+      assign e_p = 'Plus 12 maanden garantie op elke douchekop.'
+      assign f_t = 'Universele ½″-aansluiting'
+      assign f_p = 'Past op standaard doucheslangen.'
+      assign cta = 'Vergelijk de modellen'
+  endcase
+-%}
+{% capture wow_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+{%- assign wow_shop_url = wow_shop_url | strip -%}
+<section class="bjx-show" aria-labelledby="BjxShowTitle-{{ section.id }}">
+  <div class="bjx-show__inner">
+    <header class="bjx-show__head">
+      <span class="bjx-kicker">{{ k }}</span>
+      <h2 class="bjx-show__title" id="BjxShowTitle-{{ section.id }}">{{ h }}</h2>
+      <a class="bjx-btn bjx-btn--primary bjx-show__cta" href="{{ wow_shop_url }}">{{ cta }} <span aria-hidden="true">→</span></a>
+    </header>
+
+    <div class="bjx-bento">
+      <article class="bjx-tile bjx-tile--photo bjx-tile--a">
+        <img src="{{ 'besjaar-web-real-water.webp' | asset_url }}" width="900" height="1200" loading="lazy" decoding="async" alt="">
+        <div class="bjx-tile__copy"><h3>{{ a_t }}</h3><p>{{ a_p }}</p></div>
+      </article>
+      <article class="bjx-tile bjx-tile--photo bjx-tile--b">
+        <img src="{{ 'besjaar-web-real-modes.webp' | asset_url }}" width="1000" height="815" loading="lazy" decoding="async" alt="">
+        <div class="bjx-tile__copy"><h3>{{ b_t }}</h3><p>{{ b_p }}</p></div>
+      </article>
+      <article class="bjx-tile bjx-tile--stat bjx-tile--e">
+        <strong class="bjx-tile__big">{{ e_v }}</strong>
+        <h3>{{ e_t }}</h3>
+        <p>{{ e_p }}</p>
+      </article>
+      <article class="bjx-tile bjx-tile--photo bjx-tile--c">
+        <img src="{{ 'besjaar-macro-nozzles.webp' | asset_url }}" width="900" height="900" loading="lazy" decoding="async" alt="">
+        <div class="bjx-tile__copy"><h3>{{ c_t }}</h3><p>{{ c_p }}</p></div>
+      </article>
+      <article class="bjx-tile bjx-tile--icon bjx-tile--d">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4"/></svg>
+        <h3>{{ d_t }}</h3>
+        <p>{{ d_p }}</p>
+      </article>
+      <article class="bjx-tile bjx-tile--icon bjx-tile--f">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5H8zM10 9v4h4V9M12 13v7"/><path d="M6 20h12"/></svg>
+        <h3>{{ f_t }}</h3>
+        <p>{{ f_p }}</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Besjaar wow showcase",
+  "settings": [],
+  "presets": [{ "name": "Besjaar wow showcase" }]
+}
+{% endschema %}

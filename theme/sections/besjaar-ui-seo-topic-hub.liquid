@@ -1,0 +1,62 @@
+{% liquid
+  capture besjaar_ui_shower_url
+    render 'shower-store-url'
+  endcapture
+  assign besjaar_ui_shower_url = besjaar_ui_shower_url | strip
+%}
+<section class="besjaar-ui-seo-topic-hub" aria-labelledby="BesjaarUISeoTopicHubTitle-{{ section.id }}">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-seo-topic-hub__surface" data-reveal>
+      <header class="besjaar-ui-seo-topic-hub__head">
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.seo_keywords.kicker' | t }}</p>
+        <h2 id="BesjaarUISeoTopicHubTitle-{{ section.id }}">{{ 'besjaar_ui.seo_keywords.heading' | t }}</h2>
+        <p>{{ 'besjaar_ui.seo_keywords.intro' | t }}</p>
+      </header>
+      <div class="besjaar-ui-seo-topic-hub__grid">
+        <article><span>01</span><h3>{{ 'besjaar_ui.seo_keywords.card1_title' | t }}</h3><p>{{ 'besjaar_ui.seo_keywords.card1_copy' | t }}</p></article>
+        <article><span>02</span><h3>{{ 'besjaar_ui.seo_keywords.card2_title' | t }}</h3><p>{{ 'besjaar_ui.seo_keywords.card2_copy' | t }}</p></article>
+        <article><span>03</span><h3>{{ 'besjaar_ui.seo_keywords.card3_title' | t }}</h3><p>{{ 'besjaar_ui.seo_keywords.card3_copy' | t }}</p></article>
+        <article><span>04</span><h3>{{ 'besjaar_ui.seo_keywords.card4_title' | t }}</h3><p>{{ 'besjaar_ui.seo_keywords.card4_copy' | t }}</p></article>
+      </div>
+      <footer class="besjaar-ui-seo-topic-hub__foot">
+        <p>{{ 'besjaar_ui.seo_keywords.support' | t }}</p>
+        <a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ besjaar_ui_shower_url }}">{{ 'besjaar_ui.seo_keywords.cta' | t }} <span aria-hidden="true">→</span></a>
+      </footer>
+    </div>
+  </div>
+</section>
+<style>
+  .besjaar-ui-seo-topic-hub{padding:clamp(54px,7vw,96px) 0}
+  .besjaar-ui-seo-topic-hub__surface{padding:clamp(24px,4vw,52px);border:1px solid #dce4dc;border-radius:28px;background:linear-gradient(145deg,#fbfcfa,#f3f6f1)}
+  .besjaar-ui-seo-topic-hub__head{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.8fr);gap:10px 46px;align-items:end;padding-bottom:28px;border-bottom:1px solid #dfe5df}
+  .besjaar-ui-seo-topic-hub__head .besjaar-ui-kicker{grid-column:1/-1;margin:0;color:#65736a;font-size:.65rem;letter-spacing:.15em}
+  .besjaar-ui-seo-topic-hub__head h2{margin:0;color:#17261d;font-size:clamp(2rem,4vw,4.25rem);line-height:.98;letter-spacing:-.055em;max-width:760px}
+  .besjaar-ui-seo-topic-hub__head>p:last-child{margin:0;color:#65736a;font-size:.94rem;line-height:1.65;max-width:620px}
+  .besjaar-ui-seo-topic-hub__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px}
+  .besjaar-ui-seo-topic-hub__grid article{position:relative;padding:28px 0 26px 42px;border-bottom:1px solid #e1e6e1}
+  .besjaar-ui-seo-topic-hub__grid article>span{position:absolute;left:0;top:31px;color:#79a368;font-size:.7rem;font-weight:900;letter-spacing:.08em}
+  .besjaar-ui-seo-topic-hub__grid h3{margin:0 0 8px;color:#22352a;font-size:1.05rem}
+  .besjaar-ui-seo-topic-hub__grid p{margin:0;color:#68756d;font-size:.84rem;line-height:1.62}
+  .besjaar-ui-seo-topic-hub__foot{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-top:26px}
+  .besjaar-ui-seo-topic-hub__foot p{margin:0;max-width:760px;color:#68756d;font-size:.83rem;line-height:1.6}
+  .besjaar-ui-seo-topic-hub__foot .besjaar-ui-button{flex:0 0 auto}
+  @media(max-width:760px){
+    .besjaar-ui-seo-topic-hub{padding:48px 0}
+    .besjaar-ui-seo-topic-hub__surface{padding:22px 17px;border-radius:22px}
+    .besjaar-ui-seo-topic-hub__head{grid-template-columns:1fr;gap:12px;padding-bottom:22px}
+    .besjaar-ui-seo-topic-hub__head .besjaar-ui-kicker{grid-column:auto}
+    .besjaar-ui-seo-topic-hub__head h2{font-size:clamp(1.9rem,9vw,2.8rem)}
+    .besjaar-ui-seo-topic-hub__grid{grid-template-columns:1fr}
+    .besjaar-ui-seo-topic-hub__grid article{padding:22px 0 21px 36px}
+    .besjaar-ui-seo-topic-hub__grid article>span{top:25px}
+    .besjaar-ui-seo-topic-hub__foot{align-items:stretch;flex-direction:column;padding-top:22px}
+    .besjaar-ui-seo-topic-hub__foot .besjaar-ui-button{width:100%}
+  }
+</style>
+{% schema %}
+{
+  "name": "SEO shower guide",
+  "settings": [],
+  "presets": [{"name": "SEO shower guide"}]
+}
+{% endschema %}

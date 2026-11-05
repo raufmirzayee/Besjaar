@@ -1,0 +1,28 @@
+{%- comment -%}
+  Besjaar 11.7 — refined colour system.
+  This is intentionally the final style carrier in the header group so the
+  palette stays consistent across the older component generations without
+  changing layout or typography.
+{%- endcomment -%}
+<script>
+(function(){
+  try {
+    if (/BingSapphire/i.test(navigator.userAgent || '')) {
+      document.documentElement.classList.add('bj-bing-mobile');
+    }
+  } catch (e) {}
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Besjaar refined colours",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Final colour polish: navy, soft sky, warm ivory and restrained sage accents. Keep this section last in the header group."
+    }
+  ],
+  "enabled_on": {"groups": ["header"]}
+}
+{% endschema %}

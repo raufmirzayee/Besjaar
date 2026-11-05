@@ -1,0 +1,174 @@
+{%- comment -%}
+  Besjaar — shipping answer for the general FAQ (q6 / a6), 2026-10-31.
+
+  Built from the theme settings that mirror Settings > Shipping, the same
+  ones besjaar-shipping-zone reads:
+    zone 1 (NL): free_shipping_threshold_exact / free_shipping_threshold,
+                 standard_shipping_rate (0 = free on every order)
+    zone 2:      ship_zone2_threshold, ship_zone2_rate
+  so the FAQ follows the announcement bar, cart bar and product page when
+  the shipping rules change, instead of a fixed sentence in the locales.
+
+  NL / EN / DE / FR are composed here. Other languages (ES) keep the locale
+  string besjaar_ui.faq_general.a6, which names no amounts.
+  The zone 2 country names are written out per language (BE, DE, FR, ES);
+  update them here if ship_zone2_countries changes.
+
+  Usage: {% render 'besjaar-shipping-faq' %}
+  Output is plain text.
+{%- endcomment -%}
+{%- liquid
+  assign bsf_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign bsf_hour = settings.order_cutoff_hour | default: 16
+  assign bsf_dec = ','
+  if bsf_lang == 'en'
+    assign bsf_dec = '.'
+  endif
+
+  assign bsf_r1 = settings.standard_shipping_rate | default: '' | strip | replace: ',', '.'
+  assign bsf_t1 = settings.free_shipping_threshold_exact | default: '' | strip | replace: ',', '.'
+  if bsf_t1 == blank
+    assign bsf_t1 = settings.free_shipping_threshold | default: 0 | append: ''
+  endif
+  assign bsf_r2 = settings.ship_zone2_rate | default: '' | strip | replace: ',', '.'
+  assign bsf_t2 = settings.ship_zone2_threshold | default: 0 | append: ''
+  assign bsf_t1_num = bsf_t1 | plus: 0
+  assign bsf_t2_num = bsf_t2 | plus: 0
+
+  assign bsf_s1 = 'none'
+  if bsf_r1 == '0' or bsf_r1 == '0.0' or bsf_r1 == '0.00'
+    assign bsf_s1 = 'free'
+  elsif bsf_t1_num > 0 and bsf_r1 != blank
+    assign bsf_s1 = 'both'
+  elsif bsf_t1_num > 0
+    assign bsf_s1 = 'from'
+  elsif bsf_r1 != blank
+    assign bsf_s1 = 'rate'
+  endif
+  assign bsf_s2 = 'none'
+  if bsf_r2 == '0' or bsf_r2 == '0.0' or bsf_r2 == '0.00'
+    assign bsf_s2 = 'free'
+  elsif bsf_t2_num > 0 and bsf_r2 != blank
+    assign bsf_s2 = 'both'
+  elsif bsf_t2_num > 0
+    assign bsf_s2 = 'from'
+  elsif bsf_r2 != blank
+    assign bsf_s2 = 'rate'
+  endif
+
+  assign bsf_r1 = bsf_r1 | replace: '.', bsf_dec
+  assign bsf_t1 = bsf_t1 | replace: '.', bsf_dec
+  assign bsf_r2 = bsf_r2 | replace: '.', bsf_dec
+  assign bsf_t2 = bsf_t2 | replace: '.', bsf_dec
+
+  assign bsf_intro = ''
+  assign bsf_z1 = ''
+  assign bsf_z2 = ''
+  case bsf_lang
+    when 'en'
+      assign bsf_intro = 'Order on a working day before ' | append: bsf_hour | append: ':00 and we ship the same day.'
+      assign bsf_c = 'Belgium, Germany, France and Spain'
+      case bsf_s1
+        when 'free'
+          assign bsf_z1 = 'Shipping within the Netherlands is always free.'
+        when 'both'
+          assign bsf_z1 = 'Shipping within the Netherlands costs €' | append: bsf_r1 | append: ', and it is free from €' | append: bsf_t1 | append: '.'
+        when 'from'
+          assign bsf_z1 = 'Shipping within the Netherlands is free from €' | append: bsf_t1 | append: '.'
+        when 'rate'
+          assign bsf_z1 = 'Shipping within the Netherlands costs €' | append: bsf_r1 | append: '.'
+      endcase
+      case bsf_s2
+        when 'free'
+          assign bsf_z2 = 'Shipping to ' | append: bsf_c | append: ' is always free.'
+        when 'both'
+          assign bsf_z2 = 'To ' | append: bsf_c | append: ' shipping costs €' | append: bsf_r2 | append: ', and it is free from €' | append: bsf_t2 | append: '.'
+        when 'from'
+          assign bsf_z2 = 'To ' | append: bsf_c | append: ' shipping is free from €' | append: bsf_t2 | append: '.'
+        when 'rate'
+          assign bsf_z2 = 'To ' | append: bsf_c | append: ' shipping costs €' | append: bsf_r2 | append: '.'
+      endcase
+    when 'de'
+      assign bsf_intro = 'Werktags vor ' | append: bsf_hour | append: ':00 Uhr bestellt, versenden wir noch am selben Tag.'
+      assign bsf_c = 'Belgien, Deutschland, Frankreich und Spanien'
+      case bsf_s1
+        when 'free'
+          assign bsf_z1 = 'Innerhalb der Niederlande ist der Versand immer kostenlos.'
+        when 'both'
+          assign bsf_z1 = 'Innerhalb der Niederlande kostet der Versand ' | append: bsf_r1 | append: ' €, ab ' | append: bsf_t1 | append: ' € ist er kostenlos.'
+        when 'from'
+          assign bsf_z1 = 'Innerhalb der Niederlande ist der Versand ab ' | append: bsf_t1 | append: ' € kostenlos.'
+        when 'rate'
+          assign bsf_z1 = 'Innerhalb der Niederlande kostet der Versand ' | append: bsf_r1 | append: ' €.'
+      endcase
+      case bsf_s2
+        when 'free'
+          assign bsf_z2 = 'Nach ' | append: bsf_c | append: ' ist der Versand immer kostenlos.'
+        when 'both'
+          assign bsf_z2 = 'Nach ' | append: bsf_c | append: ' kostet der Versand ' | append: bsf_r2 | append: ' €, ab ' | append: bsf_t2 | append: ' € ist er kostenlos.'
+        when 'from'
+          assign bsf_z2 = 'Nach ' | append: bsf_c | append: ' ist der Versand ab ' | append: bsf_t2 | append: ' € kostenlos.'
+        when 'rate'
+          assign bsf_z2 = 'Nach ' | append: bsf_c | append: ' kostet der Versand ' | append: bsf_r2 | append: ' €.'
+      endcase
+    when 'fr'
+      assign bsf_intro = 'Commandez un jour ouvré avant ' | append: bsf_hour | append: ' h et nous expédions le jour même.'
+      assign bsf_c = 'la Belgique, l’Allemagne, la France et l’Espagne'
+      case bsf_s1
+        when 'free'
+          assign bsf_z1 = 'Aux Pays-Bas, la livraison est toujours gratuite.'
+        when 'both'
+          assign bsf_z1 = 'Aux Pays-Bas, la livraison coûte ' | append: bsf_r1 | append: ' € et devient gratuite dès ' | append: bsf_t1 | append: ' €.'
+        when 'from'
+          assign bsf_z1 = 'Aux Pays-Bas, la livraison est gratuite dès ' | append: bsf_t1 | append: ' €.'
+        when 'rate'
+          assign bsf_z1 = 'Aux Pays-Bas, la livraison coûte ' | append: bsf_r1 | append: ' €.'
+      endcase
+      case bsf_s2
+        when 'free'
+          assign bsf_z2 = 'Vers ' | append: bsf_c | append: ', la livraison est toujours gratuite.'
+        when 'both'
+          assign bsf_z2 = 'Vers ' | append: bsf_c | append: ', la livraison coûte ' | append: bsf_r2 | append: ' € et devient gratuite dès ' | append: bsf_t2 | append: ' €.'
+        when 'from'
+          assign bsf_z2 = 'Vers ' | append: bsf_c | append: ', la livraison est gratuite dès ' | append: bsf_t2 | append: ' €.'
+        when 'rate'
+          assign bsf_z2 = 'Vers ' | append: bsf_c | append: ', la livraison coûte ' | append: bsf_r2 | append: ' €.'
+      endcase
+    when 'nl'
+      assign bsf_intro = 'Op werkdagen voor ' | append: bsf_hour | append: '.00 uur besteld, dan verzenden we dezelfde dag.'
+      assign bsf_c = 'België, Duitsland, Frankrijk en Spanje'
+      case bsf_s1
+        when 'free'
+          assign bsf_z1 = 'Binnen Nederland is verzending altijd gratis.'
+        when 'both'
+          assign bsf_z1 = 'Binnen Nederland kost verzending €' | append: bsf_r1 | append: ', en vanaf €' | append: bsf_t1 | append: ' is het gratis.'
+        when 'from'
+          assign bsf_z1 = 'Binnen Nederland is verzending gratis vanaf €' | append: bsf_t1 | append: '.'
+        when 'rate'
+          assign bsf_z1 = 'Binnen Nederland kost verzending €' | append: bsf_r1 | append: '.'
+      endcase
+      case bsf_s2
+        when 'free'
+          assign bsf_z2 = 'Naar ' | append: bsf_c | append: ' is verzending altijd gratis.'
+        when 'both'
+          assign bsf_z2 = 'Naar ' | append: bsf_c | append: ' kost verzending €' | append: bsf_r2 | append: ', en vanaf €' | append: bsf_t2 | append: ' is het gratis.'
+        when 'from'
+          assign bsf_z2 = 'Naar ' | append: bsf_c | append: ' is verzending gratis vanaf €' | append: bsf_t2 | append: '.'
+        when 'rate'
+          assign bsf_z2 = 'Naar ' | append: bsf_c | append: ' kost verzending €' | append: bsf_r2 | append: '.'
+      endcase
+  endcase
+
+  if bsf_intro == ''
+    echo 'besjaar_ui.faq_general.a6' | t
+  else
+    assign bsf_out = bsf_intro
+    if bsf_z1 != ''
+      assign bsf_out = bsf_out | append: ' ' | append: bsf_z1
+    endif
+    if bsf_z2 != ''
+      assign bsf_out = bsf_out | append: ' ' | append: bsf_z2
+    endif
+    echo bsf_out
+  endif
+-%}

@@ -1,0 +1,36 @@
+{%- comment -%}
+  Besjaar 11.75 — temporary campaign carrier (Nationale Kraanwaterdag 2026).
+
+  Renders the site-wide "BESJAAR WATER WEEK 💧" bar above the header and loads
+  the campaign stylesheet and countdown script. It sits in the header group for
+  the same reason the other besjaar-* carriers do: the campaign block also
+  appears on the product page, so the assets cannot belong to one section.
+
+  Assets load whenever a campaign is configured — not only when the banner is
+  on screen — because the product-page block uses the same CSS and countdown
+  and may show in markets the banner is not aimed at.
+
+  To retire the campaign after 30 September 2026, see
+  docs/besjaar-water-week-campaign.md. Nothing here needs editing: the banner
+  disappears on its own when the campaign window closes.
+{%- endcomment -%}
+{%- if shop.metafields.besjaar_discounts.active.value.campaign.enabled -%}
+  {{ 'besjaar-campaign.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'besjaar-campaign.js' | asset_url }}" defer="defer"></script>
+  {% render 'besjaar-campaign', layout: 'banner' %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Besjaar campaign bar",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Temporary promotional bar for BESJAAR WATER WEEK (Nationale Kraanwaterdag, 21–30 September 2026). It only appears while the real automatic Shopify discount behind it is running, and hides itself when the campaign ends. Keep this section first in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

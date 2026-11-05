@@ -1,0 +1,159 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "order": [
+    "main",
+    "customer_videos",
+    "besjaar_wow_why",
+    "reviews",
+    "recently_viewed",
+    "proof",
+    "cta"
+  ],
+  "sections": {
+    "besjaar_wow_why": {
+      "settings": {},
+      "type": "besjaar-wow-product"
+    },
+    "cta": {
+      "settings": {
+        "heading": "Upgrade the shower you use every day.",
+        "kicker": "BESJAAR® SHOWERHEADS",
+        "primary_label": "SHOP SHOWERHEADS",
+        "primary_link": "",
+        "secondary_label": "EXPLORE THE DETAILS",
+        "use_localized_copy": true
+      },
+      "type": "besjaar-store-cta"
+    },
+    "customer_videos": {
+      "block_order": [
+        "video_p6nyaD",
+        "video_QDJym6"
+      ],
+      "blocks": {
+        "video_QDJym6": {
+          "settings": {
+            "show_on": "10-standen",
+            "text": "Eerst Besjaar, daarna een standaard douchekop. Zie het verschil in straal.",
+            "title": "Het verschil met een gewone douchekop",
+            "video": "shopify://files/videos/douchekop.mp4"
+          },
+          "type": "video"
+        },
+        "video_p6nyaD": {
+          "settings": {
+            "show_on": "10-standen",
+            "text": "Uit de hand of in de houder: een krachtige, gelijkmatige straal.",
+            "title": "Volle straal, elke dag",
+            "video": "shopify://files/videos/shower.mp4"
+          },
+          "type": "video"
+        }
+      },
+      "settings": {
+        "heading": "Zie het verschil onder de douche.",
+        "kicker": "IN ACTIE",
+        "note": "De straal, de standen en het dagelijks gebruik in beeld.",
+        "product_types": "showerhead",
+        "use_localized_copy": true
+      },
+      "type": "besjaar-customer-videos"
+    },
+    "main": {
+      "settings": {
+        "enable_image_zoom": true,
+        "show_breadcrumbs": true,
+        "show_compare": false,
+        "show_highlights": true,
+        "show_hose_switch": true,
+        "show_intro": false,
+        "show_quotes": true,
+        "show_specs": true
+      },
+      "type": "besjaar-store-product"
+    },
+    "proof": {
+      "settings": {
+        "heading": "Publieke klantsignalen, mét bron.",
+        "kicker": "PUBLIEK MARKETPLACE-BEWIJS",
+        "rating": "4.7/5",
+        "rating_label": "Beoordeling",
+        "reviews_count": "433",
+        "reviews_label": "Openbare reviews",
+        "show_sold": false,
+        "sold_count": "100+",
+        "sold_label": "Verkocht vorige maand",
+        "source_link": "Bekijk op bol.com",
+        "source_note": "Publieke marketplace-cijfers met een directe bronlink.",
+        "source_url": "https://www.bol.com/nl/nl/p/besjaar-douchekop-met-slang-douchekop-regendouche-wellness-3-sproeistanden-hoge-druk-betere-huid-handdouche-luxe-moderne-handdouche-chrome/9300000187428486/",
+        "use_localized_copy": true
+      },
+      "type": "besjaar-store-reviews"
+    },
+    "recently_viewed": {
+      "settings": {},
+      "type": "besjaar-recently-viewed"
+    },
+    "reviews": {
+      "block_order": [
+        "trustpilot_trustpilot_review_collector_widget_bxGY9w",
+        "trustpilot_trustpilot_flex_widget_enterprise_wzzRwM"
+      ],
+      "blocks": {
+        "trustpilot_trustpilot_flex_widget_enterprise_wzzRwM": {
+          "settings": {
+            "background-color": "light",
+            "border": "no-border",
+            "external-elements": "dark",
+            "flex-variant": "highlights",
+            "highlights_number-of-highlights": 4,
+            "highlights_quotation-marks": true,
+            "highlights_review-topic": "",
+            "highlights_size": "S",
+            "locale": "en-US",
+            "reviews-language": true,
+            "text-color": "dark",
+            "theme-color": "#b2f8cc",
+            "trustscore_add-reviews": true,
+            "trustscore_category-icon": true,
+            "trustscore_category-name": true,
+            "trustscore_headline": "star",
+            "trustscore_review-number_support-text": "star",
+            "trustscore_size": "XL",
+            "trustscore_star_support-text": "review-number",
+            "trustscore_word_support-text": "review-number",
+            "vertical_space": 10
+          },
+          "type": "shopify://apps/trustpilot/blocks/trustpilot_flex_widget_enterprise/af628f2e-96c9-437f-bc0a-e8f7ff3fa8b4"
+        },
+        "trustpilot_trustpilot_review_collector_widget_bxGY9w": {
+          "settings": {
+            "border_color": "#00b67a",
+            "font_color": "#191919",
+            "font_family": "Helvetica Neue",
+            "height": 52,
+            "locale": "en-US",
+            "vertical_space": 10,
+            "width": 100
+          },
+          "type": "shopify://apps/trustpilot/blocks/trustpilot_review_collector_widget/af628f2e-96c9-437f-bc0a-e8f7ff3fa8b4"
+        }
+      },
+      "settings": {
+        "enable_legacy_judgeme_widget": false,
+        "show_intro": true,
+        "show_native_summary": true,
+        "show_review_form": true
+      },
+      "type": "besjaar-ui-reviews"
+    }
+  }
+}

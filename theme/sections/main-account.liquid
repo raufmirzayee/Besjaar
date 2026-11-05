@@ -1,0 +1,361 @@
+{% liquid
+  assign account_name = customer.first_name
+  if account_name == blank
+    assign account_name = customer.name
+  endif
+  if account_name == blank
+    assign account_name = customer.email
+  endif
+  assign account_initial = account_name | slice: 0 | upcase
+  assign latest_order = customer.orders.first
+  assign default_address = customer.default_address
+
+  assign profile_steps = 1
+  if customer.first_name != blank
+    assign profile_steps = profile_steps | plus: 1
+  endif
+  if customer.last_name != blank
+    assign profile_steps = profile_steps | plus: 1
+  endif
+  if default_address != blank
+    assign profile_steps = profile_steps | plus: 1
+  endif
+  assign account_phone = customer.phone
+  if account_phone == blank and default_address != blank
+    assign account_phone = default_address.phone
+  endif
+  if account_phone != blank
+    assign profile_steps = profile_steps | plus: 1
+  endif
+  assign profile_completion = profile_steps | times: 20
+
+  assign support_url = blank
+  if settings.account_support_page != blank
+    capture support_url
+      render 'localized-internal-url', url: settings.account_support_page.url
+    endcapture
+    assign support_url = support_url | strip
+  endif
+  assign returns_url = blank
+  if shop.refund_policy != blank
+    capture returns_url
+      render 'localized-internal-url', url: shop.refund_policy.url
+    endcapture
+    assign returns_url = returns_url | strip
+  elsif settings.returns_info_page != blank
+    capture returns_url
+      render 'localized-internal-url', url: settings.returns_info_page.url
+    endcapture
+    assign returns_url = returns_url | strip
+  endif
+  assign delivery_url = blank
+  if settings.delivery_info_page != blank
+    capture delivery_url
+      render 'localized-internal-url', url: settings.delivery_info_page.url
+    endcapture
+    assign delivery_url = delivery_url | strip
+  endif
+
+  assign club_url = routes.account_url
+  if settings.club_page != blank
+    capture club_url
+      render 'localized-internal-url', url: settings.club_page.url
+    endcapture
+    assign club_url = club_url | strip
+  elsif settings.account_rewards_page != blank
+    capture club_url
+      render 'localized-internal-url', url: settings.account_rewards_page.url
+    endcapture
+    assign club_url = club_url | strip
+  endif
+%}
+{% capture besjaar_ui_focused_shop_url %}{% render 'shower-store-url' %}{% endcapture %}
+<section
+  class="besjaar-ui-section besjaar-ui-account-page besjaar-ui-account-v46"
+  data-account-retail
+  data-greeting-morning="{{ 'besjaar_ui.account.greeting_morning' | t | escape }}"
+  data-greeting-afternoon="{{ 'besjaar_ui.account.greeting_afternoon' | t | escape }}"
+  data-greeting-evening="{{ 'besjaar_ui.account.greeting_evening' | t | escape }}"
+  data-greeting-name="{{ account_name | escape }}"
+  data-saved-empty="{{ 'besjaar_ui.account.saved_empty_v46' | t | escape }}"
+  data-view-product="{{ 'besjaar_ui.account.view_product' | t | escape }}"
+  data-move-to-cart="{{ 'besjaar_ui.account.move_to_cart_v46' | t | escape }}"
+  data-reorder-adding="{{ 'besjaar_ui.account.reorder_adding_v46' | t | escape }}"
+  data-reorder-added="{{ 'besjaar_ui.account.reorder_added_v46' | t | escape }}"
+  data-reorder-error="{{ 'besjaar_ui.account.reorder_error_v46' | t | escape }}"
+>
+  <div class="besjaar-ui-shell besjaar-ui-account-v46__shell">
+    <aside class="besjaar-ui-account-v46__sidebar" aria-label="{{ 'besjaar_ui.account.account_navigation' | t | escape }}">
+      <div class="besjaar-ui-account-v46__member">
+        <div class="besjaar-ui-account-v46__avatar" aria-hidden="true">{{ account_initial }}</div>
+        <div class="besjaar-ui-account-v46__member-copy">
+          <span>{{ settings.account_member_label | default: 'Besjaar Account' | escape }}</span>
+          <strong>{{ customer.name | default: account_name | escape }}</strong>
+          <small>{{ customer.email | escape }}</small>
+        </div>
+      </div>
+
+      <nav class="besjaar-ui-account-v46__side-nav">
+        <a class="is-active" href="{{ routes.account_url }}" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>
+          <span>{{ 'besjaar_ui.account.overview' | t }}</span>
+        </a>
+        <a href="#orders">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+          <span>{{ 'besjaar_ui.account.orders' | t }}</span><b>{{ customer.orders_count }}</b>
+        </a>
+        <a href="{{ routes.account_addresses_url }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg>
+          <span>{{ 'besjaar_ui.account.addresses' | t }}</span><b>{{ customer.addresses.size }}</b>
+        </a>
+        <button type="button" data-shipping-returns-open>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg>
+          <span>{{ 'besjaar_ui.account.returns_v46' | t }}</span>
+        </button>
+        {% if support_url != blank %}
+          <a href="{{ support_url }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v12H8l-4 4V5Z"/><path d="M8 9h8M8 13h5"/></svg>
+            <span>{{ 'besjaar_ui.account.support' | t }}</span>
+          </a>
+        {% endif %}
+      </nav>
+
+      <div class="besjaar-ui-account-v46__sidebar-bottom">
+        <div class="besjaar-ui-account-v46__profile-meter" style="--account-progress: {{ profile_completion }}%;">
+          <span class="besjaar-ui-account-v46__profile-ring" aria-hidden="true"><i>{{ profile_completion }}%</i></span>
+          <div><strong>{{ 'besjaar_ui.account.profile_completion_v46' | t }}</strong><small>{{ 'besjaar_ui.account.profile_completion_copy_v46' | t }}</small></div>
+        </div>
+        <a class="besjaar-ui-account-v46__logout" href="{{ routes.account_logout_url }}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 4H5v16h5M14 8l4 4-4 4M18 12H9"/></svg>
+          {{ 'besjaar_ui.account.logout' | t }}
+        </a>
+      </div>
+    </aside>
+
+    <div class="besjaar-ui-account-v46__main">
+      <header class="besjaar-ui-account-v46__hero">
+        <div>
+          <p class="besjaar-ui-kicker">BESJAAR / {{ 'besjaar_ui.account.my_account_v46' | t }}</p>
+          <h1 data-account-greeting>{{ 'besjaar_ui.account.welcome' | t: name: account_name }}</h1>
+          <p>{{ 'besjaar_ui.account.dashboard_copy_v46' | t }}</p>
+        </div>
+        <div class="besjaar-ui-account-v46__hero-actions">
+          <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.account.shop_new_v46' | t }}</a>
+          {% if support_url != blank %}<a class="besjaar-ui-button besjaar-ui-button--ghost" href="{{ support_url }}">{{ 'besjaar_ui.account.get_help_v46' | t }}</a>{% endif %}
+        </div>
+      </header>
+
+      <nav class="besjaar-ui-account-v46__mobile-nav" aria-label="{{ 'besjaar_ui.account.account_navigation' | t | escape }}">
+        <a class="is-active" href="{{ routes.account_url }}">{{ 'besjaar_ui.account.overview' | t }}</a>
+        <a href="#orders">{{ 'besjaar_ui.account.orders' | t }}</a>
+        <a href="{{ routes.account_addresses_url }}">{{ 'besjaar_ui.account.addresses' | t }}</a>
+      </nav>
+
+      <section class="besjaar-ui-account-v46__stats" aria-label="{{ 'besjaar_ui.account.account_snapshot_v46' | t | escape }}">
+        <article>
+          <span class="besjaar-ui-account-v46__stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg></span>
+          <div><strong>{{ customer.addresses.size }}</strong><span>{{ 'besjaar_ui.account.addresses' | t }}</span></div>
+          <a href="{{ routes.account_addresses_url }}" aria-label="{{ 'besjaar_ui.account.addresses' | t | escape }}">→</a>
+        </article>
+        <article>
+          <span class="besjaar-ui-account-v46__stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
+          <div><strong>{{ profile_completion }}%</strong><span>{{ 'besjaar_ui.account.profile_ready_v46' | t }}</span></div>
+          <a href="{{ routes.account_addresses_url }}" aria-label="{{ 'besjaar_ui.account.profile_ready_v46' | t | escape }}">→</a>
+        </article>
+      </section>
+
+      {% if latest_order %}
+        {% liquid
+          assign latest_has_tracking = false
+          assign latest_tracking_url = blank
+          assign latest_shipment_count = latest_order.fulfillments.size
+          for fulfillment in latest_order.fulfillments
+            if fulfillment.tracking_url != blank or fulfillment.tracking_number != blank
+              assign latest_has_tracking = true
+              if latest_tracking_url == blank and fulfillment.tracking_url != blank
+                assign latest_tracking_url = fulfillment.tracking_url
+              endif
+            endif
+          endfor
+          assign latest_stage = 2
+          if latest_shipment_count > 0
+            assign latest_stage = 3
+          endif
+          if latest_has_tracking
+            assign latest_stage = 4
+          endif
+        %}
+        <section class="besjaar-ui-account-v46__live-order" aria-labelledby="besjaar-ui-current-order-title">
+          <div class="besjaar-ui-account-v46__live-top">
+            <div>
+              <p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.current_order_v46' | t }}</p>
+              <h2 id="besjaar-ui-current-order-title">{{ latest_order.name }}</h2>
+              <span>{{ latest_order.created_at | date: '%d.%m.%Y' }} · {{ latest_order.total_price | money }}</span>
+            </div>
+            <div class="besjaar-ui-account-v46__live-actions">
+              {% if latest_tracking_url != blank %}<a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ latest_tracking_url }}" target="_blank" rel="noopener">{{ 'besjaar_ui.account.track_package' | t }}<span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>{% endif %}
+              <a class="besjaar-ui-button {% if latest_tracking_url != blank %}besjaar-ui-button--ghost{% else %}besjaar-ui-button--primary{% endif %}" href="{{ latest_order.customer_url }}">{{ 'besjaar_ui.account.view_order' | t }}</a>
+            </div>
+          </div>
+
+          <div class="besjaar-ui-account-v46__order-products">
+            {% for item in latest_order.line_items limit: 4 %}
+              <div class="besjaar-ui-account-v46__order-product" title="{{ item.title | escape }}">
+                {% if item.image %}{{ item.image | image_url: width: 180 | image_tag: loading: 'lazy', widths: '80,120,180', alt: item.title }}{% else %}<span aria-hidden="true">B</span>{% endif %}
+              </div>
+            {% endfor %}
+            <div class="besjaar-ui-account-v46__order-product-copy">
+              <strong>{{ latest_order.line_items.first.title }}</strong>
+              <span>{{ 'besjaar_ui.account.items_count' | t: count: latest_order.line_items.size }}</span>
+            </div>
+          </div>
+
+          {% unless latest_order.cancelled_at != blank %}
+            <ol class="besjaar-ui-account-v46__journey" aria-label="{{ 'besjaar_ui.account.delivery_progress' | t | escape }}">
+              <li class="is-done"><i>✓</i><div><strong>{{ 'besjaar_ui.account.step_order_received' | t }}</strong><span>{{ 'besjaar_ui.account.confirmed_v46' | t }}</span></div></li>
+              <li class="{% if latest_stage > 2 %}is-done{% else %}is-current{% endif %}"><i>{% if latest_stage > 2 %}✓{% else %}2{% endif %}</i><div><strong>{{ 'besjaar_ui.account.step_preparing' | t }}</strong><span>{{ latest_order.fulfillment_status_label | default: '—' }}</span></div></li>
+              <li class="{% if latest_stage > 3 %}is-done{% elsif latest_stage == 3 %}is-current{% endif %}"><i>{% if latest_stage > 3 %}✓{% else %}3{% endif %}</i><div><strong>{{ 'besjaar_ui.account.step_shipment_created' | t }}</strong><span>{{ latest_shipment_count }} {{ 'besjaar_ui.account.shipments' | t | downcase }}</span></div></li>
+              <li class="{% if latest_stage == 4 %}is-current{% endif %}"><i>4</i><div><strong>{{ 'besjaar_ui.account.step_live_tracking' | t }}</strong><span>{% if latest_has_tracking %}{{ 'besjaar_ui.account.tracking_available_v46' | t }}{% else %}{{ 'besjaar_ui.account.tracking_pending' | t }}{% endif %}</span></div></li>
+            </ol>
+          {% else %}
+            <div class="besjaar-ui-account-v46__cancelled"><strong>{{ 'besjaar_ui.account.order_cancelled' | t }}</strong><span>{{ 'besjaar_ui.account.order_cancelled_copy' | t }}</span></div>
+          {% endunless %}
+        </section>
+      {% else %}
+        <section class="besjaar-ui-account-v46__first-order">
+          <div class="besjaar-ui-account-v46__first-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>
+          <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.orders_tracking' | t }}</p><h2>{{ 'besjaar_ui.account.first_order_title_v46' | t }}</h2><p>{{ 'besjaar_ui.account.first_order_copy_v46' | t }}</p></div>
+          <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.account.discover_products_v46' | t }}</a>
+        </section>
+      {% endif %}
+
+      <section class="besjaar-ui-account-v46__hub" aria-labelledby="account-hub-title">
+        <div class="besjaar-ui-account-v46__section-head">
+          <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.shopping_tools_v46' | t }}</p><h2 id="account-hub-title">{{ 'besjaar_ui.account.your_shopping_hub_v46' | t }}</h2></div>
+        </div>
+
+        <div class="besjaar-ui-account-v46__hub-grid">
+
+
+          <article class="besjaar-ui-account-v46__panel besjaar-ui-account-v46__panel--delivery">
+            <div class="besjaar-ui-account-v46__panel-head">
+              <div><span>{{ 'besjaar_ui.account.delivery_details' | t }}</span><h3>{{ 'besjaar_ui.account.delivery_returns_v46' | t }}</h3></div>
+              <a class="besjaar-ui-mini-link" href="{{ routes.account_addresses_url }}">{{ 'besjaar_ui.account.manage' | t }} →</a>
+            </div>
+            {% if default_address %}
+              <div class="besjaar-ui-account-v46__address-preview">
+                <span class="besjaar-ui-account-v46__address-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2.1"/></svg></span>
+                <div><strong>{{ default_address.first_name | escape }} {{ default_address.last_name | escape }}</strong><p>{{ default_address.address1 | escape }}{% if default_address.address2 != blank %}, {{ default_address.address2 | escape }}{% endif %}<br>{{ default_address.zip | escape }} {{ default_address.city | escape }}</p></div>
+              </div>
+            {% else %}
+              <div class="besjaar-ui-account-v46__panel-empty"><strong>{{ 'besjaar_ui.account.no_default_address_v46' | t }}</strong><p>{{ 'besjaar_ui.account.no_default_address_copy' | t }}</p></div>
+            {% endif %}
+            <div class="besjaar-ui-account-v46__service-facts">
+              <span><b>↺</b>{{ 'besjaar_ui.account.return_window_v46' | t: days: settings.return_window_days }}</span>
+              {% if delivery_url != blank %}<a href="{{ delivery_url }}"><b>→</b>{{ 'besjaar_ui.account.delivery_information' | t }}</a>{% endif %}
+              {% if returns_url != blank %}<a href="{{ returns_url }}"><b>→</b>{{ 'besjaar_ui.account.returns_policy' | t }}</a>{% endif %}
+            </div>
+          </article>
+
+          <article class="besjaar-ui-account-v46__panel besjaar-ui-account-v46__panel--help">
+            <div class="besjaar-ui-account-v46__panel-head"><div><span>{{ 'besjaar_ui.account.service' | t }}</span><h3>{{ 'besjaar_ui.account.help_center_v46' | t }}</h3></div></div>
+            <div class="besjaar-ui-account-v46__help-links">
+              <a href="#orders"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></span><div><strong>{{ 'besjaar_ui.account.order_help_v46' | t }}</strong><small>{{ 'besjaar_ui.account.order_help_short_v46' | t }}</small></div><b>→</b></a>
+              {% if returns_url != blank %}<a href="{{ returns_url }}"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M7 7h10a4 4 0 0 1 0 8H8"/><path d="m8 11-4 4 4 4"/></svg></span><div><strong>{{ 'besjaar_ui.account.returns_v46' | t }}</strong><small>{{ 'besjaar_ui.account.returns_help_v46' | t }}</small></div><b>→</b></a>{% endif %}
+              {% if support_url != blank %}<a href="{{ support_url }}"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M4 5h16v12H8l-4 4V5Z"/></svg></span><div><strong>{{ 'besjaar_ui.account.contact_support' | t }}</strong><small>{{ 'besjaar_ui.account.contact_support_short_v46' | t }}</small></div><b>→</b></a>{% endif %}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="besjaar-ui-account-v46__orders" id="orders" aria-labelledby="account-orders-title">
+        <div class="besjaar-ui-account-v46__section-head besjaar-ui-account-v46__section-head--orders">
+          <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.order_history' | t }}</p><h2 id="account-orders-title">{{ 'besjaar_ui.account.all_orders_v46' | t }}</h2></div>
+          {% if customer.orders.size > 0 %}
+            <div class="besjaar-ui-account-v46__order-tabs" role="group" aria-label="{{ 'besjaar_ui.account.filter_orders_v46' | t | escape }}">
+              <button class="is-active" type="button" data-account-order-filter="all">{{ 'besjaar_ui.account.filter_all_v46' | t }}</button>
+              <button type="button" data-account-order-filter="active">{{ 'besjaar_ui.account.filter_active_v46' | t }}</button>
+              <button type="button" data-account-order-filter="fulfilled">{{ 'besjaar_ui.account.filter_fulfilled_v46' | t }}</button>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if customer.orders.size > 0 %}
+          <div class="besjaar-ui-account-v46__order-table">
+            {% for order in customer.orders limit: 12 %}
+              {% liquid
+                assign order_first_item = order.line_items.first
+                assign order_state = 'active'
+                if order.cancelled_at != blank
+                  assign order_state = 'cancelled'
+                elsif order.fulfillments.size > 0
+                  assign order_state = 'fulfilled'
+                endif
+              %}
+              <article class="besjaar-ui-account-v46__order-row" data-account-order-row data-order-state="{{ order_state }}">
+                <a class="besjaar-ui-account-v46__order-media" href="{{ order.customer_url }}">
+                  {% if order_first_item.image %}{{ order_first_item.image | image_url: width: 220 | image_tag: loading: 'lazy', widths: '90,140,220', alt: order_first_item.title }}{% else %}<span aria-hidden="true">B</span>{% endif %}
+                </a>
+                <div class="besjaar-ui-account-v46__order-info">
+                  <div class="besjaar-ui-account-v46__order-title"><a href="{{ order.customer_url }}">{{ order.name }}</a><span>{{ order.created_at | date: '%d.%m.%Y' }}</span></div>
+                  <strong>{{ order_first_item.title }}</strong>
+                  <small>{{ 'besjaar_ui.account.items_count' | t: count: order.line_items.size }}</small>
+                </div>
+                <div class="besjaar-ui-account-v46__order-status">
+                  {% if order.cancelled_at != blank %}<span class="is-cancelled">{{ 'besjaar_ui.account.order_cancelled' | t }}</span>{% elsif order.fulfillments.size > 0 %}<span class="is-fulfilled">{% if order.fulfillment_status_label != blank %}{{ order.fulfillment_status_label }}{% else %}{{ 'besjaar_ui.account.order_fulfilled' | t }}{% endif %}</span>{% else %}<span class="is-active">{{ 'besjaar_ui.account.order_processing' | t }}</span>{% endif %}
+                  <small>{{ order.financial_status_label }}</small>
+                </div>
+                <strong class="besjaar-ui-account-v46__order-total">{{ order.total_price | money }}</strong>
+                <div class="besjaar-ui-account-v46__order-actions">
+                  <a class="besjaar-ui-mini-link" href="{{ order.customer_url }}">{{ 'besjaar_ui.account.view_order' | t }}</a>
+                  {% capture reorder_items %}[
+                    {%- assign reorder_first = true -%}
+                    {%- for item in order.line_items -%}
+                      {%- capture besjaar_ui_reorder_focus -%}{%- render 'is-focus-showerhead', product: item.product -%}{%- endcapture -%}
+                      {%- assign besjaar_ui_reorder_focus = besjaar_ui_reorder_focus | strip -%}
+                      {%- if item.variant and item.variant.available and besjaar_ui_reorder_focus == 'true' -%}
+                        {%- unless reorder_first -%},{%- endunless -%}{"id":{{ item.variant.id | json }},"quantity":{{ item.quantity | json }}}
+                        {%- assign reorder_first = false -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  ]{% endcapture %}
+                  {% if reorder_items contains '"id"' %}<button class="besjaar-ui-mini-link" type="button" data-account-reorder data-items="{{ reorder_items | strip_newlines | escape }}">{{ 'besjaar_ui.account.buy_again_v46' | t }}</button>{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          <p class="besjaar-ui-account-v46__reorder-status" data-account-reorder-status role="status" aria-live="polite"></p>
+        {% else %}
+          <div class="besjaar-ui-account-v46__empty-orders">
+            <div class="besjaar-ui-account-v46__first-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45"><path d="M6 3h12v18H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>
+            <div><h3>{{ 'besjaar_ui.account.no_orders_title' | t }}</h3><p>{{ 'besjaar_ui.account.no_orders_copy_v41' | t }}</p></div>
+            <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ besjaar_ui_focused_shop_url | strip }}">{{ 'besjaar_ui.account.start_shopping' | t }}</a>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="besjaar-ui-account-v46__account-management" aria-labelledby="account-management-title">
+        <div class="besjaar-ui-account-v46__section-head"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.account_settings_v46' | t }}</p><h2 id="account-management-title">{{ 'besjaar_ui.account.manage_account_v46' | t }}</h2></div></div>
+        <div class="besjaar-ui-account-v46__management-grid">
+          <a href="{{ routes.account_addresses_url }}"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21s7-5 7-12a7 7 0 1 0-14 0c0 7 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg></span><div><strong>{{ 'besjaar_ui.account.addresses' | t }}</strong><small>{{ 'besjaar_ui.account.manage_addresses_short_v46' | t }}</small></div><b>→</b></a>
+          {% if settings.enable_besjaar_club and settings.show_club_account_panel %}<a href="{{ club_url }}"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3 9.6 8 4 8.8l4 3.9-.9 5.5L12 15.6l4.9 2.6-.9-5.5 4-3.9-5.6-.8Z"/></svg></span><div><strong>{{ settings.club_name | default: 'Besjaar Club' | escape }}</strong><small>{{ 'besjaar_ui.account.club_short_v46' | t }}</small></div><b>→</b></a>{% endif %}
+          {% if support_url != blank %}<a href="{{ support_url }}"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5h16v12H8l-4 4V5Z"/></svg></span><div><strong>{{ 'besjaar_ui.account.support' | t }}</strong><small>{{ 'besjaar_ui.account.support_short_v46' | t }}</small></div><b>→</b></a>{% endif %}
+        </div>
+      </section>
+
+      {% if section.blocks.size > 0 %}
+        <section class="besjaar-ui-account-v46__apps" aria-label="{{ 'besjaar_ui.account.connected_services_v46' | t | escape }}">
+          <div class="besjaar-ui-account-v46__section-head"><div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.account.connected_services_v46' | t }}</p><h2>{{ 'besjaar_ui.account.apps_rewards_v46' | t }}</h2></div></div>
+          <div class="besjaar-ui-app-surface">{% for block in section.blocks %}{% if block.type == '@app' %}{% render block %}{% endif %}{% endfor %}</div>
+        </section>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Account retail hub",
+  "settings":[],
+  "blocks":[{"type":"@app"}]
+}
+{% endschema %}

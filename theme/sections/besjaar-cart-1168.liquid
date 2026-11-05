@@ -1,0 +1,72 @@
+{%- comment -%}
+  Besjaar 11.6.8 — cart drawer.
+
+  1. The payment-logo row is dropped so the line items and the checkout
+     button get the space. Everything else in the drawer is the theme's
+     original design.
+  2. Resilience for cart updates ("Winkelwagen kon niet worden bijgewerkt"):
+     - cart writes (/cart/change.js, /cart/update.js, /cart/add.js,
+       /cart/clear.js) run one at a time, so a burst of +/− taps can no
+       longer overlap;
+     - a quantity update or cart read that fails on the network or with a
+       5xx is retried once after 450 ms before the theme shows its error.
+       add.js is never retried (a lost response could otherwise add twice);
+       4xx answers (e.g. stock limits) are passed through untouched.
+     This wraps window.fetch after the runtime section's wrapper, so the
+     one-round-trip optimisation there keeps working.
+
+  Temporary carrier; fold into assets/besjaar-ui-core.js during consolidation.
+{%- endcomment -%}
+
+{{ 'besjaar-x-cart-1.css' | asset_url | stylesheet_tag: preload: true }}
+
+<script src="{{ 'besjaar-x-cart-2.js' | asset_url }}"></script>
+<script src="{{ 'besjaar-x-cart-3.js' | asset_url }}"></script>
+{%- comment -%}
+  2026-09-29: one gold (#E0A526) for every review star on every page –
+  collection and search cards, product page, homepage, cart. Older theme rules
+  painted stars navy, amber (#D79545) or a darker gold, some with an id in the
+  selector. The two :not(#…) parts only raise specificity (no element has
+  those ids), so this rule wins over any of them.
+{%- endcomment -%}
+{{ 'besjaar-x-cart-4.css' | asset_url | stylesheet_tag: preload: true }}
+{%- comment -%}
+  2026-11-05 cart drawer UX: the drawer shows the same short product names as
+  the cart page (handle -> name from snippets/localized-product-title.liquid,
+  applied by assets/besjaar-cart-ux.js) and the free-shipping band is visible
+  again, with compact suggestion cards (assets/besjaar-cart-ux.css).
+{%- endcomment -%}
+{%- capture bj_cart_titles -%}
+  {%- for bj_tp in collections['all'].products limit: 50 -%}
+    {%- capture bj_tt -%}{% render 'localized-product-title', product: bj_tp %}{%- endcapture -%}
+    {%- unless forloop.first -%},{%- endunless -%}{{ bj_tp.handle | json }}:{{ bj_tt | strip | json }}
+  {%- endfor -%}
+{%- endcapture -%}
+<script type="application/json" data-bj-cart-titles>{ {{- bj_cart_titles -}} }</script>
+{{ 'besjaar-cart-ux.css' | asset_url | stylesheet_tag: preload: true }}
+<script src="{{ 'besjaar-cart-ux.js' | asset_url }}" defer="defer"></script>
+{%- comment -%}
+  2026-11-05 product page UX (assets/besjaar-product-ux.css, product pages only):
+  the add-to-cart button comes straight after the price and version choice (the
+  Club member-price box moves below the delivery line) and on desktop all
+  product photos fit on one thumbnail row.
+  2026-11-05 collection page UX (assets/besjaar-collection-ux.css, collection
+  pages only): a lower title band, three cards per row from 761px and four from
+  1100px, and a plus on the quick-add button.
+{%- endcomment -%}
+{%- if request.page_type == 'product' -%}{{ 'besjaar-product-ux.css' | asset_url | stylesheet_tag: preload: true }}{%- endif -%}
+{%- if request.page_type == 'collection' -%}{{ 'besjaar-collection-ux.css' | asset_url | stylesheet_tag: preload: true }}{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar cart polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8 + 2026-09-30 (Univex cart: 440px, with a 300px suggestions column from 1100px): hides the payment-logo row in the cart drawer, queues cart updates so quick taps cannot overlap, and retries a failed quantity update once before the theme shows its error. Keep in the header group after the runtime section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

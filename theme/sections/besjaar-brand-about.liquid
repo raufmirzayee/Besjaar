@@ -1,0 +1,123 @@
+{%- comment -%}
+  Besjaar About page (2026-10-14): the brand story "Een betere douche begint
+  met een goede keuze", in the visitor's language, with the facts the store
+  already states (shipping from Assen per the shipping policy, Bol.com
+  availability, the return window, replacement filters) and the existing
+  brand Q&A (snippet besjaar-brand-answers, which also outputs the FAQPage
+  structured data the old About layout had).
+
+  Used by templates/page.about.json. Assign that template to the About page
+  (Online Store › Pages › Over Ons › Theme template: "about") after this
+  theme is published. Until then, preview it with ?view=about.
+{%- endcomment -%}
+{%- liquid
+  capture about_shop_url
+    render 'shower-store-url'
+  endcapture
+  assign about_shop_url = about_shop_url | strip
+
+  assign contact_page = settings.contact_page
+  if contact_page == blank
+    assign contact_page = pages['contact-us']
+  endif
+
+  assign return_days = settings.return_window_days | default: 0 | plus: 0
+  assign return_days_label = return_days | append: ''
+
+  capture v_title
+    render 'besjaar-brand-copy', key: 'about_heading'
+  endcapture
+  capture v_alt
+    render 'besjaar-brand-copy', key: 'image_alt'
+  endcapture
+  capture v_quote
+    render 'besjaar-brand-copy', key: 'about_p4'
+  endcapture
+-%}
+{{ 'besjaar-brand.css' | asset_url | stylesheet_tag }}
+<section class="bjb bjb-about" aria-labelledby="BjbAboutTitle-{{ section.id }}">
+  <div class="bjb__shell">
+    <div class="bjb-about__hero">
+      <div>
+        <p class="bjb__kicker">{% render 'besjaar-brand-copy', key: 'about_kicker' %}</p>
+        <h1 class="bjb-about__title" id="BjbAboutTitle-{{ section.id }}">{{ v_title | strip | escape }}</h1>
+        <p class="bjb-about__intro">{% render 'besjaar-brand-copy', key: 'about_p1' %}</p>
+        <div class="bjb__actions">
+          <a class="bjb-btn bjb-btn--primary" href="{{ about_shop_url }}">{% render 'besjaar-brand-copy', key: 'about_cta_shop' %} <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <figure class="bjb-about__media">
+        {%- if section.settings.image != blank -%}
+          {%- assign about_img_alt = section.settings.image.alt | default: v_alt | strip -%}
+          {{ section.settings.image | image_url: width: 1200 | image_tag: loading: 'eager', widths: '480, 720, 960, 1200', sizes: '(min-width: 961px) 42vw, 92vw', alt: about_img_alt }}
+        {%- else -%}
+          <img src="{{ 'besjaar-product-front-exact.webp' | asset_url }}" alt="{{ v_alt | strip | escape }}" width="1254" height="1254" loading="eager" decoding="async">
+        {%- endif -%}
+      </figure>
+    </div>
+
+    <div class="bjb-about__story">
+      <p>{% render 'besjaar-brand-copy', key: 'about_p2' %}</p>
+      <p>{% render 'besjaar-brand-copy', key: 'about_p3' %}</p>
+      <blockquote class="bjb-about__quote"><p>{{ v_quote | strip | escape }}</p></blockquote>
+      <p>{% render 'besjaar-brand-copy', key: 'about_p5' %}</p>
+    </div>
+
+    <div class="bjb-about__facts">
+      <h2>{% render 'besjaar-brand-copy', key: 'about_facts_heading' %}</h2>
+      <ul>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>{% render 'besjaar-brand-copy', key: 'fact_location' %}</span></li>
+        {%- if section.settings.show_bol -%}
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>{% render 'besjaar-brand-copy', key: 'fact_bol' %}</span></li>
+        {%- endif -%}
+        {%- if return_days > 0 -%}
+          {%- capture v_returns -%}{% render 'besjaar-brand-copy', key: 'fact_returns' %}{%- endcapture -%}
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>{{ v_returns | strip | replace: '[days]', return_days_label }}</span></li>
+        {%- endif -%}
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>{% render 'besjaar-brand-copy', key: 'fact_filters' %}</span></li>
+      </ul>
+    </div>
+
+    <div class="bjb-about__signoff">
+      <p>{% render 'besjaar-brand-copy', key: 'about_signoff' %}</p>
+      <div class="bjb__actions">
+        <a class="bjb-btn bjb-btn--primary" href="{{ about_shop_url }}">{% render 'besjaar-brand-copy', key: 'about_cta_shop' %}</a>
+        {%- if contact_page != blank -%}
+          <a class="bjb-btn bjb-btn--ghost" href="{% render 'localized-internal-url', url: contact_page.url %}">{% render 'besjaar-brand-copy', key: 'contact_cta' %}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- if section.settings.show_answers -%}
+      <div class="bjb-about__answers">{% render 'besjaar-brand-answers' %}</div>
+    {%- endif -%}
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Besjaar About story",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Use a real Besjaar product or bathroom photo. Without an image, the chrome product photo from the theme is shown."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bol",
+      "label": "Mention availability on Bol.com",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_answers",
+      "label": "Show 'Besjaar, in short' Q&A",
+      "info": "Also outputs the FAQ structured data for search engines.",
+      "default": true
+    }
+  ],
+  "presets": [{ "name": "Besjaar About story" }]
+}
+{% endschema %}

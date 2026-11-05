@@ -1,0 +1,63 @@
+{%- comment -%}
+  Besjaar 11.6 — Recently viewed products.
+  Renders client-side from localStorage (module in besjaar-1150.js), so the
+  strip is personal to the visitor's browser, needs no app, and stays hidden
+  (section [hidden]) until at least one other product has been viewed.
+{%- endcomment -%}
+<section class="besjaar-ui-section b116-recent" data-besjaar-recent-section data-empty-label="{{ 'besjaar_ui.intelligence.no_recent' | t | escape }}" hidden>
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-heading-row">
+      <div>
+        <p class="besjaar-ui-kicker">{{ 'besjaar_ui.intelligence.recent_kicker' | t }}</p>
+        <h2 class="besjaar-ui-subtitle">{{ 'besjaar_ui.intelligence.recent_heading' | t }}</h2>
+        <p class="besjaar-ui-copy">{{ 'besjaar_ui.intelligence.recent_copy' | t }}</p>
+      </div>
+    </div>
+    <div class="b116-recent__grid" data-besjaar-recent-grid></div>
+  </div>
+  {%- comment -%}
+    2026-09-22: current prices and automatic discounts for every product, keyed
+    by handle. The strip is rendered from the visitor's browser storage, which
+    may hold prices recorded weeks ago and knows nothing about discounts, so
+    the JavaScript looks each product up here first and only falls back to the
+    stored values for a product that is no longer in the catalogue. Rendered
+    server-side on every request, so it is always in step with the discount
+    mirror (see snippets/besjaar-discount-badge.liquid).
+  {%- endcomment -%}
+  {%- assign besjaar_recent_currency = cart.currency.iso_code | default: shop.currency | json -%}
+  {%- capture besjaar_recent_prices -%}
+    {%- assign besjaar_recent_count = 0 -%}
+    {%- for besjaar_recent_product in collections.all.products limit: 48 -%}
+      {%- assign besjaar_recent_variant = besjaar_recent_product.selected_or_first_available_variant -%}
+      {%- if besjaar_recent_variant == blank -%}{%- continue -%}{%- endif -%}
+      {%- capture besjaar_recent_sale -%}{% render 'besjaar-discount-badge', product: besjaar_recent_product, variant: besjaar_recent_variant, layout: 'cents' %}{%- endcapture -%}
+      {%- assign besjaar_recent_sale = besjaar_recent_sale | strip -%}
+      {%- capture besjaar_recent_badge -%}{% render 'besjaar-discount-badge', product: besjaar_recent_product, variant: besjaar_recent_variant, layout: 'label' %}{%- endcapture -%}
+      {%- assign besjaar_recent_regular = besjaar_recent_variant.price -%}
+      {%- comment -%}2026-09-27: a compare-at sale shows like a discount. The earlier price is the regular price and the product price is the sale price.{%- endcomment -%}
+      {%- if besjaar_recent_sale == '' and besjaar_recent_variant.compare_at_price > besjaar_recent_variant.price -%}
+        {%- assign besjaar_recent_regular = besjaar_recent_variant.compare_at_price -%}
+        {%- assign besjaar_recent_sale = besjaar_recent_variant.price -%}
+        {%- capture besjaar_recent_badge -%}{% render 'besjaar-compare-sale', product: besjaar_recent_product, variant: besjaar_recent_variant, layout: 'badge' %}{%- endcapture -%}
+      {%- endif -%}
+      {%- if besjaar_recent_count > 0 -%},{%- endif -%}
+      {{ besjaar_recent_product.handle | json }}: { "p": {{ besjaar_recent_regular }}, "s": {% if besjaar_recent_sale != '' %}{{ besjaar_recent_sale }}{% else %}0{% endif %}, "b": {{ besjaar_recent_badge | strip | json }}, "c": {{ besjaar_recent_currency }} }
+      {%- assign besjaar_recent_count = besjaar_recent_count | plus: 1 -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- comment -%}The braces are plain text on purpose: Shopify's Liquid tokenizer ends a {{ }} output at the first closing brace, so a brace inside a quoted string breaks the template.{%- endcomment -%}
+  <script type="application/json" data-besjaar-recent-prices>{ {{ besjaar_recent_prices | strip }} }</script>
+</section>
+
+{% schema %}
+{
+  "name": "Recently viewed",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the visitor's recently viewed products (stored in their own browser). The section stays hidden until there is something to show."
+    }
+  ],
+  "presets": [{ "name": "Recently viewed", "category": "Besjaar" }]
+}
+{% endschema %}

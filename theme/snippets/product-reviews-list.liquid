@@ -1,0 +1,69 @@
+{%- liquid
+  comment
+    Renders published reviews for a product from the custom.reviews metafield.
+
+    Metafield: custom.reviews (type: json), a list of objects
+      [{ "rating": 5, "title": "...", "body": "...",
+         "author": "Rauf M.", "date": "2026-08-01", "verified": true }]
+
+    Reviews submitted through snippets/product-review-form arrive by email; adding
+    one here is what publishes it. A review app writes its own storage instead and
+    renders through the app block, so this stays empty and out of the way.
+  endcomment
+  assign list_product = list_product | default: product
+  assign published_reviews = list_product.metafields.custom.reviews.value
+
+  assign reviews_total = 0
+  assign reviews_sum = 0
+  if published_reviews != blank
+    for entry in published_reviews
+      assign entry_rating = entry.rating | default: 0
+      if entry_rating > 0
+        assign reviews_total = reviews_total | plus: 1
+        assign reviews_sum = reviews_sum | plus: entry_rating
+      endif
+    endfor
+  endif
+
+  assign reviews_average = 0
+  if reviews_total > 0
+    assign reviews_average = reviews_sum | times: 1.0 | divided_by: reviews_total
+  endif
+-%}
+{%- if reviews_total > 0 -%}
+  <div class="besjaar-reviews">
+    <div class="besjaar-reviews__summary">
+      <strong class="besjaar-reviews__average">{{ reviews_average | round: 1 }}</strong>
+      <span class="besjaar-ui-rating-meter" style="--besjaar-ui-rating-percent:{{ reviews_average | times: 20.0 }}%" aria-hidden="true"><span class="besjaar-ui-rating-meter__base">★★★★★</span><span class="besjaar-ui-rating-meter__fill">★★★★★</span></span>
+      <small>{{ 'besjaar_ui.reviews.based_on' | t: count: reviews_total }}</small>
+    </div>
+
+    <ul class="besjaar-reviews__list">
+      {%- for entry in published_reviews -%}
+        {%- assign entry_rating = entry.rating | default: 0 -%}
+        {%- if entry_rating > 0 -%}
+          <li class="besjaar-reviews__item">
+            <div class="besjaar-reviews__item-head">
+              <span class="besjaar-ui-rating-meter besjaar-reviews__item-stars" style="--besjaar-ui-rating-percent:{{ entry_rating | times: 20.0 }}%" aria-label="{{ 'besjaar_ui.reviews.rating_accessible' | t: rating: entry_rating, max: 5, count: 1 | escape }}"><span class="besjaar-ui-rating-meter__base" aria-hidden="true">★★★★★</span><span class="besjaar-ui-rating-meter__fill" aria-hidden="true">★★★★★</span></span>
+              {%- if entry.verified -%}
+                <span class="besjaar-reviews__verified">{{ 'besjaar_ui.reviews.verified_purchase' | t }}</span>
+              {%- endif -%}
+            </div>
+            {%- if entry.title != blank -%}
+              <h3 class="besjaar-reviews__item-title">{{ entry.title | escape }}</h3>
+            {%- endif -%}
+            {%- if entry.body != blank -%}
+              <p class="besjaar-reviews__item-body">{{ entry.body | escape | newline_to_br }}</p>
+            {%- endif -%}
+            <p class="besjaar-reviews__item-meta">
+              {%- if entry.author != blank -%}<span>{{ entry.author | escape }}</span>{%- endif -%}
+              {%- if entry.date != blank -%}
+                <time datetime="{{ entry.date | escape }}">{{ entry.date | date: '%-d %B %Y' }}</time>
+              {%- endif -%}
+            </p>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+{%- endif -%}

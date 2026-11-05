@@ -1,0 +1,21 @@
+{%- comment -%}
+  One guide card for sections/besjaar-brand-guides.liquid (simplified
+  2026-10-15): photo and title, the whole card is one link.
+  Params: guide (article). Older params (related, read_label, related_label)
+  are accepted and ignored.
+{%- endcomment -%}
+{%- liquid
+  capture guide_url
+    render 'localized-internal-url', url: guide.url
+  endcapture
+  assign guide_url = guide_url | strip
+  assign guide_alt = guide.image.alt | default: guide.title
+-%}
+<a class="bjb-guide__link" href="{{ guide_url }}">
+  {%- if guide.image != blank -%}
+    <div class="bjb-guide__media">
+      {{ guide.image | image_url: width: 720 | image_tag: loading: 'lazy', widths: '360, 540, 720', sizes: '(min-width: 961px) 30vw, (min-width: 641px) 46vw, 76vw', alt: guide_alt }}
+    </div>
+  {%- endif -%}
+  <div class="bjb-guide__body"><h3>{{ guide.title | escape }}</h3></div>
+</a>

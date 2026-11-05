@@ -1,0 +1,42 @@
+{% liquid
+  if section.settings.use_localized_copy
+    assign newsletter_heading = 'besjaar_ui.home.newsletter_heading' | t
+    assign newsletter_text = 'besjaar_ui.home.newsletter_text' | t
+  else
+    assign newsletter_heading = section.settings.heading
+    assign newsletter_text = section.settings.text
+  endif
+%}
+<section class="besjaar-ui-section besjaar-ui-home-section besjaar-ui-home-section--newsletter">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-newsletter" data-reveal>
+      <div class="besjaar-ui-newsletter__grid">
+        <div class="besjaar-ui-newsletter__copy"><p class="besjaar-ui-kicker">{{ 'besjaar_ui.home.newsletter_eyebrow' | t }}</p><h2 class="besjaar-ui-title">{{ newsletter_heading }}</h2><p class="besjaar-ui-copy">{{ newsletter_text }}</p></div>
+        <div class="besjaar-ui-newsletter__form-wrap">
+          <div class="besjaar-ui-newsletter__signal"><span></span>{{ 'besjaar_ui.home.newsletter_signal' | t }}</div>
+          {% assign besjaar_ui_newsletter_form_id = 'BesjaarUINewsletterForm-' | append: section.id %}
+          {% form 'customer', id: besjaar_ui_newsletter_form_id %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <label class="besjaar-ui-visually-hidden" for="BesjaarUINewsletterEmail-{{ section.id }}">{{ 'besjaar_ui.home.newsletter_placeholder' | t }}</label>
+            <input class="besjaar-ui-input" id="BesjaarUINewsletterEmail-{{ section.id }}" type="email" name="contact[email]" autocorrect="off" autocapitalize="off" autocomplete="email" placeholder="{{ 'besjaar_ui.home.newsletter_placeholder' | t }}" required aria-required="true"{% if form.errors %} aria-invalid="true" aria-describedby="BesjaarUINewsletterErrors-{{ section.id }}"{% endif %} value="{{ form.email | escape }}">
+            <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.home.newsletter_button' | t }}</button>
+            {% if form.posted_successfully? %}<p class="besjaar-ui-form-message besjaar-ui-form-message--success" role="status" aria-live="polite">{{ 'besjaar_ui.home.newsletter_success' | t }}</p>{% endif %}
+            {% if form.errors %}<div id="BesjaarUINewsletterErrors-{{ section.id }}" class="besjaar-ui-form-message besjaar-ui-form-message--error" role="alert" aria-live="assertive"><strong>{{ 'besjaar_ui.forms.error_heading' | t }}</strong>{{ form.errors | default_errors }}</div>{% endif %}
+          {% endform %}
+          <p class="besjaar-ui-newsletter__note">{{ 'besjaar_ui.home.newsletter_note' | t }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Newsletter",
+  "settings":[
+    {"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true},
+    {"type":"text","id":"heading","label":"Custom heading","default":"Blijf op de hoogte van Besjaar douchekoppen."},
+    {"type":"textarea","id":"text","label":"Custom text","default":"Ontvang nuttige douche- en onderhoudstips, productupdates en geselecteerde aanbiedingen."}
+  ],
+  "presets":[{"name":"Newsletter"}]
+}
+{% endschema %}

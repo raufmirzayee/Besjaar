@@ -1,0 +1,31 @@
+{% if shop.customer_accounts_enabled and settings.show_account_home_section %}
+{% assign besjaar_ui_account_name = customer.first_name | default: customer.email %}
+<section class="besjaar-ui-section besjaar-ui-account-benefits-home">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-account-benefits-home__card">
+      <div class="besjaar-ui-account-benefits-home__intro">
+        <p class="besjaar-ui-kicker">BESJAAR / ACCOUNT</p>
+        {% if customer %}
+          <h2>{{ 'besjaar_ui.account.home_welcome' | t: name: besjaar_ui_account_name }}</h2>
+          <p>{{ 'besjaar_ui.account.home_signed_in_copy' | t }}</p>
+          <div class="besjaar-ui-account-benefits-home__actions">
+            <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ routes.account_url }}">{{ 'besjaar_ui.header.my_account' | t }}</a>
+          </div>
+        {% else %}
+          <h2>{{ 'besjaar_ui.account.home_title' | t }}</h2>
+          <p>{{ 'besjaar_ui.account.home_copy' | t }}</p>
+          <div class="besjaar-ui-account-benefits-home__actions">
+            <a class="besjaar-ui-button besjaar-ui-button--primary" href="{{ routes.account_login_url }}" rel="nofollow">{{ 'besjaar_ui.header.sign_in_create' | t }}</a>
+            <span>{{ 'besjaar_ui.account.optional_account' | t }}</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="besjaar-ui-account-benefits-home__grid">
+        <div><span>01</span><strong>{{ 'besjaar_ui.account.home_benefit_orders_title' | t }}</strong><p>{{ 'besjaar_ui.account.home_benefit_orders_copy' | t }}</p></div>
+        <div><span>02</span><strong>{{ 'besjaar_ui.account.home_benefit_profile_title' | t }}</strong><p>{{ 'besjaar_ui.account.home_benefit_profile_copy' | t }}</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}{"name":"Account benefits","settings":[],"presets":[{"name":"Account benefits"}]}{% endschema %}

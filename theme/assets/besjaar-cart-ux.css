@@ -1,0 +1,114 @@
+/* Besjaar cart UX (2026-11-05). Loaded on every page from sections/besjaar-cart-1168.liquid.
+   Cart drawer:
+   1. Free-shipping band: an older layer (besjaar-seo-design.css) hid it with
+      display:none!important, so the progress bar and the one-tap accessory of
+      besjaar-cart-mobile-1176 never showed. It shows again whenever the theme's
+      script has not hidden it ([hidden] = no free-shipping threshold).
+   2. Product names: at most two lines (the full name stays on hover).
+   3. Suggestions: compact cards (photo, name, price, add button). On phones
+      (749px and narrower) the whole block, headed "Maak je bestelling compleet" /
+      "Complete your order", is left out, so the drawer goes straight from the
+      products to the total and checkout.
+   3c. On every screen size the drawer leaves out the order-note fold
+      ("Opmerking bij je bestelling"), the "Btw inbegrepen. Kortingen en
+      verzending worden berekend bij het afrekenen." line under the total and
+      the payment-method logos. The note can still be added on /cart.
+   3d. Desktop (1100px and wider): the suggestions column stands beside the
+      cart also when the cart is empty. besjaar-cart-1168.liquid builds the
+      two-column layout only for a cart with lines (:not(:has(foot[hidden]))),
+      so an empty cart showed them as a swipe row under "leeg".
+   Cart page (/cart, sections/besjaar-store-cart.liquid):
+   4. Lower title band, so the products start higher on the screen.
+   5. Free-shipping band in the same mint style as the drawer.
+   6. Pinned phone checkout bar in the same blue as the main checkout button.
+   7. "Misschien ook interessant": compact rows on phones; quick add refreshes
+      the page (besjaar-cart-ux.js) instead of opening the drawer on top of it. */
+
+/* 1. free-shipping band */
+html body #BesjaarUICartDrawer .besjaar-ui-free-shipping:not([hidden]){display:block!important;margin:0!important;padding:12px 20px 14px!important;background:#F2F7F5!important;border-bottom:1px solid #DCE9E4!important}
+html body #BesjaarUICartDrawer .besjaar-ui-free-shipping .besjaar-ui-free-shipping__row{margin:0 0 8px!important;font-size:.86rem!important;line-height:1.35!important}
+html body #BesjaarUICartDrawer .besjaar-ui-free-shipping .besjaar-ui-free-shipping__track{background:#D7E6E0!important}
+html body #BesjaarUICartDrawer .besjaar-ui-free-shipping[data-shipping-state="unlocked"] .besjaar-ui-free-shipping__row span{color:#1F5F52!important}
+
+/* 2. product names in the cart lines */
+html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__line-main h3{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important;margin:0!important;font-size:.95rem!important;font-weight:600!important;line-height:1.3!important}
+
+/* 3. suggestions */
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product{display:grid!important;grid-template-columns:64px minmax(0,1fr) auto!important;align-items:center!important;gap:12px!important;min-height:0!important;padding:10px 12px!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media{width:64px!important;height:64px!important;min-width:0!important;border-radius:12px!important;overflow:hidden!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__media img{width:100%!important;height:100%!important;object-fit:contain!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy{min-width:0!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy strong{display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important;font-size:.86rem!important;font-weight:600!important;line-height:1.3!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy>span{display:block!important;margin-top:4px!important;font-size:.84rem!important}
+@media (max-width:1099px){
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__rail{grid-auto-columns:min(280px,78%)!important}
+}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__product [data-cart-range-add]{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;padding:0!important}
+@media (min-width:1100px){
+  html body #BesjaarUICartDrawer .besjaar-ui-cart-upsell__copy strong{-webkit-line-clamp:3!important}
+}
+/* empty cart: no "€25 to go" band above the empty-cart message */
+html body #BesjaarUICartDrawer:has(.besjaar-ui-cart-empty-state) .besjaar-ui-free-shipping{display:none!important}
+
+/* 3b. phones: no "Complete your order" suggestions block in the drawer */
+@media (max-width:749px){html body #BesjaarUICartDrawer [data-cart-drawer-upsell]{display:none!important}}
+
+/* 3c. all screens: no order-note fold, no tax/shipping line under the total, no payment logos in the drawer */
+html body #BesjaarUICartDrawer .bj-cd-folds>details.bj-cd-fold:not([data-bj-cd-discount]){display:none!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart__total small{display:none!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{display:none!important}
+
+/* 3d. desktop: suggestions column beside the cart, also when the cart is empty (same layout as besjaar-cart-1168) */
+@media (min-width:1100px){
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])){display:grid!important;grid-template-columns:300px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:none!important;width:740px!important;max-width:calc(100vw - 24px)!important;overflow:hidden!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .bj-cd-main{grid-column:2!important;grid-row:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden]))>.besjaar-ui-cart-drawer__upsell{grid-column:1!important;grid-row:1!important;min-height:0!important;height:auto!important;padding:24px 20px!important;overflow-y:auto!important;border-top:0!important;border-right:1px solid #E4E1DB!important;background:#F5F2EC!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .besjaar-ui-cart-upsell__rail{flex-direction:column!important;margin:0!important;padding:0!important;overflow:visible!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .besjaar-ui-cart-upsell__product{flex:0 0 auto!important;width:100%!important;box-sizing:border-box!important}
+}
+
+/* 4. cart page: lower title band */
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__header{padding:clamp(18px,2.4vw,30px) max(16px,calc(50vw - 640px)) clamp(30px,3.4vw,44px)!important;margin-bottom:clamp(16px,2vw,26px)!important;align-items:center!important}
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__header::after{height:clamp(14px,1.8vw,26px)!important}
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__header h1{font-size:clamp(1.75rem,3.2vw,2.6rem)!important;line-height:1.1!important}
+@media (max-width:749px){
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__header{flex-wrap:nowrap!important;justify-content:space-between!important;gap:12px!important;padding:16px 16px 28px!important}
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__continue{flex:0 0 auto;padding:8px 12px!important;font-size:14px!important;white-space:nowrap}
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__continue svg{width:16px!important;height:16px!important}
+}
+
+/* 5. cart page: free-shipping band like the drawer */
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp-ship{margin-bottom:16px!important;background:#F2F7F5!important;border:1px solid #DCE9E4!important}
+html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp-ship__bar{height:8px!important;background:#D7E6E0!important}
+
+/* 6. pinned phone checkout bar: same blue as the main checkout button */
+html body .bj-cp-sticky .bj-cp-checkout{border:0!important;border-radius:999px!important;background:linear-gradient(135deg,#7dd3fc 0%,#38bdf8 45%,#0ea5e9 100%)!important;color:#04121f!important;font-weight:800!important;box-shadow:0 10px 24px -14px rgba(14,165,233,.85),inset 0 1px 0 rgba(255,255,255,.55)!important}
+html body .bj-cp-sticky .bj-cp-checkout *{color:#04121f!important;stroke:currentColor}
+html body .bj-cp-sticky .bj-cp-checkout:hover{background:linear-gradient(135deg,#93dcfd 0%,#4cc4f9 45%,#1aaef0 100%)!important}
+
+/* 7. cart page suggestions */
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-card-quick-add.is-loading{opacity:.6;cursor:progress}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-card-quick-add{min-height:40px!important;padding:0 18px!important;font-size:13px!important}
+@media (max-width:749px){
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-smart-recommendations__surface{padding:18px 14px!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-smart-recommendations__head h2{font-size:1.6rem!important;line-height:1.15!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-smart-recommendations__head p:not(.besjaar-ui-kicker){font-size:.9rem!important;margin-top:4px!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-recommendations__grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;margin:0!important;padding:0!important;overflow:visible!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-recommendations__grid>.besjaar-ui-product-card{display:grid!important;grid-template-columns:88px minmax(0,1fr)!important;align-items:center!important;gap:14px!important;width:auto!important;flex:none!important;padding:10px!important;background:#fff!important;border:1px solid #E3EEF5!important;border-radius:18px!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__media{width:88px!important;height:88px!important;aspect-ratio:1!important;margin:0!important;padding:0!important;border-radius:12px!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__media img{width:100%!important;height:100%!important;object-fit:contain!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) :is(.besjaar-ui-product-card__badge,.besjaar-ui-product-card__quicklink,.besjaar-ui-product-card__specs,.besjaar-ui-product-card__availability,.besjaar-ui-product-card__best-for,.besjaar-ui-product-card__identity){display:none!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__body{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:6px 10px!important;min-width:0!important;padding:0!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__body>*{flex:0 0 100%;min-width:0}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__body>.besjaar-ui-price{flex:0 1 auto}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__body>.besjaar-ui-product-card__foot{flex:0 0 auto;margin-left:auto!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__title{margin:0!important;font-size:15px!important;line-height:1.3!important;display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-price{margin:0!important;font-size:14px!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-product-card__foot{display:flex!important;justify-content:flex-end!important;margin:0!important;padding:0!important;border:0!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-card-quick-form{width:auto!important}
+html body[data-page-type="cart"] .besjaar-ui-smart-recommendations:not(#bjk1):not(#bjk2):not(#bjk3) .besjaar-ui-card-quick-add{width:auto!important;min-height:38px!important;padding:0 14px!important;font-size:13px!important;white-space:nowrap}
+}
+/* the line just added from a suggestion lights up briefly (the line's box-shadow is !important, so this uses the outline) */
+html body .bj-cp .bj-cp-item.bj-cp-item--added{outline:3px solid rgba(56,189,248,0);outline-offset:2px;animation:bj-cp-added 2.4s ease-out}
+@keyframes bj-cp-added{0%,40%{outline-color:#38bdf8}100%{outline-color:rgba(56,189,248,0)}}
+@media (prefers-reduced-motion:reduce){html body .bj-cp .bj-cp-item.bj-cp-item--added{animation:none;outline-color:#38bdf8}}

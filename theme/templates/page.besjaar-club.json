@@ -1,0 +1,30 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "club": {
+      "type": "besjaar-club-program",
+      "settings": {
+        "welcome_code": "WELKOM20",
+        "welcome_percent": 20,
+        "show_member_price": true,
+        "refill_percent": 20,
+        "refill_product": "besjaar-douchefilter",
+        "refill_months_min": 3,
+        "refill_months_max": 5,
+        "show_reminder": true,
+        "preview_member": false
+      }
+    }
+  },
+  "order": [
+    "club"
+  ]
+}

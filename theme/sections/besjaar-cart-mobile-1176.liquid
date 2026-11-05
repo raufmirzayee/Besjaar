@@ -1,0 +1,106 @@
+{%- comment -%}
+  Besjaar 11.76 (2026-11-04) — mobile cart optimisation, for the cart drawer
+  and the cart page. A carrier in the header group, like the other besjaar-*
+  sections, so nothing in site-header.liquid, besjaar-cart-1168.liquid or
+  besjaar-store-cart.liquid had to change.
+
+  1. Tap targets: on phones the quantity − / + buttons and the bin are 40px
+     (they were 34px and 36px), in the drawer and on the cart page.
+  2. The discount-code and note fields use 16px text on phones, so iOS Safari
+     no longer zooms the page in when a shopper taps them.
+  3. Express checkout: Apple Pay / Google Pay / Shop Pay under the checkout
+     button. Shopify renders only the wallets the shop has switched on and the
+     device supports. They are rendered here and moved under the drawer's (or
+     the cart page's) checkout button; in the drawer they are re-rendered
+     through the Section Rendering API (sections/besjaar-express-checkout.liquid)
+     when the cart changes, as Shopify recommends for cart drawers.
+  4. Free-shipping nudge: while the cart is under the free-shipping amount,
+     the shipping band (drawer and cart page) offers one matching accessory
+     with a one-tap add button: spare filters for a showerhead with a filter,
+     the hose for a showerhead sold without one. Nothing shows when nothing
+     fits. Products are picked by product type (showerhead / Shower Filter /
+     Shower Hose) and tags (Filter, Doucheset); no handles are hard-coded.
+  5. Cart page on phones: a checkout bar pinned to the bottom of the screen
+     (with the total) while the summary's own checkout button is out of view.
+{%- endcomment -%}
+{%- liquid
+  assign bjn_filter_heads = ''
+  assign bjn_bare_heads = ''
+  assign bjn_has_refill = false
+  assign bjn_has_hose = false
+  for bjn_p in collections['all'].products limit: 50
+    unless bjn_p.available
+      continue
+    endunless
+    assign bjn_type = bjn_p.type | downcase
+    assign bjn_title_lc = bjn_p.title | downcase
+    if bjn_type contains 'showerhead' or bjn_type contains 'shower head'
+      if bjn_p.tags contains 'Filter' or bjn_title_lc contains 'met filter'
+        assign bjn_filter_heads = bjn_filter_heads | append: ',' | append: bjn_p.id
+      endif
+      unless bjn_p.tags contains 'Doucheset' or bjn_title_lc contains 'met slang'
+        assign bjn_bare_heads = bjn_bare_heads | append: ',' | append: bjn_p.id
+      endunless
+    elsif bjn_type contains 'filter'
+      unless bjn_has_refill
+        assign bjn_refill = bjn_p
+        assign bjn_has_refill = true
+      endunless
+    elsif bjn_type contains 'hose' or bjn_type contains 'slang'
+      unless bjn_has_hose
+        assign bjn_hose = bjn_p
+        assign bjn_has_hose = true
+      endunless
+    endif
+  endfor
+  assign bjn_filter_heads = bjn_filter_heads | remove_first: ','
+  assign bjn_bare_heads = bjn_bare_heads | remove_first: ','
+-%}
+<script type="application/json" data-bj-ship-nudge>
+{
+  "filterHeads": [{{ bjn_filter_heads }}],
+  "bareHeads": [{{ bjn_bare_heads }}],
+  "items": [
+    {%- assign bjn_n = 0 -%}
+    {%- for bjn_i in (1..2) -%}
+      {%- if bjn_i == 1 -%}{%- assign bjn_item = bjn_refill -%}{%- assign bjn_kind = 'refill' -%}{%- assign bjn_ok = bjn_has_refill -%}{%- else -%}{%- assign bjn_item = bjn_hose -%}{%- assign bjn_kind = 'hose' -%}{%- assign bjn_ok = bjn_has_hose -%}{%- endif -%}
+      {%- if bjn_ok -%}
+        {%- assign bjn_v = bjn_item.selected_or_first_available_variant -%}
+        {%- if bjn_n > 0 -%},{%- endif -%}
+        {"kind": {{ bjn_kind | json }}, "id": {{ bjn_item.id }}, "variantId": {{ bjn_v.id }}, "price": {{ bjn_v.price }}, "image": {% if bjn_item.featured_image %}{{ bjn_item.featured_image | image_url: width: 120 | json }}{% else %}""{% endif %}}
+        {%- assign bjn_n = bjn_n | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ],
+  "cart": {"total_price": {{ cart.total_price }}, "item_count": {{ cart.item_count }}, "currency": {{ cart.currency.iso_code | json }}, "items": [{%- for bjn_line in cart.items -%}{%- unless forloop.first -%},{%- endunless -%}{"product_id": {{ bjn_line.product_id }}}{%- endfor -%}]}
+}
+</script>
+{%- if additional_checkout_buttons -%}
+  {%- if request.page_type == 'cart' -%}
+    <div class="bj-cp-express" data-bj-cp-express>{{ content_for_additional_checkout_buttons }}</div>
+  {%- else -%}
+    <div class="bj-cd-express" data-bj-cd-express data-sig="{{ cart.item_count }}:{{ cart.total_price }}">{{ content_for_additional_checkout_buttons }}</div>
+  {%- endif -%}
+{%- endif -%}
+{%- if request.page_type == 'cart' and cart.item_count > 0 -%}
+  {%- assign bjm_checkout = 'besjaar_ui.cart.drawer_checkout' | t | replace: '→', '' | strip -%}
+  <div class="bj-cp-sticky" data-bj-cp-sticky aria-hidden="true">
+    <button type="submit" form="besjaar-store-cart-form" name="checkout" value="Checkout" class="bj-cp-checkout" tabindex="-1"><span>{{ bjm_checkout }}</span><span class="bj-cp-sticky__total" data-bj-cp-sticky-total>{{ cart.total_price | money }}</span></button>
+  </div>
+{%- endif -%}
+{{ 'besjaar-x-cart-mobile-1.css' | asset_url | stylesheet_tag: preload: true }}
+<script src="{{ 'besjaar-cart-mobile-1176.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+{
+  "name": "Besjaar mobile cart",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.76 (2026-11-04): bigger tap targets and 16px fields on phones, Apple Pay / Google Pay / Shop Pay under the checkout button, a one-tap accessory in the free-shipping band, and a pinned checkout bar on the cart page on phones. Keep in the header group after Besjaar cart polish."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

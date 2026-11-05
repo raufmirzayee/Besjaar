@@ -1,0 +1,30 @@
+{% liquid
+  assign review_product = product
+  assign review_rating_meta = review_product.metafields.reviews.rating
+  assign review_count_meta = review_product.metafields.reviews.rating_count
+  assign review_rating = blank
+  assign review_scale_max = 5
+  assign review_count = 0
+  if review_rating_meta != blank
+    assign review_rating = review_rating_meta.value.rating | default: review_rating_meta.value
+    assign review_scale_max = review_rating_meta.value.scale_max | default: 5
+  endif
+  if review_count_meta != blank
+    assign review_count = review_count_meta.value | default: review_count_meta
+  endif
+  assign review_percent = 0
+  if review_rating != blank and review_scale_max > 0
+    assign review_percent = review_rating | times: 100.0 | divided_by: review_scale_max
+  endif
+%}
+{% if review_product.metafields.judgeme.badge != blank %}
+  <span class="besjaar-ui-review-stars besjaar-ui-review-stars--judgeme{% if compact %} besjaar-ui-review-stars--compact{% endif %}">
+    <span class="jdgm-widget jdgm-preview-badge" data-id="{{ review_product.id }}" data-auto-install="false">{{ review_product.metafields.judgeme.badge }}</span>
+  </span>
+{% elsif review_rating != blank and review_count > 0 %}
+  <span class="besjaar-ui-review-stars{% if compact %} besjaar-ui-review-stars--compact{% endif %}" aria-label="{{ 'besjaar_ui.reviews.rating_accessible' | t: rating: review_rating, max: review_scale_max, count: review_count | escape }}">
+    <span class="besjaar-ui-review-stars__icons" style="--besjaar-ui-rating-percent:{{ review_percent }}%" aria-hidden="true"><span class="besjaar-ui-review-stars__base">★★★★★</span><span class="besjaar-ui-review-stars__fill">★★★★★</span></span>
+    <strong>{{ review_rating | round: 1 }}</strong>
+    <span class="besjaar-ui-review-stars__count">({{ review_count }})</span>
+  </span>
+{% endif %}

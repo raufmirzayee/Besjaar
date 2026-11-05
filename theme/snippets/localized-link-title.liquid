@@ -1,0 +1,41 @@
+{%- liquid
+  assign besjaar_ui_link = link
+  assign besjaar_ui_title = besjaar_ui_link.title
+  assign besjaar_ui_url = besjaar_ui_link.url | downcase
+  assign besjaar_ui_title_lc = besjaar_ui_title | downcase | strip
+
+  if besjaar_ui_url contains '/collections/'
+    assign besjaar_ui_collection_handle = besjaar_ui_url | split: '/collections/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+    if collections[besjaar_ui_collection_handle] != blank
+      capture besjaar_ui_title
+        render 'localized-collection-title', collection: collections[besjaar_ui_collection_handle]
+      endcapture
+      assign besjaar_ui_title = besjaar_ui_title | strip
+    elsif besjaar_ui_collection_handle == 'all'
+      assign besjaar_ui_title = 'besjaar_ui.navigation.all_products' | t
+    endif
+  elsif besjaar_ui_url contains '/pages/'
+    assign besjaar_ui_page_handle = besjaar_ui_url | split: '/pages/' | last | split: '?' | first | split: '#' | first | split: '/' | first
+    if pages[besjaar_ui_page_handle] != blank
+      capture besjaar_ui_title
+        render 'localized-page-title', page: pages[besjaar_ui_page_handle]
+      endcapture
+      assign besjaar_ui_title = besjaar_ui_title | strip
+    endif
+  endif
+
+  if besjaar_ui_title_lc == 'bashar' or besjaar_ui_title_lc == 'beshear' or besjaar_ui_title_lc == 'besjar' or besjaar_ui_title_lc == 'besjaar'
+    assign besjaar_ui_title = 'Besjaar'
+  elsif besjaar_ui_title_lc == 'assortiment' or besjaar_ui_title_lc == 'shop' or besjaar_ui_title_lc == 'catalogus' or besjaar_ui_title_lc == 'catalog'
+    assign besjaar_ui_title = 'besjaar_ui.navigation.shop' | t
+  elsif besjaar_ui_title_lc contains 'volg uw bestelling' or besjaar_ui_title_lc contains 'track your order' or besjaar_ui_title_lc == 'order tracking'
+    assign besjaar_ui_title = 'besjaar_ui.navigation.track_order' | t
+  elsif besjaar_ui_title_lc contains 'veelgestelde vragen' or besjaar_ui_title_lc contains 'frequently asked' or besjaar_ui_title_lc == 'faq'
+    assign besjaar_ui_title = 'besjaar_ui.navigation.faq' | t
+  elsif besjaar_ui_title_lc == 'contact' or besjaar_ui_title_lc == 'contact us'
+    assign besjaar_ui_title = 'besjaar_ui.navigation.contact' | t
+  elsif besjaar_ui_title_lc == 'over ons' or besjaar_ui_title_lc == 'about us' or besjaar_ui_title_lc == 'about'
+    assign besjaar_ui_title = 'besjaar_ui.navigation.about' | t
+  endif
+  echo besjaar_ui_title
+-%}

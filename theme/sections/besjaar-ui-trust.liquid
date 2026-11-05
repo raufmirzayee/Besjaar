@@ -1,0 +1,70 @@
+<section class="besjaar-ui-section besjaar-ui-section--tight besjaar-ui-home-section besjaar-ui-home-section--trust besjaar-ui-home-section--trust-shower">
+  <div class="besjaar-ui-shell besjaar-ui-trust-shell">
+    <div class="besjaar-ui-trust-heading" data-reveal>
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.home.trust_eyebrow' | t }}</p>
+      <h2>{{ 'besjaar_ui.home.trust_heading' | t }}</h2>
+    </div>
+
+    <div class="besjaar-ui-trust-shower-grid" data-reveal>
+      <div class="besjaar-ui-trust-shower-visual" aria-hidden="true">
+        <svg viewBox="0 0 220 310" fill="none">
+          <circle cx="110" cy="94" r="78" fill="#F4F8F5" stroke="#BFD7CF" stroke-width="4"/>
+          <circle cx="110" cy="94" r="58" stroke="#D6E6E0" stroke-width="3"/>
+          <g fill="#284E46">
+            <circle cx="110" cy="43" r="5"/><circle cx="84" cy="50" r="5"/><circle cx="136" cy="50" r="5"/>
+            <circle cx="67" cy="68" r="5"/><circle cx="153" cy="68" r="5"/><circle cx="60" cy="96" r="5"/><circle cx="160" cy="96" r="5"/>
+            <circle cx="70" cy="124" r="5"/><circle cx="150" cy="124" r="5"/><circle cx="90" cy="138" r="5"/><circle cx="130" cy="138" r="5"/>
+            <circle cx="110" cy="72" r="5"/><circle cx="88" cy="88" r="5"/><circle cx="132" cy="88" r="5"/><circle cx="110" cy="112" r="5"/>
+          </g>
+          <path d="M96 168h28l18 106c2 12-7 22-19 22H97c-12 0-21-10-19-22l18-106Z" fill="#E8F1EC" stroke="#BFD7CF" stroke-width="4"/>
+          <path d="M87 198h46" stroke="#284E46" stroke-width="5" stroke-linecap="round"/>
+          <path d="M84 220h52" stroke="#284E46" stroke-width="5" stroke-linecap="round" opacity=".65"/>
+        </svg>
+        <span>{{ 'besjaar_ui.home.trust_visual_label' | t }}</span>
+      </div>
+
+      {% for block in section.blocks %}
+        {% liquid
+          assign point_title = block.settings.title
+          assign point_text = block.settings.text
+          if section.settings.use_localized_copy
+            case forloop.index
+              when 1
+                assign point_title = 'besjaar_ui.home.trust.one_title' | t
+                assign point_text = 'besjaar_ui.home.trust.one_text' | t
+              when 2
+                assign point_title = 'besjaar_ui.home.trust.two_title' | t
+                assign point_text = 'besjaar_ui.home.trust.two_text' | t
+              when 3
+                assign point_title = 'besjaar_ui.home.trust.three_title' | t
+                assign point_text = 'besjaar_ui.home.trust.three_text' | t
+              else
+                assign point_title = 'besjaar_ui.home.trust.four_title' | t
+                assign point_text = 'besjaar_ui.home.trust.four_text' | t
+            endcase
+          endif
+        %}
+        <article class="besjaar-ui-trust-shower-card besjaar-ui-trust-shower-card--{{ forloop.index }}" {{ block.shopify_attributes }}>
+          <span class="besjaar-ui-trust-shower-card__number">0{{ forloop.index }}</span>
+          <span class="besjaar-ui-trust-shower-card__icon" aria-hidden="true">
+            {% case forloop.index %}
+              {% when 1 %}<svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M7 4v6M12 4v6M17 4v6M6 15l2 2 4-5M14 16h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {% when 2 %}<svg viewBox="0 0 24 24" fill="none"><path d="M7 7h8a4 4 0 1 1 0 8H7m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {% when 3 %}<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+              {% else %}<svg viewBox="0 0 24 24" fill="none"><path d="M5 6h14v9H9l-4 4V6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 10h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            {% endcase %}
+          </span>
+          <div><h3>{{ point_title }}</h3><p>{{ point_text }}</p></div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Trust points",
+  "settings":[{"type":"checkbox","id":"use_localized_copy","label":"Use automatic localized copy (EN / NL / DE / FR)","default":true}],
+  "blocks":[{"type":"point","name":"Point","limit":4,"settings":[{"type":"text","id":"icon","label":"Icon (legacy fallback)","default":"✦"},{"type":"text","id":"title","label":"Custom title","default":"Gericht assortiment, helder gekozen"},{"type":"text","id":"text","label":"Custom text","default":"Een compact douchekopassortiment dat eenvoudig te vergelijken is."}]}],
+  "presets":[{"name":"Trust points","blocks":[{"type":"point"},{"type":"point"},{"type":"point"},{"type":"point"}]}]
+}
+{% endschema %}

@@ -1,0 +1,45 @@
+{%- comment -%}
+  Besjaar 11.6.14 — chrome mark on the About page brand card, all widths.
+  The image lives in snippets/besjaar-leaf-logo.liquid; it is rendered into
+  a <template> on page templates and mounted above the wordmark by the
+  script below. The card itself (ice gradient, sky glow, wordmark, note) is
+  styled here so phones and desktop match; the desktop-fixes carrier adds
+  only desktop sizing on top.
+{%- endcomment -%}
+{%- if request.page_type == 'page' -%}
+<template id="bj-leaf-logo">{% render 'besjaar-leaf-logo' %}</template>
+
+<script>
+(function () {
+  'use strict';
+  var run = function () {
+    var stage = document.querySelector('.besjaar-ui-about-v461__brand-stage');
+    var tpl = document.getElementById('bj-leaf-logo');
+    if (!stage || !tpl || stage.classList.contains('has-leaf')) return;
+    var source = tpl.content ? tpl.content.firstElementChild : tpl.firstElementChild;
+    if (!source) return;
+    var node = source.cloneNode(true);
+    var strong = stage.querySelector('strong');
+    stage.insertBefore(node, strong || null);
+    stage.classList.add('has-leaf');
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run, { once: true });
+  else run();
+  document.addEventListener('shopify:section:load', run);
+})();
+</script>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar leaf mark",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.14: mounts the chrome mark (snippets/besjaar-leaf-logo.liquid) on the About page brand card at every width. Keep in the header group after the desktop fixes section."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

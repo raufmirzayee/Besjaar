@@ -1,0 +1,12 @@
+{% liquid
+  assign besjaar_ui_focus_match = false
+  if product != blank
+    capture besjaar_ui_family_capture
+      render 'product-family', product: product
+    endcapture
+    assign besjaar_ui_family = besjaar_ui_family_capture | strip
+    if besjaar_ui_family == 'shower'
+      assign besjaar_ui_focus_match = true
+    endif
+  endif
+%}{{ besjaar_ui_focus_match }}

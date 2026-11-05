@@ -1,0 +1,53 @@
+{%- comment -%}
+  Besjaar — store description for the WebSite node in structured-data
+  (2026-10-31). Takes besjaar_ui.shower_store.meta.description and makes its
+  Netherlands shipping sentence follow the zone 1 theme settings
+  (standard_shipping_rate 0 = free on every order, otherwise "free from
+  €X" with free_shipping_threshold_exact / free_shipping_threshold), so the
+  locale files do not need editing when the shipping rules change.
+  Languages without a free-shipping sentence (ES) pass through unchanged.
+
+  Usage: {%- render 'besjaar-store-description' -%}
+  Output is plain text.
+{%- endcomment -%}
+{%- liquid
+  assign bsd_text = 'besjaar_ui.shower_store.meta.description' | t
+  assign bsd_lang = request.locale.iso_code | split: '-' | first | downcase
+  assign bsd_rate = settings.standard_shipping_rate | default: '' | strip | replace: ',', '.'
+  assign bsd_free_always = false
+  if bsd_rate == '0' or bsd_rate == '0.0' or bsd_rate == '0.00'
+    assign bsd_free_always = true
+  endif
+  unless bsd_free_always
+    assign bsd_t = settings.free_shipping_threshold_exact | default: '' | strip | replace: ',', '.'
+    if bsd_t == blank
+      assign bsd_t = settings.free_shipping_threshold | default: 0 | append: ''
+    endif
+    assign bsd_t_num = bsd_t | plus: 0
+    if bsd_lang != 'en'
+      assign bsd_t = bsd_t | replace: '.', ','
+    endif
+    assign bsd_old = ''
+    case bsd_lang
+      when 'en'
+        assign bsd_old = 'Free shipping across the Netherlands.'
+        assign bsd_new = 'Free shipping in the Netherlands from €' | append: bsd_t | append: '.'
+      when 'de'
+        assign bsd_old = 'Kostenloser Versand in den Niederlanden.'
+        assign bsd_new = 'Kostenloser Versand in den Niederlanden ab ' | append: bsd_t | append: ' €.'
+      when 'fr'
+        assign bsd_old = 'Livraison offerte aux Pays-Bas.'
+        assign bsd_new = 'Livraison offerte aux Pays-Bas dès ' | append: bsd_t | append: ' €.'
+      when 'nl'
+        assign bsd_old = 'Gratis verzending in heel Nederland.'
+        assign bsd_new = 'Gratis verzending in Nederland vanaf €' | append: bsd_t | append: '.'
+    endcase
+    if bsd_old != ''
+      if bsd_t_num <= 0
+        assign bsd_new = ''
+      endif
+      assign bsd_text = bsd_text | replace: bsd_old, bsd_new | strip
+    endif
+  endunless
+  echo bsd_text
+-%}

@@ -1,0 +1,11 @@
+{% liquid
+  assign normalized_price = value | money_without_currency | strip
+  assign locale_code = request.locale.iso_code | downcase
+  assign normalized_price = normalized_price | replace: ' ', '' | replace: ' ', '' | replace: ' ', ''
+  if locale_code == 'en'
+    assign normalized_price = normalized_price | replace: ',', ''
+  else
+    assign normalized_price = normalized_price | replace: '.', '' | replace: ',', '.'
+  endif
+  echo normalized_price
+%}

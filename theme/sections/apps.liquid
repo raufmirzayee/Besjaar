@@ -1,0 +1,17 @@
+<section class="besjaar-ui-section besjaar-ui-apps-section">
+  <div class="besjaar-ui-shell">
+    <div class="besjaar-ui-apps-section__inner">
+      {% for block in section.blocks %}
+        {% if block.type == '@app' %}{% render block %}{% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name":"Apps",
+  "settings":[],
+  "blocks":[{"type":"@app"}],
+  "presets":[{"name":"Apps"}]
+}
+{% endschema %}

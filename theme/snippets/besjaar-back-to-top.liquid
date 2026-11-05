@@ -1,0 +1,11 @@
+{%- comment -%}
+  Besjaar 2026-09-22: "back to top" button. Hidden until the visitor has
+  scrolled about one screen down, then fades in bottom-right, above the chat
+  bubble and the mobile sticky add-to-cart bar. Smooth scroll unless the
+  visitor prefers reduced motion. Rendered once from layout/theme.liquid.
+{%- endcomment -%}
+{{ 'besjaar-x-back-to-top-1.css' | asset_url | stylesheet_tag: preload: true }}
+<button type="button" class="besjaar-to-top" data-besjaar-to-top aria-label="{{ 'besjaar_ui.footer.back_to_top' | t | escape }}" title="{{ 'besjaar_ui.footer.back_to_top' | t | escape }}">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+</button>
+<script src="{{ 'besjaar-x-back-to-top-2.js' | asset_url }}"></script>

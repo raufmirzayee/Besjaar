@@ -1,0 +1,13 @@
+{%- liquid
+  assign besjaar_ui_candidate = product
+  assign besjaar_ui_is_range = false
+  if besjaar_ui_candidate != blank
+    capture besjaar_ui_family_capture
+      render 'product-family', product: besjaar_ui_candidate
+    endcapture
+    assign besjaar_ui_family = besjaar_ui_family_capture | strip
+    if besjaar_ui_family == 'shower'
+      assign besjaar_ui_is_range = true
+    endif
+  endif
+-%}{{- besjaar_ui_is_range -}}

@@ -1,0 +1,134 @@
+{%- comment -%}
+  Besjaar 11.6.8 — runtime patches.
+
+  1. Cart drawer speed: /cart/change.js already returns the full cart, but
+     besjaar-ui-core.js discards it and reads /cart.js again. Serve that follow-up
+     read from the change.js response (one-shot, 1.5 s window).
+  2. Product gallery: warm the images the thumbnails will request —
+     neighbours on idle, everything after the first touch, the touched thumb
+     immediately. Never on data-saver / 2G.
+  3. Phones: no backdrop-filter on the drawer backdrop, toast, zoom button
+     and hero pill while things animate.
+  4. Home product cards: the "Shop nu" text link becomes a full-width
+     outlined button, and cards stretch to equal height with the button
+     anchored at the bottom so a row of buttons lines up.
+  5. Mobile menu, tile layout: navy "Shop alles" button, category tiles,
+     icon rows for the pages, a 2×2 icon grid for the "Meer" links, account
+     row, compact language pill and a trust line — everything visible, no
+     accordions. Built by re-arranging the existing links, so the theme's
+     open/close logic and every href stay untouched.
+  6. Home colour rhythm: ice hero with a sky glow and a two-tone headline,
+     navy trust strip, white range, navy-veiled scene, ice feature band,
+     white reviews, navy CTA with a white title. Kickers in blue on light
+     bands, sky on navy.
+  7. Product accordion: the details panels are exclusive (besjaar-1150.js
+     closes the others), so opening a lower panel collapsed the long
+     description above it and the page jumped. The tapped heading now stays
+     where it was: the scroll position is compensated for the collapsed
+     height.
+  8. Product delivery promise: only the delivery estimate shows on the
+     product page, full width, styled like the trust tiles (the returns and
+     warranty cards duplicated the tiles and clipped on phones).
+  9. Trust strip ticker: when the strip overflows (phones), the items scroll
+     continuously (seamless loop from a cloned, aria-hidden set), pause on
+     hover/focus, and stay static under prefers-reduced-motion or when
+     everything fits.
+ 10. Feature cards link to the showerhead collection: a stretched link
+     covers each card (labelled with the card title) and a short call to
+     action line is appended to the card body.
+ 11. Home CTA 360° spin: the static image in the closing CTA is replaced
+     by the theme's own 360 viewer (assets/besjaar-ui-360.js, loaded on demand).
+     Frame source, in order of preference: the 36 frames cut from the studio
+     spin video (besjaar-cta-360-01.webp … -36.webp) in Shopify Files, else
+     the same files as theme assets, else the theme's bundled 23-frame spin
+     (assets/besjaar-360-01..23.webp), else the still image stays. Rotates
+     continuously, drag / arrow keys to rotate, resumes after a drag, pauses
+     off-screen, no autoplay under prefers-reduced-motion.
+
+  (The compact cart-drawer redesign that briefly lived here was reverted on
+  request; the drawer renders exactly as the 11.2.40 layer styles it.)
+
+  Temporary carrier like besjaar-tokens-1164. During the consolidation, fold
+  (1) into refreshCart(cart) in besjaar-ui-core.js, (2)+(7) into the product page
+  scripts, (3) into the mobile CSS, (4)+(6)+(9) into the home CSS/JS, (5)
+  into the mobile menu markup in sections/site-header.liquid, (8) into
+  snippets/delivery-promise.liquid, (10) into sections/besjaar-store-features.liquid
+  as a real <a> per card, (11) into sections/besjaar-store-cta.liquid as a proper
+  viewer block.
+{%- endcomment -%}
+{%- liquid
+  capture bj_ship_cents
+    render 'besjaar-shipping-zone', field: 'threshold_cents'
+  endcapture
+  assign bj_ship_cents = bj_ship_cents | strip | plus: 0
+  assign bj_ship_money = bj_ship_cents | money_without_trailing_zeros
+  capture bj_ship_free
+    render 'besjaar-shipping-zone', field: 'free_always'
+  endcapture
+  assign bj_ship_free = bj_ship_free | strip
+  assign bj_menu_t1 = ''
+  if bj_ship_free == 'true'
+    assign bj_menu_t1 = 'besjaar_ui.product.free_shipping' | t
+  elsif bj_ship_cents > 0
+    assign bj_menu_t1 = 'besjaar_ui.product.free_shipping_from' | t: amount: bj_ship_money
+  endif
+  assign bj_menu_t2 = 'besjaar_ui.product.returns_days' | t: days: settings.return_window_days
+  assign bj_menu_foot = bj_menu_t2
+  if bj_menu_t1 != ''
+    assign bj_menu_foot = bj_menu_t1 | append: ' · ' | append: bj_menu_t2
+  endif
+  assign bj_menu_cat = 'Categorieën'
+  assign bj_menu_more = 'Meer'
+  case request.locale.iso_code
+    when 'en'
+      assign bj_menu_cat = 'Categories'
+      assign bj_menu_more = 'More'
+    when 'de'
+      assign bj_menu_cat = 'Kategorien'
+      assign bj_menu_more = 'Mehr'
+    when 'fr'
+      assign bj_menu_cat = 'Catégories'
+      assign bj_menu_more = 'Plus'
+    when 'es'
+      assign bj_menu_cat = 'Categorías'
+      assign bj_menu_more = 'Más'
+  endcase
+-%}
+<script type="application/json" id="bj-menu-config">{"foot":{{ bj_menu_foot | json }},"categories":{{ bj_menu_cat | json }},"more":{{ bj_menu_more | json }}}</script>
+{%- if request.page_type == 'index' -%}
+  {%- liquid
+    assign bj_360_hint = 'Sleep om te draaien'
+    assign bj_360_label = 'Besjaar douchekop, 360° weergave — sleep om te draaien'
+    case request.locale.iso_code
+      when 'en'
+        assign bj_360_hint = 'Drag to rotate'
+        assign bj_360_label = 'Besjaar showerhead, 360° view — drag to rotate'
+      when 'de'
+        assign bj_360_hint = 'Ziehen zum Drehen'
+        assign bj_360_label = 'Besjaar Duschkopf, 360°-Ansicht — zum Drehen ziehen'
+      when 'fr'
+        assign bj_360_hint = 'Glissez pour faire tourner'
+        assign bj_360_label = 'Pommeau de douche Besjaar, vue à 360° — glissez pour tourner'
+      when 'es'
+        assign bj_360_hint = 'Desliza para girar'
+        assign bj_360_label = 'Alcachofa de ducha Besjaar, vista 360° — desliza para girar'
+    endcase
+  -%}
+  <script type="application/json" id="bj-cta-360-frames" data-script="{{ 'besjaar-ui-360.js' | asset_url }}" data-hint="{{ bj_360_hint | escape }}" data-label="{{ bj_360_label | escape }}">{"files":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | file_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"assets":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"bundled":[{%- for i in (1..23) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_asset = 'besjaar-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_asset | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]}</script>
+{%- endif -%}
+{{ 'besjaar-seo-carriers-early.css' | asset_url | stylesheet_tag: preload: true }}
+<script src="{{ 'besjaar-x-runtime-1.js' | asset_url }}"></script>
+{% schema %}
+{
+  "name": "Besjaar runtime patches",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.8 runtime patches: cart speed, gallery warming, no blur on phones, home card buttons, the tile-style mobile menu, home colour rhythm, stable product accordion, delivery estimate card, ticker strip, linked feature cards, and the CTA 360° spin (besjaar-cta-360-01–36.webp from Files or theme assets, else the bundled spin). Keep this section in the header group, after the colour tokens."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

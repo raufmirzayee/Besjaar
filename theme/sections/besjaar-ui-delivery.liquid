@@ -1,0 +1,11 @@
+<section class="besjaar-ui-section besjaar-ui-section--tight besjaar-ui-home-section besjaar-ui-home-section--delivery"{% unless settings.show_home_delivery_section %} hidden{% endunless %}>
+  <div class="besjaar-ui-shell besjaar-ui-delivery-home" data-reveal>
+    <div class="besjaar-ui-delivery-home__intro">
+      <p class="besjaar-ui-kicker">{{ 'besjaar_ui.delivery.eyebrow' | t }}</p>
+      <h2 class="besjaar-ui-title">{{ 'besjaar_ui.delivery.home_heading' | t }}</h2>
+      <p class="besjaar-ui-copy">{{ 'besjaar_ui.delivery.home_copy' | t }}</p>
+    </div>
+    {% render 'delivery-promise', context: 'home' %}
+  </div>
+</section>
+{% schema %}{"name":"Delivery & returns","settings":[],"presets":[{"name":"Delivery & returns"}]}{% endschema %}

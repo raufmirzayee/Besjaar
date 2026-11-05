@@ -1,0 +1,109 @@
+{%- comment -%}
+  Besjaar guides on the homepage (2026-10-14, simplified 2026-10-15): three
+  guide articles as photo cards with just their title; the whole card links
+  to the article. On phones all three show as a list (small photo left,
+  title right) instead of a swipe row, so none are hidden.
+
+  Add up to three "Guide" blocks in the theme editor and pick an article for
+  each. Without blocks the section shows the three most recent articles from
+  the guides blog. The section renders nothing when there are no published
+  articles.
+{%- endcomment -%}
+{%- liquid
+  assign guide_blog = blogs[section.settings.blog_handle]
+  if guide_blog == blank
+    assign guide_blog = blogs['gids']
+  endif
+
+  assign guide_total = 0
+  for block in section.blocks
+    if block.settings.article != blank
+      assign guide_total = guide_total | plus: 1
+    endif
+  endfor
+  assign use_blocks = false
+  if guide_total > 0
+    assign use_blocks = true
+  elsif guide_blog != blank
+    assign guide_total = guide_blog.articles_count | at_most: 3
+  endif
+-%}
+{%- if guide_total > 0 -%}
+{{ 'besjaar-brand.css' | asset_url | stylesheet_tag }}
+<section class="bjb bjb-guides bjb-guides--simple" id="besjaar-brand-guides" aria-labelledby="BjbGuidesTitle-{{ section.id }}">
+  <div class="bjb__shell">
+    <header class="bjb-guides__head">
+      <div>
+        <p class="bjb__kicker">{% render 'besjaar-brand-copy', key: 'guides_kicker' %}</p>
+        <h2 class="bjb__h2" id="BjbGuidesTitle-{{ section.id }}">{% render 'besjaar-brand-copy', key: 'guides_heading' %}</h2>
+      </div>
+      {%- if guide_blog != blank -%}
+        <a class="bjb__link" href="{% render 'localized-internal-url', url: guide_blog.url %}">{% render 'besjaar-brand-copy', key: 'guides_all' %} <span aria-hidden="true">→</span></a>
+      {%- endif -%}
+    </header>
+  </div>
+
+  <ul class="bjb-guides__grid">
+    {%- if use_blocks -%}
+      {%- for block in section.blocks -%}
+        {%- if block.settings.article == blank -%}{%- continue -%}{%- endif -%}
+        <li class="bjb-guide" {{ block.shopify_attributes }}>
+          {%- render 'besjaar-brand-guide-card', guide: block.settings.article -%}
+        </li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for guide in guide_blog.articles limit: 3 -%}
+        <li class="bjb-guide">
+          {%- render 'besjaar-brand-guide-card', guide: guide -%}
+        </li>
+      {%- endfor -%}
+    {%- endif -%}
+  </ul>
+</section>
+<style>
+  .bjb-guides--simple{padding:clamp(40px,5.5vw,76px) 0}
+  .bjb-guides--simple .bjb-guides__head{margin-bottom:22px}
+  .bjb-guides--simple .bjb-guides__grid{width:min(calc(100% - 32px),var(--bjb-width));margin-inline:auto}
+  .bjb-guides--simple .bjb-guide__link{display:flex;flex-direction:column;height:100%;color:var(--bjb-ink);text-decoration:none}
+  .bjb-guides--simple .bjb-guide__body{padding:16px 18px 18px}
+  .bjb-guides--simple .bjb-guide__body h3{font-size:1rem;line-height:1.35}
+  .bjb-guides--simple .bjb-guide__link:hover h3{color:var(--bjb-accent)}
+  .bjb-guides--simple .bjb-guide__link:hover .bjb-guide__media img{transform:scale(1.03)}
+  @media (max-width:640px){
+    .bjb-guides--simple .bjb-guides__head{flex-direction:row;align-items:flex-end;flex-wrap:wrap}
+    .bjb-guides--simple .bjb-guides__grid{grid-template-columns:minmax(0,1fr);gap:10px}
+    .bjb-guides--simple .bjb-guide__link{flex-direction:row;align-items:stretch}
+    .bjb-guides--simple .bjb-guide__media{position:relative;flex:0 0 108px;width:108px;aspect-ratio:auto;min-height:96px}
+    .bjb-guides--simple .bjb-guide__media img{position:absolute;inset:0;width:100%;height:100%}
+    .bjb-guides--simple .bjb-guide__body{justify-content:center;padding:12px 16px}
+    .bjb-guides--simple .bjb-guide__body h3{font-size:.95rem;line-height:1.32}
+  }
+</style>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar guides",
+  "tag": "div",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "blog_handle",
+      "label": "Guides blog handle",
+      "info": "Used for the 'All guides' link and when no guide blocks are added.",
+      "default": "gids"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "guide",
+      "name": "Guide",
+      "settings": [
+        { "type": "article", "id": "article", "label": "Article" },
+        { "type": "product", "id": "product", "label": "Related product", "info": "Not shown in the simplified layout." }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Besjaar guides" }]
+}
+{% endschema %}

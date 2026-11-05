@@ -1,0 +1,226 @@
+{%- comment -%}
+  Besjaar — welcome-offer notice and welcome prices (2026-09-28).
+
+  1. Notice. After a shopper claims the Welcome Drop, Shopify's customer form
+     sends them through /discount/CODE to the product range. This section
+     confirms on that landing page that the code is saved.
+
+  2. Welcome prices. A claimed percentage code (WELKOM10/15/20) takes its
+     percentage off the product's own price at checkout. Since 2026-10-09 the
+     codes do not combine with other product discounts, so when a product
+     also has a sale of its own Shopify gives the shopper the better of the
+     two, never both: the reduction never exceeds the code's percentage. For
+     a shopper who has claimed one, every product it covers shows that final
+     price everywhere it is displayed: product cards, the product page
+     (price, sticky bar, badge, savings), the recently-viewed strip and the
+     cart drawer's suggestions. Where the product's own sale is already the
+     better deal, nothing is rewritten.
+
+     Prices are computed here, server-side, for each code, from the product's
+     own price, rounded the way Shopify rounds a percentage discount (the cut
+     is truncated to the cent), and compared with the price the shop already
+     shows (automatic discount from the mirror, else the product price). The
+     script only picks the right numbers.
+
+     The code's scope (the collections it applies to) is not readable from
+     Liquid, so it is a setting on this section; keep it in step with the
+     WELKOM codes in Admin > Discounts.
+
+  3. Shareable discount links (2026-10-08). A shopper can also arrive through
+     a link such as /discount/WELKOM20?redirect=/products/... without using
+     the popup. Two ways are read so they still get the notice and the
+     welcome prices:
+     - the ?besjaar_offer_claimed=<10|15|20> marker in the redirect target:
+       the claim now records the link's own code (the welcome-offer snippet
+       records the popup's current reward, which can be a different code);
+     - otherwise the codes Shopify has put on the cart (/cart.js
+       discount_codes), because Shopify can drop the marker on the redirect.
+
+  The script is inline (not deferred) so it can read the claim state and
+  rewrite the price lists other sections print (data-besjaar-recent-prices,
+  data-besjaar-ui-cart-range) before the deferred theme scripts read them. It
+  uses the storage keys and ?besjaar_offer_claimed= marker of
+  assets/besjaar-welcome-offer.js.
+{%- endcomment -%}
+{%- liquid
+  assign bjw_show = settings.welcome_offer_enabled
+  if customer != blank
+    assign bjw_show = false
+  endif
+  if request.design_mode or request.visual_preview_mode
+    assign bjw_show = false
+  endif
+
+  assign bjw_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bjw_lang
+    when 'en'
+      assign bjw_title = 'Your welcome discount is applied'
+      assign bjw_body = 'Code {code} ({value}) is saved and will be deducted automatically at checkout.'
+      assign bjw_off = 'off'
+      assign bjw_note = 'Includes your {pct}% welcome discount, applied automatically.'
+      assign bjw_save = 'Save'
+    when 'de'
+      assign bjw_title = 'Dein Willkommensrabatt ist aktiviert'
+      assign bjw_body = 'Der Code {code} ({value}) ist gespeichert und wird an der Kasse automatisch abgezogen.'
+      assign bjw_off = 'Rabatt'
+      assign bjw_note = 'Inkl. {pct}% Willkommensrabatt, automatisch abgezogen.'
+      assign bjw_save = 'Spare'
+    when 'fr'
+      assign bjw_title = 'Votre réduction de bienvenue est appliquée'
+      assign bjw_body = 'Le code {code} ({value}) est enregistré et sera déduit automatiquement au paiement.'
+      assign bjw_off = 'de réduction'
+      assign bjw_note = 'Remise de bienvenue de {pct}% incluse, appliquée automatiquement.'
+      assign bjw_save = 'Économisez'
+    when 'es'
+      assign bjw_title = 'Tu descuento de bienvenida está aplicado'
+      assign bjw_body = 'El código {code} ({value}) está guardado y se descontará automáticamente al pagar.'
+      assign bjw_off = 'de descuento'
+      assign bjw_note = 'Descuento de bienvenida del {pct}% incluido, aplicado automáticamente.'
+      assign bjw_save = 'Ahorra'
+    else
+      assign bjw_title = 'Je welkomstkorting is toegepast'
+      assign bjw_body = 'Code {code} ({value}) is opgeslagen en wordt automatisch verrekend bij het afrekenen.'
+      assign bjw_off = 'korting'
+      assign bjw_note = 'Incl. {pct}% welkomstkorting, automatisch verrekend.'
+      assign bjw_save = 'Bespaar'
+  endcase
+
+  assign bjw_pcts = '10,15,20' | split: ','
+  assign bjw_scope = section.settings.welcome_collections | default: 'showerhead,shower-filter' | split: ','
+-%}
+{%- if bjw_show -%}
+  {%- comment -%}
+    Final price per product, variant and welcome percentage. "now" is the price
+    the shop shows today, "was" the struck-through reference (the regular price
+    under an automatic discount, the compare-at price under a compare-at sale,
+    else the price itself) and "sale" the existing reduction in whole percent.
+    Per percentage, "w" says whether the welcome code sets the price (false
+    when the product's own sale is the better deal, as Shopify will apply
+    that one instead).
+  {%- endcomment -%}
+  {%- capture bjw_prices_json -%}
+    {%- assign bjw_seen = '|' -%}
+    {%- assign bjw_count = 0 -%}
+    {%- for bjw_scope_handle in bjw_scope -%}
+      {%- assign bjw_collection_handle = bjw_scope_handle | strip -%}
+      {%- assign bjw_collection = collections[bjw_collection_handle] -%}
+      {%- if bjw_collection == blank -%}{%- continue -%}{%- endif -%}
+      {%- for bjw_product in bjw_collection.products limit: 50 -%}
+        {%- capture bjw_token -%}|{{ bjw_product.handle }}|{%- endcapture -%}
+        {%- if bjw_seen contains bjw_token -%}{%- continue -%}{%- endif -%}
+        {%- assign bjw_seen = bjw_seen | append: bjw_token -%}
+        {%- assign bjw_first = bjw_product.selected_or_first_available_variant | default: bjw_product.variants.first -%}
+        {%- if bjw_count > 0 -%},{%- endif -%}
+        {{ bjw_product.handle | json }}: { "id": {{ bjw_product.id }}, "first": {{ bjw_first.id }}, "v": {
+        {%- for bjw_variant in bjw_product.variants -%}
+          {%- capture bjw_auto -%}{% render 'besjaar-discount-badge', product: bjw_product, variant: bjw_variant, layout: 'cents' %}{%- endcapture -%}
+          {%- assign bjw_auto = bjw_auto | strip -%}
+          {%- if bjw_auto != '' -%}
+            {%- assign bjw_now = bjw_auto | plus: 0 -%}
+            {%- assign bjw_was = bjw_variant.price -%}
+          {%- elsif bjw_variant.compare_at_price > bjw_variant.price -%}
+            {%- assign bjw_now = bjw_variant.price -%}
+            {%- assign bjw_was = bjw_variant.compare_at_price -%}
+          {%- else -%}
+            {%- assign bjw_now = bjw_variant.price -%}
+            {%- assign bjw_was = bjw_variant.price -%}
+          {%- endif -%}
+          {%- assign bjw_sale = 0 -%}
+          {%- if bjw_was > bjw_now -%}
+            {%- assign bjw_sale = bjw_was | minus: bjw_now | times: 100 | divided_by: bjw_was -%}
+          {%- endif -%}
+          {%- unless forloop.first -%},{%- endunless -%}
+          "{{ bjw_variant.id }}": { "was": {{ bjw_was }}, "sale": {{ bjw_sale }}, "wm": {{ bjw_was | money | json }}, "p": {
+          {%- for bjw_pct_text in bjw_pcts -%}
+            {%- assign bjw_pct = bjw_pct_text | plus: 0 -%}
+            {%- assign bjw_cut = bjw_variant.price | times: bjw_pct | divided_by: 100 -%}
+            {%- assign bjw_final = bjw_variant.price | minus: bjw_cut -%}
+            {%- assign bjw_wins = true -%}
+            {%- if bjw_now <= bjw_final -%}
+              {%- assign bjw_final = bjw_now -%}
+              {%- assign bjw_wins = false -%}
+            {%- endif -%}
+            {%- assign bjw_saving = bjw_was | minus: bjw_final -%}
+            {%- unless forloop.first -%},{%- endunless -%}
+            "{{ bjw_pct }}": { "c": {{ bjw_final }}, "m": {{ bjw_final | money | json }}, "s": {{ bjw_saving | money | json }}, "w": {{ bjw_wins }} }
+          {%- endfor -%}
+          } }
+        {%- endfor -%}
+        } }
+        {%- assign bjw_count = bjw_count | plus: 1 -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  {%- liquid
+    comment
+      Codes Shopify has actually attached to the cart. When the cart holds a
+      product the codes cover and the claimed code is not among these, the
+      code is not in play (used, removed or replaced) and no welcome price is
+      shown.
+    endcomment
+    assign bjw_cart_codes = '|'
+    for bjw_application in cart.discount_applications
+      if bjw_application.type == 'discount_code'
+        assign bjw_cart_codes = bjw_cart_codes | append: bjw_application.title | append: '|'
+      endif
+    endfor
+    assign bjw_cart_covered = false
+    for bjw_item in cart.items
+      capture bjw_item_token
+        echo '|'
+        echo bjw_item.product.handle
+        echo '|'
+      endcapture
+      if bjw_seen contains bjw_item_token
+        assign bjw_cart_covered = true
+      endif
+    endfor
+  -%}
+  {{ 'besjaar-x-welcome-applied-1.css' | asset_url | stylesheet_tag: preload: true }}
+  <div id="BesjaarWelcomeApplied" class="bj-offer-applied" role="status" aria-live="polite" hidden>
+    <span class="bj-offer-applied__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+    <div class="bj-offer-applied__text"><strong data-applied-title></strong><span data-applied-body></span></div>
+    <button class="bj-offer-applied__close" type="button" data-applied-close aria-label="{{ 'besjaar_ui.welcome_offer.close' | t | escape }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <script type="application/json" id="BesjaarWelcomeAppliedConfig">
+    {
+      "title": {{ bjw_title | json }},
+      "body": {{ bjw_body | json }},
+      "note": {{ bjw_note | json }},
+      "save": {{ bjw_save | json }},
+      "regularLabel": {{ 'besjaar_ui.product.regular_price' | t | json }},
+      "rewards": [
+        {"id":"10","pct":10,"value":{{ '10% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_10 | default: 'WELKOM10' | json }}},
+        {"id":"15","pct":15,"value":{{ '15% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_15 | default: 'WELKOM15' | json }}},
+        {"id":"20","pct":20,"value":{{ '20% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_20 | default: 'WELKOM20' | json }}},
+        {"id":"shipping","pct":0,"value":{{ 'besjaar_ui.welcome_offer.free_shipping_value' | t | json }},"code":{{ settings.welcome_offer_code_shipping | default: 'WELKOMSHIP' | json }}}
+      ],
+      "cartCodes": {{ bjw_cart_codes | json }},
+      "cartCovered": {{ bjw_cart_covered | json }},
+      "prices": { {{ bjw_prices_json | strip }} }
+    }
+  </script>
+  <script src="{{ 'besjaar-x-welcome-applied-2.js' | asset_url }}"></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Besjaar welcome notice",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows a short 'discount applied' confirmation after a shopper claims the Welcome Drop, and from then on shows that shopper the welcome price on every product the code covers. It follows the Welcome offer settings in Theme settings. Keep this section in the footer group."
+    },
+    {
+      "type": "text",
+      "id": "welcome_collections",
+      "label": "Collections the welcome codes apply to",
+      "info": "Collection handles, comma-separated. Keep in step with the WELKOM codes in Admin > Discounts.",
+      "default": "showerhead,shower-filter"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  }
+}
+{% endschema %}

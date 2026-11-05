@@ -1,0 +1,38 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "order": [
+    "main",
+    "1788015123d9b13b21"
+  ],
+  "sections": {
+    "1788015123d9b13b21": {
+      "block_order": [
+        "judge_me_reviews_preview_badge_QtBcdz"
+      ],
+      "blocks": {
+        "judge_me_reviews_preview_badge_QtBcdz": {
+          "settings": {},
+          "type": "shopify://apps/judge-me-reviews/blocks/preview_badge/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8"
+        }
+      },
+      "disabled": true,
+      "settings": {},
+      "type": "apps"
+    },
+    "main": {
+      "settings": {
+        "products_per_page": 12,
+        "show_sort": false
+      },
+      "type": "besjaar-shower-collection"
+    }
+  }
+}

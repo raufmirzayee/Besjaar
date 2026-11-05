@@ -1,0 +1,182 @@
+{%- comment -%}
+  Besjaar Club member price (2026-10-06)
+
+  The price a signed-in Besjaar Club member pays for a product. It mirrors the
+  automatic Shopify discount "Besjaar Club – ledenprijs" (Discounts), which is
+  limited to the customer segment "Besjaar Club-leden"
+  (customer_account_status = 'ENABLED': everyone who has signed in to a
+  customer account). Theme settings › Accounts & club name the collection and
+  the percentage that discount uses; keep the two in step.
+
+  Google Merchant Center receives the same member price in the
+  loyalty_program attribute and compares it with the product page. Google's
+  crawler is never signed in, so the price is rendered in the HTML for every
+  visitor rather than added by JavaScript or shown to members only.
+
+  PARAMETERS
+    product     (required, except for 'program_json') the product to evaluate
+    variant     (optional) defaults to product.selected_or_first_available_variant
+    layout      'block'           — the product page line (default)
+                'cents'           — the member price in cents
+                'program_json'    — the club as a schema.org MemberProgram
+                                    object, for the Organization node
+                'price_spec_json' — regular + member UnitPriceSpecification
+                                    array for a product Offer; only when every
+                                    variant has the same price, because the
+                                    same array is added to each Offer
+    best_cents  (optional) the price in cents a running automatic discount
+                already gives everyone; the member price is dropped when it is
+                not lower than that, because Shopify applies only the best
+                product discount
+
+  Renders nothing when the club, the club page, the collection or the
+  percentage is not set, or the product is not in the collection.
+{%- endcomment -%}
+{%- liquid
+  assign bjm_layout = layout | default: 'block'
+  assign bjm_pct = settings.club_member_percent | default: 0 | plus: 0
+  assign bjm_collection = settings.club_member_collection
+
+  assign bjm_on = false
+  if settings.enable_besjaar_club and settings.club_page != blank and bjm_collection != blank and bjm_pct > 0
+    assign bjm_on = true
+    assign bjm_tier_id = shop.url | append: '/pages/' | append: settings.club_page.handle | append: '#member'
+  endif
+
+  assign bjm_ready = false
+  if bjm_on and bjm_layout != 'program_json' and product != blank
+    assign bjm_variant = variant | default: product.selected_or_first_available_variant
+    for bjm_c in product.collections
+      if bjm_c.id == bjm_collection.id
+        assign bjm_ready = true
+        break
+      endif
+    endfor
+    if bjm_layout == 'price_spec_json' and product.price_varies
+      assign bjm_ready = false
+    endif
+  endif
+
+  if bjm_ready
+    assign bjm_off = bjm_variant.price | times: bjm_pct | divided_by: 100.0 | round
+    assign bjm_cents = bjm_variant.price | minus: bjm_off
+    if bjm_off < 1
+      assign bjm_ready = false
+    endif
+    assign bjm_best = best_cents | default: '' | strip
+    if bjm_best != ''
+      assign bjm_best = bjm_best | plus: 0
+      if bjm_best <= bjm_cents
+        assign bjm_ready = false
+      endif
+    endif
+  endif
+
+  if bjm_ready or bjm_on and bjm_layout == 'program_json'
+    assign bjm_club = settings.club_name | default: 'Besjaar Club'
+    assign bjm_lang = request.locale.iso_code | split: '-' | first | downcase
+    case bjm_lang
+      when 'en'
+        assign bjm_t_for = 'for [CLUB] members'
+        assign bjm_t_guest = 'Membership is free. Sign in at checkout and the member price is applied automatically.'
+        assign bjm_t_join = 'Join for free'
+        assign bjm_t_member = 'You’re a member: the member price is applied automatically at checkout.'
+        assign bjm_t_desc = 'Free Besjaar account with a [PCT]% member discount on replacement filters.'
+        assign bjm_t_tier = 'Member'
+      when 'de'
+        assign bjm_t_for = 'für [CLUB]‑Mitglieder'
+        assign bjm_t_guest = 'Die Mitgliedschaft ist kostenlos. Melde dich beim Bezahlen an, dann wird der Mitgliederpreis automatisch abgezogen.'
+        assign bjm_t_join = 'Kostenlos Mitglied werden'
+        assign bjm_t_member = 'Du bist Mitglied: Der Mitgliederpreis wird beim Bezahlen automatisch abgezogen.'
+        assign bjm_t_desc = 'Kostenloses Besjaar-Konto mit [PCT] % Mitgliederrabatt auf Ersatzfilter.'
+        assign bjm_t_tier = 'Mitglied'
+      when 'fr'
+        assign bjm_t_for = 'pour les membres [CLUB]'
+        assign bjm_t_guest = 'L’adhésion est gratuite. Connectez-vous lors du paiement et le prix membre s’applique automatiquement.'
+        assign bjm_t_join = 'Devenir membre gratuitement'
+        assign bjm_t_member = 'Vous êtes membre : le prix membre s’applique automatiquement lors du paiement.'
+        assign bjm_t_desc = 'Compte Besjaar gratuit avec [PCT] % de remise membre sur les filtres de rechange.'
+        assign bjm_t_tier = 'Membre'
+      when 'es'
+        assign bjm_t_for = 'para miembros de [CLUB]'
+        assign bjm_t_guest = 'Hacerse miembro es gratis. Inicia sesión al pagar y el precio de miembro se aplica automáticamente.'
+        assign bjm_t_join = 'Hazte miembro gratis'
+        assign bjm_t_member = 'Eres miembro: el precio de miembro se aplica automáticamente al pagar.'
+        assign bjm_t_desc = 'Cuenta Besjaar gratuita con un [PCT] % de descuento para miembros en filtros de recambio.'
+        assign bjm_t_tier = 'Miembro'
+      else
+        assign bjm_t_for = 'voor [CLUB]‑leden'
+        assign bjm_t_guest = 'Lid worden is gratis. Log in bij het afrekenen en de ledenprijs gaat er automatisch af.'
+        assign bjm_t_join = 'Gratis lid worden'
+        assign bjm_t_member = 'Je bent lid: de ledenprijs gaat er bij het afrekenen automatisch af.'
+        assign bjm_t_desc = 'Gratis Besjaar-account met [PCT]% ledenkorting op vervangfilters.'
+        assign bjm_t_tier = 'Lid'
+    endcase
+  endif
+-%}
+{%- if bjm_layout == 'program_json' -%}
+  {%- if bjm_on -%}
+    {%- assign bjm_url = shop.url | append: settings.club_page.url -%}
+    {"@type":"MemberProgram","@id":{{ shop.url | append: '/pages/' | append: settings.club_page.handle | append: '#program' | json }},"name":{{ bjm_club | json }},"description":{{ bjm_t_desc | replace: '[PCT]', bjm_pct | json }},"url":{{ bjm_url | json }},"hasTiers":[{"@type":"MemberProgramTier","@id":{{ bjm_tier_id | json }},"name":{{ bjm_t_tier | json }},"url":{{ bjm_url | json }},"hasTierBenefit":["https://schema.org/TierBenefitLoyaltyPrice"]}]}
+  {%- endif -%}
+{%- elsif bjm_ready -%}
+  {%- case bjm_layout -%}
+    {%- when 'cents' -%}
+      {{- bjm_cents -}}
+    {%- when 'price_spec_json' -%}
+      {%- assign bjm_currency = cart.currency.iso_code | default: shop.currency | json -%}
+      [{"@type":"UnitPriceSpecification","price":{{ bjm_variant.price | divided_by: 100.0 }},"priceCurrency":{{ bjm_currency }}},{"@type":"UnitPriceSpecification","price":{{ bjm_cents | divided_by: 100.0 }},"priceCurrency":{{ bjm_currency }},"validForMemberTier":{"@id":{{ bjm_tier_id | json }}}}]
+    {%- else -%}
+      {%- liquid
+        assign bjm_t_for = bjm_t_for | replace: '[CLUB]', bjm_club | escape
+        assign bjm_variant_prices = false
+        if product.variants.size > 1 and product.price_varies
+          assign bjm_variant_prices = true
+        endif
+      -%}
+      <div class="bj-pd-member" data-bj-member>
+        <span class="bj-pd-member__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg></span>
+        <div class="bj-pd-member__body">
+          <p class="bj-pd-member__price"><strong data-bj-member-now>{{ bjm_cents | money }}</strong> {{ bjm_t_for }} <span class="bj-pd-member__pct">−{{ bjm_pct }}%</span></p>
+          {%- if customer -%}
+            <p class="bj-pd-member__note">{{ bjm_t_member | escape }}</p>
+          {%- else -%}
+            <p class="bj-pd-member__note">{{ bjm_t_guest | escape }} <a href="{% render 'localized-internal-url', url: settings.club_page.url %}">{{ bjm_t_join | escape }}</a></p>
+          {%- endif -%}
+        </div>
+        {%- if bjm_variant_prices -%}
+          <script type="application/json" data-bj-member-prices>{
+            {%- for bjm_v in product.variants -%}
+              {%- assign bjm_v_off = bjm_v.price | times: bjm_pct | divided_by: 100.0 | round -%}
+              {{- bjm_v.id | append: '' | json }}:{{ bjm_v.price | minus: bjm_v_off | money | json -}}
+              {%- unless forloop.last -%},{%- endunless -%}
+            {%- endfor -%}
+          }</script>
+          <script>
+            (function () {
+              var box = document.currentScript.closest('[data-bj-member]');
+              if (!box) return;
+              var prices = {};
+              try { prices = JSON.parse(box.querySelector('[data-bj-member-prices]').textContent); } catch (error) { return; }
+              document.addEventListener('besjaar_ui:variant-change', function (event) {
+                var id = event.detail && String(event.detail.id || event.detail.variantId || '');
+                var now = box.querySelector('[data-bj-member-now]');
+                if (id && now && prices[id]) now.textContent = prices[id];
+              });
+            })();
+          </script>
+        {%- endif -%}
+      </div>
+      <style>
+        .bj-pd-member{display:flex;align-items:flex-start;gap:12px;margin:14px 0 0;padding:12px 14px;border:1px solid rgba(31,95,82,.18);border-radius:14px;background:#F1F7F4;color:#1C2326}
+        .bj-pd-member__icon{display:inline-grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:50%;background:#1F5F52;color:#fff}
+        .bj-pd-member__icon svg{width:17px;height:17px}
+        .bj-pd-member__body{min-width:0}
+        .bj-pd-member__price{margin:0;font-size:.95rem;line-height:1.35}
+        .bj-pd-member__price strong{font-size:1.06rem;font-weight:800;color:#1F5F52}
+        .bj-pd-member__pct{display:inline-block;margin-left:2px;padding:2px 7px;border-radius:999px;background:#1F5F52;color:#fff;font-size:.72rem;font-weight:800;line-height:1.3;vertical-align:1px;white-space:nowrap}
+        .bj-pd-member__note{margin:4px 0 0;color:#4F5A5D;font-size:.8rem;line-height:1.45}
+        .bj-pd-member__note a{color:#1F5F52;font-weight:700;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+      </style>
+  {%- endcase -%}
+{%- endif -%}

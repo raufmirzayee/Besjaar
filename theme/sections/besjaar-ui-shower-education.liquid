@@ -1,0 +1,100 @@
+{% unless request.page_type == 'product' %}{{ 'besjaar-ui-shower-trust-education.css' | asset_url | stylesheet_tag }}{% endunless %}
+{% liquid
+  assign shower_family = product.metafields.custom.shower_family.value | default: '' | downcase | strip
+  assign spray_modes = product.metafields.custom.spray_modes.value | default: ''
+  assign connection = product.metafields.custom.connection_size.value | default: '' | strip
+  assign replacement = product.metafields.custom.filter_replacement_interval.value | default: '' | strip
+  assign care = product.metafields.custom.care_instructions.value | default: ''
+  assign filter_defined = false
+  assign filter_included = false
+  if product.metafields.custom.filter_included != blank
+    assign filter_defined = true
+    assign filter_included = product.metafields.custom.filter_included.value
+  endif
+  assign hose_defined = false
+  assign hose_included = false
+  if product.metafields.custom.hose_included != blank
+    assign hose_defined = true
+    assign hose_included = product.metafields.custom.hose_included.value
+  endif
+  assign education_count = 0
+  if spray_modes != blank
+    assign education_count = education_count | plus: 1
+  endif
+  if filter_defined or replacement != blank
+    assign education_count = education_count | plus: 1
+  endif
+  if connection != blank or hose_defined
+    assign education_count = education_count | plus: 1
+  endif
+  if care != blank
+    assign education_count = education_count | plus: 1
+  endif
+  capture besjaar_ui_focus_capture
+    render 'is-shower-head', product: product
+  endcapture
+  assign besjaar_ui_is_focus = besjaar_ui_focus_capture | strip
+%}
+{% if shower_family != blank and besjaar_ui_is_focus == 'true' and education_count > 0 %}
+<section class="besjaar-ui-section besjaar-ui-shower-education besjaar-ui-shower-trust-education" data-reveal>
+  <div class="besjaar-ui-shell">
+    <header class="besjaar-ui-shower-education__head">
+      <div><p class="besjaar-ui-kicker">{{ 'besjaar_ui.shower_education.eyebrow' | t }}</p><h2>{{ 'besjaar_ui.shower_education.heading' | t }}</h2></div>
+      <p>{{ 'besjaar_ui.shower_education.copy' | t }}</p>
+    </header>
+
+    <div class="besjaar-ui-shower-education__layout">
+      <aside class="besjaar-ui-shower-education__summary">
+        <div><span>{{ 'besjaar_ui.shower_education.before_buying' | t }}</span><h3>{{ 'besjaar_ui.shower_education.summary_heading' | t }}</h3><p>{{ 'besjaar_ui.shower_education.summary_copy' | t }}</p></div>
+        <div class="besjaar-ui-shower-education__facts">
+          {% if spray_modes != blank %}<b>{{ 'besjaar_ui.shower_education.fact_modes' | t: count: spray_modes }}</b>{% endif %}
+          {% if connection != blank %}<b>{{ connection }}</b>{% endif %}
+          {% if filter_defined %}<b>{% if filter_included %}{{ 'besjaar_ui.shower_education.fact_filter_yes' | t }}{% else %}{{ 'besjaar_ui.shower_education.fact_filter_no' | t }}{% endif %}</b>{% endif %}
+          {% if hose_defined %}<b>{% if hose_included %}{{ 'besjaar_ui.shower_education.fact_hose_yes' | t }}{% else %}{{ 'besjaar_ui.shower_education.fact_hose_no' | t }}{% endif %}</b>{% endif %}
+        </div>
+      </aside>
+
+      <div class="besjaar-ui-shower-education__chapters">
+        {% if spray_modes != blank %}
+          <details class="besjaar-ui-shower-education__chapter" open>
+            <summary><span>01</span><strong>{{ 'besjaar_ui.shower_education.modes_heading' | t }}</strong><i>+</i></summary>
+            <div class="besjaar-ui-shower-education__chapter-body"><p>{{ 'besjaar_ui.shower_education.modes_known' | t: count: spray_modes }}</p><span class="besjaar-ui-shower-education__verified">✓ {{ 'besjaar_ui.shower_education.from_product_data' | t }}</span></div>
+          </details>
+        {% endif %}
+
+        {% if filter_defined or replacement != blank %}
+          <details class="besjaar-ui-shower-education__chapter">
+            <summary><span>02</span><strong>{{ 'besjaar_ui.shower_education.filter_heading' | t }}</strong><i>+</i></summary>
+            <div class="besjaar-ui-shower-education__chapter-body">
+              {% if filter_defined %}<p>{% if filter_included %}{{ 'besjaar_ui.shower_education.filter_included_copy' | t }}{% else %}{{ 'besjaar_ui.shower_education.filter_not_included_copy' | t }}{% endif %}</p>{% endif %}
+              {% if filter_included and replacement != blank %}<p>{{ 'besjaar_ui.shower_education.replacement_known' | t: interval: replacement }}</p>{% endif %}
+              <span class="besjaar-ui-shower-education__verified">✓ {{ 'besjaar_ui.shower_education.from_product_data' | t }}</span>
+            </div>
+          </details>
+        {% endif %}
+
+        {% if connection != blank or hose_defined %}
+          <details class="besjaar-ui-shower-education__chapter">
+            <summary><span>03</span><strong>{{ 'besjaar_ui.shower_education.fit_heading' | t }}</strong><i>+</i></summary>
+            <div class="besjaar-ui-shower-education__chapter-body">
+              {% if connection != blank %}<p>{{ 'besjaar_ui.shower_education.fit_known' | t: connection: connection }}</p>{% endif %}
+              {% if hose_defined %}<p>{% if hose_included %}{{ 'besjaar_ui.shower_education.hose_included_copy' | t }}{% else %}{{ 'besjaar_ui.shower_education.hose_not_included_copy' | t }}{% endif %}</p>{% endif %}
+              <span class="besjaar-ui-shower-education__verified">✓ {{ 'besjaar_ui.shower_education.from_product_data' | t }}</span>
+            </div>
+          </details>
+        {% endif %}
+
+        {% if care != blank %}
+          <details class="besjaar-ui-shower-education__chapter">
+            <summary><span>04</span><strong>{{ 'besjaar_ui.shower_education.care_heading' | t }}</strong><i>+</i></summary>
+            <div class="besjaar-ui-shower-education__chapter-body"><p>{{ care | newline_to_br }}</p><span class="besjaar-ui-shower-education__verified">✓ {{ 'besjaar_ui.shower_education.from_product_data' | t }}</span></div>
+          </details>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% schema %}
+{"name":"Shower buying education","settings":[],"presets":[{"name":"Shower buying education"}]}
+{% endschema %}

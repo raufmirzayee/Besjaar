@@ -1,0 +1,142 @@
+{%- comment -%} Besjaar — premium product detail explorer {%- endcomment -%}
+{%- liquid
+  assign loc = section.settings.use_localized_copy
+  if loc
+    assign v_kicker = 'besjaar_store.viewer.kicker' | t
+    assign v_heading = 'besjaar_store.viewer.heading' | t
+    assign v_text = 'besjaar_store.viewer.text' | t
+  else
+    assign v_kicker = section.settings.kicker
+    assign v_heading = section.settings.heading
+    assign v_text = section.settings.text
+  endif
+  assign v_detail = 'besjaar_store.viewer.detail' | t
+  assign v_hint = 'besjaar_store.viewer.hint' | t
+-%}
+<section class="besjaar-store besjaar-store-detail" id="details">
+  <div class="besjaar-store-shell besjaar-store-detail__grid">
+    <figure class="besjaar-store-detail__visual">
+      <div class="besjaar-store-detail__image-wrap">
+        {%- if section.settings.image -%}
+          <img src="{{ section.settings.image | image_url: width: 1200 }}" alt="{{ section.settings.image.alt | escape }}" width="{{ section.settings.image.width }}" height="{{ section.settings.image.height }}" loading="lazy" decoding="async">
+        {%- else -%}
+          <img src="{{ 'besjaar-real-360-01.webp' | asset_url }}" alt="Besjaar showerhead front view" width="750" height="1000" loading="lazy" decoding="async">
+        {%- endif -%}
+        {%- for block in section.blocks -%}
+          <button type="button" class="besjaar-store-detail__mark" data-i="{{ forloop.index0 }}" style="--x:{{ block.settings.x }}%;--y:{{ block.settings.y }}%" aria-label="{{ v_detail | escape }} {{ forloop.index }}" aria-pressed="false"><span aria-hidden="true">+</span></button>
+        {%- endfor -%}
+      </div>
+      <figcaption><span>{{ v_hint | escape }}</span></figcaption>
+    </figure>
+
+    <div class="besjaar-store-detail__mobile-info" aria-label="{{ v_heading | escape }}">
+      <div class="besjaar-store-detail__mobile-head">
+        <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
+        <h2>{{ v_heading | escape }}</h2>
+        <p>{{ v_text | escape }}</p>
+      </div>
+      <div class="besjaar-store-detail__mobile-list">
+        {%- for block in section.blocks -%}
+          {% if loc %}
+            {% capture mobile_title_key %}besjaar_store.viewer.t{{ forloop.index }}{% endcapture %}
+            {% capture mobile_line_key %}besjaar_store.viewer.point_{{ forloop.index }}{% endcapture %}
+            {% assign mobile_item_title = mobile_title_key | t %}
+            {% assign mobile_item_text = mobile_line_key | t %}
+            {%- comment -%}Besjaar 11.6: only 4 hotspot translations ship — blocks 5-6 fall back to the block's own copy instead of printing "Translation missing".{%- endcomment -%}
+            {% if mobile_item_title contains 'ranslation missing' %}{% assign mobile_item_title = block.settings.title %}{% endif %}
+            {% if mobile_item_text contains 'ranslation missing' %}{% assign mobile_item_text = block.settings.line %}{% endif %}
+          {% else %}
+            {% assign mobile_item_title = block.settings.title %}
+            {% assign mobile_item_text = block.settings.line %}
+          {% endif %}
+          <article class="besjaar-store-detail__mobile-card" {{ block.shopify_attributes }}>
+            <span class="besjaar-store-detail__mobile-num" aria-hidden="true">0{{ forloop.index }}</span>
+            <span class="besjaar-store-detail__mobile-card-copy">
+              <strong>{{ mobile_item_title }}</strong>
+              <small>{{ mobile_item_text }}</small>
+            </span>
+          </article>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="besjaar-store-detail__copy">
+      <span class="besjaar-store-kicker">{{ v_kicker | escape }}</span>
+      <h2 class="besjaar-store-h2">{{ v_heading | escape }}</h2>
+      <p class="besjaar-store-detail__intro">{{ v_text | escape }}</p>
+      <div class="besjaar-store-detail__list" id="indhs-list-{{ section.id }}">
+        {%- for block in section.blocks -%}
+          {% if loc %}
+            {% capture title_key %}besjaar_store.viewer.t{{ forloop.index }}{% endcapture %}
+            {% capture line_key %}besjaar_store.viewer.point_{{ forloop.index }}{% endcapture %}
+            {% assign item_title = title_key | t %}
+            {% assign item_text = line_key | t %}
+            {% if item_title contains 'ranslation missing' %}{% assign item_title = block.settings.title %}{% endif %}
+            {% if item_text contains 'ranslation missing' %}{% assign item_text = block.settings.line %}{% endif %}
+          {% else %}
+            {% assign item_title = block.settings.title %}
+            {% assign item_text = block.settings.line %}
+          {% endif %}
+          <button type="button" class="besjaar-store-detail__row" data-i="{{ forloop.index0 }}" aria-pressed="false" {{ block.shopify_attributes }}>
+            <span><strong>{{ item_title }}</strong><small>{{ item_text }}</small></span>
+            <span aria-hidden="true" class="besjaar-store-detail__arrow">↗</span>
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function () {
+  var root = document.currentScript.previousElementSibling;
+  if (!root) return;
+  var rows = root.querySelectorAll('.besjaar-store-detail__row');
+  var marks = root.querySelectorAll('.besjaar-store-detail__mark');
+  var n = marks.length;
+  if (!n) return;
+  var active = 0, touched = false;
+  function apply() {
+    rows.forEach(function (el, i) { el.classList.toggle('is-active', i === active); el.setAttribute('aria-pressed', i === active ? 'true' : 'false'); });
+    marks.forEach(function (el, i) { el.classList.toggle('is-active', i === active); el.setAttribute('aria-pressed', i === active ? 'true' : 'false'); });
+  }
+  function pick(i) { touched = true; active = i; apply(); }
+  rows.forEach(function (el) { el.addEventListener('click', function () { pick(+el.dataset.i); }); });
+  marks.forEach(function (el) { el.addEventListener('click', function () { pick(+el.dataset.i); }); });
+  {% if section.settings.autocycle %}
+    /* Besjaar 11.6: no auto-motion for reduced-motion users (WCAG 2.2.2), and
+       stop cycling as soon as keyboard focus enters the explorer. */
+    if (!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      setInterval(function () { if (!touched) { active = (active + 1) % n; apply(); } }, 4000);
+      root.addEventListener('focusin', function () { touched = true; });
+    }
+  {% endif %}
+  apply();
+})();
+</script>
+{% schema %}
+{
+  "name": "Premium detail explorer",
+  "settings": [
+    {"type": "checkbox", "id": "use_localized_copy", "label": "Gebruik vertaalde teksten (NL/EN/DE/FR)", "default": true},
+    {"type": "text", "id": "kicker", "label": "Kicker", "default": "DESIGNED IN DETAIL"},
+    {"type": "text", "id": "heading", "label": "Titel", "default": "Every detail has a purpose."},
+    {"type": "textarea", "id": "text", "label": "Intro", "default": "Explore the real Besjaar showerhead and the details that shape the shower experience."},
+    {"type": "image_picker", "id": "image", "label": "Productfoto (vooraanzicht)"},
+    {"type": "checkbox", "id": "autocycle", "label": "Details automatisch wisselen", "default": true}
+  ],
+  "blocks": [
+    {
+      "type": "spot",
+      "name": "Detailpunt",
+      "settings": [
+        {"type": "text", "id": "title", "label": "Titel", "default": "SELF-CLEARING NOZZLES"},
+        {"type": "text", "id": "line", "label": "Beschrijving", "default": "Flexible silicone nozzles for easier daily care."},
+        {"type": "range", "id": "x", "label": "X-positie (%)", "min": 0, "max": 100, "step": 1, "default": 50},
+        {"type": "range", "id": "y", "label": "Y-positie (%)", "min": 0, "max": 100, "step": 1, "default": 50}
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [{"name": "Premium detail explorer", "category": "Besjaar"}]
+}
+{% endschema %}

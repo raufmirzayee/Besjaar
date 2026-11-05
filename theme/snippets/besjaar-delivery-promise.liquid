@@ -1,0 +1,77 @@
+{%- comment -%}
+  Besjaar — delivery promise per shopper country (2026-10-26).
+
+  Netherlands: delivered tomorrow.
+  Every other country: delivered within 2 business days.
+  The country comes from besjaar-shipping-zone (localization.country), the
+  language from request.locale. The cut-off itself is not mentioned
+  (2026-10-26).
+
+  Usage: {% render 'besjaar-delivery-promise' %}
+  field: text (default) | prefix | transit_days
+    text         = "Morgen in huis"
+    prefix       = label before a delivery date ("In huis op")
+    transit_days = business days from dispatch to delivery (1 or 2)
+  Output is plain text (no whitespace) so callers can capture + strip it.
+{%- endcomment -%}
+{%- liquid
+  assign bdp_field = field | default: 'text'
+  capture bdp_country
+    render 'besjaar-shipping-zone', field: 'country_code'
+  endcapture
+  assign bdp_country = bdp_country | strip
+  assign bdp_nl = false
+  if bdp_country == 'NL'
+    assign bdp_nl = true
+  endif
+  assign bdp_lang = request.locale.iso_code | split: '-' | first | downcase
+
+  case bdp_lang
+    when 'de'
+      assign bdp_tomorrow = 'Morgen geliefert'
+      assign bdp_days = 'In 2 Werktagen geliefert'
+      assign bdp_prefix_nl = 'Geliefert am'
+      assign bdp_prefix = 'Geliefert bis'
+    when 'fr'
+      assign bdp_tomorrow = 'Livré demain'
+      assign bdp_days = 'Livré sous 2 jours ouvrés'
+      assign bdp_prefix_nl = 'Livré le'
+      assign bdp_prefix = 'Livré au plus tard le'
+    when 'es'
+      assign bdp_tomorrow = 'Entregado mañana'
+      assign bdp_days = 'Entregado en 2 días laborables'
+      assign bdp_prefix_nl = 'Entregado el'
+      assign bdp_prefix = 'Entregado como tarde el'
+    when 'en'
+      assign bdp_tomorrow = 'Delivered tomorrow'
+      assign bdp_days = 'Delivered within 2 business days'
+      assign bdp_prefix_nl = 'Delivered on'
+      assign bdp_prefix = 'Delivered by'
+    else
+      assign bdp_tomorrow = 'Morgen in huis'
+      assign bdp_days = 'Binnen 2 werkdagen in huis'
+      assign bdp_prefix_nl = 'In huis op'
+      assign bdp_prefix = 'Uiterlijk in huis op'
+  endcase
+
+  case bdp_field
+    when 'prefix'
+      if bdp_nl
+        echo bdp_prefix_nl
+      else
+        echo bdp_prefix
+      endif
+    when 'transit_days'
+      if bdp_nl
+        echo 1
+      else
+        echo 2
+      endif
+    else
+      if bdp_nl
+        echo bdp_tomorrow
+      else
+        echo bdp_days
+      endif
+  endcase
+-%}

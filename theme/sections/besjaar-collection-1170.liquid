@@ -1,0 +1,47 @@
+{%- comment -%}
+  Besjaar 11.6.17 — collection pages: hide the "Eén collectie…" banner.
+
+  The heading stays in the DOM, visually hidden, so the page keeps its h1 for
+  search engines — it just no longer takes up the first screen before the
+  product groups. Applies at every width (the desktop carrier already did
+  this above 901px; this covers phones as well).
+
+  11.6.21 — product-card rating rows read "★★★★★ (69)" on a single line.
+
+  Judge.me writes its own label ("69 beoordelingen"), which is too long for a
+  card in the two-up phone grid. Worse, its badge is a flex row whose two
+  children were both free to shrink, and a flex item only refuses to shrink
+  below min-content — for a run of inline star spans that is a single star.
+  So the browser squeezed the group and wrapped it, stranding the fifth star
+  on its own line.
+
+  The label is replaced with a compact "(69)" built from the badge's own
+  data-number-of-reviews attribute, so the figure always matches whatever
+  Judge.me rendered — no metafield assumptions, nothing to keep in sync.
+  Every element in the chain is pinned nowrap and flex:0 0 auto, so the row
+  cannot break at any width, and a badge reporting zero reviews is hidden
+  rather than showing "(0)".
+
+  11.6.21 — card bodies no longer carry a fixed height floor, so removing the
+  spec chips does not leave a gap above the buttons.
+  2026-09-13 consolidation: this section's <style> block was extracted during
+  the CSS bundling pass. The rules above are now served from
+  assets/besjaar-seo-carriers-late.css, loaded by besjaar-desktop-fixes-1170.
+  Editing this file changes nothing — edit the bundle instead. The section is
+  kept so existing header-group settings stay valid.
+{%- endcomment -%}
+
+{% schema %}
+{
+  "name": "Besjaar collection polish",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "11.6.17: hides the shop hub banner heading at every width while keeping it in the page for SEO. 11.6.21: product-card ratings now read as stars followed by the review count in brackets, on a single line that cannot break, and product-card bodies stretch to the card instead of a fixed height floor, so the action buttons sit flush at the bottom. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}

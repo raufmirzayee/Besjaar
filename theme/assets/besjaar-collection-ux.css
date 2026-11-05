@@ -1,0 +1,45 @@
+/* Besjaar collection page UX (2026-11-05). Loaded on collection pages only, from
+   sections/besjaar-cart-1168.liquid. It only tidies what
+   sections/besjaar-shower-collection.liquid and
+   snippets/besjaar-collection-wow-hero.liquid already render, so it works for
+   every collection and language.
+   1. Lower title band on a single collection: the navy band took ~450px on a
+      phone and ~550px on desktop, so the first screen showed only the tops of
+      the first product photos. Less padding, a smaller title and intro on
+      phones, the three chips on one swipeable row, a smaller photo and wave on
+      desktop. The grouped /collections/all hub (.bjc-hero--all) is unchanged.
+   2. Grid: three cards per row from 761px (was two up to 1099px, each ~726px
+      tall) and four from 1100px (was three, ~685px tall), so the shower heads
+      can be compared side by side.
+   3. "Snel toevoegen" carries a plus again: an arrow (set in
+      besjaar-seo-carriers-late.css) read like "go to the product page". */
+
+/* 1. compact title band */
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__inner{padding-top:clamp(18px,2.6vw,32px);padding-bottom:clamp(40px,4.4vw,64px)}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__crumbs{margin-bottom:clamp(12px,1.6vw,20px)}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__title{margin-top:10px}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__intro{margin-top:12px}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__chips{margin-top:16px}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__media{width:clamp(220px,22vw,300px)}
+html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__wave{height:clamp(20px,2.6vw,40px)}
+@media (max-width:760px){
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__inner{padding:14px 16px 34px;grid-template-columns:minmax(0,1fr)}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__copy{min-width:0}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__crumbs{margin-bottom:12px}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__title{margin-top:8px;font-size:clamp(2rem,9vw,2.6rem)}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__intro{margin-top:10px;font-size:.95rem;line-height:1.5}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__chips{flex-wrap:nowrap;overflow-x:auto;margin:14px -16px 0;padding:0 16px 2px;scrollbar-width:none}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__chips::-webkit-scrollbar{display:none}
+  html body .bjc-wow:not(#bjcx1) .bjc-hero:not(.bjc-hero--all) .bjc-hero__chips li{flex:0 0 auto;white-space:nowrap}
+}
+
+/* 2. more cards per row */
+@media (min-width:761px) and (max-width:1099px){
+  html body .besjaar-collection-step3:not(#bjcx1) .besjaar-collection-product-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px!important}
+}
+@media (min-width:1100px){
+  html body .besjaar-collection-step3:not(#bjcx1) .besjaar-collection-product-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:clamp(16px,1.6vw,24px)!important}
+}
+
+/* 3. quick add: plus, not an arrow */
+html body .besjaar-collection-product-card__quick::after{content:"+"!important;font-size:1.15rem;font-weight:600;transform:none!important}

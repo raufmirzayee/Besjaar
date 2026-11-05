@@ -1,0 +1,211 @@
+{{ 'besjaar-ui-customer-proof.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign valid_count = 0
+  for block in section.blocks
+    if block.type == 'proof'
+      assign block_product = block.settings.product
+      assign show_block = true
+      if product != blank and block_product != blank and block_product.id != product.id
+        assign show_block = false
+      endif
+      if show_block
+        if block.settings.image != blank or block.settings.quote != blank
+          assign valid_count = valid_count | plus: 1
+        endif
+      endif
+    endif
+  endfor
+
+  assign should_render = false
+  if valid_count > 0 or request.design_mode
+    assign should_render = true
+  endif
+%}
+
+{% if should_render %}
+  <section class="besjaar-ui-section besjaar-ui-customer-proof" id="besjaar-ui-customer-proof-{{ section.id }}" data-reveal>
+    <div class="besjaar-ui-shell">
+      <header class="besjaar-ui-customer-proof__head">
+        <div class="besjaar-ui-customer-proof__head-copy">
+          <p class="besjaar-ui-kicker">
+            {% if section.settings.eyebrow != blank %}{{ section.settings.eyebrow | escape }}{% else %}{{ 'besjaar_ui.customer_proof.kicker' | t }}{% endif %}
+          </p>
+          <h2 class="besjaar-ui-title">
+            {% if section.settings.heading != blank %}{{ section.settings.heading | escape }}{% else %}{{ 'besjaar_ui.customer_proof.heading' | t }}{% endif %}
+          </h2>
+          <p class="besjaar-ui-copy">
+            {% if section.settings.copy != blank %}{{ section.settings.copy | escape }}{% else %}{{ 'besjaar_ui.customer_proof.copy' | t }}{% endif %}
+          </p>
+        </div>
+        {% if section.settings.source_url != blank %}
+          {% liquid
+          assign section_source_label = section.settings.source_label
+          if section_source_label == blank
+            assign section_source_label = 'besjaar_ui.customer_proof.view_source' | t
+          endif
+        %}
+        <a class="besjaar-ui-customer-proof__source" href="{{ section.settings.source_url }}" target="_blank" rel="noopener noreferrer nofollow">
+            {{ section_source_label | escape }}
+            <span aria-hidden="true">↗</span>
+          <span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+        {% endif %}
+      </header>
+
+      {% if valid_count > 0 %}
+        <div class="besjaar-ui-customer-proof__rail" role="list" aria-label="{{ 'besjaar_ui.customer_proof.list_label' | t | escape }}">
+          {% for block in section.blocks %}
+            {% if block.type == 'proof' %}
+              {% liquid
+                assign block_product = block.settings.product
+                assign display_product = block_product
+                if display_product == blank and product != blank
+                  assign display_product = product
+                endif
+
+                assign show_block = true
+                if product != blank and block_product != blank and block_product.id != product.id
+                  assign show_block = false
+                endif
+
+                assign has_content = false
+                if block.settings.image != blank or block.settings.quote != blank
+                  assign has_content = true
+                endif
+              %}
+
+              {% if show_block and has_content %}
+                <article class="besjaar-ui-customer-proof__card" role="listitem" {{ block.shopify_attributes }}>
+                  {% if block.settings.image != blank %}
+                    <div class="besjaar-ui-customer-proof__media">
+                      {{ block.settings.image
+                        | image_url: width: 1000
+                        | image_tag:
+                          loading: 'lazy',
+                          widths: '360, 540, 720, 1000',
+                          sizes: '(max-width: 749px) 82vw, (max-width: 1099px) 42vw, 31vw',
+                          alt: block.settings.image.alt
+                      }}
+                    </div>
+                  {% else %}
+                    <div class="besjaar-ui-customer-proof__media besjaar-ui-customer-proof__media--text" aria-hidden="true">
+                      <span>“</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="besjaar-ui-customer-proof__body">
+                    {% if block.settings.rating != 'none' and block.settings.rating != blank %}
+                      <div class="besjaar-ui-customer-proof__rating" aria-label="{{ 'besjaar_ui.customer_proof.rating_label' | t: rating: block.settings.rating | escape }}">
+                        <span aria-hidden="true">
+                          {% assign rating_number = block.settings.rating | plus: 0 %}
+                          {% for i in (1..5) %}{% if i <= rating_number %}★{% else %}☆{% endif %}{% endfor %}
+                        </span>
+                      </div>
+                    {% endif %}
+
+                    {% if block.settings.quote != blank %}
+                      <blockquote class="besjaar-ui-customer-proof__quote">{{ block.settings.quote | escape | newline_to_br }}</blockquote>
+                    {% endif %}
+
+                    <div class="besjaar-ui-customer-proof__meta">
+                      <div>
+                        {% if block.settings.reviewer != blank %}<strong>{{ block.settings.reviewer | escape }}</strong>{% endif %}
+                        {% if block.settings.location != blank %}<span>{{ block.settings.location | escape }}</span>{% endif %}
+                      </div>
+
+                      {% if block.settings.verified and block.settings.source_url != blank %}
+                        <a class="besjaar-ui-customer-proof__verified" href="{{ block.settings.source_url }}" target="_blank" rel="noopener noreferrer nofollow">
+                          <span aria-hidden="true">✓</span>{{ 'besjaar_ui.customer_proof.verified_source' | t }}
+                        <span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+                      {% elsif block.settings.source_url != blank %}
+                        {% liquid
+                          assign block_source_label = block.settings.source_label
+                          if block_source_label == blank
+                            assign block_source_label = 'besjaar_ui.customer_proof.source' | t
+                          endif
+                        %}
+                        <a class="besjaar-ui-customer-proof__verified besjaar-ui-customer-proof__verified--source" href="{{ block.settings.source_url }}" target="_blank" rel="noopener noreferrer nofollow">
+                          {{ block_source_label | escape }} <span aria-hidden="true">↗</span>
+                        <span class="besjaar-ui-visually-hidden"> ({{ 'besjaar_ui.accessibility.opens_new_tab' | t }})</span></a>
+                      {% endif %}
+                    </div>
+
+                    {% if display_product != blank %}
+                      <a class="besjaar-ui-customer-proof__product" href="{{ display_product.url }}">
+                        {% if display_product.featured_image != blank %}
+                          {{ display_product.featured_image
+                            | image_url: width: 96
+                            | image_tag: loading: 'lazy', widths: '48, 72, 96', sizes: '40px', alt: display_product.featured_image.alt
+                          }}
+                        {% endif %}
+                        <span>
+                          <small>{{ 'besjaar_ui.customer_proof.purchased' | t }}</small>
+                          <strong>{{ display_product.title | escape }}</strong>
+                        </span>
+                        <span class="besjaar-ui-customer-proof__product-arrow" aria-hidden="true">→</span>
+                      </a>
+                    {% elsif block.settings.product_label != blank %}
+                      <div class="besjaar-ui-customer-proof__product besjaar-ui-customer-proof__product--label">
+                        <span>
+                          <small>{{ 'besjaar_ui.customer_proof.purchased' | t }}</small>
+                          <strong>{{ block.settings.product_label | escape }}</strong>
+                        </span>
+                      </div>
+                    {% endif %}
+                  </div>
+                </article>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if section.settings.note != blank %}
+          <p class="besjaar-ui-customer-proof__note">{{ section.settings.note | escape }}</p>
+        {% endif %}
+      {% elsif request.design_mode %}
+        <div class="besjaar-ui-customer-proof__editor-note">
+          <strong>{{ 'besjaar_ui.customer_proof.editor_heading' | t }}</strong>
+          <p>{{ 'besjaar_ui.customer_proof.editor_copy' | t }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Customer proof / UGC",
+  "max_blocks": 6,
+  "settings": [
+    {"type":"text","id":"eyebrow","label":"Eyebrow (optional)"},
+    {"type":"text","id":"heading","label":"Heading (optional)"},
+    {"type":"textarea","id":"copy","label":"Introduction (optional)"},
+    {"type":"text","id":"source_label","label":"Section source label"},
+    {"type":"url","id":"source_url","label":"Section source URL"},
+    {"type":"text","id":"note","label":"Transparency note (optional)"}
+  ],
+  "blocks": [
+    {
+      "type": "proof",
+      "name": "Customer proof",
+      "settings": [
+        {"type":"image_picker","id":"image","label":"Customer / bathroom photo"},
+        {"type":"textarea","id":"quote","label":"Customer review"},
+        {"type":"select","id":"rating","label":"Rating (show only if sourced)","default":"none","options":[{"value":"none","label":"Do not show"},{"value":"1","label":"1 star"},{"value":"2","label":"2 stars"},{"value":"3","label":"3 stars"},{"value":"4","label":"4 stars"},{"value":"5","label":"5 stars"}]},
+        {"type":"text","id":"reviewer","label":"Customer name / first name + initial"},
+        {"type":"text","id":"location","label":"Location (optional)"},
+        {"type":"product","id":"product","label":"Purchased product (recommended)"},
+        {"type":"text","id":"product_label","label":"Purchased product label fallback"},
+        {"type":"text","id":"source_label","label":"Source label"},
+        {"type":"url","id":"source_url","label":"Public review / source URL"},
+        {"type":"checkbox","id":"verified","label":"Show verified-source badge","default":false,"info":"Enable only when the source URL verifies this exact review or purchase."}
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer proof / UGC"
+    }
+  ]
+}
+{% endschema %}
