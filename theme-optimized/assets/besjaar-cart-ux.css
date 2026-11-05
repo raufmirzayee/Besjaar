@@ -9,6 +9,10 @@
       (749px and narrower) the whole block, headed "Maak je bestelling compleet" /
       "Complete your order", is left out, so the drawer goes straight from the
       products to the total and checkout.
+   3c. Phones (749px and narrower) also leave out the order-note fold
+      ("Opmerking bij je bestelling"), the "Btw inbegrepen. Kortingen en
+      verzending worden berekend bij het afrekenen." line under the total and
+      the payment-method logos. The note can still be added on /cart.
    Cart page (/cart, sections/besjaar-store-cart.liquid):
    4. Lower title band, so the products start higher on the screen.
    5. Free-shipping band in the same mint style as the drawer.
@@ -44,6 +48,13 @@ html body #BesjaarUICartDrawer:has(.besjaar-ui-cart-empty-state) .besjaar-ui-fre
 
 /* 3b. phones: no "Complete your order" suggestions block in the drawer */
 @media (max-width:749px){html body #BesjaarUICartDrawer [data-cart-drawer-upsell]{display:none!important}}
+
+/* 3c. phones: no order-note fold, no tax/shipping line under the total, no payment logos in the drawer */
+@media (max-width:749px){
+html body #BesjaarUICartDrawer .bj-cd-folds>details.bj-cd-fold:not([data-bj-cd-discount]){display:none!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart__total small{display:none!important}
+html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{display:none!important}
+}
 
 /* 4. cart page: lower title band */
 html body .bj-cp:not(#bjk1):not(#bjk2):not(#bjk3) .bj-cp__header{padding:clamp(18px,2.4vw,30px) max(16px,calc(50vw - 640px)) clamp(30px,3.4vw,44px)!important;margin-bottom:clamp(16px,2vw,26px)!important;align-items:center!important}
