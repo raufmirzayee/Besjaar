@@ -84,3 +84,17 @@ exact file names. The theme picks them up automatically, with no code change:
   every photo by that blue. Both are now white with no blending, so the photos
   show their real colours (`besjaar-mobile-detail-clarity.css`,
   `besjaar-seo-carriers-late.css`).
+
+## Status (2026-11-05, 20:08 CET)
+
+- Unpublished theme **"Besjaar – snelheid, adres & foto's (preview)"**
+  (`204081791303`) = copy of the live theme + all changes from this branch
+  (25 files written from commit `3619d16`; 24 checksums identical to the repo,
+  `settings_data.json` re-saved by Shopify with the new values in place).
+  Preview: `https://www.besjaar.eu/?preview_theme_id=204081791303`
+- The four homepage photos are in Content → Files under their original names
+  (status READY), so the copy serves them through `image_url`/`image_tag`.
+  The live theme does not reference Files, so it is unaffected.
+- Not done: the Legal notice policy still lists Elbestraat 113 as "Fysiek
+  adres". The connector lacks the `write_legal_policies` scope; edit it in
+  Settings → Policies.
