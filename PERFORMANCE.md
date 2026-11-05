@@ -3,7 +3,8 @@
 `theme/` holds the text files of the live Shopify theme **"Besjaar – Trustpilot
 Nederlands (preview)"** (theme id `204061278535`). The first commit on this branch
 is an untouched export, so `git diff` against it shows exactly what changed.
-The 42 image assets (webp/png) are not in the export and are unchanged.
+The image assets (webp/png) are unchanged and not in the export, except the four
+homepage photos below (byte-identical copies, used as the source for the Files upload).
 
 > **Do not run a plain `shopify theme push` from `theme/`.** The images are not
 > in this folder, so a full push would delete them from the store theme. Push only
