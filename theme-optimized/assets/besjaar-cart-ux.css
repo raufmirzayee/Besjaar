@@ -13,6 +13,10 @@
       ("Opmerking bij je bestelling"), the "Btw inbegrepen. Kortingen en
       verzending worden berekend bij het afrekenen." line under the total and
       the payment-method logos. The note can still be added on /cart.
+   3d. Desktop (1100px and wider): the suggestions column stands beside the
+      cart also when the cart is empty. besjaar-cart-1168.liquid builds the
+      two-column layout only for a cart with lines (:not(:has(foot[hidden]))),
+      so an empty cart showed them as a swipe row under "leeg".
    Cart page (/cart, sections/besjaar-store-cart.liquid):
    4. Lower title band, so the products start higher on the screen.
    5. Free-shipping band in the same mint style as the drawer.
@@ -54,6 +58,15 @@ html body #BesjaarUICartDrawer:has(.besjaar-ui-cart-empty-state) .besjaar-ui-fre
 html body #BesjaarUICartDrawer .bj-cd-folds>details.bj-cd-fold:not([data-bj-cd-discount]){display:none!important}
 html body #BesjaarUICartDrawer .besjaar-ui-cart__total small{display:none!important}
 html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{display:none!important}
+}
+
+/* 3d. desktop: suggestions column beside the cart, also when the cart is empty (same layout as besjaar-cart-1168) */
+@media (min-width:1100px){
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])){display:grid!important;grid-template-columns:300px minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;grid-template-areas:none!important;width:740px!important;max-width:calc(100vw - 24px)!important;overflow:hidden!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .bj-cd-main{grid-column:2!important;grid-row:1!important;display:flex!important;flex-direction:column!important;min-height:0!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden]))>.besjaar-ui-cart-drawer__upsell{grid-column:1!important;grid-row:1!important;min-height:0!important;height:auto!important;padding:24px 20px!important;overflow-y:auto!important;border-top:0!important;border-right:1px solid #E4E1DB!important;background:#F5F2EC!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .besjaar-ui-cart-upsell__rail{flex-direction:column!important;margin:0!important;padding:0!important;overflow:visible!important}
+html body #BesjaarUICartDrawer:has(>.besjaar-ui-cart-drawer__upsell:not([hidden])) .besjaar-ui-cart-upsell__product{flex:0 0 auto!important;width:100%!important;box-sizing:border-box!important}
 }
 
 /* 4. cart page: lower title band */
