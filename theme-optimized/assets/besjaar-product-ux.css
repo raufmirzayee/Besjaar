@@ -1,0 +1,24 @@
+/* Besjaar product page UX (2026-11-05). Loaded on product pages only, from
+   sections/besjaar-cart-1168.liquid. Works on every product and language
+   because it only rearranges and tidies what sections/besjaar-store-product.liquid
+   already renders.
+   1. Buy path first: the Club member-price box (snippets/besjaar-member-price.liquid)
+      stood between the price and the version choice, pushing the add-to-cart
+      button down by ~150px on phones. The buy column is a flex column, so the
+      box is moved (CSS order, no layout shift) to just after the delivery and
+      returns line: price -> version -> add to cart -> delivery -> member offer.
+      The description block under the price is empty since the intro and the
+      benefit tiles were switched off; its leftover margin is removed too.
+   2. Desktop thumbnails: fixed 76px tiles fit seven per row, so the eighth photo
+      sat alone on a second row. They now share one row (52-76px each). */
+
+/* 1. member-price box after the buy area */
+html body[data-page-type="product"] .besjaar-store-premium-pd__summary>.bj-pd-member{order:1;margin:16px 0 0!important}
+html body[data-page-type="product"] .besjaar-store-premium-pd__summary>.bj-pd-assure~*:not(.bj-pd-member){order:2}
+html body[data-page-type="product"] .besjaar-store-premium-pd__summary>.besjaar-store-premium-pd__description-group:empty{display:none!important}
+
+/* 2. all thumbnails on one row (desktop layout) */
+@media (min-width:901px){
+  html body[data-page-type="product"] [data-besjaar-product-section] .besjaar-store-premium-pd__thumbs:not(#bjpx1){flex-wrap:nowrap!important;overflow-x:auto!important;scrollbar-width:none}
+  html body[data-page-type="product"] [data-besjaar-product-section] .besjaar-store-premium-pd__thumbs:not(#bjpx1)>.besjaar-store-premium-pd__thumb{flex:1 1 0!important;width:auto!important;min-width:52px!important;max-width:76px!important;height:auto!important;aspect-ratio:1/1}
+}
