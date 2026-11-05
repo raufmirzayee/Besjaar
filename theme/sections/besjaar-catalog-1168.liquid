@@ -22,7 +22,8 @@
   assets/besjaar-product-detail.css during the consolidation.
 {%- endcomment -%}
 
-<script src="{{ 'besjaar-x-catalog-1.js' | asset_url }}"></script>
+{%- comment -%}2026-11-05 performance: the script only acts on product pages (it returns straight away elsewhere), so it is only requested there, and deferred instead of parser-blocking.{%- endcomment -%}
+{%- if request.page_type == 'product' -%}<script src="{{ 'besjaar-x-catalog-1.js' | asset_url }}" defer="defer"></script>{%- endif -%}
 {% schema %}
 {
   "name": "Besjaar catalogue polish",

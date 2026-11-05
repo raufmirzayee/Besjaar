@@ -136,10 +136,22 @@
 
     <figure class="bjx-hero__media">
       <div class="bjx-hero__frame">
+        {%- comment -%}
+          2026-11-05 performance: this photo is the page's Largest Contentful
+          Paint. Both branches now preload it through the Link header (Early
+          Hints), so it downloads in parallel with the stylesheets instead of
+          waiting until the parser reaches this point. The default photo comes
+          from snippets/besjaar-theme-image: upload besjaar-lifestyle-shower.webp
+          under Content → Files (same file name) and it is served resized,
+          as AVIF/WebP, with a srcset; until then it is the theme asset.
+          sizes: the frame crops a landscape photo with object-fit: cover, so on
+          phones the photo renders at the frame height × 1.78 (about 924px), and
+          on desktop at up to 640px × 1.78 (about 1140px), not at the frame width.
+        {%- endcomment -%}
         {%- if section.settings.image != blank -%}
-          {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', sizes: '(max-width: 989px) 100vw, 50vw', loading: 'eager', fetchpriority: 'high', alt: v_alt }}
+          {{ section.settings.image | image_url: width: 1600 | image_tag: widths: '600,900,1200,1600', sizes: '(max-width: 989px) 100vw, 50vw', loading: 'eager', fetchpriority: 'high', preload: true, alt: v_alt }}
         {%- else -%}
-          <img src="{{ 'besjaar-lifestyle-shower.webp' | asset_url }}" width="1672" height="941" loading="eager" decoding="async" fetchpriority="high" alt="{{ v_alt | escape }}">
+          {% render 'besjaar-theme-image', file: 'besjaar-lifestyle-shower.webp', width: 1672, height: 941, alt: v_alt, widths: '750,1000,1300,1672', sizes: '(max-width: 989px) 924px, (max-width: 1320px) 96vw, 1140px', eager: true %}
         {%- endif -%}
       </div>
       <figcaption class="bjx-hero__chips">

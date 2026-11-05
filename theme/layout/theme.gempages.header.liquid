@@ -97,6 +97,9 @@
     {{ 'besjaar-cart-polish-1140.css' | asset_url | stylesheet_tag }}
     {{ 'besjaar-premium-lux.css' | asset_url | stylesheet_tag }}
     {{ 'besjaar-1150.css' | asset_url | stylesheet_tag }}
+    {%- comment -%}2026-11-05 performance: moved here from the header-group sections (were parser-blocking); see layout/theme.liquid.{%- endcomment -%}
+    <script src="{{ 'besjaar-x-runtime-1.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'besjaar-x-cart-2.js' | asset_url }}" defer="defer"></script>
     {% unless request.visual_preview_mode %}
     {% liquid
       capture besjaar_ui_js_shop_url_capture

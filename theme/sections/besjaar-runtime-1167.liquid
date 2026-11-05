@@ -96,6 +96,7 @@
 -%}
 <script type="application/json" id="bj-menu-config">{"foot":{{ bj_menu_foot | json }},"categories":{{ bj_menu_cat | json }},"more":{{ bj_menu_more | json }}}</script>
 {%- if request.page_type == 'index' -%}
+  {%- comment -%}2026-11-05 performance: the "files" list is only filled when besjaar-cta-360-01.webp exists under Content → Files (it does not today), so the viewer no longer probes a URL that 404s. assets/besjaar-x-runtime-1.js now mounts the viewer when the CTA comes within about 1200px of the viewport instead of at page load.{%- endcomment -%}
   {%- liquid
     assign bj_360_hint = 'Sleep om te draaien'
     assign bj_360_label = 'Besjaar douchekop, 360° weergave — sleep om te draaien'
@@ -114,10 +115,10 @@
         assign bj_360_label = 'Alcachofa de ducha Besjaar, vista 360° — desliza para girar'
     endcase
   -%}
-  <script type="application/json" id="bj-cta-360-frames" data-script="{{ 'besjaar-ui-360.js' | asset_url }}" data-hint="{{ bj_360_hint | escape }}" data-label="{{ bj_360_label | escape }}">{"files":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | file_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"assets":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"bundled":[{%- for i in (1..23) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_asset = 'besjaar-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_asset | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]}</script>
+  <script type="application/json" id="bj-cta-360-frames" data-script="{{ 'besjaar-ui-360.js' | asset_url }}" data-hint="{{ bj_360_hint | escape }}" data-label="{{ bj_360_label | escape }}">{"files":[{%- if images['besjaar-cta-360-01.webp'] != blank -%}{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | file_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}{%- endif -%}],"assets":[{%- for i in (1..36) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_file = 'besjaar-cta-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_file | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}],"bundled":[{%- for i in (1..23) -%}{%- assign bj_n = i | prepend: '0' | slice: -2, 2 -%}{%- assign bj_asset = 'besjaar-360-' | append: bj_n | append: '.webp' -%}{"url":{{ bj_asset | asset_url | json }},"alt":{{ bj_360_label | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]}</script>
 {%- endif -%}
 {{ 'besjaar-seo-carriers-early.css' | asset_url | stylesheet_tag: preload: true }}
-<script src="{{ 'besjaar-x-runtime-1.js' | asset_url }}"></script>
+{%- comment -%}2026-11-05 performance: assets/besjaar-x-runtime-1.js now loads from layout/theme.liquid (<head>, defer, before besjaar-ui-core.js) instead of as a parser-blocking tag here.{%- endcomment -%}
 {% schema %}
 {
   "name": "Besjaar runtime patches",

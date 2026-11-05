@@ -18,10 +18,26 @@
   Temporary carrier; fold into assets/besjaar-ui-core.js during consolidation.
 {%- endcomment -%}
 
-{{ 'besjaar-x-cart-1.css' | asset_url | stylesheet_tag: preload: true }}
+{%- comment -%}
+  2026-11-05 performance: besjaar-x-cart-1.css and besjaar-cart-ux.css style only
+  the cart drawer and the cart page (every rule is scoped to #BesjaarUICartDrawer,
+  the drawer classes or body[data-page-type="cart"]). The closed drawer is already
+  off-screen and inert from besjaar-seo-base.css in <head>, so outside the cart page
+  these two files load without blocking the first paint (media="print" swap). The
+  <link> keeps its place in the document, so the cascade order is unchanged once
+  they apply. On the cart page they stay render-blocking as before.
+  Not done for besjaar-x-cart-mobile-1.css: it hides the express-checkout buttons
+  ([data-bj-cd-express]) until they are moved into the drawer.
+{%- endcomment -%}
+{%- if request.page_type == 'cart' -%}
+  {{ 'besjaar-x-cart-1.css' | asset_url | stylesheet_tag: preload: true }}
+{%- else -%}
+  <link rel="stylesheet" href="{{ 'besjaar-x-cart-1.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'besjaar-x-cart-1.css' | asset_url | stylesheet_tag }}</noscript>
+{%- endif -%}
 
-<script src="{{ 'besjaar-x-cart-2.js' | asset_url }}"></script>
-<script src="{{ 'besjaar-x-cart-3.js' | asset_url }}"></script>
+{%- comment -%}2026-11-05 performance: assets/besjaar-x-cart-2.js (the fetch queue) now loads from layout/theme.liquid (<head>, defer, before besjaar-ui-core.js); besjaar-x-cart-3.js is deferred. Both were parser-blocking here.{%- endcomment -%}
+<script src="{{ 'besjaar-x-cart-3.js' | asset_url }}" defer="defer"></script>
 {%- comment -%}
   2026-09-29: one gold (#E0A526) for every review star on every page –
   collection and search cards, product page, homepage, cart. Older theme rules
@@ -43,7 +59,12 @@
   {%- endfor -%}
 {%- endcapture -%}
 <script type="application/json" data-bj-cart-titles>{ {{- bj_cart_titles -}} }</script>
-{{ 'besjaar-cart-ux.css' | asset_url | stylesheet_tag: preload: true }}
+{%- if request.page_type == 'cart' -%}
+  {{ 'besjaar-cart-ux.css' | asset_url | stylesheet_tag: preload: true }}
+{%- else -%}
+  <link rel="stylesheet" href="{{ 'besjaar-cart-ux.css' | asset_url }}" media="print" onload="this.media='all'">
+  <noscript>{{ 'besjaar-cart-ux.css' | asset_url | stylesheet_tag }}</noscript>
+{%- endif -%}
 <script src="{{ 'besjaar-cart-ux.js' | asset_url }}" defer="defer"></script>
 {%- comment -%}
   2026-11-05 product page UX (assets/besjaar-product-ux.css, product pages only):

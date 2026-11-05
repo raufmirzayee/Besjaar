@@ -58,7 +58,7 @@
   <style>body[data-page-type="page"]{--bj-about-stage:url({{ bj_about_stage }});--bj-about-1:url({{ 'besjaar-web-real-modes.webp' | asset_url }});--bj-about-2:url({{ 'besjaar-macro-nozzles.webp' | asset_url }});--bj-about-3:url({{ 'besjaar-premium-hero-pressure-v3.webp' | asset_url }});--bj-about-4:url({{ 'besjaar-lifestyle-shower.webp' | asset_url }})}</style>
 {%- endif -%}
 {{ 'besjaar-seo-carriers-late.css' | asset_url | stylesheet_tag: preload: true }}
-<script src="{{ 'besjaar-x-desktop-fixes-1.js' | asset_url }}"></script>
+<script src="{{ 'besjaar-x-desktop-fixes-1.js' | asset_url }}" defer="defer"></script>
 {% schema %}
 {
   "name": "Besjaar desktop fixes",

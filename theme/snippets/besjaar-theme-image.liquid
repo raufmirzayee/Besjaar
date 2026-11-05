@@ -1,0 +1,40 @@
+{%- comment -%}
+  Besjaar 2026-11-05 (performance) — an image that ships in assets/.
+
+  Files in assets/ are served as-is: Shopify's CDN cannot resize them, so every
+  visitor downloads the full-size file whatever the screen. When an image with
+  the SAME file name is uploaded under Content → Files, this snippet serves that
+  copy through image_url | image_tag instead, so the CDN:
+    - builds a srcset and serves each device a suitable width,
+    - negotiates AVIF/WebP and picks the compression quality,
+    - and, for the above-the-fold image (eager: true), sends it as an HTTP 103
+      Early Hint / Link preload, so the download starts before the HTML is
+      parsed.
+  Until that upload exists the output is the plain <img> it replaces; for the
+  eager image the asset is still preloaded through the Link header.
+
+  Parameters
+    file    asset file name, e.g. 'besjaar-lifestyle-shower.webp' (required)
+    width   intrinsic width of the asset (fallback <img> only)
+    height  intrinsic height of the asset (fallback <img> only)
+    alt     alt text; leave empty for a decorative image
+    widths  srcset widths for the Files copy, e.g. '600,900,1200'
+    sizes   sizes attribute for the Files copy (how wide the image renders;
+            for object-fit: cover, the rendered width of the cropped image)
+    eager   true for the LCP image: loading=eager, fetchpriority=high and a
+            preload. Default: loading=lazy.
+{%- endcomment -%}
+{%- liquid
+  assign bj_ti_file = images[file]
+  assign bj_ti_alt = alt | default: ''
+-%}
+{%- if bj_ti_file != blank -%}
+  {%- if eager -%}
+    {{ bj_ti_file | image_url: width: bj_ti_file.width | image_tag: widths: widths, sizes: sizes, loading: 'eager', fetchpriority: 'high', decoding: 'async', preload: true, alt: bj_ti_alt }}
+  {%- else -%}
+    {{ bj_ti_file | image_url: width: bj_ti_file.width | image_tag: widths: widths, sizes: sizes, loading: 'lazy', decoding: 'async', alt: bj_ti_alt }}
+  {%- endif -%}
+{%- else -%}
+  {%- if eager -%}{{ file | asset_url | preload_tag: as: 'image', fetchpriority: 'high' }}{%- endif -%}
+  <img src="{{ file | asset_url }}" width="{{ width }}" height="{{ height }}" loading="{% if eager %}eager{% else %}lazy{% endif %}" decoding="async"{% if eager %} fetchpriority="high"{% endif %} alt="{{ bj_ti_alt | escape }}">
+{%- endif -%}

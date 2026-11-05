@@ -44,7 +44,7 @@
   -%}
   {%- if bj_filter_url != blank -%}
 <script type="application/json" id="bj-filter-card">{"url":{{ bj_filter_url | json }},"label":{{ bj_filter_label | json }}}</script>
-<script src="{{ 'besjaar-x-features-1.js' | asset_url }}"></script>
+<script src="{{ 'besjaar-x-features-1.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 {%- endif -%}
 {% schema %}

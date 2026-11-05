@@ -32,7 +32,7 @@
       assign bj_heading_font = settings.type_heading_font
       assign bj_body_font = settings.type_body_font
     -%}
-    <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- comment -%}2026-11-05 performance: removed the preconnect to fonts.shopifycdn.com. font_url serves the theme fonts from the shop's own domain (/cdn/fonts/), so that connection was never used, and Lighthouse flags more than 4 preconnects (apps add their own).{%- endcomment -%}
     {%- if bj_body_font -%}{{ bj_body_font | font_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}{%- endif -%}
     {%- if bj_heading_font -%}{{ bj_heading_font | font_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}{%- endif -%}
     <style id="besjaar-fonts">
@@ -74,7 +74,7 @@
       endif
     -%}
     {% unless request.page_type == '404' %}<link rel="canonical" href="{{ bj_canonical_url | escape }}">{% endunless %}
-    {%- comment -%}2026-11-04: no image preload on the home page. The preload pointed at besjaar-hero-premium-spa.webp (145 KB) from the disabled besjaar-store-hero section; the live hero (sections/besjaar-wow-hero.liquid) shows a different photo and already requests it with fetchpriority="high", so the preload was an unused download competing with the real hero image.{%- endcomment -%}
+    {%- comment -%}2026-11-04: no image preload on the home page. The preload pointed at besjaar-hero-premium-spa.webp (145 KB) from the disabled besjaar-store-hero section; the live hero (sections/besjaar-wow-hero.liquid) shows a different photo and already requests it with fetchpriority="high", so the preload was an unused download competing with the real hero image. 2026-11-05: the hero section now preloads its own image (Link header via image_tag / preload_tag), so the preload always matches the image that is actually shown.{%- endcomment -%}
     {% if request.page_type == 'product' and product.featured_image != blank %}
       {%- comment -%}Besjaar 11.6: preload the image the gallery actually renders (variant media wins over featured image) with the section's exact sizes value, so the preload always matches the LCP request.{%- endcomment -%}
       {% assign besjaar_ui_preload_image = product.selected_or_first_available_variant.featured_media.preview_image | default: product.featured_media.preview_image | default: product.featured_image %}
@@ -187,6 +187,17 @@
     
     {%- comment -%}Besjaar 11.5: shared storefront refinement and interaction states.{%- endcomment -%}
     
+    {%- comment -%}
+      2026-11-05 performance: the runtime patches and the cart write queue both
+      wrap window.fetch, and used to load as parser-blocking <script> tags from
+      the header-group sections (besjaar-runtime-1167, besjaar-cart-1168), which
+      stopped HTML parsing in front of the header and hero on every page. They
+      load here with defer instead. Deferred scripts run in document order, so
+      placing them before besjaar-ui-core.js keeps the order they always had:
+      runtime wrapper, then cart queue, then besjaar-ui-core.js.
+    {%- endcomment -%}
+    <script src="{{ 'besjaar-x-runtime-1.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'besjaar-x-cart-2.js' | asset_url }}" defer="defer"></script>
     {% unless request.visual_preview_mode %}
     {% liquid
       capture besjaar_ui_js_shop_url_capture

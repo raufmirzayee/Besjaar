@@ -66,7 +66,7 @@
   assign bj_about_url = bj_about_url | strip
 -%}
 <script type="application/json" id="bj-nav-zakelijk">{"url":{{ bj_z_url | json }},"label":{{ bj_z_label | json }},"current":{{ bj_z_current | json }},"about":{{ bj_about_url | json }}}</script>
-<script src="{{ 'besjaar-x-nav-1.js' | asset_url }}"></script>
+<script src="{{ 'besjaar-x-nav-1.js' | asset_url }}" defer="defer"></script>
 {% schema %}
 {
   "name": "Besjaar zakelijk link",

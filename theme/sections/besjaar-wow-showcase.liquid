@@ -107,11 +107,12 @@
 
     <div class="bjx-bento">
       <article class="bjx-tile bjx-tile--photo bjx-tile--a">
-        <img src="{{ 'besjaar-web-real-water.webp' | asset_url }}" width="900" height="1200" loading="lazy" decoding="async" alt="">
+        {%- comment -%}2026-11-05 performance: served resized from Content → Files when the same file name is uploaded there; see snippets/besjaar-theme-image.{%- endcomment -%}
+        {% render 'besjaar-theme-image', file: 'besjaar-web-real-water.webp', width: 900, height: 1200, widths: '450,700,900', sizes: '(max-width: 989px) calc(100vw - 40px), (max-width: 1320px) 48vw, 620px' %}
         <div class="bjx-tile__copy"><h3>{{ a_t }}</h3><p>{{ a_p }}</p></div>
       </article>
       <article class="bjx-tile bjx-tile--photo bjx-tile--b">
-        <img src="{{ 'besjaar-web-real-modes.webp' | asset_url }}" width="1000" height="815" loading="lazy" decoding="async" alt="">
+        {% render 'besjaar-theme-image', file: 'besjaar-web-real-modes.webp', width: 1000, height: 815, widths: '450,700,1000', sizes: '(max-width: 989px) calc(100vw - 40px), (max-width: 1320px) 48vw, 620px' %}
         <div class="bjx-tile__copy"><h3>{{ b_t }}</h3><p>{{ b_p }}</p></div>
       </article>
       <article class="bjx-tile bjx-tile--stat bjx-tile--e">
@@ -120,7 +121,7 @@
         <p>{{ e_p }}</p>
       </article>
       <article class="bjx-tile bjx-tile--photo bjx-tile--c">
-        <img src="{{ 'besjaar-macro-nozzles.webp' | asset_url }}" width="900" height="900" loading="lazy" decoding="async" alt="">
+        {% render 'besjaar-theme-image', file: 'besjaar-macro-nozzles.webp', width: 900, height: 900, widths: '300,450,600,900', sizes: '(max-width: 989px) 50vw, (max-width: 1320px) 24vw, 300px' %}
         <div class="bjx-tile__copy"><h3>{{ c_t }}</h3><p>{{ c_p }}</p></div>
       </article>
       <article class="bjx-tile bjx-tile--icon bjx-tile--d">
