@@ -9,6 +9,10 @@
  */
 {
   "current": {
+    "company_vat": "",
+    "company_street": "Dr. A.F. Philipsweg 39 A",
+    "company_zip": "9403 AD",
+    "company_city": "Assen",
     "bg": "#FFFFFF",
     "surface": "#FFFFFF",
     "text": "#1C2326",

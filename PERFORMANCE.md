@@ -67,3 +67,19 @@ exact file names. The theme picks them up automatically, with no code change:
   paint: 9 files in `<head>` plus 10 more from header-group sections, built up in
   layers that override each other. Merging the layers and splitting per page type
   is the biggest remaining structural win, but needs visual QA on every template.
+
+## Also on this branch: address, VAT number, product photo colours
+
+- **Public address.** The footer, contact page and Organization JSON-LD show
+  *Dr. A.F. Philipsweg 39 A, 9403 AD Assen* (Theme settings → Brand & layout →
+  Public address; snippet `besjaar-company-address`). The Shopify store address
+  stays *Elbestraat 113, 9406 SV Assen*: that is where returns are received, and
+  the refund policy already names it as the return address.
+- **VAT number** hidden from the footer and contact page (theme setting
+  `company_vat` emptied); the KVK number stays. It is still on the Contact
+  information and Legal notice policy pages.
+- **Product photos looked blue.** That was CSS: the gallery and thumbnails sat
+  on a light-blue background with `mix-blend-mode: multiply`, which multiplied
+  every photo by that blue. Both are now white with no blending, so the photos
+  show their real colours (`besjaar-mobile-detail-clarity.css`,
+  `besjaar-seo-carriers-late.css`).

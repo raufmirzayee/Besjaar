@@ -177,6 +177,32 @@
         "default": "Univex B.V."
       },
       {
+        "type": "header",
+        "content": "Public address"
+      },
+      {
+        "type": "paragraph",
+        "content": "The address shown in the footer, on the contact page and to search engines. Returns still go to the store address under Settings → Store details. Empty all three fields to show the store address instead."
+      },
+      {
+        "type": "text",
+        "id": "company_street",
+        "label": "Street and number",
+        "default": "Dr. A.F. Philipsweg 39 A"
+      },
+      {
+        "type": "text",
+        "id": "company_zip",
+        "label": "Postcode",
+        "default": "9403 AD"
+      },
+      {
+        "type": "text",
+        "id": "company_city",
+        "label": "City",
+        "default": "Assen"
+      },
+      {
         "type": "text",
         "id": "company_kvk",
         "label": "KVK number",
@@ -186,7 +212,7 @@
         "type": "text",
         "id": "company_vat",
         "label": "BTW / VAT number",
-        "default": "NL868051111B01"
+        "info": "Leave empty to hide the VAT number in the footer and on the contact page. It stays on the Contact information and Legal notice policy pages (Settings → Policies)."
       },
       {
         "type": "checkbox",

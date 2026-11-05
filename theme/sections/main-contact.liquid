@@ -54,16 +54,12 @@
       assign besjaar_ui_contact_brand_of = 'Besjaar is een merk van'
       assign besjaar_ui_contact_vat_label = 'BTW'
   endcase
+  comment
+    2026-11-05: the public address (Theme settings → Public address), not the
+    store address where returns are received; see snippets/besjaar-company-address.
+  endcomment
   capture besjaar_ui_contact_address
-    if shop.address.address1 != blank
-      echo shop.address.address1
-    endif
-    if shop.address.zip != blank or shop.address.city != blank
-      if shop.address.address1 != blank
-        echo ', '
-      endif
-      echo shop.address.zip | append: ' ' | append: shop.address.city | strip
-    endif
+    render 'besjaar-company-address'
   endcapture
   assign besjaar_ui_contact_address = besjaar_ui_contact_address | strip
   assign besjaar_ui_contact_legal_parts = ''

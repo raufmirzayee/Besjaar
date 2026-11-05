@@ -1,0 +1,43 @@
+{%- comment -%}
+  Besjaar 2026-11-05 — the company address shown to customers.
+
+  The Shopify store address (Settings → Store details, Univex B.V., Elbestraat
+  113) is where returns are received and stays the registered business address,
+  but it is not the address the website shows. The public address comes from
+  Theme settings → Brand & layout → "Public address" (Dr. A.F. Philipsweg 39 A,
+  9403 AD Assen). If those settings are emptied, the store address is used again.
+
+  Used by the footer identity line, the contact page and the Organization
+  JSON-LD (snippets/structured-data.liquid).
+
+  Parameter
+    field   'street', 'zip' or 'city' for one part; anything else (or none)
+            returns the one-line form "Street 1, 1234 AB City".
+{%- endcomment -%}
+{%- liquid
+  if settings.company_street != blank
+    assign bca_street = settings.company_street
+    assign bca_zip = settings.company_zip
+    assign bca_city = settings.company_city
+  else
+    assign bca_street = shop.address.address1
+    assign bca_zip = shop.address.zip
+    assign bca_city = shop.address.city
+  endif
+  case field
+    when 'street'
+      echo bca_street
+    when 'zip'
+      echo bca_zip
+    when 'city'
+      echo bca_city
+    else
+      echo bca_street
+      if bca_zip != blank or bca_city != blank
+        if bca_street != blank
+          echo ', '
+        endif
+        echo bca_zip | append: ' ' | append: bca_city | strip
+      endif
+  endcase
+-%}
