@@ -9,7 +9,7 @@
       (749px and narrower) the whole block, headed "Maak je bestelling compleet" /
       "Complete your order", is left out, so the drawer goes straight from the
       products to the total and checkout.
-   3c. Phones (749px and narrower) also leave out the order-note fold
+   3c. On every screen size the drawer leaves out the order-note fold
       ("Opmerking bij je bestelling"), the "Btw inbegrepen. Kortingen en
       verzending worden berekend bij het afrekenen." line under the total and
       the payment-method logos. The note can still be added on /cart.
@@ -53,12 +53,10 @@ html body #BesjaarUICartDrawer:has(.besjaar-ui-cart-empty-state) .besjaar-ui-fre
 /* 3b. phones: no "Complete your order" suggestions block in the drawer */
 @media (max-width:749px){html body #BesjaarUICartDrawer [data-cart-drawer-upsell]{display:none!important}}
 
-/* 3c. phones: no order-note fold, no tax/shipping line under the total, no payment logos in the drawer */
-@media (max-width:749px){
+/* 3c. all screens: no order-note fold, no tax/shipping line under the total, no payment logos in the drawer */
 html body #BesjaarUICartDrawer .bj-cd-folds>details.bj-cd-fold:not([data-bj-cd-discount]){display:none!important}
 html body #BesjaarUICartDrawer .besjaar-ui-cart__total small{display:none!important}
 html body #BesjaarUICartDrawer .besjaar-ui-cart-drawer__payments{display:none!important}
-}
 
 /* 3d. desktop: suggestions column beside the cart, also when the cart is empty (same layout as besjaar-cart-1168) */
 @media (min-width:1100px){
