@@ -157,3 +157,10 @@ Subtotaal / Korting in the drawer: `besjaar-x-cart-1.css` forces those rows to
 **"Besjaar – alleen totaal v2 (preview)"** (`204140806471`) = copy of the live
 theme + the fixed `assets/besjaar-x-cart-1.css`.
 Preview: `https://www.besjaar.eu/?preview_theme_id=204140806471`.
+
+Update (2026-11-06, 17:10 CET): "alleen totaal v2" was published. The Shop Pay /
+Google Pay express buttons under Afrekenen are removed from the cart drawer and
+the cart page (`sections/besjaar-cart-mobile-1176.liquid`, commit `ba5a700`).
+Unpublished theme **"Besjaar – zonder Shop Pay knoppen (preview)"**
+(`204144509255`) = copy of the live theme + that file.
+Preview: `https://www.besjaar.eu/?preview_theme_id=204144509255`.
