@@ -1,1 +1,273 @@
-(()=>{let e={};try{e=JSON.parse(document.getElementById("BesjaarWelcomeAppliedConfig")?.textContent||"{}")}catch{return}const t=Array.isArray(e.rewards)?e.rewards:[];const r=e.prices||{};const c="besjaar_welcome_offer_pending_session_v3";const n="besjaar_welcome_offer_claimed_v3";const o=10*60*1e3;const a=2*24*60*60*1e3;const read=(e,t)=>{try{return JSON.parse(e.getItem(t)||"null")}catch{return null}};const s=new URLSearchParams(location.search);const i=s.get("besjaar_offer_claimed");const d=read(sessionStorage,c);const l=!!d?.at&&Date.now()-Number(d.at)<o;const u={};const f={};Object.keys(r).forEach((e=>{const t=r[e];u[t.id]=t;Object.keys(t.v||{}).forEach((e=>{f[e]=t}))}));const claimedReward=()=>{const r=read(localStorage,n);if(!r?.at||r.status!=="active")return null;const c=Date.now()-Number(r.at);if(!Number.isFinite(c)||c<0||c>a)return null;const o=t.find((e=>e.id===r.reward))||t.find((e=>e.code===r.code));if(!o||!o.pct||r.code&&r.code!==o.code)return null;if(e.cartCovered&&!String(e.cartCodes||"").includes(`|${o.code}|`))return null;return o};const badgeText=e=>`${e.pct}% KORTING`;const variantOf=(e,t)=>(e?.v||{})[t]||(e?.v||{})[e?.first]||null;const welcomeFor=(e,t)=>{const r=e?.p?.[t.pct];return r&&r.w!==false?r:null};const wasNode=t=>{const r=document.createElement("s");r.className="bj-price__was";const c=document.createElement("span");c.className="besjaar-ui-visually-hidden";c.textContent=`${e.regularLabel||""} `;r.append(c,t.wm);return r};const rewriteLists=e=>{document.querySelectorAll("script[data-besjaar-recent-prices]").forEach((t=>{try{const c=JSON.parse(t.textContent||"{}");Object.keys(c).forEach((t=>{const n=r[t];const o=variantOf(n,n?.first);const a=welcomeFor(o,e);if(!a)return;c[t].p=o.was;c[t].s=a.c;c[t].b=badgeText(e)}));t.textContent=JSON.stringify(c)}catch{}}));document.querySelectorAll("script[data-besjaar-ui-cart-range]").forEach((t=>{try{const r=JSON.parse(t.textContent||"[]");r.forEach((t=>{const r=u[t.id];const c=variantOf(r,t.variantId);const n=welcomeFor(c,e);if(!n)return;t.price=c.was;t.priceNow=n.c;t.badge=badgeText(e)}));t.textContent=JSON.stringify(r)}catch{}}))};const rewriteCards=e=>{document.querySelectorAll('[class*="__price"]').forEach((t=>{const c=Array.from(t.classList).find((e=>/__price$/.test(e)));if(!c||t.closest("[data-product-root]"))return;if(t.closest('[class*="cart"], [id*="cart"], [id*="Cart"], form[action*="/cart"]'))return;const n=t.closest("article")||t.parentElement?.parentElement;const o=n?.querySelector('a[href*="/products/"]');if(!o)return;let a="";try{a=decodeURIComponent(new URL(o.href,location.origin).pathname.split("/products/")[1].split("/")[0])}catch{return}const s=r[a];const i=variantOf(s,s?.first);const d=welcomeFor(i,e);if(!d)return;if(t.dataset.bjWelcome===e.id)return;t.dataset.bjWelcome=e.id;const l=document.createElement("span");l.className="bj-price__now";l.textContent=d.m;t.replaceChildren(l," ",wasNode(i));const u=c.replace(/__price$/,"");let f=n.querySelector(".bj-discount-badge")||n.querySelector(`.${u}__badge`);if(!f){const e=n.querySelector(`.${u}__badges`)||n.querySelector(`.${u}__media`);if(e){f=document.createElement("span");f.className=`${u}__badge`;if(u==="besjaar-collection-product-card")f.classList.add("besjaar-collection-badge");e.appendChild(f)}}if(f){Array.from(f.classList).forEach((e=>{if(/--(dark|muted|sale)$/.test(e))f.classList.remove(e)}));f.classList.add("bj-discount-badge");f.textContent=badgeText(e)}}))};const rewriteProductPage=t=>{document.querySelectorAll("[data-product-root]").forEach((r=>{const c=r.querySelector("[data-variant-id]")?.value;const n=f[c];const o=variantOf(n,c);const a=welcomeFor(o,t);if(!a)return;const s=r.querySelector(".besjaar-store-premium-pd__price");if(s){s.textContent=a.m;s.classList.add("is-bj-discounted")}const i=r.querySelector('[id^="BesjaarStickyPrice-"]');if(i)i.textContent=a.m;const d=r.querySelector("[data-bj-price-was]");if(d){d.hidden=false;const e=d.querySelector("[data-bj-was-value]");if(e)e.textContent=o.wm}const l=r.querySelector(".besjaar-store-premium-pd__sale");if(l){l.textContent=`${e.save} ${a.s}`;l.hidden=false}const u=r.querySelector(".besjaar-store-premium-pd__topline");let p=u?.querySelector(".bj-discount-badge");if(u&&!p){p=document.createElement("span");p.className="bj-discount-badge";const e=u.querySelector(".besjaar-store-premium-pd__brand");if(e)e.after(p);else u.prepend(p)}if(p)p.textContent=badgeText(t);const m=r.querySelector(".besjaar-store-premium-pd__price-row");if(m){let c=r.querySelector("[data-bj-welcome-note]");if(!c){c=document.createElement("p");c.className="bj-discount-note";c.dataset.bjWelcomeNote="";m.after(c)}c.textContent=String(e.note||"").replace("{pct}",t.pct).replace("{code}",t.code)}}))};let p=null;const applyWelcomePrices=()=>{const e=claimedReward();if(!e)return;if(!p||p.id!==e.id)rewriteLists(e);p=e;rewriteCards(e);rewriteProductPage(e)};applyWelcomePrices();document.addEventListener("besjaar_ui:variant-change",(()=>window.setTimeout(applyWelcomePrices,0)));const m=document.getElementById("BesjaarWelcomeApplied");const show=t=>{if(!m)return;const fill=e=>String(e||"").replace("{code}",t.code).replace("{value}",t.value||"");m.querySelector("[data-applied-title]").textContent=fill(e.title);m.querySelector("[data-applied-body]").textContent=fill(e.body);m.hidden=false;requestAnimationFrame((()=>m.classList.add("is-visible")));let r=null;const hide=()=>{clearTimeout(r);m.classList.remove("is-visible");window.setTimeout((()=>{m.hidden=true}),300)};m.querySelector("[data-applied-close]")?.addEventListener("click",hide,{once:true});r=window.setTimeout(hide,1e4);document.dispatchEvent(new CustomEvent("besjaar_ui:welcome_offer_applied_notice",{detail:{reward:t.id}}))};document.addEventListener("DOMContentLoaded",(()=>{const flag=e=>document.querySelector(`[data-offer-server-${e}]`)?.value==="true";const e=flag("success")||flag("error")||s.get("customer_posted")==="true"||location.pathname.includes("/challenge");let r=null;if(!e){if(i){r=t.find((e=>e.id===i))||d&&t.find((e=>e.code===d.code))||null;if(r){try{localStorage.setItem(n,JSON.stringify({at:Date.now(),reward:r.id,code:r.code,status:"active"}))}catch{}}}else if(l){r=t.find((e=>e.id===d.reward))||t.find((e=>e.code===d.code))||null;if(r){try{sessionStorage.removeItem(c)}catch{}try{localStorage.setItem(n,JSON.stringify({at:Date.now(),reward:r.id,code:r.code,status:"active"}))}catch{}}}if(r?.code)show(r)}applyWelcomePrices();if(!e&&!r){const e=window.BesjaarUIConfig?.routes?.cartJson||"/cart.js";fetch(e,{credentials:"same-origin",headers:{Accept:"application/json"}}).then((e=>e.ok?e.json():null)).then((e=>{const r=(e?.discount_codes||[]).map((e=>String(e?.code||"").toUpperCase()));if(!r.length)return;const c=t.find((e=>e.pct&&r.includes(String(e.code||"").toUpperCase())));if(!c)return;const o=claimedReward();if(o&&o.id===c.id)return;try{localStorage.setItem(n,JSON.stringify({at:Date.now(),reward:c.id,code:c.code,status:"active"}))}catch{return}show(c);applyWelcomePrices()})).catch((()=>{}))}}))})();
+/* Besjaar — code prices after the welcome offer / Black Friday sign-up.
+   Config and server-side prices: sections/besjaar-welcome-applied.liquid.
+   2026-11-06: knows the Black Friday sign-up code (reward "bf", every product,
+   valid until the code ends), strikes through the price the code applies to,
+   and puts the code's percentage in the product page's price-row badge. */
+(() => {
+  let config = {};
+  try { config = JSON.parse(document.getElementById('BesjaarWelcomeAppliedConfig')?.textContent || '{}'); } catch { return; }
+  const rewards = Array.isArray(config.rewards) ? config.rewards : [];
+  const prices = config.prices || {};
+  const PENDING = 'besjaar_welcome_offer_pending_session_v3';
+  const CLAIMED = 'besjaar_welcome_offer_claimed_v3';
+  const PENDING_MS = 10 * 60 * 1000;
+  const ACTIVE_MS = 2 * 24 * 60 * 60 * 1000;
+  const read = (store, key) => { try { return JSON.parse(store.getItem(key) || 'null'); } catch { return null; } };
+  const remember = reward => {
+    try { localStorage.setItem(CLAIMED, JSON.stringify({ at: Date.now(), reward: reward.id, code: reward.code, status: 'active' })); return true; } catch { return false; }
+  };
+  const upper = value => String(value || '').toUpperCase();
+
+  const params = new URLSearchParams(location.search);
+  const marker = params.get('besjaar_offer_claimed');
+  const pending = read(sessionStorage, PENDING);
+  const pendingFresh = !!pending?.at && Date.now() - Number(pending.at) < PENDING_MS;
+  const bfReward = rewards.find(r => r.id === 'bf' && r.pct && r.code) || null;
+  const flag = name => document.querySelector(`[data-offer-server-${name}]`)?.value === 'true';
+  const blocked = () => flag('success') || flag('error') || params.get('customer_posted') === 'true' || location.pathname.includes('/challenge');
+
+  /* Back from the Black Friday sign-up: Shopify has put the code on the cart
+     and the popup is about to say so. Read the marker now: this script runs
+     before the popup's, which removes it from the address bar. */
+  const bfLanding = !!(bfReward && params.get('besjaar_bf_signup') && !blocked());
+  if (bfLanding) remember(bfReward);
+
+  const byProductId = {};
+  const byVariantId = {};
+  Object.keys(prices).forEach(handle => {
+    const entry = prices[handle];
+    byProductId[entry.id] = entry;
+    Object.keys(entry.v || {}).forEach(id => { byVariantId[id] = entry; });
+  });
+
+  /* A code counts only while it can still be on the cart: when the cart holds
+     a product the code covers, the code must be among the applied codes. */
+  const inPlay = reward => {
+    const covered = reward.all ? config.cartAny : config.cartCovered;
+    return !covered || upper(config.cartCodes).includes(`|${upper(reward.code)}|`);
+  };
+  const claimedReward = () => {
+    const found = [];
+    const claim = read(localStorage, CLAIMED);
+    if (claim?.at && claim.status === 'active') {
+      const reward = rewards.find(r => r.id === claim.reward) || rewards.find(r => r.code === claim.code);
+      const age = Date.now() - Number(claim.at);
+      /* Welcome claims last 2 days; the Black Friday code as long as the shop
+         still lists it (the section drops it when the code ends). */
+      const fresh = reward?.id === 'bf' || (Number.isFinite(age) && age >= 0 && age <= ACTIVE_MS);
+      if (reward && fresh && !(claim.code && claim.code !== reward.code)) found.push(reward);
+    }
+    if (bfReward && read(localStorage, config.bfKey || 'besjaar_bf_early_access_2026_v1')) found.push(bfReward);
+    return found.find(reward => reward.pct && inPlay(reward)) || null;
+  };
+
+  const badgeText = reward => `${reward.pct}% KORTING`;
+  const covers = (entry, reward) => !!entry && (reward.all || entry.ws !== false);
+  const variantOf = (entry, id) => (entry?.v || {})[id] || (entry?.v || {})[entry?.first] || null;
+  const codePrice = (entry, variant, reward) => {
+    if (!covers(entry, reward)) return null;
+    const p = variant?.p?.[reward.pct];
+    return p && p.w !== false ? p : null;
+  };
+  const wasNode = variant => {
+    const s = document.createElement('s');
+    s.className = 'bj-price__was';
+    const label = document.createElement('span');
+    label.className = 'besjaar-ui-visually-hidden';
+    label.textContent = `${config.regularLabel || ''} `;
+    s.append(label, variant.wm);
+    return s;
+  };
+
+  /* Price lists other sections print for their own scripts (recently viewed,
+     the cart drawer's suggestions). */
+  const rewriteLists = reward => {
+    document.querySelectorAll('script[data-besjaar-recent-prices]').forEach(script => {
+      try {
+        const data = JSON.parse(script.textContent || '{}');
+        Object.keys(data).forEach(handle => {
+          const entry = prices[handle];
+          const variant = variantOf(entry, entry?.first);
+          const p = codePrice(entry, variant, reward);
+          if (!p) return;
+          data[handle].p = variant.was;
+          data[handle].s = p.c;
+          data[handle].b = badgeText(reward);
+        });
+        script.textContent = JSON.stringify(data);
+      } catch {}
+    });
+    document.querySelectorAll('script[data-besjaar-ui-cart-range]').forEach(script => {
+      try {
+        const list = JSON.parse(script.textContent || '[]');
+        list.forEach(item => {
+          const entry = byProductId[item.id];
+          const variant = variantOf(entry, item.variantId);
+          const p = codePrice(entry, variant, reward);
+          if (!p) return;
+          item.price = variant.was;
+          item.priceNow = p.c;
+          item.badge = badgeText(reward);
+        });
+        script.textContent = JSON.stringify(list);
+      } catch {}
+    });
+  };
+
+  /* Product cards: any element whose class ends in __price, outside the cart
+     and the product page's own buy box. */
+  const rewriteCards = reward => {
+    document.querySelectorAll('[class*="__price"]').forEach(el => {
+      const cls = Array.from(el.classList).find(c => /__price$/.test(c));
+      if (!cls || el.closest('[data-product-root]')) return;
+      if (el.closest('[class*="cart"], [id*="cart"], [id*="Cart"], form[action*="/cart"]')) return;
+      const card = el.closest('article') || el.parentElement?.parentElement;
+      const link = card?.querySelector('a[href*="/products/"]');
+      if (!link) return;
+      let handle = '';
+      try { handle = decodeURIComponent(new URL(link.href, location.origin).pathname.split('/products/')[1].split('/')[0]); } catch { return; }
+      const entry = prices[handle];
+      const variant = variantOf(entry, entry?.first);
+      const p = codePrice(entry, variant, reward);
+      if (!p || el.dataset.bjWelcome === reward.id) return;
+      el.dataset.bjWelcome = reward.id;
+      const now = document.createElement('span');
+      now.className = 'bj-price__now';
+      now.textContent = p.m;
+      el.replaceChildren(now, ' ', wasNode(variant));
+      const base = cls.replace(/__price$/, '');
+      let badge = card.querySelector('.bj-discount-badge') || card.querySelector(`.${base}__badge`);
+      if (!badge) {
+        const holder = card.querySelector(`.${base}__badges`) || card.querySelector(`.${base}__media`);
+        if (holder) {
+          badge = document.createElement('span');
+          badge.className = `${base}__badge`;
+          if (base === 'besjaar-collection-product-card') badge.classList.add('besjaar-collection-badge');
+          holder.appendChild(badge);
+        }
+      }
+      if (badge) {
+        Array.from(badge.classList).forEach(c => { if (/--(dark|muted|sale)$/.test(c)) badge.classList.remove(c); });
+        badge.classList.add('bj-discount-badge');
+        badge.textContent = badgeText(reward);
+      }
+    });
+  };
+
+  /* Product page buy box (sections/besjaar-store-product.liquid): price,
+     struck price, sticky bar, savings label on the photo, the sale badge in
+     the price row, and a one-line note under the price. */
+  const rewriteProductPage = reward => {
+    document.querySelectorAll('[data-product-root]').forEach(root => {
+      const id = root.querySelector('[data-variant-id]')?.value;
+      const entry = byVariantId[id];
+      const variant = variantOf(entry, id);
+      const p = codePrice(entry, variant, reward);
+      if (!p) return;
+      const price = root.querySelector('.besjaar-store-premium-pd__price');
+      if (price) { price.textContent = p.m; price.classList.add('is-bj-discounted'); }
+      const sticky = root.querySelector('[id^="BesjaarStickyPrice-"]');
+      if (sticky) sticky.textContent = p.m;
+      const was = root.querySelector('[data-bj-price-was]');
+      if (was) {
+        was.hidden = false;
+        const value = was.querySelector('[data-bj-was-value]');
+        if (value) value.textContent = variant.wm;
+      }
+      root.querySelectorAll('[data-sale-price-prefix]').forEach(el => { el.hidden = false; });
+      const sale = root.querySelector('.besjaar-store-premium-pd__sale');
+      if (sale) { sale.textContent = `${config.save} ${p.s}`; sale.hidden = false; }
+      const row = root.querySelector('.besjaar-store-premium-pd__price-row');
+      if (!row) return;
+      /* The dark badge carries the compare-at sale ("23% KORTING"); with a
+         code it names the code's percentage instead, or is added. */
+      let badge = row.querySelector('[data-bj-welcome-badge]') || row.querySelector('.bj-pd-badge--dark');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'bj-pd-badge bj-pd-badge--dark';
+        const lead = row.firstElementChild;
+        if (lead) lead.after(badge); else row.prepend(badge);
+      }
+      badge.dataset.bjWelcomeBadge = '';
+      badge.classList.add('bj-discount-badge');
+      badge.textContent = badgeText(reward);
+      let note = root.querySelector('[data-bj-welcome-note]');
+      if (!note) {
+        note = document.createElement('p');
+        note.className = 'bj-discount-note';
+        note.dataset.bjWelcomeNote = '';
+        row.after(note);
+      }
+      note.textContent = String(reward.note || config.note || '').replace('{pct}', reward.pct).replace('{code}', reward.code);
+    });
+  };
+
+  let applied = null;
+  const applyCodePrices = () => {
+    const reward = claimedReward();
+    if (!reward) return;
+    if (!applied || applied.id !== reward.id) rewriteLists(reward);
+    applied = reward;
+    rewriteCards(reward);
+    rewriteProductPage(reward);
+  };
+  applyCodePrices();
+  document.addEventListener('besjaar_ui:variant-change', () => window.setTimeout(applyCodePrices, 0));
+
+  const notice = document.getElementById('BesjaarWelcomeApplied');
+  const show = reward => {
+    if (!notice) return;
+    const fill = text => String(text || '').replace('{code}', reward.code).replace('{value}', reward.value || '');
+    notice.querySelector('[data-applied-title]').textContent = fill(reward.title || config.title);
+    notice.querySelector('[data-applied-body]').textContent = fill(reward.body || config.body);
+    notice.hidden = false;
+    requestAnimationFrame(() => notice.classList.add('is-visible'));
+    let timer = null;
+    const hide = () => {
+      clearTimeout(timer);
+      notice.classList.remove('is-visible');
+      window.setTimeout(() => { notice.hidden = true; }, 300);
+    };
+    notice.querySelector('[data-applied-close]')?.addEventListener('click', hide, { once: true });
+    timer = window.setTimeout(hide, 10000);
+    document.dispatchEvent(new CustomEvent('besjaar_ui:welcome_offer_applied_notice', { detail: { reward: reward.id } }));
+  };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const isBlocked = blocked();
+    let reward = null;
+    if (!isBlocked && !bfLanding) {
+      if (marker) {
+        reward = rewards.find(r => r.id === marker) || (pending && rewards.find(r => r.code === pending.code)) || null;
+        if (reward) remember(reward);
+      } else if (pendingFresh) {
+        reward = rewards.find(r => r.id === pending.reward) || rewards.find(r => r.code === pending.code) || null;
+        if (reward) {
+          try { sessionStorage.removeItem(PENDING); } catch {}
+          remember(reward);
+        }
+      }
+      if (reward?.code) show(reward);
+    }
+    applyCodePrices();
+    /* Arrived through a shareable link (/discount/CODE?redirect=…) instead of
+       the popup: read the codes Shopify put on the cart. Skipped on the Black
+       Friday landing, where the popup itself confirms the code. */
+    if (isBlocked || bfLanding || reward) return;
+    const url = window.BesjaarUIConfig?.routes?.cartJson || '/cart.js';
+    fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+      .then(response => (response.ok ? response.json() : null))
+      .then(cart => {
+        const codes = (cart?.discount_codes || []).map(d => upper(d?.code));
+        if (!codes.length) return;
+        const match = rewards.find(r => r.pct && codes.includes(upper(r.code)));
+        if (!match) return;
+        const current = claimedReward();
+        if (current && current.id === match.id) return;
+        if (!remember(match)) return;
+        show(match);
+        applyCodePrices();
+      })
+      .catch(() => {});
+  });
+})();

@@ -368,6 +368,28 @@
       toast(i18n.cartUpdateError||'Cart could not be updated. Please try again.');
     }
   };
+  /* 2026-11-06: an order discount (the Black Friday code VROEG20-PJX6SL, SHOP20…)
+     sits in cart_level_discount_applications and never lowers final_line_price,
+     so every drawer line kept showing its full price. Spread it over the lines
+     in proportion to their price, the last line taking the rounding rest, so the
+     lines add up to the real total. Returns Map(line key -> cents). Also used by
+     assets/besjaar-x-cart-3.js for the code tag under each line. */
+  const cartOrderShares=cart=>{
+    const shares=new Map(),items=Array.isArray(cart?.items)?cart.items:[];
+    const total=(cart?.cart_level_discount_applications||[]).reduce((sum,d)=>sum+Math.max(0,Number(d?.total_allocated_amount)||0),0);
+    const base=items.reduce((sum,item)=>sum+Math.max(0,Number(item.final_line_price)||0),0);
+    if(!(total>0)||!(base>0))return shares;
+    let left=Math.min(total,base);
+    items.forEach((item,index)=>{
+      const line=Math.max(0,Number(item.final_line_price)||0);
+      const share=Math.min(line,left,index===items.length-1?left:Math.round(line*total/base));
+      shares.set(item.key,share);left-=share;
+    });
+    return shares;
+  };
+  window.BesjaarCartOrderShares=cartOrderShares;
+  /* Line-level discount-code cents on a line (WELKOM codes are product discounts). */
+  const lineCodeCents=item=>(item.line_level_discount_allocations||[]).reduce((sum,a)=>sum+(a?.discount_application?.type==='discount_code'?Math.max(0,Number(a.amount)||0):0),0);
   /* Besjaar 11.6: rapid updates from several drawer lines used to race — two
      /cart.js reads could resolve out of order and paint a stale snapshot. Each
      refresh takes a token; stale responses (token mismatch) are discarded. */
@@ -411,12 +433,17 @@
       }
       if(foot)foot.hidden=false;
       if(checkout){checkout.disabled=false;checkout.removeAttribute('aria-busy')}
+      const orderShares=cartOrderShares(cart);
       body.innerHTML=cart.items.map(item=>{
         const itemTitle=translateCatalogTitle(item.product_title),currencyCode=cart.currency||currency;
         const options=Array.isArray(item.options_with_values)?item.options_with_values.filter(option=>option?.value&&String(option.value).toLowerCase()!=='default title'):[];
         const variantMeta=options.length?options.map(option=>`<span><b>${escapeHtml(option.name||'')}</b>${option.name?': ':''}${escapeHtml(option.value||'')}</span>`).join(''):(item.variant_title&&String(item.variant_title).toLowerCase()!=='default title'?`<span>${escapeHtml(item.variant_title)}</span>`:'');
         const properties=Object.entries(item.properties||{}).filter(([key,value])=>value&&key&&key.charAt(0)!=='_').map(([key,value])=>`<span><b>${escapeHtml(key)}</b>: ${escapeHtml(String(value))}</span>`).join('');
-        const compareUnit=Number(comparePrices()[item.variant_id]||0),baseLine=Number(item.original_line_price||0),original=compareUnit>Number(item.original_price||0)?Math.max(baseLine,compareUnit*Number(item.quantity||1)):baseLine,finalPrice=Number(item.final_line_price||0),hasDiscount=original>finalPrice&&original>0,savingPct=hasDiscount?Math.max(1,Math.round((1-finalPrice/original)*100)):0;
+        /* 2026-11-06: with a discount code on the line (its order share or a line-level
+           code), the struck price is the price before the code, so "Bespaar 20%" matches
+           the code; without one, the compare-at price as before. */
+        const orderShare=Number(orderShares.get(item.key)||0),codeCents=lineCodeCents(item),lineFinal=Number(item.final_line_price||0);
+        const compareUnit=Number(comparePrices()[item.variant_id]||0),baseLine=Number(item.original_line_price||0),original=(orderShare>0||codeCents>0)?lineFinal+codeCents:(compareUnit>Number(item.original_price||0)?Math.max(baseLine,compareUnit*Number(item.quantity||1)):baseLine),finalPrice=Math.max(0,lineFinal-orderShare),hasDiscount=original>finalPrice&&original>0,savingPct=hasDiscount?Math.max(1,Math.round((1-finalPrice/original)*100)):0;
         const priceHtml=`<div class="besjaar-ui-cart-drawer__prices">${hasDiscount?`<del><span class="besjaar-ui-visually-hidden">${escapeHtml(i18n.regularPrice||'Regular price')} </span>${formatMoney(original,currencyCode)}</del>`:''}${hasDiscount?`<span class="besjaar-ui-visually-hidden">${escapeHtml(i18n.salePrice||'Sale price')} </span>`:''}<strong>${formatMoney(finalPrice,currencyCode)}</strong>${hasDiscount?`<em>${escapeHtml((i18n.savePercent||'Save %percent%').replace('%percent%',savingPct+'%'))}</em>`:''}</div>`;
         return `<div class="besjaar-ui-drawer__item besjaar-ui-cart-drawer__line" aria-busy="false">${item.image?`<a class="besjaar-ui-cart-drawer__media" href="${escapeHtml(localizeInternalUrl(item.url))}" aria-label="${escapeHtml(itemTitle)}"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(itemTitle)}" width="124" height="124" loading="lazy" decoding="async"></a>`:'<div class="besjaar-ui-cart-drawer__media besjaar-ui-cart-drawer__media--empty" aria-hidden="true"></div>'}<div class="besjaar-ui-cart-drawer__line-main"><a href="${escapeHtml(localizeInternalUrl(item.url))}"><h3>${escapeHtml(itemTitle)}</h3></a>${variantMeta?`<small class="besjaar-ui-cart-drawer__variant">${variantMeta}</small>`:''}${item.selling_plan_allocation?.selling_plan?.name?`<small class="besjaar-ui-selling-plan-line">${escapeHtml(item.selling_plan_allocation.selling_plan.name)}</small>`:''}${properties?`<small class="besjaar-ui-cart-drawer__properties">${properties}</small>`:''}</div><div class="besjaar-ui-cart-drawer__line-side">${priceHtml}<div class="besjaar-ui-line-quantity"><button type="button" data-line-minus="${escapeHtml(item.key)}" aria-label="${escapeHtml((i18n.decrease||'Decrease')+' '+itemTitle)}">−</button><span>${item.quantity}</span><button type="button" data-line-plus="${escapeHtml(item.key)}" aria-label="${escapeHtml((i18n.increase||'Increase')+' '+itemTitle)}">+</button></div></div><button class="besjaar-ui-cart-drawer__remove" type="button" data-remove-line="${escapeHtml(item.key)}" aria-label="${escapeHtml((i18n.remove||'Remove')+' '+itemTitle)}">×</button></div>`
       }).join('');
@@ -482,7 +509,7 @@
         try{
           const cart=await changeCartLine(key,next);
           const item=cart.items.find(entry=>entry.key===key);
-          if(!item){line.remove()}else{const input=qs('[data-cart-page-quantity]',line);if(input)input.value=item.quantity;const price=qs('[data-cart-page-line-price]',line);if(price)price.textContent=formatMoney(item.final_line_price,cart.currency||currency)}
+          if(!item){line.remove()}else{const input=qs('[data-cart-page-quantity]',line);if(input)input.value=item.quantity;const price=qs('[data-cart-page-line-price]',line);if(price)price.textContent=formatMoney(Math.max(0,Number(item.final_line_price||0)-Number(cartOrderShares(cart).get(key)||0)),cart.currency||currency)}
           updateCartPageSummary(cart);setCartPageStatus(i18n.cartUpdated||'Cart updated.','success');
           if(!cart.items.length){window.location.reload();return}
         }catch(error){setCartPageStatus(i18n.cartUpdateError||'Cart could not be updated. Please try again.','error');toast(i18n.cartUpdateError||'Cart could not be updated. Please try again.')}finally{if(line.isConnected)setCartPageLineBusy(line,false);if(cartPageCheckout&&document.querySelectorAll('[data-cart-page-line]').length)cartPageCheckout.disabled=false}

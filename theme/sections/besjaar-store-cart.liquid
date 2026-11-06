@@ -259,6 +259,29 @@
             </div>
           {% endif %}
 
+          {%- liquid
+            comment
+              2026-11-06: an order discount (the Black Friday code VROEG20-PJX6SL,
+              SHOP20…) is a cart-level discount: it lowers the total but never
+              final_line_price, so every line kept showing its full price. Spread
+              it over the lines in proportion to their price, the last line taking
+              the rounding rest (same rounding as cartOrderShares in
+              assets/besjaar-ui-core.js), and show each line's share.
+            endcomment
+            assign bjc_order_total = 0
+            assign bjc_order_titles = ''
+            for bjc_application in cart.cart_level_discount_applications
+              if bjc_application.total_allocated_amount > 0
+                assign bjc_order_total = bjc_order_total | plus: bjc_application.total_allocated_amount
+                if bjc_order_titles != ''
+                  assign bjc_order_titles = bjc_order_titles | append: ' + '
+                endif
+                assign bjc_order_titles = bjc_order_titles | append: bjc_application.title
+              endif
+            endfor
+            assign bjc_order_base = cart.items_subtotal_price
+            assign bjc_order_left = bjc_order_total | at_most: bjc_order_base
+          -%}
           <ul class="bj-cp-list" role="list">
             {% for item in cart.items %}
               {% capture cart_item_title_capture %}{% render 'localized-product-title', product: item.product %}{% endcapture %}
@@ -275,6 +298,31 @@
                 if compare_line > line_original
                   assign line_original = compare_line
                 endif
+
+                assign bjc_share = 0
+                if bjc_order_total > 0 and bjc_order_base > 0
+                  if forloop.last
+                    assign bjc_share = bjc_order_left
+                  else
+                    assign bjc_share = item.final_line_price | times: bjc_order_total | times: 2 | plus: bjc_order_base | divided_by: bjc_order_base | divided_by: 2
+                  endif
+                  assign bjc_share = bjc_share | at_most: item.final_line_price | at_most: bjc_order_left
+                  assign bjc_order_left = bjc_order_left | minus: bjc_share
+                endif
+                assign bjc_code_cents = 0
+                for bjc_allocation in item.line_level_discount_allocations
+                  if bjc_allocation.discount_application.type == 'discount_code'
+                    assign bjc_code_cents = bjc_code_cents | plus: bjc_allocation.amount
+                  endif
+                endfor
+                comment
+                  With a discount code on the line, strike through the price before
+                  the code, so the saving matches the code's percentage.
+                endcomment
+                if bjc_share > 0 or bjc_code_cents > 0
+                  assign line_original = item.final_line_price | plus: bjc_code_cents
+                endif
+                assign bjc_line_final = item.final_line_price | minus: bjc_share
               %}
               <li class="bj-cp-item" data-cart-page-line data-cart-line-key="{{ item.key | escape }}" data-compare-unit="{{ compare_unit }}" aria-busy="false">
                 <a class="bj-cp-item__media" href="{{ cart_item_url }}" tabindex="-1" aria-hidden="true">
@@ -301,11 +349,12 @@
                         {%- for discount in item.line_level_discount_allocations -%}
                           {%- if discount.amount > 0 -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ discount.discount_application.title | escape }} (−{{ discount.amount | money }})</span></li>{%- endif -%}
                         {%- endfor -%}
+                        {%- if bjc_share > 0 -%}<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="7.5" cy="8.5" r="1.4"/></svg><span>{{ bjc_order_titles | escape }} (−{{ bjc_share | money }})</span></li>{%- endif -%}
                       </ul>
                     </div>
                     <div class="bj-cp-item__price">
-                      <s data-bj-cp-line-original{% unless line_original > item.final_line_price %} hidden{% endunless %}>{% if line_original > item.final_line_price %}{{ line_original | money }}{% endif %}</s>
-                      <span data-cart-page-line-price>{{ item.final_line_price | money }}</span>
+                      <s data-bj-cp-line-original{% unless line_original > bjc_line_final %} hidden{% endunless %}>{% if line_original > bjc_line_final %}{{ line_original | money }}{% endif %}</s>
+                      <span data-cart-page-line-price>{{ bjc_line_final | money }}</span>
                     </div>
                   </div>
                   <div class="bj-cp-item__actions">
@@ -451,22 +500,31 @@
     var cart = event.detail;
     if (!cart || !cart.items) return;
     var cur = cart.currency || 'EUR';
+    var levels = (cart.cart_level_discount_applications || []).filter(function (d) { return Number(d.total_allocated_amount) > 0; });
+    /* 2026-11-06: each line's share of an order discount (see the Liquid above),
+       from the same function the cart drawer uses. */
+    var shares = typeof window.BesjaarCartOrderShares === 'function' ? window.BesjaarCartOrderShares(cart) : null;
+    var orderTitles = levels.map(function (d) { return String(d.title || ''); }).join(' + ');
     Array.prototype.forEach.call(form.querySelectorAll('[data-cart-page-line]'), function (line) {
       var item = cart.items.filter(function (i) { return i.key === line.getAttribute('data-cart-line-key'); })[0];
       if (!item) return;
+      var share = shares ? Number(shares.get(item.key) || 0) : 0;
+      var lineFinal = Number(item.final_line_price || 0);
+      var codeCents = (item.line_level_discount_allocations || []).reduce(function (sum, a) { return sum + (a && a.discount_application && a.discount_application.type === 'discount_code' ? Math.max(0, Number(a.amount) || 0) : 0); }, 0);
       var list = line.querySelector('[data-bj-cp-line-disc]');
       if (list) list.innerHTML = (item.line_level_discount_allocations || []).filter(function (a) { return Number(a.amount) > 0; }).map(function (a) {
         return '<li>' + tagIcon + '<span>' + esc((a.discount_application && a.discount_application.title) || '') + ' (−' + money(a.amount, cur) + ')</span></li>';
-      }).join('');
+      }).join('') + (share > 0 ? '<li>' + tagIcon + '<span>' + esc(orderTitles) + ' (−' + money(share, cur) + ')</span></li>' : '');
+      var priceEl = line.querySelector('[data-cart-page-line-price]');
+      if (priceEl) priceEl.textContent = money(Math.max(0, lineFinal - share), cur);
       var s = line.querySelector('[data-bj-cp-line-original]');
       if (s) {
-        var original = Math.max(Number(item.original_line_price || 0), Number(line.getAttribute('data-compare-unit') || 0) * Number(item.quantity || 0));
-        var show = original > Number(item.final_line_price || 0);
+        var original = (share > 0 || codeCents > 0) ? lineFinal + codeCents : Math.max(Number(item.original_line_price || 0), Number(line.getAttribute('data-compare-unit') || 0) * Number(item.quantity || 0));
+        var show = original > lineFinal - share;
         s.hidden = !show;
         s.textContent = show ? money(original, cur) : '';
       }
     });
-    var levels = (cart.cart_level_discount_applications || []).filter(function (d) { return Number(d.total_allocated_amount) > 0; });
     var subRow = form.querySelector('[data-bj-cp-subtotal-row]'), sub = form.querySelector('[data-bj-cp-subtotal]'), order = form.querySelector('[data-bj-cp-order]');
     if (subRow) subRow.hidden = !levels.length;
     if (sub) sub.textContent = money(cart.items_subtotal_price, cur);

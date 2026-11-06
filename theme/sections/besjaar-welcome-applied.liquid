@@ -41,6 +41,22 @@
   data-besjaar-ui-cart-range) before the deferred theme scripts read them. It
   uses the storage keys and ?besjaar_offer_claimed= marker of
   assets/besjaar-welcome-offer.js.
+
+  4. Black Friday sign-up code (2026-11-06). Until Black Week starts the popup
+     (snippets/besjaar-welcome-offer.liquid) gives VROEG20-PJX6SL instead of a
+     WELKOM code: 20% off the whole order. This section did not know that code,
+     so after signing up the shopper still saw the old prices everywhere. It is
+     now a reward here too ("bf"): it covers every product, not only the
+     welcome collections, and lasts until the code ends instead of 2 days. The
+     shopper counts as signed up when they land back with
+     ?besjaar_bf_signup=1, when the popup's own key is in storage, or when the
+     code is on their cart. Keep bjw_bf_code and the end time in step with the
+     popup snippet and with Admin > Discounts.
+
+  The struck-through price next to a code price is the price the code takes its
+  percentage off (the product price), so "20% KORTING", the struck price and the
+  new price always agree, and match the cart and checkout. Before 2026-11-06 the
+  compare-at price was struck through, which made 20% look like 38%.
 {%- endcomment -%}
 {%- liquid
   assign bjw_show = settings.welcome_offer_enabled
@@ -59,80 +75,112 @@
       assign bjw_off = 'off'
       assign bjw_note = 'Includes your {pct}% welcome discount, applied automatically.'
       assign bjw_save = 'Save'
+      assign bjw_bf_title = 'Your Black Friday discount is applied'
+      assign bjw_bf_body = 'Code {code} ({value}) is on your cart and will be deducted automatically at checkout.'
+      assign bjw_bf_note = 'Includes your {pct}% Black Friday discount, applied automatically.'
     when 'de'
       assign bjw_title = 'Dein Willkommensrabatt ist aktiviert'
       assign bjw_body = 'Der Code {code} ({value}) ist gespeichert und wird an der Kasse automatisch abgezogen.'
       assign bjw_off = 'Rabatt'
       assign bjw_note = 'Inkl. {pct}% Willkommensrabatt, automatisch abgezogen.'
       assign bjw_save = 'Spare'
+      assign bjw_bf_title = 'Dein Black-Friday-Rabatt ist aktiviert'
+      assign bjw_bf_body = 'Der Code {code} ({value}) ist in deinem Warenkorb und wird an der Kasse automatisch abgezogen.'
+      assign bjw_bf_note = 'Inkl. {pct}% Black-Friday-Rabatt, automatisch abgezogen.'
     when 'fr'
       assign bjw_title = 'Votre réduction de bienvenue est appliquée'
       assign bjw_body = 'Le code {code} ({value}) est enregistré et sera déduit automatiquement au paiement.'
       assign bjw_off = 'de réduction'
       assign bjw_note = 'Remise de bienvenue de {pct}% incluse, appliquée automatiquement.'
       assign bjw_save = 'Économisez'
+      assign bjw_bf_title = 'Votre réduction Black Friday est appliquée'
+      assign bjw_bf_body = 'Le code {code} ({value}) est dans votre panier et sera déduit automatiquement au paiement.'
+      assign bjw_bf_note = 'Réduction Black Friday de {pct}% incluse, appliquée automatiquement.'
     when 'es'
       assign bjw_title = 'Tu descuento de bienvenida está aplicado'
       assign bjw_body = 'El código {code} ({value}) está guardado y se descontará automáticamente al pagar.'
       assign bjw_off = 'de descuento'
       assign bjw_note = 'Descuento de bienvenida del {pct}% incluido, aplicado automáticamente.'
       assign bjw_save = 'Ahorra'
+      assign bjw_bf_title = 'Tu descuento de Black Friday está aplicado'
+      assign bjw_bf_body = 'El código {code} ({value}) está en tu carrito y se descontará automáticamente al pagar.'
+      assign bjw_bf_note = 'Descuento de Black Friday del {pct}% incluido, aplicado automáticamente.'
     else
       assign bjw_title = 'Je welkomstkorting is toegepast'
       assign bjw_body = 'Code {code} ({value}) is opgeslagen en wordt automatisch verrekend bij het afrekenen.'
       assign bjw_off = 'korting'
       assign bjw_note = 'Incl. {pct}% welkomstkorting, automatisch verrekend.'
       assign bjw_save = 'Bespaar'
+      assign bjw_bf_title = 'Je Black Friday-korting is toegepast'
+      assign bjw_bf_body = 'Code {code} ({value}) staat op je winkelwagen en wordt automatisch verrekend bij het afrekenen.'
+      assign bjw_bf_note = 'Incl. {pct}% Black Friday-korting, automatisch verrekend.'
   endcase
 
   assign bjw_pcts = '10,15,20' | split: ','
   assign bjw_scope = section.settings.welcome_collections | default: 'showerhead,shower-filter' | split: ','
+
+  comment
+    Black Friday sign-up code (see 4. above). Same code, percentage and end as
+    bjw_bf_code / bjw_bf_starts in snippets/besjaar-welcome-offer.liquid:
+    1795215600 = Sat 21 Nov 2026 00:00 Amsterdam, when the code ends in Admin
+    and the popup switches off. Its percentage must be one of bjw_pcts.
+  endcomment
+  assign bjw_bf_code = ''
+  assign bjw_bf_pct = 20
+  assign bjw_bf_now = 'now' | date: '%s' | plus: 0
+  if settings.welcome_offer_bf_early_access != false and bjw_bf_now < 1795215600
+    assign bjw_bf_code = 'VROEG20-PJX6SL'
+  endif
+
+  comment
+    Collections to price: the welcome collections first, then (while the Black
+    Friday code runs) the whole catalogue. Products only in the second part
+    get "ws": false, so the WELKOM codes are never shown on them.
+  endcomment
+  assign bjw_lists = bjw_scope
+  if bjw_bf_code != ''
+    assign bjw_lists = bjw_scope | join: ',' | append: ',all' | split: ','
+  endif
 -%}
 {%- if bjw_show -%}
   {%- comment -%}
-    Final price per product, variant and welcome percentage. "now" is the price
-    the shop shows today, "was" the struck-through reference (the regular price
-    under an automatic discount, the compare-at price under a compare-at sale,
-    else the price itself) and "sale" the existing reduction in whole percent.
-    Per percentage, "w" says whether the welcome code sets the price (false
-    when the product's own sale is the better deal, as Shopify will apply
-    that one instead).
+    Final price per product, variant and code percentage. "now" is the price
+    the shop shows today (automatic discount from the mirror, else the product
+    price); "was" is the product price, the amount the code takes its
+    percentage off, struck through beside the code price. Per percentage, "w"
+    says whether the code sets the price (false when the product's own
+    automatic discount is the better deal, as Shopify will apply that one
+    instead). "ws" is false for products outside the welcome collections.
   {%- endcomment -%}
   {%- capture bjw_prices_json -%}
     {%- assign bjw_seen = '|' -%}
+    {%- assign bjw_seen_scope = '|' -%}
     {%- assign bjw_count = 0 -%}
-    {%- for bjw_scope_handle in bjw_scope -%}
-      {%- assign bjw_collection_handle = bjw_scope_handle | strip -%}
+    {%- for bjw_list_handle in bjw_lists -%}
+      {%- assign bjw_in_scope = true -%}
+      {%- if forloop.index > bjw_scope.size -%}{%- assign bjw_in_scope = false -%}{%- endif -%}
+      {%- assign bjw_collection_handle = bjw_list_handle | strip -%}
       {%- assign bjw_collection = collections[bjw_collection_handle] -%}
       {%- if bjw_collection == blank -%}{%- continue -%}{%- endif -%}
       {%- for bjw_product in bjw_collection.products limit: 50 -%}
         {%- capture bjw_token -%}|{{ bjw_product.handle }}|{%- endcapture -%}
         {%- if bjw_seen contains bjw_token -%}{%- continue -%}{%- endif -%}
         {%- assign bjw_seen = bjw_seen | append: bjw_token -%}
+        {%- if bjw_in_scope -%}{%- assign bjw_seen_scope = bjw_seen_scope | append: bjw_token -%}{%- endif -%}
         {%- assign bjw_first = bjw_product.selected_or_first_available_variant | default: bjw_product.variants.first -%}
         {%- if bjw_count > 0 -%},{%- endif -%}
-        {{ bjw_product.handle | json }}: { "id": {{ bjw_product.id }}, "first": {{ bjw_first.id }}, "v": {
+        {{ bjw_product.handle | json }}: { "id": {{ bjw_product.id }}, "first": {{ bjw_first.id }}, "ws": {{ bjw_in_scope }}, "v": {
         {%- for bjw_variant in bjw_product.variants -%}
           {%- capture bjw_auto -%}{% render 'besjaar-discount-badge', product: bjw_product, variant: bjw_variant, layout: 'cents' %}{%- endcapture -%}
           {%- assign bjw_auto = bjw_auto | strip -%}
-          {%- if bjw_auto != '' -%}
-            {%- assign bjw_now = bjw_auto | plus: 0 -%}
-            {%- assign bjw_was = bjw_variant.price -%}
-          {%- elsif bjw_variant.compare_at_price > bjw_variant.price -%}
-            {%- assign bjw_now = bjw_variant.price -%}
-            {%- assign bjw_was = bjw_variant.compare_at_price -%}
-          {%- else -%}
-            {%- assign bjw_now = bjw_variant.price -%}
-            {%- assign bjw_was = bjw_variant.price -%}
-          {%- endif -%}
-          {%- assign bjw_sale = 0 -%}
-          {%- if bjw_was > bjw_now -%}
-            {%- assign bjw_sale = bjw_was | minus: bjw_now | times: 100 | divided_by: bjw_was -%}
-          {%- endif -%}
+          {%- assign bjw_now = bjw_variant.price -%}
+          {%- if bjw_auto != '' -%}{%- assign bjw_now = bjw_auto | plus: 0 -%}{%- endif -%}
+          {%- assign bjw_was = bjw_variant.price -%}
           {%- unless forloop.first -%},{%- endunless -%}
-          "{{ bjw_variant.id }}": { "was": {{ bjw_was }}, "sale": {{ bjw_sale }}, "wm": {{ bjw_was | money | json }}, "p": {
+          "{{ bjw_variant.id }}": { "was": {{ bjw_was }}, "wm": {{ bjw_was | money | json }}, "p": {
           {%- for bjw_pct_text in bjw_pcts -%}
             {%- assign bjw_pct = bjw_pct_text | plus: 0 -%}
+            {%- comment -%}Truncated to the cent, as Shopify does (order #SH1053: 20% of €19,99 = €3,99 off).{%- endcomment -%}
             {%- assign bjw_cut = bjw_variant.price | times: bjw_pct | divided_by: 100 -%}
             {%- assign bjw_final = bjw_variant.price | minus: bjw_cut -%}
             {%- assign bjw_wins = true -%}
@@ -153,10 +201,11 @@
   {%- endcapture -%}
   {%- liquid
     comment
-      Codes Shopify has actually attached to the cart. When the cart holds a
-      product the codes cover and the claimed code is not among these, the
-      code is not in play (used, removed or replaced) and no welcome price is
-      shown.
+      Codes Shopify has actually attached to the cart (upper case). When the
+      cart holds a product a code covers and that code is not among these, the
+      code is not in play (used, removed or replaced) and no code price is
+      shown. The WELKOM codes cover the welcome collections (cartCovered), the
+      Black Friday code covers every product (cartAny).
     endcomment
     assign bjw_cart_codes = '|'
     for bjw_application in cart.discount_applications
@@ -164,6 +213,7 @@
         assign bjw_cart_codes = bjw_cart_codes | append: bjw_application.title | append: '|'
       endif
     endfor
+    assign bjw_cart_codes = bjw_cart_codes | upcase
     assign bjw_cart_covered = false
     for bjw_item in cart.items
       capture bjw_item_token
@@ -171,10 +221,14 @@
         echo bjw_item.product.handle
         echo '|'
       endcapture
-      if bjw_seen contains bjw_item_token
+      if bjw_seen_scope contains bjw_item_token
         assign bjw_cart_covered = true
       endif
     endfor
+    assign bjw_cart_any = false
+    if cart.item_count > 0
+      assign bjw_cart_any = true
+    endif
   -%}
   {{ 'besjaar-x-welcome-applied-1.css' | asset_url | stylesheet_tag: preload: true }}
   <div id="BesjaarWelcomeApplied" class="bj-offer-applied" role="status" aria-live="polite" hidden>
@@ -194,9 +248,14 @@
         {"id":"15","pct":15,"value":{{ '15% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_15 | default: 'WELKOM15' | json }}},
         {"id":"20","pct":20,"value":{{ '20% ' | append: bjw_off | json }},"code":{{ settings.welcome_offer_code_20 | default: 'WELKOM20' | json }}},
         {"id":"shipping","pct":0,"value":{{ 'besjaar_ui.welcome_offer.free_shipping_value' | t | json }},"code":{{ settings.welcome_offer_code_shipping | default: 'WELKOMSHIP' | json }}}
+        {%- if bjw_bf_code != '' -%},
+        {"id":"bf","pct":{{ bjw_bf_pct }},"all":true,"value":{{ bjw_bf_pct | append: '% ' | append: bjw_off | json }},"code":{{ bjw_bf_code | json }},"title":{{ bjw_bf_title | json }},"body":{{ bjw_bf_body | json }},"note":{{ bjw_bf_note | json }}}
+        {%- endif %}
       ],
+      "bfKey": "besjaar_bf_early_access_2026_v1",
       "cartCodes": {{ bjw_cart_codes | json }},
       "cartCovered": {{ bjw_cart_covered | json }},
+      "cartAny": {{ bjw_cart_any | json }},
       "prices": { {{ bjw_prices_json | strip }} }
     }
   </script>
@@ -209,7 +268,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Shows a short 'discount applied' confirmation after a shopper claims the Welcome Drop, and from then on shows that shopper the welcome price on every product the code covers. It follows the Welcome offer settings in Theme settings. Keep this section in the footer group."
+      "content": "Shows a short 'discount applied' confirmation after a shopper claims the Welcome Drop, and from then on shows that shopper the welcome price on every product the code covers. Until 21 November it does the same for the Black Friday sign-up code VROEG20-PJX6SL (20% on every product). It follows the Welcome offer settings in Theme settings. Keep this section in the footer group."
     },
     {
       "type": "text",

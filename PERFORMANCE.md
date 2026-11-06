@@ -98,3 +98,41 @@ exact file names. The theme picks them up automatically, with no code change:
 - Not done: the Legal notice policy still lists Elbestraat 113 as "Fysiek
   adres". The connector lacks the `write_legal_policies` scope; edit it in
   Settings → Policies.
+
+## Discount shown after the e-mail sign-up (2026-11-06)
+
+**Problem.** After entering their e-mail in the Black Friday popup, a shopper got
+code `VROEG20-PJX6SL` (20% off), but product pages, product cards and the cart
+still showed the old prices and no 20%.
+
+**Why.**
+1. The script that shows code prices (`besjaar-welcome-applied`) only knew the
+   WELKOM codes, not the Black Friday code, so nothing changed after sign-up.
+2. `VROEG20-PJX6SL` is an *order* discount (Admin > Discounts, class ORDER).
+   Shopify puts order discounts on the cart total only, never on
+   `final_line_price`, so every cart line kept its full price.
+3. On the product page the "20% KORTING" badge was meant for a block that no
+   longer exists, and the dark price-row badge kept the compare-at percentage
+   ("23% KORTING") next to the code price.
+
+**What changed.**
+
+| Where | Change | Files |
+|---|---|---|
+| Product pages, cards, recently viewed, drawer suggestions | The Black Friday code is a reward ("bf"): every product, valid until the code ends (21 Nov 00:00), detected from the sign-up landing, the popup's storage key or the codes on the cart. The struck price is now the price the code applies to (€16,00 ~~€19,99~~ 20% KORTING), so the percentage, struck price and new price agree. The price-row badge shows the code's % in sale red, with a note "Incl. 20% Black Friday-korting, automatisch verrekend." | `sections/besjaar-welcome-applied.liquid`, `assets/besjaar-x-welcome-applied-2.js`, `assets/besjaar-x-welcome-applied-1.css` |
+| Cart drawer | An order discount is spread over the lines (in proportion to price, the last line takes the rounding rest, so lines add up to the total). Each line shows the struck price, the price after the code, "Bespaar 20%" and a code tag. | `assets/besjaar-ui-core.js`, `assets/besjaar-x-cart-3.js` |
+| Cart page | Same, server-rendered and after every quantity change. | `sections/besjaar-store-cart.liquid` |
+
+Prices are truncated to the cent as Shopify does (orders #SH1053, #SH1065).
+Without a code nothing changes: compare-at sales still show the compare-at price
+struck through. When the code changes or Black Friday moves, update
+`bjw_bf_code` / `bjw_bf_starts` in `snippets/besjaar-welcome-offer.liquid` **and**
+`bjw_bf_code` / `1795215600` in `sections/besjaar-welcome-applied.liquid`.
+
+Checked: Theme Check (no offenses in the changed files), the section rendered
+with liquidjs against the six products' real prices, and the scripts in
+Chromium (product page, cards, drawer, cart page) for sign-up, later visits,
+code removed from the cart, expired welcome claims and shareable links.
+Deploy the six files like the others (see "Deploy" above), then on the preview:
+sign up in the popup on a product page, check the price, open the cart drawer
+and the cart page.
