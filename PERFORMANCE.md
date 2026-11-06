@@ -136,3 +136,10 @@ code removed from the cart, expired welcome claims and shareable links.
 Deploy the six files like the others (see "Deploy" above), then on the preview:
 sign up in the popup on a product page, check the price, open the cart drawer
 and the cart page.
+
+Status (2026-11-06, 15:48 CET): unpublished theme **"Besjaar – korting zichtbaar
+(preview)"** (`204139528519`) = copy of the live theme "Besjaar – SEO alle talen
+(preview)" (`204113707335`, taken 14:47 UTC; its six files were identical to the
+baseline above) + the six files from commit `aabe5ba` (checksums verified).
+Preview: `https://www.besjaar.eu/?preview_theme_id=204139528519`. The connector
+cannot write to or publish the live theme: publish it in Online Store > Themes.
