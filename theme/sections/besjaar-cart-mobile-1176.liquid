@@ -75,13 +75,14 @@
   "cart": {"total_price": {{ cart.total_price }}, "item_count": {{ cart.item_count }}, "currency": {{ cart.currency.iso_code | json }}, "items": [{%- for bjn_line in cart.items -%}{%- unless forloop.first -%},{%- endunless -%}{"product_id": {{ bjn_line.product_id }}}{%- endfor -%}]}
 }
 </script>
-{%- if additional_checkout_buttons -%}
-  {%- if request.page_type == 'cart' -%}
-    <div class="bj-cp-express" data-bj-cp-express>{{ content_for_additional_checkout_buttons }}</div>
-  {%- else -%}
-    <div class="bj-cd-express" data-bj-cd-express data-sig="{{ cart.item_count }}:{{ cart.total_price }}">{{ content_for_additional_checkout_buttons }}</div>
-  {%- endif -%}
-{%- endif -%}
+{%- comment -%}
+  2026-11-06 (owner's request): no express checkout buttons (Shop Pay, Google
+  Pay, Apple Pay) in the cart drawer or on the cart page; only the Afrekenen
+  button. The wallets stay available in Shopify's own checkout. To bring them
+  back, render content_for_additional_checkout_buttons again in
+  div.bj-cd-express[data-bj-cd-express] (drawer) / div.bj-cp-express[data-bj-cp-express]
+  (cart page); assets/besjaar-cart-mobile-1176.js places and refreshes them.
+{%- endcomment -%}
 {%- if request.page_type == 'cart' and cart.item_count > 0 -%}
   {%- assign bjm_checkout = 'besjaar_ui.cart.drawer_checkout' | t | replace: '→', '' | strip -%}
   <div class="bj-cp-sticky" data-bj-cp-sticky aria-hidden="true">
