@@ -149,3 +149,11 @@ and cart page now show only the total (Subtotaal / Korting rows hidden, commit
 `ec677c5`). Unpublished theme **"Besjaar – alleen totaal (preview)"**
 (`204139987271`) = copy of the live theme + those two files (checksums verified).
 Preview: `https://www.besjaar.eu/?preview_theme_id=204139987271`.
+
+Fix (2026-11-06, 16:40 CET): "alleen totaal" was published but still showed
+Subtotaal / Korting in the drawer: `besjaar-x-cart-1.css` forces those rows to
+`display:flex!important` and showed their block under an order discount
+(`.bj-cd-order-disc`). That rule is removed (commit `4ee6608`). Unpublished theme
+**"Besjaar – alleen totaal v2 (preview)"** (`204140806471`) = copy of the live
+theme + the fixed `assets/besjaar-x-cart-1.css`.
+Preview: `https://www.besjaar.eu/?preview_theme_id=204140806471`.
