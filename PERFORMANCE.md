@@ -143,3 +143,9 @@ Status (2026-11-06, 15:48 CET): unpublished theme **"Besjaar – korting zichtba
 baseline above) + the six files from commit `aabe5ba` (checksums verified).
 Preview: `https://www.besjaar.eu/?preview_theme_id=204139528519`. The connector
 cannot write to or publish the live theme: publish it in Online Store > Themes.
+
+Update (2026-11-06, 16:10 CET): "korting zichtbaar" was published. The cart drawer
+and cart page now show only the total (Subtotaal / Korting rows hidden, commit
+`ec677c5`). Unpublished theme **"Besjaar – alleen totaal (preview)"**
+(`204139987271`) = copy of the live theme + those two files (checksums verified).
+Preview: `https://www.besjaar.eu/?preview_theme_id=204139987271`.
