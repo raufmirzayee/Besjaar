@@ -418,11 +418,14 @@
       if(discount){discount.hidden=!(cart.total_discount>0);discount.textContent=cart.total_discount>0?(i18n.cartSavings||'You save %amount%').replace('%amount%',formatMoney(cart.total_discount,cart.currency||currency)):''}
       /* 2026-09-22 cart drawer v2: subtotal / discount rows appear only when a
          discount applies (otherwise the subtotal would just repeat the total),
-         and the checkout button carries the amount. */
+         and the checkout button carries the amount.
+         2026-11-06 (owner's request): the subtotal and discount rows stay hidden;
+         only the total shows. Each line already shows its discount (struck
+         price, new price and the code), so the rows only repeated it. */
       {const hasSavings=Number(cart.total_discount||0)>0,currencyCode=cart.currency||currency,subtotalRow=qs('[data-cart-drawer-subtotal-row]'),subtotalEl=qs('[data-cart-drawer-subtotal]'),discountRow=qs('[data-cart-drawer-discount-row]'),discountAmount=qs('[data-cart-drawer-discount-amount]'),checkoutTotal=qs('[data-cart-drawer-checkout-total]');
-        if(subtotalRow)subtotalRow.hidden=!hasSavings;
+        if(subtotalRow)subtotalRow.hidden=true;
         if(subtotalEl)subtotalEl.textContent=formatMoney(Number(cart.original_total_price||cart.total_price||0),currencyCode);
-        if(discountRow)discountRow.hidden=!hasSavings;
+        if(discountRow)discountRow.hidden=true;
         if(discountAmount)discountAmount.textContent=hasSavings?'\u2212 '+formatMoney(cart.total_discount,currencyCode):'';
         if(checkoutTotal)checkoutTotal.textContent=formatMoney(cart.total_price,currencyCode)}
       if(!cart.items.length){

@@ -401,8 +401,9 @@
             </div>
 
             <div class="bj-cp-sum">
-              <div class="bj-cp-sum__row" data-bj-cp-subtotal-row{% if cart.cart_level_discount_applications.size == 0 %} hidden{% endif %}><span>{{ 'besjaar_ui.cart.drawer_subtotal' | t }}</span><span data-bj-cp-subtotal>{{ cart.items_subtotal_price | money }}</span></div>
-              <ul class="bj-cp-sum__order" role="list" data-bj-cp-order{% if cart.cart_level_discount_applications.size == 0 %} hidden{% endif %}>
+              {%- comment -%}2026-11-06 (owner's request): only the total shows. Each line already shows its discount, so the subtotal and order-discount rows stay hidden.{%- endcomment -%}
+              <div class="bj-cp-sum__row" data-bj-cp-subtotal-row hidden><span>{{ 'besjaar_ui.cart.drawer_subtotal' | t }}</span><span data-bj-cp-subtotal>{{ cart.items_subtotal_price | money }}</span></div>
+              <ul class="bj-cp-sum__order" role="list" data-bj-cp-order hidden>
                 {%- for discount in cart.cart_level_discount_applications -%}<li><span>{{ discount.title | escape }}</span><span>−{{ discount.total_allocated_amount | money }}</span></li>{%- endfor -%}
               </ul>
               <div class="bj-cp-sum__row bj-cp-sum__total"><span>{{ 'besjaar_ui.cart.total' | t }}</span><span><span data-cart-page-total>{{ cart.total_price | money }}</span> {{ cart.currency.iso_code }}</span></div>
@@ -526,10 +527,10 @@
       }
     });
     var subRow = form.querySelector('[data-bj-cp-subtotal-row]'), sub = form.querySelector('[data-bj-cp-subtotal]'), order = form.querySelector('[data-bj-cp-order]');
-    if (subRow) subRow.hidden = !levels.length;
+    if (subRow) subRow.hidden = true;
     if (sub) sub.textContent = money(cart.items_subtotal_price, cur);
     if (order) {
-      order.hidden = !levels.length;
+      order.hidden = true;
       order.innerHTML = levels.map(function (d) { return '<li><span>' + esc(d.title) + '</span><span>−' + money(d.total_allocated_amount, cur) + '</span></li>'; }).join('');
     }
   });
