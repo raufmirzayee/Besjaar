@@ -1,0 +1,46 @@
+--- a/snippets/seo-head.liquid
++++ b/snippets/seo-head.liquid
+@@ -39,8 +39,31 @@
+       assign seo_head_page = 'Pagina'
+   endcase
+ -%}
++{%- liquid
++  comment
++    2026-11-07 SEO audit: Shopify policy pages (/policies/*) have no search
++    engine listing field, so page_description was empty and the theme printed
++    <meta name="description" content="">. Policy pages now get a short,
++    language-specific description built from the policy title.
++  endcomment
++  assign seo_head_description = page_description
++  if request.page_type == 'policy' and seo_head_description == blank
++    case seo_head_lang
++      when 'en'
++        assign seo_head_description = page_title | append: ' of Besjaar (Univex B.V., Assen, the Netherlands), the official store for shower heads and shower filters. Questions? Email info@univexbv.com.'
++      when 'de'
++        assign seo_head_description = page_title | append: ' von Besjaar (Univex B.V., Assen, Niederlande), dem offiziellen Shop für Duschköpfe und Duschfilter. Fragen? E-Mail an info@univexbv.com.'
++      when 'fr'
++        assign seo_head_description = page_title | append: ' de Besjaar (Univex B.V., Assen, Pays-Bas), la boutique officielle de pommeaux et filtres de douche. Questions ? info@univexbv.com.'
++      when 'es'
++        assign seo_head_description = page_title | append: ' de Besjaar (Univex B.V., Assen, Países Bajos), la tienda oficial de alcachofas y filtros de ducha. ¿Preguntas? info@univexbv.com.'
++      else
++        assign seo_head_description = page_title | append: ' van Besjaar (Univex B.V., Assen), de officiële webshop voor douchekoppen en douchefilters. Vragen? Mail naar info@univexbv.com.'
++    endcase
++  endif
++-%}
+ <title>{{ page_title | escape_once }}{% if current_tags %} &ndash; {{ seo_head_tagged }} "{{ current_tags | join: ', ' | escape_once }}"{% endif %}{% if current_page != 1 %} &ndash; {{ seo_head_page }} {{ current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}</title>
+-<meta name="description" content="{{ page_description | escape }}">
++<meta name="description" content="{{ seo_head_description | escape }}">
+ <meta name="application-name" content="Besjaar">
+ {%- liquid
+   comment
+@@ -53,8 +76,8 @@
+     assign besjaar_ui_browser_title = page_title | append: ' – ' | append: shop.name
+   endunless
+ -%}
+-{% render 'meta-tags', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: page_description %}
+-{% render 'structured-data', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: page_description %}
++{% render 'meta-tags', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: seo_head_description %}
++{% render 'structured-data', besjaar_ui_browser_title: besjaar_ui_browser_title, besjaar_ui_meta_description: seo_head_description %}
+ {%- if request.page_type == 'product' -%}
+   <script>
+     /* The theme owns Product JSON-LD (snippets/structured-data.liquid): Shopify's

@@ -1,0 +1,11 @@
+--- a/snippets/structured-data.liquid
++++ b/snippets/structured-data.liquid
+@@ -106,7 +106,7 @@
+         "@type": "Organization",
+         "@id": {{ sd_org_id | json }},
+         "name": "Besjaar",
+-        "url": "https://besjaar.eu",
++        "url": {{ shop.url | append: '/' | json }},
+         {% if sd_org_legal_name != blank %}"legalName": {{ sd_org_legal_name | json }},{% endif %}
+         "description": {{ sd_org_description | json }},
+         {%- capture sd_addr_street -%}{% render 'besjaar-company-address', field: 'street' %}{%- endcapture -%}{%- capture sd_addr_zip -%}{% render 'besjaar-company-address', field: 'zip' %}{%- endcapture -%}{%- capture sd_addr_city -%}{% render 'besjaar-company-address', field: 'city' %}{%- endcapture -%}{%- assign sd_addr_street = sd_addr_street | strip -%}{%- assign sd_addr_zip = sd_addr_zip | strip -%}{%- assign sd_addr_city = sd_addr_city | strip -%}{% if sd_addr_city != blank and sd_addr_street != blank %}"address": {"@type": "PostalAddress", "streetAddress": {{ sd_addr_street | json }}, "postalCode": {{ sd_addr_zip | json }}, "addressLocality": {{ sd_addr_city | json }}, "addressCountry": {{ shop.address.country_code | json }}},{% endif %}

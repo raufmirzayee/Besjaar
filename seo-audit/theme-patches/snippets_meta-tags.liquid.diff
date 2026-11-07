@@ -1,0 +1,29 @@
+--- a/snippets/meta-tags.liquid
++++ b/snippets/meta-tags.liquid
+@@ -121,6 +121,26 @@
+       assign besjaar_ui_noindex = true
+     endif
+   endif
++
++  comment
++    2026-11-07 SEO audit:
++    1. Blog tag listings (/blogs/<blog>/tagged/<tag>) repeat the blog index
++       description and only re-list articles that already have their own
++       URLs. Same treatment as collection tag pages: noindex,follow.
++    2. Articles that exist only in Dutch (no Translate & Adapt translation)
++       are still served under /de, /en, /fr and /es with a foreign <html lang>
++       and hreflang. Set the article metafield custom.primary_locale_only
++       (boolean) to true for such an article; its non-primary-language URLs
++       then get noindex,follow until a real translation is added.
++  endcomment
++  if request.page_type == 'blog' and current_tags != blank
++    assign besjaar_ui_noindex = true
++  endif
++  if request.page_type == 'article' and request.locale.primary == false
++    if article.metafields.custom.primary_locale_only.value == true
++      assign besjaar_ui_noindex = true
++    endif
++  endif
+ %}
+ <meta property="og:site_name" content="Besjaar">
+ {% liquid
