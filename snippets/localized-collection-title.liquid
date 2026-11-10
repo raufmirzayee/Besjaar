@@ -1,6 +1,12 @@
 {%- liquid
   assign besjaar_ui_collection = collection
-  assign besjaar_ui_handle = handle | default: besjaar_ui_collection.handle | downcase | strip
+  comment
+    2026-11-10: the collection's own handle comes first. `handle` is also a
+    Shopify global (the current page's handle), so on /collections/all it was
+    'all' for every collection passed in, and Douchefilters and Douchesets
+    both rendered as "Douchekoppen & filters".
+  endcomment
+  assign besjaar_ui_handle = besjaar_ui_collection.handle | default: handle | downcase | strip
   assign besjaar_ui_title = title | default: besjaar_ui_collection.title
   assign besjaar_ui_focus_collection = settings.shower_collection
   assign is_focus_collection = false

@@ -44,10 +44,12 @@
     assign announcement_text = section.settings.announcement
     assign announcement_mobile_text = section.settings.announcement_mobile | default: section.settings.announcement
   endif
-  capture besjaar_ui_shower_url
-    render 'shower-store-url'
-  endcapture
-  assign besjaar_ui_shower_url = besjaar_ui_shower_url | strip
+  comment
+    2026-11-10: "Shop" and "Shop alles" open the full catalogue
+    (/collections/all: douchekoppen, douchefilters and douchesets) instead of
+    only the shower-head collection. routes.* is already localised.
+  endcomment
+  assign besjaar_ui_shop_all_url = routes.all_products_collection_url
 
   assign besjaar_ui_mega_collection = settings.shower_collection
   if besjaar_ui_mega_collection == blank
@@ -395,14 +397,14 @@
 
     <nav class="besjaar-ui-nav besjaar-ui-nav--shower-focus" aria-label="{{ 'besjaar_ui.accessibility.main_navigation' | t | escape }}">
       <div class="besjaar-ui-shop-mega-wrap" data-shop-mega>
-        <a class="besjaar-ui-nav__link besjaar-ui-shop-mega__trigger" href="{{ besjaar_ui_shower_url }}" aria-haspopup="true" aria-expanded="false" aria-controls="BesjaarUIShopMega-{{ section.id }}" data-shop-mega-trigger>
+        <a class="besjaar-ui-nav__link besjaar-ui-shop-mega__trigger" href="{{ besjaar_ui_shop_all_url }}" aria-haspopup="true" aria-expanded="false" aria-controls="BesjaarUIShopMega-{{ section.id }}" data-shop-mega-trigger>
           <span>{{ 'besjaar_ui.shower_store.nav.shop' | t }}</span>
           <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m3 5 4 4 4-4"/></svg>
         </a>
         <div class="besjaar-ui-shop-mega" id="BesjaarUIShopMega-{{ section.id }}" data-shop-mega-panel aria-hidden="true" inert>
           <div class="besjaar-ui-shell besjaar-ui-shop-mega__inner{% if besjaar_ui_mega_featured_product != blank %} has-featured{% else %} is-catalog-only{% endif %}">
             <div class="besjaar-ui-shop-mega__catalog">
-              <a class="besjaar-ui-shop-mega__eyebrow besjaar-ui-shop-mega__all-link" href="{{ besjaar_ui_shower_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
+              <a class="besjaar-ui-shop-mega__eyebrow besjaar-ui-shop-mega__all-link" href="{{ besjaar_ui_shop_all_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
               <div class="besjaar-ui-shop-mega__grid">
                 {% assign besjaar_ui_mega_rendered = 0 %}
                 {% if besjaar_ui_mega_collection != blank %}
@@ -616,7 +618,7 @@
 
   <nav class="besjaar-ui-mobile-menu" id="BesjaarUIMobileMenu-{{ section.id }}" data-mobile-menu aria-hidden="true" aria-label="{{ 'besjaar_ui.accessibility.mobile_menu' | t | escape }}" inert>
     <div class="besjaar-ui-mobile-menu__shop">
-      <a class="besjaar-ui-mobile-menu__shop-title besjaar-ui-mobile-menu__shop-all" href="{{ besjaar_ui_shower_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
+      <a class="besjaar-ui-mobile-menu__shop-title besjaar-ui-mobile-menu__shop-all" href="{{ besjaar_ui_shop_all_url }}">{{ 'besjaar_ui.header.shop_all' | t }} <span aria-hidden="true">→</span></a>
       <div class="besjaar-ui-mobile-menu__categories">
         {% if besjaar_ui_mega_collection != blank %}
           <a href="{% render 'localized-internal-url', url: besjaar_ui_mega_collection.url %}">
@@ -749,7 +751,7 @@
           <div class="besjaar-ui-search-discovery__block">
             <div class="besjaar-ui-search-discovery__head"><span>{{ 'besjaar_ui.search.brands' | t }}</span></div>
             <div class="besjaar-ui-search-brands">
-              <a href="{% render 'localized-internal-url', url: besjaar_ui_shower_url %}">BESJAAR · {{ 'besjaar_ui.shower_store.nav.shop' | t }} <span>→</span></a>
+              <a href="{% render 'localized-internal-url', url: besjaar_ui_shop_all_url %}">BESJAAR · {{ 'besjaar_ui.shower_store.nav.shop' | t }} <span>→</span></a>
             </div>
           </div>
         {% endif %}
@@ -769,7 +771,7 @@
         <button class="besjaar-ui-button besjaar-ui-button--primary" type="submit">{{ 'besjaar_ui.header.search_button' | t }}</button>
       </form>
       <nav class="besjaar-ui-nojs-tools__links" aria-label="{{ 'besjaar_ui.accessibility.mobile_navigation' | t | escape }}">
-        <a href="{% render 'localized-internal-url', url: besjaar_ui_shower_url %}">{{ 'besjaar_ui.shower_store.nav.shop' | t }}</a>
+        <a href="{% render 'localized-internal-url', url: besjaar_ui_shop_all_url %}">{{ 'besjaar_ui.shower_store.nav.shop' | t }}</a>
         <a href="{{ besjaar_ui_guide_url }}">{{ besjaar_ui_guide_label | escape }}</a>
         {% if besjaar_ui_news_url != blank %}<a href="{{ besjaar_ui_news_url }}">{{ besjaar_ui_news_label | escape }}</a>{% endif %}
         <a href="{{ besjaar_ui_reviews_url }}">{{ 'besjaar_ui.shower_store.nav.reviews' | t }}</a>
@@ -992,7 +994,7 @@
 {% if settings.show_mobile_bottom_nav %}
 <nav class="besjaar-ui-bottom-nav besjaar-ui-bottom-nav--v21 besjaar-ui-bottom-nav--v33" aria-label="{{ 'besjaar_ui.accessibility.mobile_navigation' | t | escape }}">
   <a href="{{ routes.root_url }}"{% if request.page_type == 'index' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m3 11 9-8 9 8v10H6a3 3 0 0 1-3-3Z"/><path d="M9 21v-7h6v7"/></svg><span>{{ 'besjaar_ui.header.home' | t }}</span></a>
-  <a href="{% render 'localized-internal-url', url: besjaar_ui_shower_url %}"{% if request.page_type == 'collection' or request.page_type == 'product' or request.page_type == 'list-collections' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span>{{ 'besjaar_ui.header.shop' | t }}</span></a>
+  <a href="{% render 'localized-internal-url', url: besjaar_ui_shop_all_url %}"{% if request.page_type == 'collection' or request.page_type == 'product' or request.page_type == 'list-collections' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg><span>{{ 'besjaar_ui.header.shop' | t }}</span></a>
   <button type="button" data-search-toggle aria-expanded="false" aria-haspopup="dialog" aria-controls="BesjaarUISearchPanel-{{ section.id }}"{% if request.page_type == 'search' %} class="is-active" aria-current="page"{% endif %}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg><span>{{ 'besjaar_ui.header.search_short' | t }}</span></button>
   <button type="button" data-open-drawer="cart" aria-haspopup="dialog" aria-controls="BesjaarUICartDrawer"{% if request.page_type == 'cart' %} class="is-active" aria-current="page"{% endif %}><span class="besjaar-ui-bottom-nav__count" data-cart-count>{{ cart.item_count }}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20.5 7H6"/></svg><span>{{ 'besjaar_ui.header.cart_short' | t }}</span></button>
 </nav>
