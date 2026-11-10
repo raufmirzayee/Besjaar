@@ -1,0 +1,216 @@
+{%- comment -%}
+  Besjaar 15 Oct 2026: ocean hero for collection pages (single collection and
+  the /collections/all "Assortiment" hub). Fact chips repeat what the
+  collection descriptions already state; other collections get the delivery,
+  returns and warranty facts used across the shop.
+  Params: collection, is_all, root_url, intro
+{%- endcomment -%}
+{%- liquid
+  assign wl = request.locale.iso_code | split: '-' | first | downcase
+  assign h = collection.handle
+  assign kind = 'general'
+  if is_all
+    assign kind = 'general'
+  elsif h == 'showerhead' or h == 'douchekoppen' or h == 'showerheads'
+    assign kind = 'heads'
+  elsif h == 'shower-filter' or h == 'douchefilters'
+    assign kind = 'filters'
+  elsif h == 'douchekop-met-filter'
+    assign kind = 'headfilter'
+  endif
+  assign rdays = settings.return_window_days | default: 30
+
+  case wl
+    when 'en'
+      case kind
+        when 'heads'
+          assign c1 = 'Max. 8 litres per minute'
+          assign c2 = '3 or 10 spray modes'
+          assign c3 = 'G½ connection, no tools needed'
+        when 'filters'
+          assign c1 = '3–5 months per filter'
+          assign c2 = 'Set of 2: up to 10 months'
+          assign c3 = 'Swap without tools'
+        when 'headfilter'
+          assign c1 = '8-stage filter in the handle'
+          assign c2 = '10 modes + pause button'
+          assign c3 = 'Max. 8 litres per minute'
+        else
+          capture c1
+            render 'besjaar-delivery-promise'
+          endcapture
+          assign c1 = c1 | strip
+          assign c2 = rdays | append: ' days to change your mind'
+          assign c3 = '12-month warranty'
+      endcase
+      assign all_intro = 'Showerheads with and without filter, replacement filters and complete sets.'
+      assign jump = 'Jump to'
+    when 'de'
+      case kind
+        when 'heads'
+          assign c1 = 'Max. 8 Liter pro Minute'
+          assign c2 = '3 oder 10 Strahlarten'
+          assign c3 = 'G½-Anschluss, ohne Werkzeug'
+        when 'filters'
+          assign c1 = '3–5 Monate pro Filter'
+          assign c2 = '2er-Set: bis zu 10 Monate'
+          assign c3 = 'Wechsel ohne Werkzeug'
+        when 'headfilter'
+          assign c1 = '8-stufiger Filter im Griff'
+          assign c2 = '10 Strahlarten + Pausentaste'
+          assign c3 = 'Max. 8 Liter pro Minute'
+        else
+          capture c1
+            render 'besjaar-delivery-promise'
+          endcapture
+          assign c1 = c1 | strip
+          assign c2 = rdays | append: ' Tage Rückgaberecht'
+          assign c3 = '12 Monate Garantie'
+      endcase
+      assign all_intro = 'Duschköpfe mit und ohne Filter, Ersatzfilter und Komplettsets.'
+      assign jump = 'Springe zu'
+    when 'fr'
+      case kind
+        when 'heads'
+          assign c1 = '8 litres par minute max.'
+          assign c2 = '3 ou 10 types de jet'
+          assign c3 = 'Raccord G½, sans outils'
+        when 'filters'
+          assign c1 = '3 à 5 mois par filtre'
+          assign c2 = "Lot de 2 : jusqu'à 10 mois"
+          assign c3 = 'Remplacement sans outils'
+        when 'headfilter'
+          assign c1 = 'Filtre 8 étapes dans la poignée'
+          assign c2 = '10 jets + bouton pause'
+          assign c3 = '8 litres par minute max.'
+        else
+          capture c1
+            render 'besjaar-delivery-promise'
+          endcapture
+          assign c1 = c1 | strip
+          assign c2 = rdays | append: " jours pour changer d'avis"
+          assign c3 = 'Garantie 12 mois'
+      endcase
+      assign all_intro = 'Pommeaux avec ou sans filtre, filtres de rechange et kits complets.'
+      assign jump = 'Aller à'
+    when 'es'
+      case kind
+        when 'heads'
+          assign c1 = 'Máx. 8 litros por minuto'
+          assign c2 = '3 o 10 modos de chorro'
+          assign c3 = 'Conexión G½, sin herramientas'
+        when 'filters'
+          assign c1 = '3–5 meses por filtro'
+          assign c2 = 'Pack de 2: hasta 10 meses'
+          assign c3 = 'Cambio sin herramientas'
+        when 'headfilter'
+          assign c1 = 'Filtro de 8 etapas en el mango'
+          assign c2 = '10 modos + botón de pausa'
+          assign c3 = 'Máx. 8 litros por minuto'
+        else
+          capture c1
+            render 'besjaar-delivery-promise'
+          endcapture
+          assign c1 = c1 | strip
+          assign c2 = rdays | append: ' días para cambiar de opinión'
+          assign c3 = '12 meses de garantía'
+      endcase
+      assign all_intro = 'Alcachofas con y sin filtro, filtros de recambio y sets completos.'
+      assign jump = 'Ir a'
+    else
+      case kind
+        when 'heads'
+          assign c1 = 'Max. 8 liter per minuut'
+          assign c2 = '3 of 10 standen'
+          assign c3 = 'G½-aansluiting, zonder gereedschap'
+        when 'filters'
+          assign c1 = '3–5 maanden per filter'
+          assign c2 = 'Set van 2: tot 10 maanden'
+          assign c3 = 'Wisselen zonder gereedschap'
+        when 'headfilter'
+          assign c1 = '8-traps filter in de handgreep'
+          assign c2 = '10 standen + pauzeknop'
+          assign c3 = 'Max. 8 liter per minuut'
+        else
+          capture c1
+            render 'besjaar-delivery-promise'
+          endcapture
+          assign c1 = c1 | strip
+          assign c2 = rdays | append: ' dagen bedenktijd'
+          assign c3 = '12 maanden garantie'
+      endcase
+      assign all_intro = 'Douchekoppen met en zonder filter, vervangfilters en complete sets.'
+      assign jump = 'Ga naar'
+  endcase
+
+  if is_all
+    assign hero_title = 'besjaar_ui.shower_store.catalog.heading' | t
+    assign hero_intro = all_intro
+    assign hero_eyebrow = 'BESJAAR'
+  else
+    capture hero_title
+      render 'localized-collection-title', collection: collection
+    endcapture
+    assign hero_title = hero_title | strip
+    assign hero_intro = intro
+    assign hero_eyebrow = 'besjaar_ui.collection.products_count' | t: count: collection.products_count
+    assign hero_eyebrow = 'BESJAAR · ' | append: hero_eyebrow
+  endif
+-%}
+<div class="bjc-hero{% if is_all %} bjc-hero--all{% endif %}">
+  <div class="bjc-hero__glow" aria-hidden="true"></div>
+  <div class="bjc-hero__inner">
+    <div class="bjc-hero__copy">
+      {%- unless is_all -%}
+        <nav class="bjc-hero__crumbs" aria-label="{{ 'besjaar_ui.product.breadcrumbs' | t | escape }}">
+          <a href="{{ root_url }}">{{ 'besjaar_grouped_collection.home' | t }}</a>
+          <span aria-hidden="true">›</span>
+          <span aria-current="page">{{ hero_title | escape_once }}</span>
+        </nav>
+      {%- endunless -%}
+      <p class="bjc-hero__eyebrow"><span aria-hidden="true"></span>{{ hero_eyebrow | escape_once }}</p>
+      <h1 class="bjc-hero__title">{{ hero_title | escape_once }}</h1>
+      {%- if hero_intro != blank -%}<p class="bjc-hero__intro">{{ hero_intro | escape_once }}</p>{%- endif -%}
+      <ul class="bjc-hero__chips" role="list">
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg>{{ c1 }}</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg>{{ c2 }}</li>
+        <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.2 4.2L19 7"/></svg>{{ c3 }}</li>
+      </ul>
+    </div>
+
+    {%- if is_all -%}
+      <nav class="bjc-cats" aria-label="{{ jump | escape }}">
+        {%- for pass in (1..2) -%}
+          {%- for shop_collection in collections -%}
+            {%- if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' -%}{%- continue -%}{%- endif -%}
+            {%- assign cat_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase -%}
+            {%- assign cat_is_filter = false -%}
+            {%- if cat_identity contains 'filter' -%}{%- assign cat_is_filter = true -%}{%- endif -%}
+            {%- if pass == 1 and cat_is_filter -%}{%- continue -%}{%- endif -%}
+            {%- if pass == 2 and cat_is_filter == false -%}{%- continue -%}{%- endif -%}
+            {%- capture cat_title -%}{% render 'localized-collection-title', collection: shop_collection %}{%- endcapture -%}
+            {%- assign cat_image = shop_collection.image | default: shop_collection.products.first.featured_image -%}
+            <a class="bjc-cat" href="#Collection-{{ shop_collection.handle | escape }}">
+              <span class="bjc-cat__media">
+                {%- if cat_image -%}{{ cat_image | image_url: width: 400 | image_tag: loading: 'eager', widths: '200,300,400', sizes: '120px', alt: '' }}{%- endif -%}
+              </span>
+              <span class="bjc-cat__text">
+                <strong>{{ cat_title | strip | escape_once }}</strong>
+                <small>{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</small>
+              </span>
+              <span class="bjc-cat__arrow" aria-hidden="true">↓</span>
+            </a>
+          {%- endfor -%}
+        {%- endfor -%}
+      </nav>
+    {%- else -%}
+      {%- assign hero_image = collection.image | default: collection.products.first.featured_image -%}
+      {%- if hero_image -%}
+        <figure class="bjc-hero__media" aria-hidden="true">
+          {{ hero_image | image_url: width: 900 | image_tag: loading: 'eager', fetchpriority: 'high', widths: '400,600,900', sizes: '(max-width: 989px) 0px, 420px', alt: '' }}
+        </figure>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+  <svg class="bjc-hero__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 32c120-20 240-26 360-15s240 34 360 34 240-29 360-36 240 9 360 19v26H0z"/></svg>
+</div>
