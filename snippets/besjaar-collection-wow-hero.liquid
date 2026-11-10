@@ -179,28 +179,31 @@
     </div>
 
     {%- if is_all -%}
+      {%- comment -%}2026-11-10: same groups, order and counts as the product groups below (snippets/besjaar-shop-groups).{%- endcomment -%}
+      {%- capture cat_groups -%}{% render 'besjaar-shop-groups' %}{%- endcapture -%}
+      {%- assign cat_groups = cat_groups | strip | split: ',' -%}
       <nav class="bjc-cats" aria-label="{{ jump | escape }}">
-        {%- for pass in (1..2) -%}
-          {%- for shop_collection in collections -%}
-            {%- if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' -%}{%- continue -%}{%- endif -%}
-            {%- assign cat_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase -%}
-            {%- assign cat_is_filter = false -%}
-            {%- if cat_identity contains 'filter' -%}{%- assign cat_is_filter = true -%}{%- endif -%}
-            {%- if pass == 1 and cat_is_filter -%}{%- continue -%}{%- endif -%}
-            {%- if pass == 2 and cat_is_filter == false -%}{%- continue -%}{%- endif -%}
-            {%- capture cat_title -%}{% render 'localized-collection-title', collection: shop_collection %}{%- endcapture -%}
-            {%- assign cat_image = shop_collection.image | default: shop_collection.products.first.featured_image -%}
-            <a class="bjc-cat" href="#Collection-{{ shop_collection.handle | escape }}">
-              <span class="bjc-cat__media">
-                {%- if cat_image -%}{{ cat_image | image_url: width: 400 | image_tag: loading: 'eager', widths: '200,300,400', sizes: '120px', alt: '' }}{%- endif -%}
-              </span>
-              <span class="bjc-cat__text">
-                <strong>{{ cat_title | strip | escape_once }}</strong>
-                <small>{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</small>
-              </span>
-              <span class="bjc-cat__arrow" aria-hidden="true">↓</span>
-            </a>
+        {%- for cat_group in cat_groups -%}
+          {%- assign cat_parts = cat_group | split: ':' -%}
+          {%- assign cat_id = cat_parts[0] | plus: 0 -%}
+          {%- assign cat_count = cat_parts[1] | plus: 0 -%}
+          {%- assign shop_collection = nil -%}
+          {%- for cat_candidate in collections -%}
+            {%- if cat_candidate.id == cat_id -%}{%- assign shop_collection = cat_candidate -%}{%- break -%}{%- endif -%}
           {%- endfor -%}
+          {%- if shop_collection == blank -%}{%- continue -%}{%- endif -%}
+          {%- capture cat_title -%}{% render 'localized-collection-title', collection: shop_collection %}{%- endcapture -%}
+          {%- assign cat_image = shop_collection.image | default: shop_collection.products.first.featured_image -%}
+          <a class="bjc-cat" href="#Collection-{{ shop_collection.handle | escape }}">
+            <span class="bjc-cat__media">
+              {%- if cat_image -%}{{ cat_image | image_url: width: 400 | image_tag: loading: 'eager', widths: '200,300,400', sizes: '120px', alt: '' }}{%- endif -%}
+            </span>
+            <span class="bjc-cat__text">
+              <strong>{{ cat_title | strip | escape_once }}</strong>
+              <small>{{ 'besjaar_ui.collection.products_count' | t: count: cat_count }}</small>
+            </span>
+            <span class="bjc-cat__arrow" aria-hidden="true">↓</span>
+          </a>
         {%- endfor -%}
       </nav>
     {%- else -%}

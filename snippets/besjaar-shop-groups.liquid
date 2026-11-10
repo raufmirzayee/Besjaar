@@ -1,0 +1,89 @@
+{%- comment -%}
+  Besjaar 2026-11-10 — group order for the /collections/all shop hub. Used by
+  sections/besjaar-shower-collection (the product groups) and
+  snippets/besjaar-collection-wow-hero (the category cards) so both always
+  list the same groups in the same order.
+
+  Order: shower-head collections, filter collections, any other collection,
+  then the Accessoires collection (shower hose, replacement filters) last.
+  Products that are in Accessoires are left out of the earlier groups, and a
+  group with nothing left to show is skipped.
+
+  Accessoires is found by its handle in any shop language, because
+  collection.handle returns the translated handle (e.g. 'accessories' on /en).
+
+  Params: field — 'groups' (default) or 'extras_ids'.
+  'groups' outputs "collection_id:shown_count:kind," per group, where kind is
+  heads, filters, other or extras.
+  'extras_ids' outputs "|id|id|" with the Accessoires product ids.
+{%- endcomment -%}
+{%- liquid
+  assign extras = nil
+  for extras_candidate in collections
+    if extras_candidate.handle == 'accessoires' or extras_candidate.handle == 'accessories' or extras_candidate.handle == 'zubehoer' or extras_candidate.handle == 'accesorios'
+      assign extras = extras_candidate
+      break
+    endif
+  endfor
+
+  assign extras_ids = '|'
+  if extras != blank and extras.products_count > 0
+    for extras_product in extras.products limit: 50
+      assign extras_ids = extras_ids | append: extras_product.id | append: '|'
+    endfor
+  endif
+
+  if field == 'extras_ids'
+    echo extras_ids
+  else
+    assign out_heads = ''
+    assign out_filters = ''
+    assign out_other = ''
+    for group_collection in collections
+      if group_collection.handle == 'all' or group_collection.handle == 'frontpage' or group_collection.handle == 'douchekop-met-filter' or group_collection.products_count == 0
+        continue
+      endif
+      if extras != blank and group_collection.id == extras.id
+        continue
+      endif
+
+      assign group_shown = 0
+      for group_product in group_collection.products limit: 50
+        assign group_token = '|' | append: group_product.id | append: '|'
+        unless extras_ids contains group_token
+          assign group_shown = group_shown | plus: 1
+        endunless
+      endfor
+      if group_shown == 0
+        continue
+      endif
+
+      assign group_identity = group_collection.handle | append: ' ' | append: group_collection.title | downcase
+      assign group_kind = 'other'
+      if group_identity contains 'filter'
+        assign group_kind = 'filters'
+      elsif group_collection.handle == 'badkamer-douche' or group_collection.handle == 'douchekoppen' or group_collection.handle == 'showerheads' or group_collection.handle == 'douche' or group_collection.handle == 'shower'
+        assign group_kind = 'heads'
+      elsif group_identity contains 'shower head' or group_identity contains 'showerhead' or group_identity contains 'douchekop' or group_identity contains 'hand shower' or group_identity contains 'handdouche'
+        assign group_kind = 'heads'
+      endif
+
+      assign group_entry = group_collection.id | append: ':' | append: group_shown | append: ':' | append: group_kind | append: ','
+      case group_kind
+        when 'heads'
+          assign out_heads = out_heads | append: group_entry
+        when 'filters'
+          assign out_filters = out_filters | append: group_entry
+        else
+          assign out_other = out_other | append: group_entry
+      endcase
+    endfor
+
+    assign out_extras = ''
+    if extras != blank and extras.products_count > 0
+      assign out_extras = extras.id | append: ':' | append: extras.products_count | append: ':extras,'
+    endif
+
+    echo out_heads | append: out_filters | append: out_other | append: out_extras
+  endif
+-%}

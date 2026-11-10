@@ -24,34 +24,40 @@
       {%- comment -%}Besjaar 11.6: the grouped shop hub previously rendered no h1 at all — only per-collection h2s.{%- endcomment -%}
       {% render 'besjaar-collection-wow-hero', collection: collection, is_all: true, root_url: root_url_localized %}
       <div class="besjaar-collection-collection-groups besjaar-collection-collection-groups--shop-first">
+        {%- comment -%}
+          2026-11-10: one loop instead of three passes. snippets/besjaar-shop-groups
+          gives the order (shower heads, filters, other collections, Accessoires
+          last) and how many products each group shows; products that are in
+          Accessoires (hose, replacement filters) are not repeated in the earlier
+          groups, and a group left empty is skipped.
+        {%- endcomment -%}
+        {%- capture shop_groups -%}{% render 'besjaar-shop-groups' %}{%- endcapture -%}
+        {%- capture shop_extras_ids -%}{% render 'besjaar-shop-groups', field: 'extras_ids' %}{%- endcapture -%}
+        {%- assign shop_groups = shop_groups | strip | split: ',' -%}
+        {%- assign shop_extras_ids = shop_extras_ids | strip -%}
         {% assign rendered_collection_count = 0 %}
-        {% assign rendered_collection_ids = '|' %}
 
-        {% comment %}Pass 1 — Shower Heads first.{% endcomment %}
-        {% for shop_collection in collections %}
-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
-          {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
-          {% assign is_filter_collection = false %}
-          {% if shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% assign is_filter_collection = true %}{% endif %}
-          {% if is_filter_collection %}{% continue %}{% endif %}
+        {% for shop_group in shop_groups %}
+          {% assign shop_group_parts = shop_group | split: ':' %}
+          {% assign shop_group_id = shop_group_parts[0] | plus: 0 %}
+          {% assign shop_group_count = shop_group_parts[1] | plus: 0 %}
+          {% assign shop_group_kind = shop_group_parts[2] %}
+          {% assign shop_collection = nil %}
+          {% for candidate_collection in collections %}
+            {% if candidate_collection.id == shop_group_id %}{% assign shop_collection = candidate_collection %}{% break %}{% endif %}
+          {% endfor %}
+          {% if shop_collection == blank %}{% continue %}{% endif %}
 
-          {% assign is_head_collection = false %}
-          {% if shop_collection.handle == 'badkamer-douche' or shop_collection.handle == 'douchekoppen' or shop_collection.handle == 'showerheads' or shop_collection.handle == 'douche' or shop_collection.handle == 'shower' %}{% assign is_head_collection = true %}{% endif %}
-          {% if shop_collection_identity contains 'shower head' or shop_collection_identity contains 'showerhead' or shop_collection_identity contains 'douchekop' or shop_collection_identity contains 'hand shower' or shop_collection_identity contains 'handdouche' %}{% assign is_head_collection = true %}{% endif %}
-          {% unless is_head_collection %}{% continue %}{% endunless %}
-
-          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
-          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
           {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
           {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
           {% assign group_number = rendered_collection_count | plus: 1 %}
 
-          <section class="besjaar-collection-collection-group besjaar-collection-collection-group--heads" id="Collection-{{ shop_collection.handle | escape }}">
+          <section class="besjaar-collection-collection-group{% if shop_group_kind != 'other' %} besjaar-collection-collection-group--{{ shop_group_kind }}{% endif %}" id="Collection-{{ shop_collection.handle | escape }}">
             <header class="besjaar-collection-collection-group__head">
               <div class="besjaar-collection-collection-group__identity">
                 <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
                 <div>
-                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
+                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_group_count }}</p>
                   <h2>{{ shop_collection_title | strip | escape_once }}</h2>
                   {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
                 </div>
@@ -61,84 +67,18 @@
 
             <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
               {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
+              {% assign shown_in_group = 0 %}
               {% for product in shop_collection.products limit: 50 %}
-                {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if rendered_collection_count == 0 and forloop.index <= 2 %}{% assign card_loading = 'eager' %}{% if forloop.index == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
+                {% if shop_group_kind != 'extras' %}
+                  {% assign product_token = '|' | append: product.id | append: '|' %}
+                  {% if shop_extras_ids contains product_token %}{% continue %}{% endif %}
+                {% endif %}
+                {% assign shown_in_group = shown_in_group | plus: 1 %}
+                {% assign card_loading = 'lazy' %}{% assign card_priority = 'auto' %}{% if rendered_collection_count == 0 and shown_in_group <= 2 %}{% assign card_loading = 'eager' %}{% if shown_in_group == 1 %}{% assign card_priority = 'high' %}{% endif %}{% endif %}
                 {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading, image_priority: card_priority %}
               {% endfor %}
             </div>
           </section>
-          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
-          {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
-        {% endfor %}
-
-        {% comment %}Pass 2 — Shower Filters second.{% endcomment %}
-        {% for shop_collection in collections %}
-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
-          {% assign shop_collection_identity = shop_collection.handle | append: ' ' | append: shop_collection.title | downcase %}
-          {% unless shop_collection_identity contains 'filter' or shop_collection_identity contains 'douchefilter' %}{% continue %}{% endunless %}
-          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
-          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
-
-          {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
-          {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
-          {% assign group_number = rendered_collection_count | plus: 1 %}
-
-          <section class="besjaar-collection-collection-group besjaar-collection-collection-group--filters" id="Collection-{{ shop_collection.handle | escape }}">
-            <header class="besjaar-collection-collection-group__head">
-              <div class="besjaar-collection-collection-group__identity">
-                <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
-                <div>
-                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
-                  <h2>{{ shop_collection_title | strip | escape_once }}</h2>
-                  {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
-                </div>
-              </div>
-              <a class="besjaar-collection-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
-            </header>
-
-            <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
-              {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
-              {% for product in shop_collection.products limit: 50 %}
-                {% assign card_loading = 'lazy' %}
-                {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
-              {% endfor %}
-            </div>
-          </section>
-          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
-          {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
-        {% endfor %}
-
-        {% comment %}Pass 3 — any remaining active Besjaar collection comes after the two primary ranges.{% endcomment %}
-        {% for shop_collection in collections %}
-          {% if shop_collection.handle == 'all' or shop_collection.handle == 'frontpage' or shop_collection.products_count == 0 or shop_collection.handle == 'douchekop-met-filter' %}{% continue %}{% endif %}
-          {% capture collection_token %}|{{ shop_collection.id }}|{% endcapture %}
-          {% if rendered_collection_ids contains collection_token %}{% continue %}{% endif %}
-          {% capture shop_collection_title %}{% render 'localized-collection-title', collection: shop_collection %}{% endcapture %}
-          {% capture shop_collection_url %}{% render 'localized-internal-url', url: shop_collection.url %}{% endcapture %}
-          {% assign group_number = rendered_collection_count | plus: 1 %}
-
-          <section class="besjaar-collection-collection-group" id="Collection-{{ shop_collection.handle | escape }}">
-            <header class="besjaar-collection-collection-group__head">
-              <div class="besjaar-collection-collection-group__identity">
-                <span class="besjaar-collection-collection-group__index" aria-hidden="true">{% if group_number < 10 %}0{% endif %}{{ group_number }}</span>
-                <div>
-                  <p class="besjaar-collection-collection-group__count">{{ 'besjaar_ui.collection.products_count' | t: count: shop_collection.products_count }}</p>
-                  <h2>{{ shop_collection_title | strip | escape_once }}</h2>
-                  {%- comment -%}Besjaar 11.7: the collection blurb no longer runs under the group heading — the grid speaks for itself. The description still feeds meta tags and structured data.{%- endcomment -%}
-                </div>
-              </div>
-              <a class="besjaar-collection-collection-group__link" href="{{ shop_collection_url | strip }}">{{ 'besjaar_grouped_collection.view_collection' | t }} <span aria-hidden="true">→</span></a>
-            </header>
-
-            <div class="besjaar-collection-product-grid besjaar-collection-product-grid--grouped">
-              {% render 'seo-visible-item-list', products: shop_collection.products, list_key: shop_collection.id, limit_count: 50, offset: 0 %}
-              {% for product in shop_collection.products limit: 50 %}
-                {% assign card_loading = 'lazy' %}
-                {% render 'besjaar-grouped-product-card', product: product, image_loading: card_loading %}
-              {% endfor %}
-            </div>
-          </section>
-          {% assign rendered_collection_ids = rendered_collection_ids | append: shop_collection.id | append: '|' %}
           {% assign rendered_collection_count = rendered_collection_count | plus: 1 %}
         {% endfor %}
 
