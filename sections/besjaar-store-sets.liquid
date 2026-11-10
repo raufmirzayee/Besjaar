@@ -43,6 +43,13 @@
 -%}
 {%- if sets_collection != blank and sets_collection.products_count > 0 -%}
   {%- capture sets_url -%}{% render 'localized-internal-url', url: sets_collection.url %}{%- endcapture -%}
+  {%- comment -%}
+    2026-11-10: besjaar-seo-design.css caps a two-card grid at 560px while the
+    homepage forces four columns, which squeezed the two sets into 128px
+    cards on desktop. Lifting the cap gives them the same width as the cards
+    in the products row above.
+  {%- endcomment -%}
+  <style>#besjaar-store-sets .besjaar-store-products__grid{max-width:none!important}</style>
   <section class="besjaar-store besjaar-store-products besjaar-store-sets" id="besjaar-store-sets">
     <div class="besjaar-store-shell besjaar-store-products__inner">
       <div class="besjaar-store-products__layout">
