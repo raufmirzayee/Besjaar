@@ -1,0 +1,75 @@
+{%- comment -%}
+  Besjaar 2026-11-10 — homepage row for the shower sets (Douchesets).
+  Same markup and classes as besjaar-store-products, so it inherits the
+  homepage card grid styling. The heading copy is localised here
+  (NL/EN/DE/FR/ES) because the products row reads its copy from shared
+  locale keys that describe the showerheads.
+{%- endcomment -%}
+{%- liquid
+  assign sets_collection = section.settings.collection
+  if sets_collection == blank
+    assign sets_collection = collections['douchesets']
+  endif
+  assign target_count = section.settings.products_to_show | default: 4
+
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_kicker = 'New · Shower systems'
+      assign bj_heading = 'Renew your whole shower in one go.'
+      assign bj_text = 'Rain shower, hand shower and mixer in one set: in chrome with a thermostatic mixer, or in matte black with push buttons.'
+      assign bj_all = 'View all shower systems'
+    when 'de'
+      assign bj_kicker = 'Neu · Duschsysteme'
+      assign bj_heading = 'Ihre ganze Dusche auf einmal erneuert.'
+      assign bj_text = 'Regendusche, Handbrause und Armatur in einem Set: in Chrom mit Thermostat oder in Mattschwarz mit Drucktasten.'
+      assign bj_all = 'Alle Duschsysteme ansehen'
+    when 'fr'
+      assign bj_kicker = 'Nouveau · Colonnes de douche'
+      assign bj_heading = 'Toute votre douche renouvelée d’un coup.'
+      assign bj_text = 'Douche de tête, douchette et mitigeur en un seul ensemble : en chrome avec thermostatique, ou en noir mat à boutons-poussoirs.'
+      assign bj_all = 'Voir toutes les colonnes de douche'
+    when 'es'
+      assign bj_kicker = 'Novedad · Columnas de ducha'
+      assign bj_heading = 'Renueva toda tu ducha de una vez.'
+      assign bj_text = 'Rociador, ducha de mano y grifo en un solo set: en cromo con termostato o en negro mate con pulsadores.'
+      assign bj_all = 'Ver todas las columnas de ducha'
+    else
+      assign bj_kicker = 'Nieuw · Douchesets'
+      assign bj_heading = 'Je hele douche in één keer vernieuwd.'
+      assign bj_text = 'Regendouche, handdouche en kraan in één set: in chroom met thermostaatkraan, of in mat zwart met drukknoppen.'
+      assign bj_all = 'Bekijk alle douchesets'
+  endcase
+-%}
+{%- if sets_collection != blank and sets_collection.products_count > 0 -%}
+  {%- capture sets_url -%}{% render 'localized-internal-url', url: sets_collection.url %}{%- endcapture -%}
+  <section class="besjaar-store besjaar-store-products besjaar-store-sets" id="besjaar-store-sets">
+    <div class="besjaar-store-shell besjaar-store-products__inner">
+      <div class="besjaar-store-products__layout">
+        <div class="besjaar-store-products__head">
+          <span class="besjaar-store-kicker">{{ bj_kicker }}</span>
+          <h2 class="besjaar-store-h2">{{ bj_heading }}</h2>
+          <p class="besjaar-store-products__intro">{{ bj_text }}</p>
+          <a class="besjaar-store-products__all" href="{{ sets_url | strip }}">{{ bj_all }} <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="besjaar-store-products__grid" data-product-count-target="{{ target_count }}">
+          {%- for product in sets_collection.products limit: target_count -%}
+            {% render 'premium-home-product-card', product: product %}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- elsif request.design_mode -%}
+  <div class="besjaar-store-products__empty">Select the Douchesets collection in this section to show the shower sets here.</div>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar shower sets",
+  "settings": [
+    {"type": "collection", "id": "collection", "label": "Shower sets collection"},
+    {"type": "range", "id": "products_to_show", "label": "Products to show", "min": 2, "max": 6, "step": 1, "default": 4}
+  ],
+  "presets": [{"name": "Besjaar shower sets"}]
+}
+{% endschema %}
