@@ -1,0 +1,74 @@
+{%- comment -%}
+  Besjaar 2026-11-10 — "Douchesets" navigation link.
+
+  Same approach as besjaar-nav-1170 (Zakelijk): the header builds its links in
+  Liquid and does not read Shopify's Main Menu, so the link is added to the
+  desktop nav and the mobile menu here. Desktop: inserted right after the
+  Douchekoppen link when that is a direct nav link, otherwise before the
+  more-menu. Mobile: the Douchekoppen row is cloned (falling back to the
+  Over ons row) so the styling always matches; the check repeats for about
+  five seconds because the runtime section rebuilds the mobile menu.
+  Localised NL/EN/DE/FR/ES. Renders nothing while the collection is empty.
+{%- endcomment -%}
+{%- liquid
+  assign bj_sets = collections['douchesets']
+  assign bj_heads = collections['showerhead']
+  assign bj_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bj_lang
+    when 'en'
+      assign bj_s_label = 'Shower Systems'
+    when 'de'
+      assign bj_s_label = 'Duschsysteme'
+    when 'fr'
+      assign bj_s_label = 'Colonnes de douche'
+    when 'es'
+      assign bj_s_label = 'Columnas de ducha'
+    else
+      assign bj_s_label = 'Douchesets'
+  endcase
+  assign bj_s_current = false
+  if request.page_type == 'collection' and collection != blank and collection.handle == 'douchesets'
+    assign bj_s_current = true
+  endif
+  assign bj_about_page = pages['over-ons']
+  if bj_about_page == blank
+    assign bj_about_page = pages['overons']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about-us']
+  endif
+  if bj_about_page == blank
+    assign bj_about_page = pages['about']
+  endif
+-%}
+{%- if bj_sets != blank and bj_sets.products_count > 0 -%}
+{%- capture bj_s_url -%}{% render 'localized-internal-url', url: bj_sets.url %}{%- endcapture -%}
+{%- capture bj_h_url -%}{%- if bj_heads != blank -%}{% render 'localized-internal-url', url: bj_heads.url %}{%- endif -%}{%- endcapture -%}
+{%- capture bj_a_url -%}{%- if bj_about_page != blank -%}{% render 'localized-internal-url', url: bj_about_page.url %}{%- else -%}{% render 'localized-internal-url', url: '/pages/about-us' %}{%- endif -%}{%- endcapture -%}
+<script type="application/json" id="bj-nav-sets">{"url":{{ bj_s_url | strip | json }},"label":{{ bj_s_label | json }},"current":{{ bj_s_current | json }},"heads":{{ bj_h_url | strip | json }},"about":{{ bj_a_url | strip | json }}}</script>
+<script>
+(function(){"use strict";var c;try{c=JSON.parse(document.getElementById("bj-nav-sets").textContent)}catch(x){return}if(!c||!c.url)return;
+var skip=/^(svg|path|use|circle|rect|line|polyline|polygon|g|defs)$/i;
+function relabel(row){var all=row.querySelectorAll("*"),first=null,extra=[],i,el,txt;for(i=0;i<all.length;i+=1){el=all[i];if(el.children.length||skip.test(el.tagName))continue;txt=(el.textContent||"").trim();if(txt.length>1){if(!first)first=el;else extra.push(el)}}if(first){first.textContent=c.label;for(i=0;i<extra.length;i+=1){if(extra[i].parentNode)extra[i].parentNode.removeChild(extra[i])}}else{row.textContent=c.label}}
+function desktop(){var nav=document.querySelector(".besjaar-ui-nav");if(!nav)return false;if(nav.querySelector("[data-bj-sets]"))return true;var a=document.createElement("a");a.className="besjaar-ui-nav__link";a.href=c.url;a.textContent=c.label;a.setAttribute("data-bj-sets","1");if(c.current)a.setAttribute("aria-current","page");var ref=c.heads?nav.querySelector('a[href="'+c.heads+'"]'):null;var more=nav.querySelector(".besjaar-ui-more-menu");if(ref&&ref.parentNode===nav){nav.insertBefore(a,ref.nextSibling)}else if(more&&more.parentNode===nav){nav.insertBefore(a,more)}else{nav.appendChild(a)}return true}
+function mobile(){var m=document.querySelector("[data-mobile-menu]");if(!m)return false;if(m.querySelector("[data-bj-sets-m]"))return true;var r=c.heads?m.querySelector('a[href="'+c.heads+'"]:not(.besjaar-ui-mobile-menu__shop-all)'):null;if(r&&r.querySelector("img"))r=null;if(!r&&c.about)r=m.querySelector('a[href="'+c.about+'"]');if(!r)return false;var n=r.cloneNode(true);n.setAttribute("data-bj-sets-m","1");n.removeAttribute("aria-current");n.setAttribute("href",c.url);relabel(n);if(c.current)n.setAttribute("aria-current","page");r.parentNode.insertBefore(n,r.nextSibling);return true}
+var count=0,timer=null;function tick(){desktop();mobile();count+=1;if(count>25&&timer){window.clearInterval(timer);timer=null}}
+function start(){count=0;if(timer)window.clearInterval(timer);timer=window.setInterval(tick,200)}
+start();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",tick,{once:true});else tick();
+document.addEventListener("shopify:section:load",start)})();
+</script>
+{%- endif -%}
+{% schema %}
+{
+  "name": "Besjaar douchesets link",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "2026-11-10: adds the Douchesets collection to the header nav (after Douchekoppen) and to the mobile menu, localised NL/EN/DE/FR/ES. The header does not read Shopify's Main Menu. Keep in the header group."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}
