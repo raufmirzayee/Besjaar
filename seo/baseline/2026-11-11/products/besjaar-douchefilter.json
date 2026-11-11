@@ -1,0 +1,182 @@
+{
+ "product": {
+  "id": 10997821243719,
+  "title": "Besjaar® Vervangfilters voor Douchekop met Filter – Set van 2",
+  "body_html": "<div style=\"color:#11110E;line-height:1.55;\">\n<p style=\"font-size:1.35em;line-height:1.3;font-weight:600;color:#153252;margin:0 0 .6em;\">Twee verse filters. Tot tien maanden gebruik.</p>\n<p style=\"margin:0 0 1.2em;\">De navulset voor je Besjaar Douchekop met Filter. Elke cartridge heeft een 8-traps filter dat deeltjes tegenhoudt en vrij chloor afbreekt. Let op: een douchefilter maakt je water niet zachter en haalt geen opgeloste kalk weg. In Nederland zit normaal geen chloor in het kraanwater; het filter is vooral relevant waar kraanwater wel gechloreerd is, bijvoorbeeld in België, Frankrijk en Spanje.</p>\n<div style=\"background:#EEF6FB;border-radius:12px;padding:16px 18px;margin:0 0 1.2em;\">\n<h2 style=\"font-size:.8em;letter-spacing:.06em;font-weight:600;color:#49627D;margin:0 0 .7em;line-height:1.4;text-transform:none;\">Wat je merkt</h2>\n<ul style=\"list-style:none;padding:0;margin:0;\">\n<li style=\"display:flex;gap:10px;align-items:flex-start;margin:0 0 .55em;font-size:.95em;color:#0F2947;\">\n<span style=\"flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:#153252;color:#FFFFFF;font-size:11px;line-height:18px;text-align:center;display:inline-block;margin-top:2px;\">✓</span><span>8-traps filtratie met o.a. calciumsulfiet, maifansteen en keramische bollen</span>\n</li>\n<li style=\"display:flex;gap:10px;align-items:flex-start;margin:0 0 .55em;font-size:.95em;color:#0F2947;\">\n<span style=\"flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:#153252;color:#FFFFFF;font-size:11px;line-height:18px;text-align:center;display:inline-block;margin-top:2px;\">✓</span><span>Werkt in warm én koud water</span>\n</li>\n<li style=\"display:flex;gap:10px;align-items:flex-start;margin:0 0 .55em;font-size:.95em;color:#0F2947;\">\n<span style=\"flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:#153252;color:#FFFFFF;font-size:11px;line-height:18px;text-align:center;display:inline-block;margin-top:2px;\">✓</span><span>3 tot 5 maanden per filter – met twee filters tot 10 maanden</span>\n</li>\n<li style=\"display:flex;gap:10px;align-items:flex-start;margin:0;font-size:.95em;color:#0F2947;\">\n<span style=\"flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:#153252;color:#FFFFFF;font-size:11px;line-height:18px;text-align:center;display:inline-block;margin-top:2px;\">✓</span><span>Wisselen zonder gereedschap: slang los, oude filter eruit, nieuwe erin</span>\n</li>\n</ul>\n</div>\n<h2 style=\"font-size:.8em;letter-spacing:.06em;font-weight:600;color:#49627D;margin:0 0 .7em;line-height:1.4;text-transform:none;\">In de doos</h2>\n<ul style=\"list-style:none;padding:0;margin:0 0 1.2em;display:flex;flex-wrap:wrap;gap:6px;\">\n<li style=\"margin:0;font-size:.85em;color:#153252;border:1px solid #C9DBE8;border-radius:999px;padding:5px 11px;line-height:1.3;\">2× Besjaar filtercartridge</li>\n</ul>\n<h2 style=\"font-size:.8em;letter-spacing:.06em;font-weight:600;color:#49627D;margin:0 0 .3em;line-height:1.4;text-transform:none;\">Specificaties</h2>\n<ul style=\"list-style:none;padding:0;margin:0 0 1.2em;font-size:.95em;\">\n<li style=\"display:flex;justify-content:space-between;gap:12px;padding:8px 0;margin:0;border-bottom:1px solid #E6EEF4;\">\n<span style=\"color:#49627D;\">Levensduur</span><span style=\"text-align:right;\">3–5 maanden per filter</span>\n</li>\n<li style=\"display:flex;justify-content:space-between;gap:12px;padding:8px 0;margin:0;border-bottom:1px solid #E6EEF4;\">\n<span style=\"color:#49627D;\">Geschikt voor</span><span style=\"text-align:right;\">Besjaar Douchekop met Filter (10 sproeistanden)</span>\n</li>\n<li style=\"display:flex;justify-content:space-between;gap:12px;padding:8px 0;margin:0;\">\n<span style=\"color:#49627D;\">Niet geschikt voor</span><span style=\"text-align:right;\">Andere douchekoppen</span>\n</li>\n</ul>\n<p style=\"margin:0;padding-top:14px;border-top:1px solid #E6EEF4;font-weight:600;color:#153252;\">Besjaar. Douchen met een volle straal.</p>\n</div>",
+  "vendor": "Besjaar",
+  "product_type": "Shower Filter",
+  "created_at": "2026-08-12T15:03:20+02:00",
+  "handle": "besjaar-douchefilter",
+  "updated_at": "2026-11-11T20:33:46+01:00",
+  "published_at": "2026-09-28T06:41:15+02:00",
+  "template_suffix": "",
+  "published_scope": "global",
+  "tags": "10-standen, Besjaar, Douche, Douchekop, Doucheset, Filter, Handdouche",
+  "variants": [
+   {
+    "id": 54600303345991,
+    "product_id": 10997821243719,
+    "title": "Default Title",
+    "price": "9.99",
+    "sku": "BJ-1002026",
+    "position": 1,
+    "compare_at_price": "12.99",
+    "fulfillment_service": "manual",
+    "inventory_management": "shopify",
+    "option1": "Default Title",
+    "option2": null,
+    "option3": null,
+    "created_at": "2026-08-12T15:03:20+02:00",
+    "updated_at": "2026-11-11T20:33:46+01:00",
+    "taxable": true,
+    "barcode": "8720726284752",
+    "grams": 0,
+    "image_id": null,
+    "weight": 0.0,
+    "weight_unit": "kg",
+    "requires_shipping": true,
+    "quantity_rule": {
+     "min": 1,
+     "max": null,
+     "increment": 1
+    },
+    "price_currency": "EUR",
+    "compare_at_price_currency": "EUR",
+    "quantity_price_breaks": []
+   }
+  ],
+  "options": [
+   {
+    "id": 14069622735175,
+    "product_id": 10997821243719,
+    "name": "Title",
+    "position": 1,
+    "values": [
+     "Default Title"
+    ]
+   }
+  ],
+  "images": [
+   {
+    "id": 78157226803527,
+    "product_id": 10997821243719,
+    "position": 1,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar vervangfilters voor de douchekop met filter, set van 2 witte filters",
+    "width": 794,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilters-douchekop-set-van-2-wit.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226737991,
+    "product_id": 10997821243719,
+    "position": 2,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Compact vervangfilter voor de Besjaar douchekop met filter",
+    "width": 1200,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilter-douchekop-compact.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226574151,
+    "product_id": 10997821243719,
+    "position": 3,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar vervangfilters, set van 2 witte filtercartridges met 8-traps filter",
+    "width": 899,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilters-8-traps-filtercartridge-set-van-2.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226770759,
+    "product_id": 10997821243719,
+    "position": 4,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar filtercartridge voor de Besjaar douchekop met filter",
+    "width": 1158,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-filtercartridge-voor-douchekop-met-filter.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226541383,
+    "product_id": 10997821243719,
+    "position": 5,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar vervangfilters voor de douchekop met filter, set van 2",
+    "width": 1200,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilters-douchekop-met-filter-set-van-2.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226639687,
+    "product_id": 10997821243719,
+    "position": 6,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar vervangfilters, 2 stuks",
+    "width": 1200,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilters-2-stuks.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226672455,
+    "product_id": 10997821243719,
+    "position": 7,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar douchefilter navulset, 2 stuks – detail",
+    "width": 900,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-douchefilter-navulset-2-stuks-detail.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226606919,
+    "product_id": 10997821243719,
+    "position": 8,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Eenvoudig te vervangen douchefilter model 1002026 voor Besjaar douchekoppen met filter",
+    "width": 1193,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilter-model-1002026-eenvoudig-vervangen.jpg?v=1792235868",
+    "variant_ids": []
+   },
+   {
+    "id": 78157226705223,
+    "product_id": 10997821243719,
+    "position": 9,
+    "created_at": "2026-08-12T15:01:47+02:00",
+    "updated_at": "2026-10-17T13:17:48+02:00",
+    "alt": "Besjaar douchefilter navulset, 2 stuks – overzicht",
+    "width": 1010,
+    "height": 1200,
+    "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-douchefilter-navulset-2-stuks-overzicht.jpg?v=1792235868",
+    "variant_ids": []
+   }
+  ],
+  "image": {
+   "id": 78157226803527,
+   "product_id": 10997821243719,
+   "position": 1,
+   "created_at": "2026-08-12T15:01:47+02:00",
+   "updated_at": "2026-10-17T13:17:48+02:00",
+   "alt": "Besjaar vervangfilters voor de douchekop met filter, set van 2 witte filters",
+   "width": 794,
+   "height": 1200,
+   "src": "https://cdn.shopify.com/s/files/1/0823/4234/7079/files/besjaar-vervangfilters-douchekop-set-van-2-wit.jpg?v=1792235868",
+   "variant_ids": []
+  }
+ }
+}
