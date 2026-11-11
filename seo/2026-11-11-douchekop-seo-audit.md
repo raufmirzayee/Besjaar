@@ -8,7 +8,7 @@ Supporting files in this repository:
 | File | What it is |
 |---|---|
 | `seo/baseline/2026-11-11/metrics.md` | Traffic, order and Lighthouse baseline (28d / 90d) |
-| `seo/baseline/2026-11-11/url-inventory.csv` | Title, meta description, robots, canonical, `lang`, hreflang, H1 and schema types for 209 live URLs in 5 languages |
+| `seo/baseline/2026-11-11/url-inventory.csv` | Title, meta description, robots, canonical, `lang`, hreflang, H1 and schema types for 300 of the 375 sitemap URLs in 5 languages (the 75 not captured are listed in `url-inventory-missing.txt`) |
 | `seo/baseline/2026-11-11/collections/*.json`, `products/*.json` | Exact current collection and product descriptions (rollback source) |
 | `seo/content/collection-showerhead.description.nl.html` | Ready-to-paste Dutch collection description (proposed) |
 | `seo/tools/snapshot_heads.py` | Re-runnable snapshot + diff tool for before/after checks |
@@ -109,7 +109,7 @@ then switch to the **Pages** tab. Repeat for the exact query "douchekop".
 | 8 | **Inaccurate / expiring meta descriptions** on the two douchesets: the Design Doucheset says "Black Friday €249,99" while the price is €199,99; both mention end dates | Admin SEO fields vs live price | Low (accuracy, CTR) |
 | 9 | Minor technical: `/collections/vendors?q=besjaar` is indexable with the bare title "Besjaar"; two untranslated new articles are indexable under `/de/` with Dutch titles (duplicate titles); Organization schema `url` is `https://besjaar.eu` while the canonical host is `www`; a removed flashlight URL (404) still gets a few organic visits | Inventory CSV and live checks | Low |
 
-**Checked and fine (no action):** canonicals (209/209 self-referencing), one H1 on every captured page,
+**Checked and fine (no action):** canonicals (300/300 self-referencing), one H1 on every captured page,
 no invalid JSON-LD, hreflang reciprocity, noindex on `/collections/all`, `/collections`, search, cart and
 track-order, product images have descriptive alt text (the empty-alt collection hero image is
 intentionally decorative and hidden), and `ProductGroup`/`Product` schema with correct shipping. NL shipping
@@ -465,7 +465,7 @@ low priority.
 | Item | Status |
 |---|---|
 | Live store (products, collections, articles, SEO fields, theme, settings, apps, redirects) | **No changes made** |
-| Repository | Added: this report, `seo/baseline/2026-11-11/*` (metrics, 209-URL inventory, exact collection and product JSON), `seo/content/collection-showerhead.description.nl.html`, `seo/tools/snapshot_heads.py` |
+| Repository | Added: this report, `seo/baseline/2026-11-11/*` (metrics, 300-URL inventory, exact collection and product JSON), `seo/content/collection-showerhead.description.nl.html`, `seo/tools/snapshot_heads.py` |
 | Pending your approval | Items 2–7 (Phase 1, Admin), 8 (Phase 2, needs GSC), 9 (Phase 3, theme copy), D7 options |
 | Pending on your side | Connect GSC and export the baseline (section I); confirm the "waterbesparend" definition; decide on range expansion and review collection |
 
@@ -476,7 +476,7 @@ low priority.
 **Tested in this session:**
 - **Live HTML** of the homepage, both target collections, 5 product pages and 11 guides: title, meta, robots,
   canonical, hreflang, H1–H3, JSON-LD, internal links and image alt text.
-- **209 live URLs in 5 languages:** canonical/H1/schema sanity checks (`url-inventory.csv`).
+- **300 live URLs in 5 languages:** canonical/H1/schema sanity checks (`url-inventory.csv`).
 - **hreflang/canonical reciprocity** on NL/EN/DE/FR/ES versions of the collection, a product and the homepage.
 - **Indexability** of `/collections/all`, `/collections`, `/search`, vendors listing, StoreRank collection (404)
   and the old flashlight URL (404).
@@ -492,14 +492,16 @@ low priority.
 - PageSpeed Insights API (daily quota exhausted).
 - Competitor pages other than Ecorain (network policy).
 - Rendering of the proposed content in the theme (no change applied yet).
-- EN/FR/ES blog URLs in the inventory: about 160 were rate-limited (HTTP 429) during the snapshot.
+- 75 of 375 sitemap URLs (blog articles: 54 EN, 10 ES, 7 FR, 4 DE) stayed rate-limited (HTTP 429) after three
+  slow retry rounds; they are listed in `url-inventory-missing.txt`. All homepage, collection, product and
+  page URLs in all 5 languages, and all Dutch articles, were captured.
   Re-run `snapshot_heads.py --only /blogs/` later to complete it.
 
 ---
 
 ## H. SEO protection – how existing rankings, URLs and languages are protected
 
-- **Baseline captured before any change:** the 209-URL head inventory, the exact current descriptions
+- **Baseline captured before any change:** the 300-URL head inventory, the exact current descriptions
   (collection/product JSON) and the traffic/order baseline. After each phase, re-run
   `python3 seo/tools/snapshot_heads.py --out after.csv` and
   `--diff seo/baseline/2026-11-11/url-inventory.csv after.csv`. Only the intended fields may change.
