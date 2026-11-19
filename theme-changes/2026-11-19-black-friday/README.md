@@ -29,3 +29,18 @@ It was about 480 px tall and is now about 150 px on desktop and 135 px on phones
 Only `sections/besjaar-black-friday-2026.liquid` changed.
 
 To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (compact)" → ⋯ → Publish.
+
+## Update: one line at the top (same theme, 205113196871)
+
+At the user's request, the Black Friday message is now a single line at the very top of every page.
+It replaces the announcement strip ("Gratis verzending vanaf €25 · Morgen in huis · 30 dagen retour"), which is hidden with CSS until 1 Dec.
+The homepage banner was removed.
+
+`sections/header-group.json` now places `besjaar-black-friday` directly before `header`.
+The bar is 40 px tall on desktop and 38 px on phones.
+
+Verified on `/` (1920 px), `/collections/showerhead` (1440 px), and `/` and `/products/besjaar-douchefilter` (iPhone 13):
+
+- the bar sits at the top of the page;
+- the announcement strip is hidden;
+- there are no Liquid errors and no horizontal scroll.
