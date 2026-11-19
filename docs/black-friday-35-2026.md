@@ -94,3 +94,14 @@ Compare-at prices are unchanged.
   - It was built so it could be published before the price change, so the line would never promise more than checkout gives.
   - The user chose to change the prices before publishing. Until it is published, the live line ("deals-link" theme) still says 35%.
 - **Scheduled restore.** The task for 1 Dec 00:00 Amsterdam (trig_01FqUKKZd9G7eokViDCbvmvs) was updated to expect the 30% prices.
+
+## 19 Nov, about 16:48 UTC: douchesets back to 35%
+
+At the user's request, the two douchesets are 35% off again; everything else stays at 30%.
+
+- Complete Doucheset (55801259819335): **162.49** (compare-at 249.99)
+- Design Doucheset (55802120732999): **162.49** (compare-at 249.99)
+
+The storefront badges read "30% KORTING" on the 6 other products and "35% KORTING" on the sets.
+The top line in "Besjaar – Black Friday 30%" uses the smallest reduction, so it says "30% korting op alles". That is true for every product.
+The scheduled restore task now expects 162.49 for the sets.
