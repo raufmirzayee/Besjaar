@@ -8,7 +8,7 @@
   under the site header (the group allows 25 sections, so this one section
   does both jobs):
 
-    homepage     a large Black Friday banner with a live countdown.
+    homepage     a compact Black Friday banner with a live countdown.
     other pages  a black Black Friday bar with a live countdown.
     every page   discount badges read "BLACK FRIDAY · 35% KORTING", and the
                  product page gets a "Black Friday-prijs" line under the price.
@@ -40,9 +40,9 @@
       assign bjbf_cta = 'Shop the deals'
       assign bjbf_prefix = 'Ends in'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_eyebrow = 'Black Friday 2026 · until Monday 30 November'
+      assign bjbf_eyebrow = 'Black Friday · until 30 November · no code needed'
       assign bjbf_title = '35% off everything'
-      assign bjbf_text = 'On every shower head, filter, hose and shower set. The discount is already in the price, so you do not need a code.'
+      assign bjbf_text = 'On every shower head, filter, hose and shower set. The discount is already in the price.'
       assign bjbf_hero_cta = 'Shop all Black Friday deals'
       assign bjbf_clock_label = 'The sale ends in'
       assign bjbf_u_d = 'days'
@@ -57,9 +57,9 @@
       assign bjbf_cta = 'Zu den Deals'
       assign bjbf_prefix = 'Noch'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_eyebrow = 'Black Friday 2026 · bis Montag, 30. November'
+      assign bjbf_eyebrow = 'Black Friday · bis 30. November · kein Code nötig'
       assign bjbf_title = '35% Rabatt auf alles'
-      assign bjbf_text = 'Auf alle Duschköpfe, Filter, Schläuche und Duschsets. Der Rabatt ist schon im Preis enthalten, du brauchst keinen Code.'
+      assign bjbf_text = 'Auf alle Duschköpfe, Filter, Schläuche und Duschsets. Der Rabatt ist schon im Preis enthalten.'
       assign bjbf_hero_cta = 'Alle Black-Friday-Deals ansehen'
       assign bjbf_clock_label = 'Die Aktion endet in'
       assign bjbf_u_d = 'Tage'
@@ -74,9 +74,9 @@
       assign bjbf_cta = 'Voir les offres'
       assign bjbf_prefix = 'Encore'
       assign bjbf_units = 'j|h|m'
-      assign bjbf_eyebrow = 'Black Friday 2026 · jusqu’au lundi 30 novembre'
+      assign bjbf_eyebrow = 'Black Friday · jusqu’au 30 novembre · sans code'
       assign bjbf_title = '-35 % sur tout'
-      assign bjbf_text = 'Sur tous les pommeaux, filtres, flexibles et ensembles de douche. La remise est déjà incluse dans le prix : aucun code nécessaire.'
+      assign bjbf_text = 'Sur tous les pommeaux, filtres, flexibles et ensembles de douche. La remise est déjà incluse dans le prix.'
       assign bjbf_hero_cta = 'Voir toutes les offres Black Friday'
       assign bjbf_clock_label = 'L’offre se termine dans'
       assign bjbf_u_d = 'jours'
@@ -91,9 +91,9 @@
       assign bjbf_cta = 'Ver ofertas'
       assign bjbf_prefix = 'Quedan'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_eyebrow = 'Black Friday 2026 · hasta el lunes 30 de noviembre'
+      assign bjbf_eyebrow = 'Black Friday · hasta el 30 de noviembre · sin código'
       assign bjbf_title = '35 % de descuento en todo'
-      assign bjbf_text = 'En todos los cabezales, filtros, flexos y conjuntos de ducha. El descuento ya está en el precio: no necesitas código.'
+      assign bjbf_text = 'En todos los cabezales, filtros, flexos y conjuntos de ducha. El descuento ya está en el precio.'
       assign bjbf_hero_cta = 'Ver todas las ofertas Black Friday'
       assign bjbf_clock_label = 'La oferta termina en'
       assign bjbf_u_d = 'días'
@@ -108,9 +108,9 @@
       assign bjbf_cta = 'Shop de deals'
       assign bjbf_prefix = 'Nog'
       assign bjbf_units = 'd|u|m'
-      assign bjbf_eyebrow = 'Black Friday 2026 · t/m maandag 30 november'
+      assign bjbf_eyebrow = 'Black Friday · t/m 30 november · geen code nodig'
       assign bjbf_title = '35% korting op alles'
-      assign bjbf_text = 'Op alle douchekoppen, filters, slangen en douchesets. De korting zit al in de prijs, je hoeft geen code in te vullen.'
+      assign bjbf_text = 'Op alle douchekoppen, filters, slangen en douchesets. De korting zit al in de prijs.'
       assign bjbf_hero_cta = 'Shop alle Black Friday-deals'
       assign bjbf_clock_label = 'De actie eindigt over'
       assign bjbf_u_d = 'dagen'
@@ -187,22 +187,40 @@
 {%- assign bjbf_pct_html = '<span class="bjbf-hero__pct">' | append: bjbf_pct | append: '</span>' -%}
 <style>
   .bjbf-hero{position:relative;overflow:hidden;background:var(--bjbf-ink);color:#fff;font-family:var(--bj-font-body,Inter,system-ui,sans-serif)}
-  .bjbf-hero::before{content:"";position:absolute;inset:-40% -10% auto auto;width:min(720px,90vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(212,242,90,.22),rgba(212,242,90,0) 62%);pointer-events:none}
-  .bjbf-hero__inner{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:center;gap:28px 56px;width:min(calc(100% - 32px),var(--besjaar-ui-width,1280px));margin-inline:auto;padding:clamp(32px,5vw,64px) 0}
-  html body .bjbf-hero .bjbf-hero__eyebrow:not(#bjbf-a){margin:0 0 12px;color:var(--bjbf-lime);font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-  html body .bjbf-hero .bjbf-hero__title:not(#bjbf-a){margin:0 0 16px;color:#fff!important;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:clamp(38px,6.4vw,76px);font-weight:600;line-height:.98;letter-spacing:-.025em}
+  .bjbf-hero::before{content:"";position:absolute;top:50%;right:-6%;width:min(520px,70vw);aspect-ratio:1;border-radius:50%;transform:translateY(-50%);background:radial-gradient(circle,rgba(212,242,90,.16),rgba(212,242,90,0) 62%);pointer-events:none}
+  .bjbf-hero::after{content:"";position:absolute;inset-inline:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--bjbf-lime),transparent)}
+  .bjbf-hero__inner{position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 40px;width:min(calc(100% - 32px),var(--besjaar-ui-width,1280px));margin-inline:auto;padding:20px 0 22px}
+  .bjbf-hero__copy{flex:1 1 380px;min-width:0}
+  html body .bjbf-hero .bjbf-hero__eyebrow:not(#bjbf-a){margin:0 0 6px;color:var(--bjbf-lime);font-size:11.5px;font-weight:800;line-height:1.3;letter-spacing:.12em;text-transform:uppercase}
+  html body .bjbf-hero .bjbf-hero__title:not(#bjbf-a){margin:0;color:#fff!important;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:clamp(26px,2.7vw,38px);font-weight:600;line-height:1.05;letter-spacing:-.02em}
   html body .bjbf-hero .bjbf-hero__pct:not(#bjbf-a){color:var(--bjbf-lime)!important}
-  html body .bjbf-hero .bjbf-hero__text:not(#bjbf-a){max-width:48ch;margin:0 0 26px;color:rgba(255,255,255,.84);font-size:clamp(15px,1.5vw,18px);line-height:1.55}
-  html body .bjbf-hero .bjbf-hero__cta:not(#bjbf-a){display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;background:var(--bjbf-lime);color:var(--bjbf-ink)!important;font-size:15px;font-weight:800;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
-  .bjbf-hero__cta:hover,.bjbf-hero__cta:focus-visible{transform:translateY(-1px);box-shadow:0 10px 30px rgba(212,242,90,.25)}
-  .bjbf-hero__clock{padding:clamp(18px,2.4vw,26px);border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.04)}
-  html body .bjbf-hero .bjbf-hero__clock-label:not(#bjbf-a){margin:0 0 14px;color:rgba(255,255,255,.72);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-  .bjbf-hero__units{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-  .bjbf-hero__unit{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px 12px;border-radius:14px;background:#1b1b1b}
-  .bjbf-hero__unit b{color:#fff;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:clamp(28px,3.6vw,44px);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
-  .bjbf-hero__unit small{color:rgba(255,255,255,.62);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-  @media (max-width:860px){.bjbf-hero__inner{grid-template-columns:1fr;gap:24px}.bjbf-hero::before{inset:-30% -40% auto auto}}
-  @media (max-width:420px){.bjbf-hero__units{gap:6px}.bjbf-hero__unit{padding:12px 2px 10px}}
+  html body .bjbf-hero .bjbf-hero__text:not(#bjbf-a){max-width:60ch;margin:6px 0 0;color:rgba(255,255,255,.78);font-size:14.5px;line-height:1.45}
+  .bjbf-hero__side{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;flex:0 0 auto}
+  html body .bjbf-hero .bjbf-hero__clock-label:not(#bjbf-a){margin:0 0 6px;color:rgba(255,255,255,.62);font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+  .bjbf-hero__units{display:flex;gap:6px}
+  .bjbf-hero__unit{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:54px;padding:7px 6px 6px;border-radius:10px;background:#1c1c1c}
+  .bjbf-hero__unit b{color:#fff;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:22px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+  .bjbf-hero__unit small{color:rgba(255,255,255,.6);font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  html body .bjbf-hero .bjbf-hero__cta:not(#bjbf-a){display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:999px;background:var(--bjbf-lime);color:var(--bjbf-ink)!important;font-size:14px;font-weight:800;white-space:nowrap;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+  .bjbf-hero__cta:hover,.bjbf-hero__cta:focus-visible{transform:translateY(-1px);box-shadow:0 8px 24px rgba(212,242,90,.22)}
+  .bjbf-hero__cta-short{display:none}
+  @media (max-width:640px){
+    .bjbf-hero__inner{gap:12px;padding:14px 0 16px}
+    .bjbf-hero__copy{flex-basis:100%}
+    html body .bjbf-hero .bjbf-hero__eyebrow:not(#bjbf-a){font-size:10.5px;letter-spacing:.1em}
+    html body .bjbf-hero .bjbf-hero__title:not(#bjbf-a){font-size:27px}
+    html body .bjbf-hero .bjbf-hero__text:not(#bjbf-a){display:none}
+    .bjbf-hero__side{flex:1 1 100%;flex-wrap:nowrap;align-items:stretch;gap:8px}
+    .bjbf-hero__clock{flex:0 0 auto}
+    html body .bjbf-hero .bjbf-hero__clock-label:not(#bjbf-a){display:none}
+    .bjbf-hero__units{gap:4px;height:100%}
+    .bjbf-hero__unit{min-width:0;width:44px;padding:6px 2px 5px;justify-content:center}
+    .bjbf-hero__unit b{font-size:18px}
+    .bjbf-hero__unit small{font-size:8.5px;letter-spacing:.04em}
+    html body .bjbf-hero .bjbf-hero__cta:not(#bjbf-a){flex:1 1 auto;min-width:0;min-height:44px;padding:0 12px;font-size:13px}
+    .bjbf-hero__cta-long{display:none}
+    .bjbf-hero__cta-short{display:inline}
+  }
   @media (prefers-reduced-motion:reduce){.bjbf-hero__cta{transition:none}}
   @media print{.bjbf-hero{display:none}}
 </style>
@@ -212,16 +230,18 @@
       <p class="bjbf-hero__eyebrow">{{ bjbf_eyebrow | escape }}</p>
       <h2 id="BjbfHeroTitle" class="bjbf-hero__title">{{ bjbf_title | escape | replace: bjbf_pct, bjbf_pct_html }}</h2>
       <p class="bjbf-hero__text">{{ bjbf_text | escape }}</p>
-      <a class="bjbf-hero__cta" href="{{ bjbf_url }}">{{ bjbf_hero_cta | escape }}<span aria-hidden="true">→</span></a>
     </div>
-    <div class="bjbf-hero__clock" role="timer" aria-label="{{ bjbf_clock_label | escape }}">
-      <p class="bjbf-hero__clock-label">{{ bjbf_clock_label | escape }}</p>
-      <div class="bjbf-hero__units">
-        <span class="bjbf-hero__unit"><b data-bjbf-unit="d">{{ bjbf_d }}</b><small>{{ bjbf_u_d | escape }}</small></span>
-        <span class="bjbf-hero__unit"><b data-bjbf-unit="h">{{ bjbf_hh }}</b><small>{{ bjbf_u_h | escape }}</small></span>
-        <span class="bjbf-hero__unit"><b data-bjbf-unit="m">{{ bjbf_mm }}</b><small>{{ bjbf_u_m | escape }}</small></span>
-        <span class="bjbf-hero__unit"><b data-bjbf-unit="s">{{ bjbf_ss }}</b><small>{{ bjbf_u_s | escape }}</small></span>
+    <div class="bjbf-hero__side">
+      <div class="bjbf-hero__clock" role="timer" aria-label="{{ bjbf_clock_label | escape }}">
+        <p class="bjbf-hero__clock-label">{{ bjbf_clock_label | escape }}</p>
+        <div class="bjbf-hero__units">
+          <span class="bjbf-hero__unit"><b data-bjbf-unit="d">{{ bjbf_d }}</b><small>{{ bjbf_u_d | escape }}</small></span>
+          <span class="bjbf-hero__unit"><b data-bjbf-unit="h">{{ bjbf_hh }}</b><small>{{ bjbf_u_h | escape }}</small></span>
+          <span class="bjbf-hero__unit"><b data-bjbf-unit="m">{{ bjbf_mm }}</b><small>{{ bjbf_u_m | escape }}</small></span>
+          <span class="bjbf-hero__unit"><b data-bjbf-unit="s">{{ bjbf_ss }}</b><small>{{ bjbf_u_s | escape }}</small></span>
+        </div>
       </div>
+      <a class="bjbf-hero__cta" href="{{ bjbf_url }}"><span class="bjbf-hero__cta-long">{{ bjbf_hero_cta | escape }}</span><span class="bjbf-hero__cta-short">{{ bjbf_cta | escape }}</span><span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>

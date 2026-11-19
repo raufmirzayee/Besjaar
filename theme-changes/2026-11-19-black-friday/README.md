@@ -5,7 +5,7 @@ The section is added to `sections/header-group.json` as `besjaar-black-friday`, 
 
 What visitors see until 1 Dec 2026 00:00 Amsterdam:
 
-- **Homepage:** a large black Black Friday banner directly under the menu: "35% korting op alles", "geen code nodig", a live countdown (days, hours, minutes, seconds) and a "Shop alle Black Friday-deals" button.
+- **Homepage:** a compact black Black Friday banner directly under the menu, about 150 px tall on desktop and 135 px on phones. It shows "Black Friday · t/m 30 november · geen code nodig", "35% korting op alles", a live countdown (days, hours, minutes, seconds) and a "Shop alle Black Friday-deals" button ("Shop de deals" on phones).
 - **Every other page:** a black bar under the menu: BLACK FRIDAY · 35% korting op alles · Geen code nodig · t/m 30 november · Nog 11d 10u 25m · Shop de deals →.
 - **Product cards:** the discount badge reads "BLACK FRIDAY / 35% KORTING", in black and lime.
 - **Product page:**
@@ -21,3 +21,11 @@ Verified in preview with Playwright (desktop 1440 px and iPhone 13) on the homep
 The uploaded section's checksum matches this file.
 
 To make it live: Online Store → Themes → "Besjaar – Black Friday 35%" → ⋯ → Publish.
+
+## Update: compact banner (theme "Besjaar – Black Friday 35% (compact)", 205113196871)
+
+After the first version went live, the user found the homepage banner too big.
+It was about 480 px tall and is now about 150 px on desktop and 135 px on phones.
+Only `sections/besjaar-black-friday-2026.liquid` changed.
+
+To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (compact)" → ⋯ → Publish.
