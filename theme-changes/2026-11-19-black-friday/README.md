@@ -66,3 +66,12 @@ To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (zond
   - Clicking the bar on the homepage lands on `/collections/all#Collection-showerhead` with the shower head cards fully in view.
 
 To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (deals-link)" → ⋯ → Publish.
+
+## Update: 30% (theme "Besjaar – Black Friday 30%", 205135741255)
+
+The top line reads its percentage from the real prices instead of a fixed "35%".
+`collections.all` is scanned, and the smallest floor((compare-at − price) × 100 / compare-at) is used.
+If no product is reduced, the section does not render.
+Checked in preview on `/`, `/en/collections/all`, `/fr` and a product page: the line follows the prices ("35%" before the change, "30%" after) with no Liquid errors.
+
+To make it live: Online Store → Themes → "Besjaar – Black Friday 30%" → ⋯ → Publish.

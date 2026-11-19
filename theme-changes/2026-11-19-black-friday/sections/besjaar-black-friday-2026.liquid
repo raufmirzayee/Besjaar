@@ -1,18 +1,23 @@
 {%- comment -%}
   Besjaar 2026-11-19: Black Friday 2026 messaging.
 
-  Every product is 35% below its compare-at price until Mon 30 Nov 2026 23:59
-  Amsterdam. The price itself carries the discount, so no code is needed (all
-  discount codes are paused until 1 Dec). This section makes it obvious that
-  the reduction is the Black Friday sale:
+  Every product is reduced below its compare-at price (30% since 19 Nov,
+  35% before) until Mon 30 Nov 2026 23:59 Amsterdam. The price itself
+  carries the discount, so no code is needed (all discount codes are paused
+  until 1 Dec). This section makes it obvious that the reduction is the
+  Black Friday sale:
 
     top of every page  one black Black Friday line with a live countdown. It
                        takes the place of the announcement strip ("Gratis
                        verzending vanaf €25 · Morgen in huis · 30 dagen
                        retour"), which is hidden while the sale runs.
-    product cards      discount badges read "BLACK FRIDAY / 35% KORTING".
+    product cards      discount badges read "BLACK FRIDAY / 30% KORTING".
     product page       the badges read "BLACK FRIDAY · …".
     welcome prices     muted: see the script at the bottom.
+
+  The percentage in the line is read from the real prices (the smallest
+  reduction across the catalogue), so the line can never promise more than
+  checkout gives, whatever the prices are changed to.
 
   It sits in the header group directly before the site header (the group
   allows 25 sections; this is the 25th).
@@ -32,39 +37,59 @@
 -%}
 {%- if bjbf_live -%}
 {%- liquid
+  assign bjbf_pct = 0
+  for bjbf_product in collections.all.products
+    for bjbf_variant in bjbf_product.variants
+      if bjbf_variant.compare_at_price > bjbf_variant.price
+        assign bjbf_off = bjbf_variant.compare_at_price | minus: bjbf_variant.price | times: 100 | divided_by: bjbf_variant.compare_at_price
+        if bjbf_pct == 0 or bjbf_off < bjbf_pct
+          assign bjbf_pct = bjbf_off
+        endif
+      endif
+    endfor
+  endfor
+  if bjbf_pct == 0
+    assign bjbf_live = false
+  endif
+-%}
+{%- endif -%}
+{%- if bjbf_live -%}
+{%- liquid
   assign bjbf_lang = request.locale.iso_code | split: '-' | first | downcase
   case bjbf_lang
     when 'en'
-      assign bjbf_line = '35% off everything'
+      assign bjbf_line = '{pct}% off everything'
       assign bjbf_note = 'No code needed · until 30 November'
       assign bjbf_cta = 'Shop the deals'
       assign bjbf_prefix = 'Ends in'
       assign bjbf_units = 'd|h|m'
     when 'de'
-      assign bjbf_line = '35% Rabatt auf alles'
+      assign bjbf_line = '{pct}% Rabatt auf alles'
       assign bjbf_note = 'Kein Code nötig · bis 30. November'
       assign bjbf_cta = 'Zu den Deals'
       assign bjbf_prefix = 'Noch'
       assign bjbf_units = 'd|h|m'
     when 'fr'
-      assign bjbf_line = '-35 % sur tout'
+      assign bjbf_line = '-{pct} % sur tout'
       assign bjbf_note = 'Sans code · jusqu’au 30 novembre'
       assign bjbf_cta = 'Voir les offres'
       assign bjbf_prefix = 'Encore'
       assign bjbf_units = 'j|h|m'
     when 'es'
-      assign bjbf_line = '35 % de descuento en todo'
+      assign bjbf_line = '{pct} % de descuento en todo'
       assign bjbf_note = 'Sin código · hasta el 30 de noviembre'
       assign bjbf_cta = 'Ver ofertas'
       assign bjbf_prefix = 'Quedan'
       assign bjbf_units = 'd|h|m'
     else
-      assign bjbf_line = '35% korting op alles'
+      assign bjbf_line = '{pct}% korting op alles'
       assign bjbf_note = 'Geen code nodig · t/m 30 november'
       assign bjbf_cta = 'Shop de deals'
       assign bjbf_prefix = 'Nog'
       assign bjbf_units = 'd|u|m'
   endcase
+  assign bjbf_pct_text = bjbf_pct | append: ''
+  assign bjbf_line = bjbf_line | replace: '{pct}', bjbf_pct_text
 
   comment
     "Shop de deals" lands on the shower heads, not on the top of the page.
@@ -189,7 +214,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Black Friday 2026: one line at the top of every page (in place of the announcement strip) and Black Friday badges. 35% off the compare-at price, no code needed. Disappears on its own on 1 December 2026 at 00:00 Amsterdam."
+      "content": "Black Friday 2026: one line at the top of every page (in place of the announcement strip) and Black Friday badges. The percentage is read from the real prices; no code needed. Disappears on its own on 1 December 2026 at 00:00 Amsterdam."
     }
   ],
   "enabled_on": {

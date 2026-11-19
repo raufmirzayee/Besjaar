@@ -73,3 +73,24 @@ If it cannot run, restore the "Price before" values by hand.
 - The user published "Besjaar – adres 37 B" (205100581191) around 12:22 UTC. The new address and the pop-up gate are live.
 - Black Friday messaging was built in a new copy, "Besjaar – Black Friday 35%" (205111918919). It waits for the user to publish it.
   See `theme-changes/2026-11-19-black-friday/README.md`.
+
+## 19 Nov, about 16:47 UTC: changed to 30%
+
+On the user's request the sale is now **30% off the compare-at price** (compare-at × 0.70, rounded down).
+Compare-at prices are unchanged.
+
+| Variant | Compare-at | Before the sale | 35% (until now) | 30% (now) |
+|---|---|---|---|---|
+| 54600092909895 | 25.99 | 19.99 | 16.89 | **18.19** |
+| 54600303345991 | 12.99 | 9.99 | 8.44 | **9.09** |
+| 54600550744391 | 34.99 | 29.99 | 22.74 | **24.49** |
+| 54600773992775 | 29.99 | 25.99 | 19.49 | **20.99** |
+| 54600792768839 | 34.99 | 30.99 | 22.74 | **24.49** |
+| 55510917382471 | 11.99 | 9.99 | 7.79 | **8.39** |
+| 55801259819335 | 249.99 | 199.99 | 162.49 | **174.99** |
+| 55802120732999 | 249.99 | 199.99 | 162.49 | **174.99** |
+
+- **Theme.** "Besjaar – Black Friday 30%" (205135741255) reads the percentage in its top line from the real prices: the smallest reduction across the catalogue.
+  - It was built so it could be published before the price change, so the line would never promise more than checkout gives.
+  - The user chose to change the prices before publishing. Until it is published, the live line ("deals-link" theme) still says 35%.
+- **Scheduled restore.** The task for 1 Dec 00:00 Amsterdam (trig_01FqUKKZd9G7eokViDCbvmvs) was updated to expect the 30% prices.
