@@ -52,3 +52,17 @@ It is removed in a fresh copy of the live theme. The top line and the Black Frid
 Checked in preview on `/products/besjaar-douchefilter` (desktop) and `/products/besjaar-complete-doucheset` (iPhone 13): no line under the price, no Liquid errors.
 
 To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (zonder prijsregel)" → ⋯ → Publish.
+
+## Update: deals link and wrong "20% KORTING" badges (theme "Besjaar – Black Friday 35% (deals-link)", 205116080455)
+
+- **Deals link.** "Shop de deals" now goes to `/collections/all#Collection-showerhead`, so the shower heads are on screen right away instead of the hero at the top.
+- **Wrong 20% badges.** `/collections/all` showed "BLACK FRIDAY 20% KORTING" to a shopper who had claimed a welcome code or the Black Friday early-access code.
+  - Cause: `assets/besjaar-x-welcome-applied-2.js` rewrites prices and badges to the claimed code's price. The early-access claim never expires.
+  - All codes are paused, so checkout would not give that price.
+  - Fix: the Black Friday section empties `rewards` in `#BesjaarWelcomeAppliedConfig` when the document turns "interactive", just before the deferred script reads it. This only happens until 1 Dec 00:00, and nothing is removed from shoppers' browsers.
+- **Verified with Playwright**, with both claims set in localStorage:
+  - live theme: "20% KORTING";
+  - this preview: "35% KORTING", no welcome notice.
+  - Clicking the bar on the homepage lands on `/collections/all#Collection-showerhead` with the shower head cards fully in view.
+
+To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (deals-link)" → ⋯ → Publish.

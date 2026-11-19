@@ -12,6 +12,7 @@
                        retour"), which is hidden while the sale runs.
     product cards      discount badges read "BLACK FRIDAY / 35% KORTING".
     product page       the badges read "BLACK FRIDAY · …".
+    welcome prices     muted: see the script at the bottom.
 
   It sits in the header group directly before the site header (the group
   allows 25 sections; this is the 25th).
@@ -65,7 +66,10 @@
       assign bjbf_units = 'd|u|m'
   endcase
 
-  assign bjbf_url = routes.all_products_collection_url
+  comment
+    "Shop de deals" lands on the shower heads, not on the top of the page.
+  endcomment
+  assign bjbf_url = routes.all_products_collection_url | append: '#Collection-showerhead'
 
   assign bjbf_left = bjbf_end | minus: bjbf_now
   assign bjbf_d = bjbf_left | divided_by: 86400
@@ -145,6 +149,29 @@
       });
       return true;
     };
+    // Every discount code is paused during the sale. The welcome-price script
+    // (assets/besjaar-x-welcome-applied-2.js) would still show a shopper who
+    // claimed a welcome or early-access code "their" price, e.g. "20% KORTING",
+    // which checkout no longer gives. It reads its codes from
+    // #BesjaarWelcomeAppliedConfig when the deferred scripts run; the document
+    // turns "interactive" just before that, so empty the list then. Nothing is
+    // removed from the shopper's browser: from 1 Dec it works as before.
+    const muteWelcomePrices = () => {
+      const node = document.getElementById('BesjaarWelcomeAppliedConfig');
+      if (!node || Date.now() >= END) return;
+      try {
+        const config = JSON.parse(node.textContent || '{}');
+        if (Array.isArray(config.rewards) && config.rewards.length) {
+          config.rewards = [];
+          node.textContent = JSON.stringify(config);
+        }
+      } catch (error) {}
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('readystatechange', () => { if (document.readyState !== 'loading') muteWelcomePrices(); });
+    } else {
+      muteWelcomePrices();
+    }
     const start = () => {
       if (!run()) return;
       const timer = window.setInterval(() => { if (!run()) window.clearInterval(timer); }, 1000);
