@@ -44,3 +44,11 @@ Verified on `/` (1920 px), `/collections/showerhead` (1440 px), and `/` and `/pr
 - the bar sits at the top of the page;
 - the announcement strip is hidden;
 - there are no Liquid errors and no horizontal scroll.
+
+## Update: no line under the price (theme "Besjaar – Black Friday 35% (zonder prijsregel)", 205115523399)
+
+The user published 205113196871 and then asked to remove the black "Black Friday-prijs: 35% korting t/m 30 november. Geen code nodig." line under the product price.
+It is removed in a fresh copy of the live theme. The top line and the Black Friday badges are unchanged.
+Checked in preview on `/products/besjaar-douchefilter` (desktop) and `/products/besjaar-complete-doucheset` (iPhone 13): no line under the price, no Liquid errors.
+
+To make it live: Online Store → Themes → "Besjaar – Black Friday 35% (zonder prijsregel)" → ⋯ → Publish.

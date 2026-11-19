@@ -11,8 +11,7 @@
                        verzending vanaf €25 · Morgen in huis · 30 dagen
                        retour"), which is hidden while the sale runs.
     product cards      discount badges read "BLACK FRIDAY / 35% KORTING".
-    product page       the badges read "BLACK FRIDAY · …", and a "Black
-                       Friday-prijs" line sits under the price.
+    product page       the badges read "BLACK FRIDAY · …".
 
   It sits in the header group directly before the site header (the group
   allows 25 sections; this is the 25th).
@@ -40,35 +39,30 @@
       assign bjbf_cta = 'Shop the deals'
       assign bjbf_prefix = 'Ends in'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_pdp = 'Black Friday price: 35% off until 30 November. No code needed.'
     when 'de'
       assign bjbf_line = '35% Rabatt auf alles'
       assign bjbf_note = 'Kein Code nötig · bis 30. November'
       assign bjbf_cta = 'Zu den Deals'
       assign bjbf_prefix = 'Noch'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_pdp = 'Black-Friday-Preis: 35% Rabatt bis 30. November. Kein Code nötig.'
     when 'fr'
       assign bjbf_line = '-35 % sur tout'
       assign bjbf_note = 'Sans code · jusqu’au 30 novembre'
       assign bjbf_cta = 'Voir les offres'
       assign bjbf_prefix = 'Encore'
       assign bjbf_units = 'j|h|m'
-      assign bjbf_pdp = 'Prix Black Friday : -35 % jusqu’au 30 novembre. Aucun code nécessaire.'
     when 'es'
       assign bjbf_line = '35 % de descuento en todo'
       assign bjbf_note = 'Sin código · hasta el 30 de noviembre'
       assign bjbf_cta = 'Ver ofertas'
       assign bjbf_prefix = 'Quedan'
       assign bjbf_units = 'd|h|m'
-      assign bjbf_pdp = 'Precio Black Friday: 35 % de descuento hasta el 30 de noviembre. Sin código.'
     else
       assign bjbf_line = '35% korting op alles'
       assign bjbf_note = 'Geen code nodig · t/m 30 november'
       assign bjbf_cta = 'Shop de deals'
       assign bjbf_prefix = 'Nog'
       assign bjbf_units = 'd|u|m'
-      assign bjbf_pdp = 'Black Friday-prijs: 35% korting t/m 30 november. Geen code nodig.'
   endcase
 
   assign bjbf_url = routes.all_products_collection_url
@@ -118,8 +112,6 @@
   {%- comment -%} Product page badges (next to the price and on the photo): one line, "BLACK FRIDAY · …". {%- endcomment -%}
   html:not(.bjbf-over) body :is(.bj-pd-badge.bj-pd-badge--dark,.bj-pd-badge.bj-discount-badge,.besjaar-store-premium-pd__sale):not(#bjbf-a):not(#bjbf-b):not(#bjbf-c):not(#bjbf-d){background:var(--bjbf-ink)!important;color:#fff!important;box-shadow:0 10px 24px -14px rgba(0,0,0,.55)!important}
   html:not(.bjbf-over) body :is(.bj-pd-badge.bj-pd-badge--dark,.bj-pd-badge.bj-discount-badge,.besjaar-store-premium-pd__sale):not(#bjbf-a):not(#bjbf-b):not(#bjbf-c):not(#bjbf-d)::before{content:"Black Friday \00B7\00A0";color:var(--bjbf-lime);font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:pre}
-  {%- comment -%} Product page: a full-width Black Friday line under the price. {%- endcomment -%}
-  html:not(.bjbf-over) body .besjaar-store-premium-pd .bj-pd-price:not(#bjbf-a):not(#bjbf-b)::after{content:"{{ bjbf_pdp }}";display:block;flex:0 0 100%;order:99;margin-top:6px;padding:11px 14px;border-left:4px solid var(--bjbf-lime);border-radius:10px;background:var(--bjbf-ink);color:#fff;font-size:13.5px;font-weight:650;line-height:1.35;letter-spacing:0}
 </style>
 <aside class="bjbf-bar" aria-label="Black Friday" data-bjbf>
   <a class="bjbf-bar__link" href="{{ bjbf_url }}">
