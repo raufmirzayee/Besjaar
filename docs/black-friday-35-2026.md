@@ -67,3 +67,9 @@ The connector cannot publish themes. Publish the copy in Online Store → Themes
 
 A scheduled task fires into this session on 1 Dec 2026 00:00 Amsterdam (trig_01FqUKKZd9G7eokViDCbvmvs) to restore the prices above.
 If it cannot run, restore the "Price before" values by hand.
+
+## Update 19 Nov, afternoon
+
+- The user published "Besjaar – adres 37 B" (205100581191) around 12:22 UTC. The new address and the pop-up gate are live.
+- Black Friday messaging was built in a new copy, "Besjaar – Black Friday 35%" (205111918919). It waits for the user to publish it.
+  See `theme-changes/2026-11-19-black-friday/README.md`.

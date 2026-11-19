@@ -1,0 +1,281 @@
+{%- comment -%}
+  Besjaar 2026-11-19: Black Friday 2026 messaging.
+
+  Every product is 35% below its compare-at price until Mon 30 Nov 2026 23:59
+  Amsterdam. The price itself carries the discount, so no code is needed (all
+  discount codes are paused until 1 Dec). This section makes it obvious that
+  the reduction is the Black Friday sale. It sits in the header group, right
+  under the site header (the group allows 25 sections, so this one section
+  does both jobs):
+
+    homepage     a large Black Friday banner with a live countdown.
+    other pages  a black Black Friday bar with a live countdown.
+    every page   discount badges read "BLACK FRIDAY · 35% KORTING", and the
+                 product page gets a "Black Friday-prijs" line under the price.
+
+  Nothing renders from 1796079600 (Tue 1 Dec 2026 00:00 Amsterdam), the moment
+  the prices go back. A page that stays open past that moment removes it all
+  in the browser. No editing is needed to retire it.
+{%- endcomment -%}
+{%- liquid
+  assign bjbf_end = 1796079600
+  assign bjbf_now = 'now' | date: '%s' | plus: 0
+  assign bjbf_mode = 'bar'
+  if request.page_type == 'index'
+    assign bjbf_mode = 'hero'
+  endif
+  assign bjbf_live = false
+  if bjbf_now < bjbf_end
+    assign bjbf_live = true
+  endif
+-%}
+{%- if bjbf_live -%}
+{%- liquid
+  assign bjbf_lang = request.locale.iso_code | split: '-' | first | downcase
+  case bjbf_lang
+    when 'en'
+      assign bjbf_pct = '35%'
+      assign bjbf_line = '35% off everything'
+      assign bjbf_note = 'No code needed · until 30 November'
+      assign bjbf_cta = 'Shop the deals'
+      assign bjbf_prefix = 'Ends in'
+      assign bjbf_units = 'd|h|m'
+      assign bjbf_eyebrow = 'Black Friday 2026 · until Monday 30 November'
+      assign bjbf_title = '35% off everything'
+      assign bjbf_text = 'On every shower head, filter, hose and shower set. The discount is already in the price, so you do not need a code.'
+      assign bjbf_hero_cta = 'Shop all Black Friday deals'
+      assign bjbf_clock_label = 'The sale ends in'
+      assign bjbf_u_d = 'days'
+      assign bjbf_u_h = 'hours'
+      assign bjbf_u_m = 'min'
+      assign bjbf_u_s = 'sec'
+      assign bjbf_pdp = 'Black Friday price: 35% off until 30 November. No code needed.'
+    when 'de'
+      assign bjbf_pct = '35%'
+      assign bjbf_line = '35% Rabatt auf alles'
+      assign bjbf_note = 'Kein Code nötig · bis 30. November'
+      assign bjbf_cta = 'Zu den Deals'
+      assign bjbf_prefix = 'Noch'
+      assign bjbf_units = 'd|h|m'
+      assign bjbf_eyebrow = 'Black Friday 2026 · bis Montag, 30. November'
+      assign bjbf_title = '35% Rabatt auf alles'
+      assign bjbf_text = 'Auf alle Duschköpfe, Filter, Schläuche und Duschsets. Der Rabatt ist schon im Preis enthalten, du brauchst keinen Code.'
+      assign bjbf_hero_cta = 'Alle Black-Friday-Deals ansehen'
+      assign bjbf_clock_label = 'Die Aktion endet in'
+      assign bjbf_u_d = 'Tage'
+      assign bjbf_u_h = 'Std.'
+      assign bjbf_u_m = 'Min.'
+      assign bjbf_u_s = 'Sek.'
+      assign bjbf_pdp = 'Black-Friday-Preis: 35% Rabatt bis 30. November. Kein Code nötig.'
+    when 'fr'
+      assign bjbf_pct = '-35 %'
+      assign bjbf_line = '-35 % sur tout'
+      assign bjbf_note = 'Sans code · jusqu’au 30 novembre'
+      assign bjbf_cta = 'Voir les offres'
+      assign bjbf_prefix = 'Encore'
+      assign bjbf_units = 'j|h|m'
+      assign bjbf_eyebrow = 'Black Friday 2026 · jusqu’au lundi 30 novembre'
+      assign bjbf_title = '-35 % sur tout'
+      assign bjbf_text = 'Sur tous les pommeaux, filtres, flexibles et ensembles de douche. La remise est déjà incluse dans le prix : aucun code nécessaire.'
+      assign bjbf_hero_cta = 'Voir toutes les offres Black Friday'
+      assign bjbf_clock_label = 'L’offre se termine dans'
+      assign bjbf_u_d = 'jours'
+      assign bjbf_u_h = 'h'
+      assign bjbf_u_m = 'min'
+      assign bjbf_u_s = 's'
+      assign bjbf_pdp = 'Prix Black Friday : -35 % jusqu’au 30 novembre. Aucun code nécessaire.'
+    when 'es'
+      assign bjbf_pct = '35 %'
+      assign bjbf_line = '35 % de descuento en todo'
+      assign bjbf_note = 'Sin código · hasta el 30 de noviembre'
+      assign bjbf_cta = 'Ver ofertas'
+      assign bjbf_prefix = 'Quedan'
+      assign bjbf_units = 'd|h|m'
+      assign bjbf_eyebrow = 'Black Friday 2026 · hasta el lunes 30 de noviembre'
+      assign bjbf_title = '35 % de descuento en todo'
+      assign bjbf_text = 'En todos los cabezales, filtros, flexos y conjuntos de ducha. El descuento ya está en el precio: no necesitas código.'
+      assign bjbf_hero_cta = 'Ver todas las ofertas Black Friday'
+      assign bjbf_clock_label = 'La oferta termina en'
+      assign bjbf_u_d = 'días'
+      assign bjbf_u_h = 'h'
+      assign bjbf_u_m = 'min'
+      assign bjbf_u_s = 's'
+      assign bjbf_pdp = 'Precio Black Friday: 35 % de descuento hasta el 30 de noviembre. Sin código.'
+    else
+      assign bjbf_pct = '35%'
+      assign bjbf_line = '35% korting op alles'
+      assign bjbf_note = 'Geen code nodig · t/m 30 november'
+      assign bjbf_cta = 'Shop de deals'
+      assign bjbf_prefix = 'Nog'
+      assign bjbf_units = 'd|u|m'
+      assign bjbf_eyebrow = 'Black Friday 2026 · t/m maandag 30 november'
+      assign bjbf_title = '35% korting op alles'
+      assign bjbf_text = 'Op alle douchekoppen, filters, slangen en douchesets. De korting zit al in de prijs, je hoeft geen code in te vullen.'
+      assign bjbf_hero_cta = 'Shop alle Black Friday-deals'
+      assign bjbf_clock_label = 'De actie eindigt over'
+      assign bjbf_u_d = 'dagen'
+      assign bjbf_u_h = 'uur'
+      assign bjbf_u_m = 'min'
+      assign bjbf_u_s = 'sec'
+      assign bjbf_pdp = 'Black Friday-prijs: 35% korting t/m 30 november. Geen code nodig.'
+  endcase
+
+  assign bjbf_url = routes.all_products_collection_url
+
+  assign bjbf_left = bjbf_end | minus: bjbf_now
+  assign bjbf_d = bjbf_left | divided_by: 86400
+  assign bjbf_h = bjbf_left | modulo: 86400 | divided_by: 3600
+  assign bjbf_m = bjbf_left | modulo: 3600 | divided_by: 60
+  assign bjbf_s = bjbf_left | modulo: 60
+  assign bjbf_hh = bjbf_h | prepend: '0' | slice: -2, 2
+  assign bjbf_mm = bjbf_m | prepend: '0' | slice: -2, 2
+  assign bjbf_ss = bjbf_s | prepend: '0' | slice: -2, 2
+  assign bjbf_u = bjbf_units | split: '|'
+  capture bjbf_compact
+    echo bjbf_prefix
+    echo ' '
+    if bjbf_d > 0
+      echo bjbf_d
+      echo bjbf_u[0]
+      echo ' '
+    endif
+    echo bjbf_h
+    echo bjbf_u[1]
+    echo ' '
+    echo bjbf_mm
+    echo bjbf_u[2]
+  endcapture
+-%}
+<style>
+  :root{--bjbf-ink:#0b0b0b;--bjbf-lime:#d4f25a}
+  {%- comment -%} Discount badges on product cards: two lines, "BLACK FRIDAY" above the percentage. {%- endcomment -%}
+  html:not(.bjbf-over) body .bj-discount-badge:not(.bj-pd-badge):not(#bjbf-a):not(#bjbf-b){display:inline-flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;gap:1px!important;min-height:0!important;padding:5px 10px 6px!important;border-radius:10px!important;background:var(--bjbf-ink)!important;border-color:var(--bjbf-ink)!important;color:#fff!important;line-height:1.1!important;text-align:left!important;white-space:nowrap!important}
+  html:not(.bjbf-over) body .bj-discount-badge:not(.bj-pd-badge):not(#bjbf-a):not(#bjbf-b)::before{content:"Black Friday";display:block;color:var(--bjbf-lime);font-size:.9em;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+  {%- comment -%} Product page badges (next to the price and on the photo): one line, "BLACK FRIDAY · …". {%- endcomment -%}
+  html:not(.bjbf-over) body :is(.bj-pd-badge.bj-pd-badge--dark,.bj-pd-badge.bj-discount-badge,.besjaar-store-premium-pd__sale):not(#bjbf-a):not(#bjbf-b):not(#bjbf-c):not(#bjbf-d){background:var(--bjbf-ink)!important;color:#fff!important;box-shadow:0 10px 24px -14px rgba(0,0,0,.55)!important}
+  html:not(.bjbf-over) body :is(.bj-pd-badge.bj-pd-badge--dark,.bj-pd-badge.bj-discount-badge,.besjaar-store-premium-pd__sale):not(#bjbf-a):not(#bjbf-b):not(#bjbf-c):not(#bjbf-d)::before{content:"Black Friday \00B7\00A0";color:var(--bjbf-lime);font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:pre}
+  {%- comment -%} Product page: a full-width Black Friday line under the price. {%- endcomment -%}
+  html:not(.bjbf-over) body .besjaar-store-premium-pd .bj-pd-price:not(#bjbf-a):not(#bjbf-b)::after{content:"{{ bjbf_pdp }}";display:block;flex:0 0 100%;order:99;margin-top:6px;padding:11px 14px;border-left:4px solid var(--bjbf-lime);border-radius:10px;background:var(--bjbf-ink);color:#fff;font-size:13.5px;font-weight:650;line-height:1.35;letter-spacing:0}
+</style>
+{%- if bjbf_mode == 'bar' -%}
+<style>
+  .bjbf-bar{position:relative;z-index:1;background:var(--bjbf-ink);color:#fff;font-family:var(--bj-font-body,Inter,system-ui,sans-serif)}
+  .bjbf-bar::after{content:"";position:absolute;inset-inline:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--bjbf-lime),transparent)}
+  html body .bjbf-bar .bjbf-bar__link:not(#bjbf-a){display:flex;align-items:center;justify-content:center;gap:0 12px;width:min(calc(100% - 24px),var(--besjaar-ui-width,1280px));margin-inline:auto;padding:10px 0 11px;color:#fff;font-size:13px;line-height:1.2;white-space:nowrap;overflow:hidden;text-decoration:none}
+  .bjbf-bar__tag{flex:0 0 auto;padding:4px 10px;border-radius:999px;background:var(--bjbf-lime);color:var(--bjbf-ink);font-size:11.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+  .bjbf-bar__line{flex:0 0 auto;font-weight:800;letter-spacing:.01em}
+  .bjbf-bar__note{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.78);font-weight:500}
+  .bjbf-bar__clock{flex:0 0 auto;font-weight:700;font-variant-numeric:tabular-nums;color:var(--bjbf-lime)}
+  .bjbf-bar__note::before,.bjbf-bar__clock::before{content:"\00B7";margin-inline-end:12px;color:rgba(255,255,255,.4)}
+  .bjbf-bar__cta{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border:1px solid rgba(255,255,255,.5);border-radius:999px;font-weight:700;transition:background-color .18s ease,color .18s ease,border-color .18s ease}
+  .bjbf-bar__link:hover .bjbf-bar__cta,.bjbf-bar__link:focus-visible .bjbf-bar__cta{background:#fff;border-color:#fff;color:var(--bjbf-ink)}
+  @media (max-width:980px){.bjbf-bar__note{display:none}}
+  @media (max-width:640px){html body .bjbf-bar .bjbf-bar__link:not(#bjbf-a){gap:0 8px;font-size:12px;padding:9px 0 10px}.bjbf-bar__cta-label{display:none}.bjbf-bar__cta{padding:3px 9px}.bjbf-bar__tag{font-size:10.5px;padding:3px 8px}}
+  @media (max-width:400px){.bjbf-bar__clock{display:none}}
+  @media print{.bjbf-bar{display:none}}
+</style>
+<aside class="bjbf-bar" aria-label="Black Friday" data-bjbf>
+  <a class="bjbf-bar__link" href="{{ bjbf_url }}">
+    <span class="bjbf-bar__tag">Black Friday</span>
+    <span class="bjbf-bar__line">{{ bjbf_line | escape }}</span>
+    <span class="bjbf-bar__note">{{ bjbf_note | escape }}</span>
+    <span class="bjbf-bar__clock" data-bjbf-compact data-prefix="{{ bjbf_prefix | escape }}" data-units="{{ bjbf_units | escape }}">{{ bjbf_compact | strip | escape }}</span>
+    <span class="bjbf-bar__cta"><span class="bjbf-bar__cta-label">{{ bjbf_cta | escape }}</span><span aria-hidden="true">→</span></span>
+  </a>
+</aside>
+{%- else -%}
+{%- assign bjbf_pct_html = '<span class="bjbf-hero__pct">' | append: bjbf_pct | append: '</span>' -%}
+<style>
+  .bjbf-hero{position:relative;overflow:hidden;background:var(--bjbf-ink);color:#fff;font-family:var(--bj-font-body,Inter,system-ui,sans-serif)}
+  .bjbf-hero::before{content:"";position:absolute;inset:-40% -10% auto auto;width:min(720px,90vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(212,242,90,.22),rgba(212,242,90,0) 62%);pointer-events:none}
+  .bjbf-hero__inner{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:center;gap:28px 56px;width:min(calc(100% - 32px),var(--besjaar-ui-width,1280px));margin-inline:auto;padding:clamp(32px,5vw,64px) 0}
+  html body .bjbf-hero .bjbf-hero__eyebrow:not(#bjbf-a){margin:0 0 12px;color:var(--bjbf-lime);font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  html body .bjbf-hero .bjbf-hero__title:not(#bjbf-a){margin:0 0 16px;color:#fff!important;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:clamp(38px,6.4vw,76px);font-weight:600;line-height:.98;letter-spacing:-.025em}
+  html body .bjbf-hero .bjbf-hero__pct:not(#bjbf-a){color:var(--bjbf-lime)!important}
+  html body .bjbf-hero .bjbf-hero__text:not(#bjbf-a){max-width:48ch;margin:0 0 26px;color:rgba(255,255,255,.84);font-size:clamp(15px,1.5vw,18px);line-height:1.55}
+  html body .bjbf-hero .bjbf-hero__cta:not(#bjbf-a){display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;background:var(--bjbf-lime);color:var(--bjbf-ink)!important;font-size:15px;font-weight:800;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+  .bjbf-hero__cta:hover,.bjbf-hero__cta:focus-visible{transform:translateY(-1px);box-shadow:0 10px 30px rgba(212,242,90,.25)}
+  .bjbf-hero__clock{padding:clamp(18px,2.4vw,26px);border:1px solid rgba(255,255,255,.14);border-radius:22px;background:rgba(255,255,255,.04)}
+  html body .bjbf-hero .bjbf-hero__clock-label:not(#bjbf-a){margin:0 0 14px;color:rgba(255,255,255,.72);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .bjbf-hero__units{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .bjbf-hero__unit{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px 12px;border-radius:14px;background:#1b1b1b}
+  .bjbf-hero__unit b{color:#fff;font-family:var(--bj-font-heading,Jost,system-ui,sans-serif);font-size:clamp(28px,3.6vw,44px);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+  .bjbf-hero__unit small{color:rgba(255,255,255,.62);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  @media (max-width:860px){.bjbf-hero__inner{grid-template-columns:1fr;gap:24px}.bjbf-hero::before{inset:-30% -40% auto auto}}
+  @media (max-width:420px){.bjbf-hero__units{gap:6px}.bjbf-hero__unit{padding:12px 2px 10px}}
+  @media (prefers-reduced-motion:reduce){.bjbf-hero__cta{transition:none}}
+  @media print{.bjbf-hero{display:none}}
+</style>
+<section class="bjbf-hero" aria-labelledby="BjbfHeroTitle" data-bjbf>
+  <div class="bjbf-hero__inner">
+    <div class="bjbf-hero__copy">
+      <p class="bjbf-hero__eyebrow">{{ bjbf_eyebrow | escape }}</p>
+      <h2 id="BjbfHeroTitle" class="bjbf-hero__title">{{ bjbf_title | escape | replace: bjbf_pct, bjbf_pct_html }}</h2>
+      <p class="bjbf-hero__text">{{ bjbf_text | escape }}</p>
+      <a class="bjbf-hero__cta" href="{{ bjbf_url }}">{{ bjbf_hero_cta | escape }}<span aria-hidden="true">→</span></a>
+    </div>
+    <div class="bjbf-hero__clock" role="timer" aria-label="{{ bjbf_clock_label | escape }}">
+      <p class="bjbf-hero__clock-label">{{ bjbf_clock_label | escape }}</p>
+      <div class="bjbf-hero__units">
+        <span class="bjbf-hero__unit"><b data-bjbf-unit="d">{{ bjbf_d }}</b><small>{{ bjbf_u_d | escape }}</small></span>
+        <span class="bjbf-hero__unit"><b data-bjbf-unit="h">{{ bjbf_hh }}</b><small>{{ bjbf_u_h | escape }}</small></span>
+        <span class="bjbf-hero__unit"><b data-bjbf-unit="m">{{ bjbf_mm }}</b><small>{{ bjbf_u_m | escape }}</small></span>
+        <span class="bjbf-hero__unit"><b data-bjbf-unit="s">{{ bjbf_ss }}</b><small>{{ bjbf_u_s | escape }}</small></span>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif -%}
+<script>
+  (() => {
+    const END = {{ bjbf_end }} * 1000;
+    const pad = (n) => String(n).padStart(2, '0');
+    const run = () => {
+      const left = Math.floor((END - Date.now()) / 1000);
+      if (left <= 0) {
+        document.documentElement.classList.add('bjbf-over');
+        document.querySelectorAll('[data-bjbf]').forEach((node) => node.remove());
+        return false;
+      }
+      const d = Math.floor(left / 86400);
+      const h = Math.floor((left % 86400) / 3600);
+      const m = Math.floor((left % 3600) / 60);
+      const s = left % 60;
+      document.querySelectorAll('[data-bjbf-compact]').forEach((node) => {
+        const u = (node.dataset.units || 'd|h|m').split('|');
+        const parts = [];
+        if (d > 0) parts.push(d + u[0]);
+        parts.push(h + u[1], pad(m) + u[2]);
+        node.textContent = (node.dataset.prefix ? node.dataset.prefix + ' ' : '') + parts.join(' ');
+      });
+      document.querySelectorAll('[data-bjbf-unit]').forEach((node) => {
+        const k = node.dataset.bjbfUnit;
+        node.textContent = k === 'd' ? String(d) : pad(k === 'h' ? h : k === 'm' ? m : s);
+      });
+      return true;
+    };
+    const start = () => {
+      if (!run()) return;
+      const timer = window.setInterval(() => { if (!run()) window.clearInterval(timer); }, 1000);
+      window.addEventListener('pageshow', run);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+  })();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Besjaar Black Friday 2026",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Black Friday 2026: banner on the homepage, bar on other pages, Black Friday badges. 35% off the compare-at price, no code needed. Disappears on its own on 1 December 2026 at 00:00 Amsterdam."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}
