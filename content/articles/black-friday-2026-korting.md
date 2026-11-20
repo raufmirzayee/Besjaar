@@ -18,3 +18,22 @@ Measured from the pre-sale prices, the real reduction is 9–21%.
 
 The user was told this and chose to keep the 30%/35% claims.
 The article does not repeat the "Eerlijke korting" promise from the early-access article, and it does not call the crossed-out prices "normal prices".
+
+## Old early-access article updated (20 Nov 2026)
+
+https://www.besjaar.eu/blogs/news/black-friday-2026-vroege-toegang (gid://shopify/Article/615922991431, same URL)
+
+- **Title:** now "Update: Black Friday bij Besjaar is begonnen".
+- **SEO:** "Black Friday 2026: de deals zijn begonnen | Besjaar", with a new description.
+- **Body:** a short update. The black box (colours forced with `!important`) has a "Bekijk alle Black Friday-deals" button to the new article. Below it: an "In het kort" list, a shop link, a note for early-access sign-ups, and contact details.
+- **Removed:**
+  - the sign-up form;
+  - the outdated 21/23 November schedule;
+  - the "Eerlijke korting" paragraph.
+
+Before-state for rollback: `rollback/black-friday-2026-vroege-toegang.before-2026-11-20.json`.
+
+Checked on iPhone 13:
+- no form and none of the old claims;
+- box text in lime and white;
+- the button lands on `/blogs/news/black-friday-2026-korting`.
