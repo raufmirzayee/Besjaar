@@ -1,0 +1,941 @@
+{
+ "shop_title_translations": {
+  "resourceId": "gid://shopify/Shop/105781231964",
+  "translations": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Univex Shop | Duschköpfe, Taschenlampen & praktische Gadgets",
+    "translatableContentDigest": "8ac2dadcace619b5a2ce47b63331c2e873fcf175298e4798e2c75bbbc756366d"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Univex Shop | Shower heads, flashlights & handy gadgets",
+    "translatableContentDigest": "8ac2dadcace619b5a2ce47b63331c2e873fcf175298e4798e2c75bbbc756366d"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Univex Shop | Pommeaux de douche, lampes torches & gadgets",
+    "translatableContentDigest": "8ac2dadcace619b5a2ce47b63331c2e873fcf175298e4798e2c75bbbc756366d"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Univex Shop | Alcachofas de ducha, linternas y gadgets",
+    "translatableContentDigest": "8ac2dadcace619b5a2ce47b63331c2e873fcf175298e4798e2c75bbbc756366d"
+   }
+  ]
+ },
+ "metafields": [
+  {
+   "ownerId": "gid://shopify/Article/1008249176412",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Hoeveel lumen heeft een zaklamp nodig? Uitleg & tips"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249209180",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Douchekop met filter: werking & filter vervangen"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249241948",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Watertemperatuur voor thee & koffie: handig overzicht"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249635164",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Nieuw: SlimHome-waterkokers, ons eigen keukenmerk"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249733468",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Hoofdlamp kopen: waar let je op? Tips & vergelijking"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249766236",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Welke reisstekker heb je nodig? Stekkertypes per land"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008249799004",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Laptopstandaard instellen: prettiger werken in 5 stappen"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008277782876",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Draadloze deurbel kopen & installeren: tips en uitleg"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008277815644",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Muizen in huis? Zo raak je ze kwijt zonder gif"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008277848412",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Telefoonhouder op de fiets: regels, keuze & montage"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008277881180",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Solar buitenlamp met bewegingssensor: tips voor herfst & winter"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008277913948",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Krullen maken met een airstyler: stap-voor-stap uitleg"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008278798684",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Digitale keukenweegschaal: tips voor nauwkeurig wegen"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008278831452",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Massage gun gebruiken: tips, opzetstukken & veiligheid"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008278864220",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Alcohol markers voor beginners: papier, technieken & tips"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008278896988",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "UV-zaklamp: urinevlekken van huisdieren opsporen"
+  },
+  {
+   "ownerId": "gid://shopify/Article/1008278929756",
+   "namespace": "global",
+   "key": "title_tag",
+   "type": "single_line_text_field",
+   "value": "Foto's overzetten met een SD-kaartlezer (USB-C)"
+  },
+  {
+   "ownerId": "gid://shopify/Page/715935252828",
+   "namespace": "global",
+   "key": "description_tag",
+   "type": "multi_line_text_field",
+   "value": "Vragen over een product of je bestelling? Mail info@univexbv.com, bel +31 6 87616931 of gebruik het formulier. We reageren meestal binnen één werkdag."
+  },
+  {
+   "ownerId": "gid://shopify/Page/715936596316",
+   "namespace": "global",
+   "key": "description_tag",
+   "type": "multi_line_text_field",
+   "value": "Antwoorden over bestellen, bezorgen, retourneren en betalen: gratis verzending in Nederland, vóór 16:00 besteld is dezelfde dag verzonden, 30 dagen bedenktijd."
+  },
+  {
+   "ownerId": "gid://shopify/Blog/130790523228",
+   "namespace": "global",
+   "key": "description_tag",
+   "type": "multi_line_text_field",
+   "value": "Praktische tips en keuzegidsen: zo kies je de juiste zaklamp, hoofdlamp, douchekop, waterkoker of reisstekker, plus uitleg over onderhoud en gebruik."
+  },
+  {
+   "ownerId": "gid://shopify/Blog/131154772316",
+   "namespace": "global",
+   "key": "description_tag",
+   "type": "multi_line_text_field",
+   "value": "Nieuws van Univex: nieuwe producten van onze merken Besjaar, Rynex, Lynex en SlimHome, en updates over verzending en retourneren."
+  },
+  {
+   "ownerId": "gid://shopify/Collection/699759100252",
+   "namespace": "seo",
+   "key": "hidden",
+   "type": "number_integer",
+   "value": "1"
+  }
+ ],
+ "translations": {
+  "gid://shopify/Product/15846949814620": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Besjaar Duschkopf mit Filter und Schlauch (10 Strahlarten)",
+    "translatableContentDigest": "aaa022299688cb161b695b13c9949d2fa4c2d754d1091a0836f669016a8844db"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Besjaar Filtered Shower Head with Hose (10 modes)",
+    "translatableContentDigest": "aaa022299688cb161b695b13c9949d2fa4c2d754d1091a0836f669016a8844db"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Besjaar pommeau de douche filtrant avec flexible (10 jets)",
+    "translatableContentDigest": "aaa022299688cb161b695b13c9949d2fa4c2d754d1091a0836f669016a8844db"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Besjaar alcachofa de ducha con filtro y flexo (10 modos)",
+    "translatableContentDigest": "aaa022299688cb161b695b13c9949d2fa4c2d754d1091a0836f669016a8844db"
+   }
+  ],
+  "gid://shopify/Product/15846952173916": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Besjaar Duschkopf mit Filter (10 Strahlarten)",
+    "translatableContentDigest": "24b3272a51955b67a09fe01357a5369382930b35d87360aab8926cf991f437e4"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Besjaar Filtered Shower Head (10 modes)",
+    "translatableContentDigest": "24b3272a51955b67a09fe01357a5369382930b35d87360aab8926cf991f437e4"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Besjaar pommeau de douche filtrant (10 jets)",
+    "translatableContentDigest": "24b3272a51955b67a09fe01357a5369382930b35d87360aab8926cf991f437e4"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Besjaar alcachofa de ducha con filtro (10 modos)",
+    "translatableContentDigest": "24b3272a51955b67a09fe01357a5369382930b35d87360aab8926cf991f437e4"
+   }
+  ],
+  "gid://shopify/Product/15846952206684": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Besjaar Duschkopf mit Schlauch (3 Strahlarten)",
+    "translatableContentDigest": "10ed1d76578fdbed2aa42da4c9fa572bc6e83e9c34393917b4f99fbb2e090180"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Besjaar Shower Head with Hose (3 modes)",
+    "translatableContentDigest": "10ed1d76578fdbed2aa42da4c9fa572bc6e83e9c34393917b4f99fbb2e090180"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Besjaar pommeau de douche avec flexible (3 jets)",
+    "translatableContentDigest": "10ed1d76578fdbed2aa42da4c9fa572bc6e83e9c34393917b4f99fbb2e090180"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Besjaar alcachofa de ducha con flexo (3 modos)",
+    "translatableContentDigest": "10ed1d76578fdbed2aa42da4c9fa572bc6e83e9c34393917b4f99fbb2e090180"
+   }
+  ],
+  "gid://shopify/Product/15846952239452": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Besjaar Wassersparender Duschkopf (3 Strahlarten)",
+    "translatableContentDigest": "0d86ed417c92a1b6534d6654501f8c016a5d6550ae0b8160b8bf23ce9e767d9a"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Besjaar Water-Saving Shower Head (3 modes)",
+    "translatableContentDigest": "0d86ed417c92a1b6534d6654501f8c016a5d6550ae0b8160b8bf23ce9e767d9a"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Besjaar pommeau de douche économique (3 jets)",
+    "translatableContentDigest": "0d86ed417c92a1b6534d6654501f8c016a5d6550ae0b8160b8bf23ce9e767d9a"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Besjaar alcachofa de ducha ahorradora (3 modos)",
+    "translatableContentDigest": "0d86ed417c92a1b6534d6654501f8c016a5d6550ae0b8160b8bf23ce9e767d9a"
+   }
+  ],
+  "gid://shopify/Product/15846953255260": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Besjaar Duschfilter-Nachfüllset (2 Filter)",
+    "translatableContentDigest": "83d88e583f7809b7b15dc93807f5e09b4cc7c9aeec14f185bdce0f407ffaf644"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Besjaar Shower Filter Refill Set (2 filters)",
+    "translatableContentDigest": "83d88e583f7809b7b15dc93807f5e09b4cc7c9aeec14f185bdce0f407ffaf644"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Besjaar recharges de filtre de douche (2 filtres)",
+    "translatableContentDigest": "83d88e583f7809b7b15dc93807f5e09b4cc7c9aeec14f185bdce0f407ffaf644"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Besjaar recambio de filtros de ducha (2 filtros)",
+    "translatableContentDigest": "83d88e583f7809b7b15dc93807f5e09b4cc7c9aeec14f185bdce0f407ffaf644"
+   }
+  ],
+  "gid://shopify/Article/1008249176412": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Wie viele Lumen braucht eine Taschenlampe? Erklärung & Tipps",
+    "translatableContentDigest": "c33c8f8c98bf2ae5f0c3cf5c4be2d81332e09299b72f7d9e6908cac006e35a76"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "How Many Lumens Does a Flashlight Need? Guide & Tips",
+    "translatableContentDigest": "c33c8f8c98bf2ae5f0c3cf5c4be2d81332e09299b72f7d9e6908cac006e35a76"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Combien de lumens pour une lampe torche ? Guide & conseils",
+    "translatableContentDigest": "c33c8f8c98bf2ae5f0c3cf5c4be2d81332e09299b72f7d9e6908cac006e35a76"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "¿Cuántos lúmenes necesita una linterna? Guía y consejos",
+    "translatableContentDigest": "c33c8f8c98bf2ae5f0c3cf5c4be2d81332e09299b72f7d9e6908cac006e35a76"
+   }
+  ],
+  "gid://shopify/Article/1008249209180": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Duschkopf mit Filter: Funktion & Filter wechseln",
+    "translatableContentDigest": "d0f7c25e8c16e23d4be65a73d048999afe96e41252292856e60fc4456a581d7a"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Filtered Shower Head: How It Works & Replacing the Filter",
+    "translatableContentDigest": "d0f7c25e8c16e23d4be65a73d048999afe96e41252292856e60fc4456a581d7a"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Pommeau de douche filtrant : fonctionnement & remplacement du filtre",
+    "translatableContentDigest": "d0f7c25e8c16e23d4be65a73d048999afe96e41252292856e60fc4456a581d7a"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Alcachofa de ducha con filtro: funcionamiento y cambio de filtro",
+    "translatableContentDigest": "d0f7c25e8c16e23d4be65a73d048999afe96e41252292856e60fc4456a581d7a"
+   }
+  ],
+  "gid://shopify/Article/1008249241948": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Wassertemperatur für Tee & Kaffee: Praktische Übersicht",
+    "translatableContentDigest": "dfadd2cd8639d96a4dbcfc912d9249745727151175eeb0aceb1306be41747024"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Water Temperature for Tea & Coffee: Handy Overview",
+    "translatableContentDigest": "dfadd2cd8639d96a4dbcfc912d9249745727151175eeb0aceb1306be41747024"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Température de l'eau pour le thé & le café : aperçu pratique",
+    "translatableContentDigest": "dfadd2cd8639d96a4dbcfc912d9249745727151175eeb0aceb1306be41747024"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Temperatura del agua para té y café: guía práctica",
+    "translatableContentDigest": "dfadd2cd8639d96a4dbcfc912d9249745727151175eeb0aceb1306be41747024"
+   }
+  ],
+  "gid://shopify/Article/1008249635164": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Neu: SlimHome Wasserkocher | Unsere eigene Küchenmarke",
+    "translatableContentDigest": "70d0572eb47ca94b2487ec69042589523562a4d7004be316d4c276e47718b82a"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "New: SlimHome Kettles | Our Own Kitchen Brand",
+    "translatableContentDigest": "70d0572eb47ca94b2487ec69042589523562a4d7004be316d4c276e47718b82a"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Nouveau : bouilloires SlimHome, notre propre marque de cuisine",
+    "translatableContentDigest": "70d0572eb47ca94b2487ec69042589523562a4d7004be316d4c276e47718b82a"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Novedad: hervidores SlimHome, nuestra propia marca de cocina",
+    "translatableContentDigest": "70d0572eb47ca94b2487ec69042589523562a4d7004be316d4c276e47718b82a"
+   }
+  ],
+  "gid://shopify/Article/1008249733468": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Stirnlampe kaufen: Worauf achten? Tipps & Vergleich",
+    "translatableContentDigest": "a0c9c9a3fdc965144ec061696c1445297af715ebae57a515faa316936aac0a79"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Buying a Headlamp: What to Look For? Tips & Comparison",
+    "translatableContentDigest": "a0c9c9a3fdc965144ec061696c1445297af715ebae57a515faa316936aac0a79"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Choisir une lampe frontale : critères, conseils & comparatif",
+    "translatableContentDigest": "a0c9c9a3fdc965144ec061696c1445297af715ebae57a515faa316936aac0a79"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Comprar linterna frontal: ¿qué tener en cuenta? Consejos y comparativa",
+    "translatableContentDigest": "a0c9c9a3fdc965144ec061696c1445297af715ebae57a515faa316936aac0a79"
+   }
+  ],
+  "gid://shopify/Article/1008249766236": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Welchen Reiseadapter brauchst du? Steckertypen nach Land",
+    "translatableContentDigest": "1da4d0111dea6440397db6b9af4c56f2193b7cc7dc3f6a5af08c2470d6b2e608"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Which Travel Adapter Do You Need? Plug Types by Country",
+    "translatableContentDigest": "1da4d0111dea6440397db6b9af4c56f2193b7cc7dc3f6a5af08c2470d6b2e608"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Quel adaptateur de voyage ? Types de prises par pays",
+    "translatableContentDigest": "1da4d0111dea6440397db6b9af4c56f2193b7cc7dc3f6a5af08c2470d6b2e608"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "¿Qué adaptador de viaje necesitas? Enchufes por país",
+    "translatableContentDigest": "1da4d0111dea6440397db6b9af4c56f2193b7cc7dc3f6a5af08c2470d6b2e608"
+   }
+  ],
+  "gid://shopify/Article/1008249799004": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Laptopständer einrichten: Angenehmer arbeiten in 5 Schritten",
+    "translatableContentDigest": "3a16bf5cf30dd97da617c7f0d4f162924a1bb655799c1b307f792933a2c392e1"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Setting Up a Laptop Stand: Work More Comfortably in 5 Steps",
+    "translatableContentDigest": "3a16bf5cf30dd97da617c7f0d4f162924a1bb655799c1b307f792933a2c392e1"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Régler un support pour PC portable : plus de confort en 5 étapes",
+    "translatableContentDigest": "3a16bf5cf30dd97da617c7f0d4f162924a1bb655799c1b307f792933a2c392e1"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Ajustar un soporte para portátil: trabaja más cómodo en 5 pasos",
+    "translatableContentDigest": "3a16bf5cf30dd97da617c7f0d4f162924a1bb655799c1b307f792933a2c392e1"
+   }
+  ],
+  "gid://shopify/Article/1008277782876": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Funk-Türklingel kaufen & installieren: Tipps und Anleitung",
+    "translatableContentDigest": "f46c1f171b98cc43d2c5fa536b99480918a652cf9b01e0072e1e4705255b00c9"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Buying & Installing a Wireless Doorbell: Tips and Guide",
+    "translatableContentDigest": "f46c1f171b98cc43d2c5fa536b99480918a652cf9b01e0072e1e4705255b00c9"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Sonnette sans fil : bien la choisir et l'installer",
+    "translatableContentDigest": "f46c1f171b98cc43d2c5fa536b99480918a652cf9b01e0072e1e4705255b00c9"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Comprar e instalar un timbre inalámbrico: consejos y guía",
+    "translatableContentDigest": "f46c1f171b98cc43d2c5fa536b99480918a652cf9b01e0072e1e4705255b00c9"
+   }
+  ],
+  "gid://shopify/Article/1008277815644": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Mäuse im Haus? So wirst du sie ohne Gift los",
+    "translatableContentDigest": "db37410b6895dae31149d24396b480234b338ff2de1da2fd9abe97a41c39808b"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Mice in the House? Get Rid of Them Without Poison",
+    "translatableContentDigest": "db37410b6895dae31149d24396b480234b338ff2de1da2fd9abe97a41c39808b"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Souris à la maison ? Chassez-les sans poison",
+    "translatableContentDigest": "db37410b6895dae31149d24396b480234b338ff2de1da2fd9abe97a41c39808b"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "¿Ratones en casa? Así te libras de ellos sin veneno",
+    "translatableContentDigest": "db37410b6895dae31149d24396b480234b338ff2de1da2fd9abe97a41c39808b"
+   }
+  ],
+  "gid://shopify/Article/1008277848412": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Handyhalterung am Fahrrad: Regeln, Auswahl & Montage",
+    "translatableContentDigest": "6691569c62986b89ce51d367e6df8cc21fc8e86804a5ac083fcf66504b537778"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Bike Phone Holder: Rules, Choosing & Fitting",
+    "translatableContentDigest": "6691569c62986b89ce51d367e6df8cc21fc8e86804a5ac083fcf66504b537778"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Support téléphone vélo : règles, choix et montage",
+    "translatableContentDigest": "6691569c62986b89ce51d367e6df8cc21fc8e86804a5ac083fcf66504b537778"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Soporte de móvil para bici: normas, elección y montaje",
+    "translatableContentDigest": "6691569c62986b89ce51d367e6df8cc21fc8e86804a5ac083fcf66504b537778"
+   }
+  ],
+  "gid://shopify/Article/1008277881180": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Solarleuchte mit Bewegungsmelder: Tipps für Herbst & Winter",
+    "translatableContentDigest": "dd3f4f81e8330fd1da499feb168742fe3b801d95dc9f4218b3ed72c526dd5f8a"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Solar Outdoor Light with Motion Sensor: Autumn & Winter Tips",
+    "translatableContentDigest": "dd3f4f81e8330fd1da499feb168742fe3b801d95dc9f4218b3ed72c526dd5f8a"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Lampe solaire à détecteur : nos conseils automne-hiver",
+    "translatableContentDigest": "dd3f4f81e8330fd1da499feb168742fe3b801d95dc9f4218b3ed72c526dd5f8a"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Lámpara solar con sensor: consejos para otoño e invierno",
+    "translatableContentDigest": "dd3f4f81e8330fd1da499feb168742fe3b801d95dc9f4218b3ed72c526dd5f8a"
+   }
+  ],
+  "gid://shopify/Article/1008277913948": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Locken mit dem Airstyler: Schritt-für-Schritt-Anleitung",
+    "translatableContentDigest": "a4d00bf870beabe2be5054c865e47dc7def01d97f4b3760544ce6de26df48662"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "How to Curl Hair with an Airstyler: Step-by-Step Guide",
+    "translatableContentDigest": "a4d00bf870beabe2be5054c865e47dc7def01d97f4b3760544ce6de26df48662"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Boucles avec un Airstyler : le guide étape par étape",
+    "translatableContentDigest": "a4d00bf870beabe2be5054c865e47dc7def01d97f4b3760544ce6de26df48662"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Cómo hacer rizos con un Airstyler: guía paso a paso",
+    "translatableContentDigest": "a4d00bf870beabe2be5054c865e47dc7def01d97f4b3760544ce6de26df48662"
+   }
+  ],
+  "gid://shopify/Article/1008278798684": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Digitale Küchenwaage: Tipps für genaues Wiegen",
+    "translatableContentDigest": "b6feedff7775d5ac3165827128d14c2098f27460fb02a2878d4ddb7f171db178"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Digital Kitchen Scale: Tips for Accurate Weighing",
+    "translatableContentDigest": "b6feedff7775d5ac3165827128d14c2098f27460fb02a2878d4ddb7f171db178"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Balance de cuisine numérique : conseils pour bien peser",
+    "translatableContentDigest": "b6feedff7775d5ac3165827128d14c2098f27460fb02a2878d4ddb7f171db178"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Báscula de cocina digital: consejos para pesar con precisión",
+    "translatableContentDigest": "b6feedff7775d5ac3165827128d14c2098f27460fb02a2878d4ddb7f171db178"
+   }
+  ],
+  "gid://shopify/Article/1008278831452": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Massagepistole anwenden: Tipps, Aufsätze & Sicherheit",
+    "translatableContentDigest": "cb5fe6e5561ab19d0343d3ceee8b771c70d8699db2a9a1dee46f905fa2e6ca03"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "How to Use a Massage Gun: Tips, Attachments & Safety",
+    "translatableContentDigest": "cb5fe6e5561ab19d0343d3ceee8b771c70d8699db2a9a1dee46f905fa2e6ca03"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Pistolet de massage : conseils, embouts et sécurité",
+    "translatableContentDigest": "cb5fe6e5561ab19d0343d3ceee8b771c70d8699db2a9a1dee46f905fa2e6ca03"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Cómo usar una pistola de masaje: consejos y seguridad",
+    "translatableContentDigest": "cb5fe6e5561ab19d0343d3ceee8b771c70d8699db2a9a1dee46f905fa2e6ca03"
+   }
+  ],
+  "gid://shopify/Article/1008278864220": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Alkoholmarker für Anfänger: Papier, Techniken & Tipps",
+    "translatableContentDigest": "1b6a01f5bb40a2c7c2c75126c353d471720981137486568393f1982831a3d40f"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "Alcohol Markers for Beginners: Paper, Techniques & Tips",
+    "translatableContentDigest": "1b6a01f5bb40a2c7c2c75126c353d471720981137486568393f1982831a3d40f"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Feutres à alcool pour débutants : papier et techniques",
+    "translatableContentDigest": "1b6a01f5bb40a2c7c2c75126c353d471720981137486568393f1982831a3d40f"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Rotuladores de alcohol para principiantes: papel y técnicas",
+    "translatableContentDigest": "1b6a01f5bb40a2c7c2c75126c353d471720981137486568393f1982831a3d40f"
+   }
+  ],
+  "gid://shopify/Article/1008278896988": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "UV-Taschenlampe: Urinflecken von Haustieren finden",
+    "translatableContentDigest": "5ff5414d06e4cb6bbacbc12a32a9d632bad71bfccc4a15ed938122edb46ec7f3"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "UV Torch: How to Find Pet Urine Stains",
+    "translatableContentDigest": "5ff5414d06e4cb6bbacbc12a32a9d632bad71bfccc4a15ed938122edb46ec7f3"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Lampe UV : détecter les taches d'urine d'animaux",
+    "translatableContentDigest": "5ff5414d06e4cb6bbacbc12a32a9d632bad71bfccc4a15ed938122edb46ec7f3"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Linterna UV: detecta manchas de orina de mascotas",
+    "translatableContentDigest": "5ff5414d06e4cb6bbacbc12a32a9d632bad71bfccc4a15ed938122edb46ec7f3"
+   }
+  ],
+  "gid://shopify/Article/1008278929756": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Fotos mit einem SD-Kartenleser übertragen (USB-C)",
+    "translatableContentDigest": "5f3e63036799ac8ae88606047fb290370b06dc4ed445d73f27c0c6ad9290cc8e"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "How to Transfer Photos with an SD Card Reader (USB-C)",
+    "translatableContentDigest": "5f3e63036799ac8ae88606047fb290370b06dc4ed445d73f27c0c6ad9290cc8e"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Transférer des photos avec un lecteur de cartes SD (USB-C)",
+    "translatableContentDigest": "5f3e63036799ac8ae88606047fb290370b06dc4ed445d73f27c0c6ad9290cc8e"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Cómo pasar fotos con un lector de tarjetas SD (USB-C)",
+    "translatableContentDigest": "5f3e63036799ac8ae88606047fb290370b06dc4ed445d73f27c0c6ad9290cc8e"
+   }
+  ],
+  "gid://shopify/Page/715935252828": [
+   {
+    "locale": "de",
+    "key": "meta_description",
+    "value": "Fragen zu Produkt oder Bestellung? Schreib an info@univexbv.com, ruf +31 6 87616931 an oder nutze das Formular. Wir antworten meist innerhalb eines Werktags.",
+    "translatableContentDigest": "3338ae95d4cc8cc70f4032f1a233ca1a1676116b220bb01d93634f422a3ba58d"
+   },
+   {
+    "locale": "en",
+    "key": "meta_description",
+    "value": "Questions about a product or your order? Email info@univexbv.com, call +31 6 87616931 or use the form. We usually reply within one working day.",
+    "translatableContentDigest": "3338ae95d4cc8cc70f4032f1a233ca1a1676116b220bb01d93634f422a3ba58d"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_description",
+    "value": "Une question sur un produit ou votre commande ? Écrivez à info@univexbv.com, appelez le +31 6 87616931 ou utilisez le formulaire. Réponse sous un jour ouvré.",
+    "translatableContentDigest": "3338ae95d4cc8cc70f4032f1a233ca1a1676116b220bb01d93634f422a3ba58d"
+   },
+   {
+    "locale": "es",
+    "key": "meta_description",
+    "value": "¿Preguntas sobre un producto o tu pedido? Escribe a info@univexbv.com, llama al +31 6 87616931 o usa el formulario. Respondemos en un día laborable.",
+    "translatableContentDigest": "3338ae95d4cc8cc70f4032f1a233ca1a1676116b220bb01d93634f422a3ba58d"
+   }
+  ],
+  "gid://shopify/Page/715936596316": [
+   {
+    "locale": "de",
+    "key": "meta_description",
+    "value": "Bestellung, Versand, Rückgabe und Zahlung: Versand nach Deutschland ab 30 € gratis, bis 16 Uhr bestellt am selben Tag verschickt, 30 Tage Rückgabe.",
+    "translatableContentDigest": "f1aaad42b7e2476ae07e06382b12d96b8fb7fe59eb75dac9c3084f1142c1e2e9"
+   },
+   {
+    "locale": "en",
+    "key": "meta_description",
+    "value": "Answers on ordering, delivery, returns and payment: free delivery in the Netherlands, free to BE, DE, FR and ES from €30, same-day dispatch before 16:00.",
+    "translatableContentDigest": "f1aaad42b7e2476ae07e06382b12d96b8fb7fe59eb75dac9c3084f1142c1e2e9"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_description",
+    "value": "Commande, livraison, retours et paiement : livraison gratuite en France dès 30 €, expédition le jour même avant 16h00 et 30 jours pour changer d'avis.",
+    "translatableContentDigest": "f1aaad42b7e2476ae07e06382b12d96b8fb7fe59eb75dac9c3084f1142c1e2e9"
+   },
+   {
+    "locale": "es",
+    "key": "meta_description",
+    "value": "Pedidos, envíos, devoluciones y pagos: envío gratis a España desde 30 €, envío el mismo día si pides antes de las 16:00 y 30 días para devolver.",
+    "translatableContentDigest": "f1aaad42b7e2476ae07e06382b12d96b8fb7fe59eb75dac9c3084f1142c1e2e9"
+   }
+  ],
+  "gid://shopify/Blog/130790523228": [
+   {
+    "locale": "de",
+    "key": "meta_description",
+    "value": "Praktische Tipps und Kaufberater rund um Taschenlampen, Stirnlampen, Duschköpfe, Wasserkocher und Reisestecker, plus Hinweise zu Pflege und Anwendung.",
+    "translatableContentDigest": "98c0b2028461ba7d71c983f0b827b5561fc1afbad6120fdb21eb7fc15d81f8d8"
+   },
+   {
+    "locale": "en",
+    "key": "meta_description",
+    "value": "Practical tips and buying guides for flashlights, head torches, shower heads, kettles and travel adapters, plus advice on care and use.",
+    "translatableContentDigest": "98c0b2028461ba7d71c983f0b827b5561fc1afbad6120fdb21eb7fc15d81f8d8"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_description",
+    "value": "Conseils pratiques et guides d'achat pour lampes torches, lampes frontales, pommeaux de douche, bouilloires et adaptateurs de voyage.",
+    "translatableContentDigest": "98c0b2028461ba7d71c983f0b827b5561fc1afbad6120fdb21eb7fc15d81f8d8"
+   },
+   {
+    "locale": "es",
+    "key": "meta_description",
+    "value": "Consejos prácticos y guías de compra de linternas, linternas frontales, alcachofas de ducha, hervidores y adaptadores de viaje.",
+    "translatableContentDigest": "98c0b2028461ba7d71c983f0b827b5561fc1afbad6120fdb21eb7fc15d81f8d8"
+   }
+  ],
+  "gid://shopify/Blog/131154772316": [
+   {
+    "locale": "de",
+    "key": "meta_description",
+    "value": "Neuigkeiten von Univex: neue Produkte unserer Marken Besjaar, Rynex, Lynex und SlimHome sowie Updates zu Versand und Rückgabe.",
+    "translatableContentDigest": "973c054d6770418c6e5f8ddff7d2ecdbe604e559dbcb18f138c7f17c1e0903ee"
+   },
+   {
+    "locale": "en",
+    "key": "meta_description",
+    "value": "News from Univex: new products from our brands Besjaar, Rynex, Lynex and SlimHome, plus updates on shipping and returns.",
+    "translatableContentDigest": "973c054d6770418c6e5f8ddff7d2ecdbe604e559dbcb18f138c7f17c1e0903ee"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_description",
+    "value": "Actualités d'Univex : nouveaux produits de nos marques Besjaar, Rynex, Lynex et SlimHome, et infos sur la livraison et les retours.",
+    "translatableContentDigest": "973c054d6770418c6e5f8ddff7d2ecdbe604e559dbcb18f138c7f17c1e0903ee"
+   },
+   {
+    "locale": "es",
+    "key": "meta_description",
+    "value": "Noticias de Univex: nuevos productos de nuestras marcas Besjaar, Rynex, Lynex y SlimHome, y novedades sobre envíos y devoluciones.",
+    "translatableContentDigest": "973c054d6770418c6e5f8ddff7d2ecdbe604e559dbcb18f138c7f17c1e0903ee"
+   }
+  ],
+  "gid://shopify/Collection/708027777372": [
+   {
+    "locale": "de",
+    "key": "meta_title",
+    "value": "Alle Produkte | Duschköpfe, Taschenlampen & mehr",
+    "translatableContentDigest": "7fb5678cd61342dfaec4f9efd9e132e1d71820a9b1f1c2837ffe1397fd815aff"
+   },
+   {
+    "locale": "de",
+    "key": "meta_description",
+    "value": "Alle Produkte von Univex: Duschköpfe mit Filter, aufladbare Taschenlampen, Wasserkocher, Haarstyling und Gadgets. Versand nach Deutschland ab 30 € gratis.",
+    "translatableContentDigest": "03ccf4aadf8767e2b415ee16e6ae4f1edd5dd4214dc6c9e46673150406e2d04b"
+   },
+   {
+    "locale": "en",
+    "key": "meta_title",
+    "value": "All products | Shower heads, flashlights & more",
+    "translatableContentDigest": "7fb5678cd61342dfaec4f9efd9e132e1d71820a9b1f1c2837ffe1397fd815aff"
+   },
+   {
+    "locale": "en",
+    "key": "meta_description",
+    "value": "All Univex products: filtered shower heads, rechargeable flashlights, kettles, hair styling and handy gadgets. Free delivery in the Netherlands.",
+    "translatableContentDigest": "03ccf4aadf8767e2b415ee16e6ae4f1edd5dd4214dc6c9e46673150406e2d04b"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_title",
+    "value": "Tous les produits | Pommeaux de douche, lampes & plus",
+    "translatableContentDigest": "7fb5678cd61342dfaec4f9efd9e132e1d71820a9b1f1c2837ffe1397fd815aff"
+   },
+   {
+    "locale": "fr",
+    "key": "meta_description",
+    "value": "Tous les produits Univex : pommeaux de douche filtrants, lampes torches rechargeables, bouilloires, coiffure et gadgets pratiques. Livraison offerte dès 30 €.",
+    "translatableContentDigest": "03ccf4aadf8767e2b415ee16e6ae4f1edd5dd4214dc6c9e46673150406e2d04b"
+   },
+   {
+    "locale": "es",
+    "key": "meta_title",
+    "value": "Todos los productos | Alcachofas, linternas y más",
+    "translatableContentDigest": "7fb5678cd61342dfaec4f9efd9e132e1d71820a9b1f1c2837ffe1397fd815aff"
+   },
+   {
+    "locale": "es",
+    "key": "meta_description",
+    "value": "Todos los productos de Univex: alcachofas con filtro, linternas recargables, hervidores, peinado y gadgets prácticos. Envío gratis a España desde 30 €.",
+    "translatableContentDigest": "03ccf4aadf8767e2b415ee16e6ae4f1edd5dd4214dc6c9e46673150406e2d04b"
+   }
+  ],
+  "gid://shopify/Collection/700629320028": [
+   {
+    "locale": "de",
+    "key": "body_html",
+    "value": "<p>Produkte mit einem vorübergehend reduzierten Preis.</p>",
+    "translatableContentDigest": "4273df6676e12e56182e106333530f43ae1d3b7dc99abd9523f33995693523a8"
+   },
+   {
+    "locale": "en",
+    "key": "body_html",
+    "value": "<p>Products with a temporarily reduced price.</p>",
+    "translatableContentDigest": "4273df6676e12e56182e106333530f43ae1d3b7dc99abd9523f33995693523a8"
+   },
+   {
+    "locale": "fr",
+    "key": "body_html",
+    "value": "<p>Produits à prix temporairement réduit.</p>",
+    "translatableContentDigest": "4273df6676e12e56182e106333530f43ae1d3b7dc99abd9523f33995693523a8"
+   },
+   {
+    "locale": "es",
+    "key": "body_html",
+    "value": "<p>Productos con un precio rebajado temporalmente.</p>",
+    "translatableContentDigest": "4273df6676e12e56182e106333530f43ae1d3b7dc99abd9523f33995693523a8"
+   }
+  ]
+ }
+}

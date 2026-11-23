@@ -1,0 +1,71 @@
+{
+ "products_seo_title_nl": {
+  "gid://shopify/Product/15846949814620": "Besjaar Douchekop met Filter en Slang (10 standen) | Univex",
+  "gid://shopify/Product/15846952173916": "Besjaar Douchekop met Filter (10 standen) | Univex",
+  "gid://shopify/Product/15846952206684": "Besjaar Douchekop met Slang (3 standen) | Univex",
+  "gid://shopify/Product/15846952239452": "Besjaar Waterbesparende Douchekop (3 standen) | Univex",
+  "gid://shopify/Product/15846953255260": "Besjaar Douchefilter Navulset (2 filters) | Univex"
+ },
+ "products_seo_title_translations": {
+  "gid://shopify/Product/15846949814620": {
+   "de": "Besjaar Duschkopf mit Filter und Schlauch (10 Strahlarten) | Univex",
+   "en": "Besjaar Filtered Shower Head with Hose (10 modes) | Univex",
+   "fr": "Besjaar pommeau de douche filtrant avec flexible (10 jets) | Univex",
+   "es": "Besjaar alcachofa de ducha con filtro y flexo (10 modos) | Univex"
+  },
+  "gid://shopify/Product/15846952173916": {
+   "de": "Besjaar Duschkopf mit Filter (10 Strahlarten) | Univex",
+   "en": "Besjaar Filtered Shower Head (10 modes) | Univex",
+   "fr": "Besjaar pommeau de douche filtrant (10 jets) | Univex",
+   "es": "Besjaar alcachofa de ducha con filtro (10 modos) | Univex"
+  },
+  "gid://shopify/Product/15846952206684": {
+   "de": "Besjaar Duschkopf mit Schlauch (3 Strahlarten) | Univex",
+   "en": "Besjaar Shower Head with Hose (3 modes) | Univex",
+   "fr": "Besjaar pommeau de douche avec flexible (3 jets) | Univex",
+   "es": "Besjaar alcachofa de ducha con flexo (3 modos) | Univex"
+  },
+  "gid://shopify/Product/15846952239452": {
+   "de": "Besjaar Wassersparender Duschkopf (3 Strahlarten) | Univex",
+   "en": "Besjaar Water-Saving Shower Head (3 modes) | Univex",
+   "fr": "Besjaar pommeau de douche économique (3 jets) | Univex",
+   "es": "Besjaar alcachofa de ducha ahorradora (3 modos) | Univex"
+  },
+  "gid://shopify/Product/15846953255260": {
+   "de": "Besjaar Duschfilter-Nachfüllset (2 Filter) | Univex",
+   "en": "Besjaar Shower Filter Refill Set (2 filters) | Univex",
+   "fr": "Besjaar recharges de filtre de douche (2 filtres) | Univex",
+   "es": "Besjaar recambio de filtros de ducha (2 filtros) | Univex"
+  }
+ },
+ "articles_seo_title_nl": {
+  "gid://shopify/Article/1008249176412": "Hoeveel Lumen Heeft een Zaklamp Nodig? Uitleg & Tips",
+  "gid://shopify/Article/1008249209180": "Douchekop met Filter: Werking & Filter Vervangen",
+  "gid://shopify/Article/1008249241948": "Watertemperatuur voor Thee & Koffie: Handig Overzicht",
+  "gid://shopify/Article/1008249635164": "Nieuw: SlimHome Waterkokers | Ons Eigen Keukenmerk",
+  "gid://shopify/Article/1008249733468": "Hoofdlamp Kopen: Waar Let Je Op? Tips & Vergelijking",
+  "gid://shopify/Article/1008249766236": "Welke Reisstekker Heb Je Nodig? Stekkertypes per Land",
+  "gid://shopify/Article/1008249799004": "Laptopstandaard Instellen: Prettiger Werken in 5 Stappen",
+  "gid://shopify/Article/1008277782876": "Draadloze Deurbel Kopen & Installeren: Tips en Uitleg",
+  "gid://shopify/Article/1008277815644": "Muizen in Huis? Zo Raak Je Ze Kwijt Zonder Gif",
+  "gid://shopify/Article/1008277848412": "Telefoonhouder op de Fiets: Regels, Keuze & Montage",
+  "gid://shopify/Article/1008277881180": "Solar Buitenlamp met Bewegingssensor: Tips voor Herfst & Winter",
+  "gid://shopify/Article/1008277913948": "Krullen Maken met een Airstyler: Stap-voor-Stap Uitleg",
+  "gid://shopify/Article/1008278798684": "Digitale Keukenweegschaal: Tips voor Nauwkeurig Wegen",
+  "gid://shopify/Article/1008278831452": "Massage Gun Gebruiken: Tips, Opzetstukken & Veiligheid",
+  "gid://shopify/Article/1008278864220": "Alcohol Markers voor Beginners: Papier, Technieken & Tips",
+  "gid://shopify/Article/1008278896988": "UV-Zaklamp: Urinevlekken van Huisdieren Opsporen",
+  "gid://shopify/Article/1008278929756": "Foto's Overzetten met een SD-Kaartlezer (USB-C)"
+ },
+ "descriptions": "none existed: delete metafield global.description_tag on each resource",
+ "producten_seo": "none existed: set seo title/description to empty",
+ "aanbiedingen_body": {
+  "nl": "<p>Producten met een tijdelijk verlaagde prijs. De doorgestreepte prijs is de laagste prijs van de afgelopen 30 dagen.</p>",
+  "de": "<p>Produkte mit einem vorübergehend reduzierten Preis. Der durchgestrichene Preis ist der niedrigste Preis der letzten 30 Tage.</p>",
+  "en": "<p>Products with a temporarily reduced price. The crossed-out price is the lowest price of the past 30 days.</p>",
+  "fr": "<p>Produits à prix temporairement réduit. Le prix barré est le prix le plus bas des 30 derniers jours.</p>",
+  "es": "<p>Productos con un precio rebajado temporalmente. El precio tachado es el precio más bajo de los últimos 30 días.</p>"
+ },
+ "frontpage": "delete metafield seo.hidden",
+ "home_title": "translations of meta_title were 'Univex BV' in all languages"
+}
