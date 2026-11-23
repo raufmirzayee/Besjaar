@@ -1,0 +1,13 @@
+mutation {
+  douche_badkamer: collectionUpdate(collection: {id: "gid://shopify/Collection/699763982684", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  zaklampen_verlichting: collectionUpdate(collection: {id: "gid://shopify/Collection/699764015452", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  huis_keuken: collectionUpdate(collection: {id: "gid://shopify/Collection/699764048220", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  elektronica_onderweg: collectionUpdate(collection: {id: "gid://shopify/Collection/699764080988", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  verzorging_wellness: collectionUpdate(collection: {id: "gid://shopify/Collection/699764113756", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  accessoires: collectionUpdate(collection: {id: "gid://shopify/Collection/699764179292", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  bestsellers: collectionUpdate(collection: {id: "gid://shopify/Collection/699764212060", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  besjaar: collectionUpdate(collection: {id: "gid://shopify/Collection/699764244828", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  rynex: collectionUpdate(collection: {id: "gid://shopify/Collection/699764277596", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  slimhome: collectionUpdate(collection: {id: "gid://shopify/Collection/699883618652", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+  aanbiedingen: collectionUpdate(collection: {id: "gid://shopify/Collection/700629320028", sortOrder: MANUAL}) { collection { handle sortOrder } userErrors { field message } }
+}
