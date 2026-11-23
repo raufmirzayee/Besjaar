@@ -19,7 +19,7 @@ P = {
 C = {
  "douche-badkamer":        (699763982684, "MOST_RELEVANT", ["dk_fs", "dk_f", "dk_s3", "dk_3", "navul"]),
  "zaklampen-verlichting":  (699764015452, "MOST_RELEVANT", ["z5000", "z2000", "h1000", "z9000", "z7800", "hsens", "uv", "solar", "kweek"]),
- "huis-keuken":            (699764048220, "MOST_RELEVANT", ["deurbel", "muis", "weeg", "wk_temp", "wk_retro", "kweek"]),
+ "huis-keuken":            (699764048220, "MOST_RELEVANT", ["wk_temp", "wk_retro", "weeg", "kweek", "deurbel", "muis"]),  # user-specified order, 23 Nov
  "elektronica-onderweg":   (699764080988, "MOST_RELEVANT", ["ws_geaard", "ws_usbc", "th_fiets", "th_auto", "laptop", "sd", "usbc"]),
  "verzorging-wellness":    (699764113756, "MOST_RELEVANT", ["airstyler", "thermal", "massage"]),
  "accessoires":            (699764179292, "MOST_RELEVANT", ["sig_aanst", "sig"]),
