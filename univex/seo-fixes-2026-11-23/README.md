@@ -23,10 +23,10 @@ These are the fixes from `../seo-audit-2026-11-23.md`. They were applied through
 
 ## Not changed
 
-- **Address in the Black Friday article.**
-  - The article (all languages) says "Doctor A.F. Philipsweg 39 A", and so does the Legal notice policy.
-  - The Contact information policy says 37 B.
-  - The article tells readers to check the address against the KvK number, so it should match the KvK register. Change it once the KvK registration is confirmed.
+- **Address 39 A → 37 B** (confirmed by you on 23 Nov):
+  - Black Friday article: done in all five languages; it stays scheduled for 1 Dec. The old Dutch text is in `bf-article-body.before.json`.
+  - Legal notice policy: done in de/en/fr/es.
+  - **Dutch Legal notice: manual.** The connector lacks `write_legal_policies`. In Settings → Policies → Legal notice, change `Philipsweg 39 A` to `Philipsweg 37 B`.
 - **Seasonal posts** (wintertijd 2026, herfstvakantie 2026, halloween 2026): left as they are. They are best updated next autumn with the 2027 dates.
 - **The two news posts without an image** (gratis verzending, 30 dagen bedenktijd): left as they are.
 - **Theme card images with `alt=""`**: this needs a theme copy that you then publish.
