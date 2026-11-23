@@ -79,3 +79,26 @@ Files:
 | Besjaar LED Kweeklamp |  | 29.99 | 32.99 | 28.04 | 15% | 6.5% |
 | Rynex USB-C naar USB-A Adapter 3 st. |  | 7.99 | 8.79 | 7.47 | 15% | 6.5% |
 | Rynex Wereldstekker Geaard |  | 29.99 | 32.99 | 28.04 | 15% | 6.5% |
+
+## Black Friday line (theme "Univex B.V – Black Friday", 209602183516)
+
+A copy of the live theme "Univex B.V" (206681506140) with:
+
+- `sections/univex-black-friday-2026.liquid` (copy in `theme/sections/`; the checksum matches the upload);
+- `sections/header-group.json`, with the new section `black-friday` placed first.
+
+What it shows:
+- **Top of every page:** one black line: "BLACK FRIDAY · 15% korting op alles · Geen code nodig · t/m 30 november · Nog 7d 12u 31m · Shop de deals →". It replaces the rotating announcement strip, which is hidden until 1 Dec.
+- **Sale badges:** "BLACK FRIDAY -15%" on product cards and "BLACK FRIDAY Bespaar 15%" on product pages.
+- **Languages:** nl, en, de, fr, es.
+- **Percentage:** read from the real prices (the smallest reduction in the shop).
+- **End:** switches itself off on 1 Dec 2026 00:00 Amsterdam.
+
+Checked in preview (Playwright, 1440 px and iPhone 13) on the homepage, `/collections/all` and a product page:
+- the line is at the top and the announcement strip is hidden;
+- the badges are relabelled;
+- there are no Liquid errors and no horizontal scroll.
+
+The session's network was extended (new personal environment "Besjaar") to reach univexbv.com for this check.
+
+To make it live: Online Store → Themes → "Univex B.V – Black Friday" → ⋯ → Publish.

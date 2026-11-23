@@ -1,0 +1,188 @@
+{%- comment -%}
+  Univex 2026-11-23: Black Friday 2026 line.
+
+  All active products carry a compare-at price and a reduced price until
+  Mon 30 Nov 2026 23:59 Amsterdam. This section:
+
+    top of every page  one black Black Friday line with a live countdown,
+                       in place of the rotating announcement strip (hidden
+                       while the sale runs).
+    sale badges        ".badge--sale" reads "BLACK FRIDAY -15%" on product
+                       cards and "BLACK FRIDAY · Bespaar 15%" on the product
+                       page.
+
+  The percentage in the line is read from the real prices (the smallest
+  reduction across the shop), so it can never promise more than the prices
+  show.
+
+  Nothing renders from 1796079600 (Tue 1 Dec 2026 00:00 Amsterdam), when the
+  prices go back, and the announcement strip returns by itself. A page left
+  open past that moment does the same in the browser. No editing is needed
+  to retire it.
+{%- endcomment -%}
+{%- liquid
+  assign uxbf_end = 1796079600
+  assign uxbf_now = 'now' | date: '%s' | plus: 0
+  assign uxbf_live = false
+  if uxbf_now < uxbf_end
+    assign uxbf_live = true
+  endif
+-%}
+{%- if uxbf_live -%}
+{%- liquid
+  assign uxbf_pct = 0
+  for uxbf_product in collections.all.products
+    for uxbf_variant in uxbf_product.variants
+      if uxbf_variant.compare_at_price > uxbf_variant.price
+        assign uxbf_off = uxbf_variant.compare_at_price | minus: uxbf_variant.price | times: 100 | divided_by: uxbf_variant.compare_at_price
+        if uxbf_pct == 0 or uxbf_off < uxbf_pct
+          assign uxbf_pct = uxbf_off
+        endif
+      endif
+    endfor
+  endfor
+  if uxbf_pct == 0
+    assign uxbf_live = false
+  endif
+-%}
+{%- endif -%}
+{%- if uxbf_live -%}
+{%- liquid
+  assign uxbf_lang = request.locale.iso_code | split: '-' | first | downcase
+  case uxbf_lang
+    when 'en'
+      assign uxbf_line = '{pct}% off everything'
+      assign uxbf_note = 'No code needed · until 30 November'
+      assign uxbf_cta = 'Shop the deals'
+      assign uxbf_prefix = 'Ends in'
+      assign uxbf_units = 'd|h|m'
+    when 'de'
+      assign uxbf_line = '{pct}% Rabatt auf alles'
+      assign uxbf_note = 'Kein Code nötig · bis 30. November'
+      assign uxbf_cta = 'Zu den Deals'
+      assign uxbf_prefix = 'Noch'
+      assign uxbf_units = 'd|h|m'
+    when 'fr'
+      assign uxbf_line = '-{pct} % sur tout'
+      assign uxbf_note = 'Sans code · jusqu’au 30 novembre'
+      assign uxbf_cta = 'Voir les offres'
+      assign uxbf_prefix = 'Encore'
+      assign uxbf_units = 'j|h|m'
+    when 'es'
+      assign uxbf_line = '{pct} % de descuento en todo'
+      assign uxbf_note = 'Sin código · hasta el 30 de noviembre'
+      assign uxbf_cta = 'Ver ofertas'
+      assign uxbf_prefix = 'Quedan'
+      assign uxbf_units = 'd|h|m'
+    else
+      assign uxbf_line = '{pct}% korting op alles'
+      assign uxbf_note = 'Geen code nodig · t/m 30 november'
+      assign uxbf_cta = 'Shop de deals'
+      assign uxbf_prefix = 'Nog'
+      assign uxbf_units = 'd|u|m'
+  endcase
+  assign uxbf_pct_text = uxbf_pct | append: ''
+  assign uxbf_line = uxbf_line | replace: '{pct}', uxbf_pct_text
+  assign uxbf_url = routes.all_products_collection_url
+
+  assign uxbf_left = uxbf_end | minus: uxbf_now
+  assign uxbf_d = uxbf_left | divided_by: 86400
+  assign uxbf_h = uxbf_left | modulo: 86400 | divided_by: 3600
+  assign uxbf_m = uxbf_left | modulo: 3600 | divided_by: 60
+  assign uxbf_mm = uxbf_m | prepend: '0' | slice: -2, 2
+  assign uxbf_u = uxbf_units | split: '|'
+  capture uxbf_compact
+    echo uxbf_prefix
+    echo ' '
+    if uxbf_d > 0
+      echo uxbf_d
+      echo uxbf_u[0]
+      echo ' '
+    endif
+    echo uxbf_h
+    echo uxbf_u[1]
+    echo ' '
+    echo uxbf_mm
+    echo uxbf_u[2]
+  endcapture
+-%}
+<style>
+  :root{--uxbf-ink:#0B0B0B;--uxbf-accent:#8CCBFF}
+  {%- comment -%} The rotating announcement strip makes way for the Black Friday line. {%- endcomment -%}
+  html:not(.uxbf-over) body .shopify-section.section-announcement:not(#uxbf-a):not(#uxbf-b){display:none!important}
+  .uxbf-bar{position:relative;z-index:1;background:var(--uxbf-ink);color:#fff;font-family:Inter,system-ui,-apple-system,sans-serif}
+  .uxbf-bar::after{content:"";position:absolute;inset-inline:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--uxbf-accent),transparent)}
+  html body .uxbf-bar .uxbf-bar__link:not(#uxbf-a){display:flex;align-items:center;justify-content:center;gap:0 12px;width:min(calc(100% - 24px),1280px);min-height:40px;margin-inline:auto;padding:8px 0;color:#fff;font-size:13px;line-height:1.2;white-space:nowrap;overflow:hidden;text-decoration:none}
+  .uxbf-bar__tag{flex:0 0 auto;padding:3px 9px;border-radius:999px;background:var(--uxbf-accent);color:var(--uxbf-ink);font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+  .uxbf-bar__line{flex:0 0 auto;font-weight:800;letter-spacing:.01em}
+  .uxbf-bar__note{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.78);font-weight:500}
+  .uxbf-bar__clock{flex:0 0 auto;font-weight:700;font-variant-numeric:tabular-nums;color:var(--uxbf-accent)}
+  .uxbf-bar__note::before,.uxbf-bar__clock::before{content:"\00B7";margin-inline-end:12px;color:rgba(255,255,255,.4)}
+  .uxbf-bar__cta{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border:1px solid rgba(255,255,255,.5);border-radius:999px;font-weight:700;transition:background-color .18s ease,color .18s ease,border-color .18s ease}
+  .uxbf-bar__link:hover .uxbf-bar__cta,.uxbf-bar__link:focus-visible .uxbf-bar__cta{background:#fff;border-color:#fff;color:var(--uxbf-ink)}
+  @media (max-width:980px){.uxbf-bar__note{display:none}}
+  @media (max-width:640px){html body .uxbf-bar .uxbf-bar__link:not(#uxbf-a){gap:0 8px;font-size:12px;min-height:38px;padding:7px 0}.uxbf-bar__cta-label{display:none}.uxbf-bar__cta{padding:2px 8px}.uxbf-bar__tag{font-size:10px;padding:3px 7px}}
+  @media (max-width:400px){.uxbf-bar__clock{display:none}}
+  @media print{.uxbf-bar{display:none}}
+
+  {%- comment -%} Sale badges: "BLACK FRIDAY" in front of the theme's own percentage. {%- endcomment -%}
+  html:not(.uxbf-over) body .badge.badge--sale:not(#uxbf-a):not(#uxbf-b){background:var(--uxbf-ink)!important;border-color:var(--uxbf-ink)!important;color:#fff!important}
+  html:not(.uxbf-over) body .badge.badge--sale:not(#uxbf-a):not(#uxbf-b)::before{content:"Black Friday\00A0";color:var(--uxbf-accent);font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+</style>
+<aside class="uxbf-bar" aria-label="Black Friday" data-uxbf>
+  <a class="uxbf-bar__link" href="{{ uxbf_url }}">
+    <span class="uxbf-bar__tag">Black Friday</span>
+    <span class="uxbf-bar__line">{{ uxbf_line | escape }}</span>
+    <span class="uxbf-bar__note">{{ uxbf_note | escape }}</span>
+    <span class="uxbf-bar__clock" data-uxbf-compact data-prefix="{{ uxbf_prefix | escape }}" data-units="{{ uxbf_units | escape }}">{{ uxbf_compact | strip | escape }}</span>
+    <span class="uxbf-bar__cta"><span class="uxbf-bar__cta-label">{{ uxbf_cta | escape }}</span><span aria-hidden="true">→</span></span>
+  </a>
+</aside>
+<script>
+  (() => {
+    const END = {{ uxbf_end }} * 1000;
+    const pad = (n) => String(n).padStart(2, '0');
+    const run = () => {
+      const left = Math.floor((END - Date.now()) / 1000);
+      if (left <= 0) {
+        document.documentElement.classList.add('uxbf-over');
+        document.querySelectorAll('[data-uxbf]').forEach((node) => node.remove());
+        return false;
+      }
+      const d = Math.floor(left / 86400);
+      const h = Math.floor((left % 86400) / 3600);
+      const m = Math.floor((left % 3600) / 60);
+      document.querySelectorAll('[data-uxbf-compact]').forEach((node) => {
+        const u = (node.dataset.units || 'd|h|m').split('|');
+        const parts = [];
+        if (d > 0) parts.push(d + u[0]);
+        parts.push(h + u[1], pad(m) + u[2]);
+        node.textContent = (node.dataset.prefix ? node.dataset.prefix + ' ' : '') + parts.join(' ');
+      });
+      return true;
+    };
+    const start = () => {
+      if (!run()) return;
+      const timer = window.setInterval(() => { if (!run()) window.clearInterval(timer); }, 1000);
+      window.addEventListener('pageshow', run);
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+  })();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Univex Black Friday 2026",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Black Friday 2026: one line at the top of every page (in place of the announcement strip) and Black Friday sale badges. The percentage is read from the real prices. Disappears on its own on 1 December 2026 at 00:00 Amsterdam."
+    }
+  ],
+  "enabled_on": {
+    "groups": ["header"]
+  }
+}
+{% endschema %}
