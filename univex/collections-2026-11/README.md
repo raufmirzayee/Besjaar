@@ -27,9 +27,27 @@ Drafts (not on the storefront) end up last on their own.
 Membership follows product tags, and every product is in a fitting category.
 The only double is the LED Kweeklamp, in "Zaklampen & verlichting" and "Huis & keuken". Both fit, so it stays, last in both.
 
-## Not covered
+## The "Producten" page (/collections/all)
 
-`/collections/all` ("Producten", also the Black Friday "Shop de deals" link) is not a real collection, so the theme sorts it alphabetically (A–Z).
+`/collections/all` was Shopify's automatic all-products list, sorted A–Z. It is also where the Black Friday "Shop de deals" link leads.
+
+At the user's request, a real collection now takes its place: "Producten" (gid://shopify/Collection/708027777372), handle `all`. Shopify serves a collection with that handle at /collections/all.
+
+- **Contents:** automatic, every product with a variant price above €0, so new products are added by themselves.
+- **Sort:** Manual, in the same order as "aanbiedingen" (bestsellers first, then showers, lights, home, care, electronics, accessories, refills last).
+- **Title translations:** Produkte (de), Products (en), Produits (fr), Productos (es), matching the old page titles.
+- **Published:** to the Online Store only.
+
+Checked on the storefront:
+- the title and h1 are unchanged in all 5 languages;
+- the page shows 32 products with no Liquid errors;
+- page 1 (24 products) is in exactly the planned order.
+
+(`/collections/all/products.json` still returned an old order right after publishing, probably a cache; the page itself is correct.)
+
+New products are added at the end of the manual order. Move them in Shopify admin (Products → Collections → Producten) if they should be higher.
+
+To undo: delete the "Producten" collection; /collections/all then goes back to Shopify's automatic A–Z list.
 
 ## Rollback
 
