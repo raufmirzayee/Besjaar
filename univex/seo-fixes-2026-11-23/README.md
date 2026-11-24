@@ -5,7 +5,7 @@ These are the fixes from `../seo-audit-2026-11-23.md`. They were applied through
 
 | # | Fix | Status |
 |---|---|---|
-| 1 | Homepage title | de/en/fr/es **live** (e.g. `Univex Shop \| Duschköpfe, Taschenlampen & praktische Gadgets`). **Dutch: manual.** The Dutch title lives in Online Store → Preferences and the API can't write it. Change "Univex BV" to `Univex Shop \| Douchekoppen, zaklampen & handige gadgets`. The four translations stay in place; Shopify will only mark them "outdated". |
+| 1 | Homepage title | **Live in all five languages.** Dutch was set by hand on 24 Nov: `Univex Shop \| Douchekoppen, zaklampen & handige gadgets`; the other four are translations. |
 | 3 | Meta descriptions for Contact, Veelgestelde vragen, and the Tips & advies and Nieuws blogs | Live in all languages |
 | 4 | SEO title and description for "Producten" (`/collections/all`) | Live in all languages |
 | 5 | "Aanbiedingen" text no longer says the crossed-out price is the lowest of the last 30 days | Done in all languages; the collection is still unpublished |
