@@ -9,7 +9,7 @@ It appears in Settings → Store details, the Legal notice policy and the refund
 | Where | Before | After | Status |
 |---|---|---|---|
 | Contact information policy: translations en, de, fr, es | `… Philipsweg 39 A …` | `… Philipsweg 37 B …` | Done (translationsRegister) |
-| Contact information policy: Dutch source text (Settings → Policies → Contact) | `Adres: Doctor A.F. Philipsweg 39 A, 9403 AD Assen, Nederland` | `Adres: Doctor A.F. Philipsweg 37 B, 9403 AD Assen, Nederland` | **Manual**: the connector lacks `write_legal_policies` |
+| Contact information policy: Dutch source text (Settings → Policies → Contact) | `Adres: Doctor A.F. Philipsweg 39 A, 9403 AD Assen, Nederland` | `Adres: Doctor A.F. Philipsweg 37 B, 9403 AD Assen, Nederland` | Done by hand; confirmed live on besjaar.eu on 24 Nov 2026 |
 | Theme setting Brand & layout → Public address → Street and number. Feeds the footer, the contact page and the Organization JSON-LD | `Dr. A.F. Philipsweg 39 A` (live theme "Besjaar – Douchesets (specs fix)", 204425953607) | `Dr. A.F. Philipsweg 37 B` in the new copy "Besjaar – adres 37 B" (205100581191) | Copy built and verified. **Waiting to be published**: the connector cannot publish themes |
 
 ### The copy "Besjaar – adres 37 B"
