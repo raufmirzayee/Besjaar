@@ -37,3 +37,7 @@ These are the fixes from `../seo-audit-2026-11-23.md`. They were applied through
 - **Article titles:** the old values are in `rollback.json`.
 - **New descriptions, Producten SEO and `seo.hidden`:** delete the metafields, or empty the fields.
 - **Black Friday article:** `articleUpdate` with `isPublished: true, publishDate: "2026-10-12T07:45:36Z"`.
+
+## Correction, 24 Nov 2026
+
+Fix 6 used `productUpdate(seo: {title})`, which also cleared the SEO description of those 5 products: Shopify replaces the whole SEO object. Found and repaired on 24 Nov. The original descriptions were restored, and their translations registered again. See `../new-products-2026-11-24/README.md`.

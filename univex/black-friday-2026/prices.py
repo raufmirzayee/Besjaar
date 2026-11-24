@@ -53,6 +53,24 @@ DATA = [
  (15865652150620, 59351660298588, "Besjaar LED Kweeklamp", "Default Title", "29.99"),
  (15865653854556, 59351667474780, "Rynex USB-C naar USB-A Adapter 3 st.", "Default Title", "7.99"),
  (15865666109788, 59351689101660, "Rynex Wereldstekker Geaard", "Default Title", "29.99"),
+ # Added 24 Nov 2026: products listed after the first run (user's choice: same
+ # deal for the new products; RC car, massage gun and Lynex 7-in-1 keep the
+ # crossed-out prices the user set and are not in this list).
+ # The two black filter shower heads were copied from the chrome ones while
+ # these were at their Black Friday price; their normal price is the chrome one.
+ (16013887897948, 60028591079772, "Besjaar Douchekop met Filter en Slang Zwart", "Default Title", "28.49"),
+ (16013887930716, 60028591112540, "Besjaar Douchekop met Filter Zwart", "Default Title", "26.00"),
+ (16013754532188, 60027697332572, "Besjaar Douchekop 4 Standen", "Met slang", "25.99"),
+ (16013754532188, 60027698610524, "Besjaar Douchekop 4 Standen", "Zonder slang", "19.99"),
+ (16013739196764, 60027671773532, "Besjaar Thermostatische Regendoucheset Mat Zwart", "Default Title", "198.00"),
+ (16013727301980, 60027657814364, "Besjaar Regendoucheset Chroom", "Default Title", "300.00"),
+ (16013899759964, 60028627976540, "Besjaar Regendouchekop XL Chroom", "Default Title", "99.99"),
+ (16013930856796, 60028865151324, "Besjaar Regendouchekop XL Zwart", "Default Title", "99.99"),
+ (16013938721116, 60029006938460, "Besjaar Doucheslang 150 cm Chroom", "Default Title", "9.99"),
+ (16013947699548, 60029168255324, "Besjaar Doucheslang 150 cm Zwart", "Default Title", "9.99"),
+ (15865664012636, 59351686316380, "Besjaar Airstyler 5-in-1 Blauw", "Default Title", "49.99"),
+ (15846976946524, 59264697368924, "Rynex Pimple Patches 144 Stuks", "Default Title", "11.99"),
+ (15846976913756, 59264697336156, "Rynex Neusstrips 30 Stuks", "Default Title", "19.99"),
 ]
 
 CENT = Decimal("0.01")
