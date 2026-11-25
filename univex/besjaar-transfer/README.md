@@ -81,3 +81,15 @@ Prices: Besjaar runs its own Black Friday sale (30%/35% off a fixed list of 8 va
 - The chrome rain set (besjaar-regendoucheset-chroom) has the same 7th image as in Univex (`besjaar-complete-doucheset-chroom-regendouche-badkamer.webp`). That photo looks like the existing thermostat set, so the owner may want to remove it.
 - The Besjaar footer (existing theme, not part of this transfer) shows info@univexbv.com.
 - Risk: the 1 Dec task "End Black Friday sale (Besjaar + Univex Shop)" switches the Shopify connector between Besjaar and Univex, which asks for a manual sign-in. The task may stop at that point, so the owner should check prices in both stores on 1 Dec.
+
+## Step 5: sorting and "Nieuw" badge (25 Nov 2026)
+
+- **Sorted (live):** in each collection, chrome and black twins now sit side by side.
+  - Douchekoppen: filter head (chrome, black), filter head with hose (chrome, black), 3-mode head, 3-mode head with hose, 4-mode head, XL rain head (chrome, black), hose (chrome, black).
+  - Douchekop met filter: the same order for the 4 filter heads.
+  - Douchesets: Regendoucheset chroom, then Design Doucheset mat zwart.
+  - Accessoires: hose chrome, hose black, refill filters, then the 2 slide rails (drafts).
+  - The chrome filter heads' with/without-hose button still links to chrome.
+- **Tag `nieuw`** is on all 9 new products. Remove the tag from a product to drop its badge.
+- **Theme:** `snippets/besjaar-grouped-product-card.liquid` (used on collection pages) now shows a "Nieuw" badge (Neu / New / Nouveau / Nuevo) for products tagged `nieuw`, `new-arrival` or `besjaar_ui:new`, behind the existing setting "show merchandising badges". It uses the theme's orange badge style. This is saved on the live theme "Besjaar – Black Friday 30% (talen-URL's)" but **not published yet**. The theme also has 14 earlier, unpublished edits by someone else (layout/theme.liquid, header, footer, product page, FAQ and others), which a publish would put live at the same time.
+- **Found:** the existing product "Besjaar Complete Doucheset" (ID 11505826103623, handle besjaar-complete-doucheset) was deleted from Besjaar after 25 Nov morning. This transfer did not delete it.
