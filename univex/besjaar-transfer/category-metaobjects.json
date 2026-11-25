@@ -1,0 +1,6 @@
+[{"id":"gid://shopify/Metaobject/759728341340","type":"shopify--color-pattern","handle":"zwart","label":"Zwart","color":"#000000","color_taxonomy_reference":["gid://shopify/TaxonomyValue/1"],"pattern_taxonomy_reference":"gid://shopify/TaxonomyValue/2874"},
+{"id":"gid://shopify/Metaobject/759792697692","type":"shopify--hardware-material","handle":"metaal","label":"Metaal","taxonomy_reference":"gid://shopify/TaxonomyValue/18307"},
+{"id":"gid://shopify/Metaobject/759910662492","type":"shopify--color-pattern","handle":"silver","label":"Zilver","color":"#D3D3D3","color_taxonomy_reference":["gid://shopify/TaxonomyValue/5"],"pattern_taxonomy_reference":"gid://shopify/TaxonomyValue/2874"},
+{"id":"gid://shopify/Metaobject/759910990172","type":"shopify--hose-material","handle":"roestvrij-staal","label":"Roestvrij staal","taxonomy_reference":"gid://shopify/TaxonomyValue/19693"},
+{"id":"gid://shopify/Metaobject/759981080924","type":"shopify--shape","handle":"rond","label":"Rond","taxonomy_reference":"gid://shopify/TaxonomyValue/627"},
+{"id":"gid://shopify/Metaobject/759987241308","type":"shopify--shape","handle":"rechthoekig","label":"Rechthoekig","taxonomy_reference":"gid://shopify/TaxonomyValue/10140"}]
