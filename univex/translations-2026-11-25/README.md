@@ -69,3 +69,21 @@ Not changed, for the owner:
 - 5 products added in October have no specifications or FAQ: RC stunt car, Lynex Thermal Brush, LED grow light, USB-C adapter, grounded world plug.
 - The (disabled) homepage comparison table says all Besjaar shower heads are 13 cm wide; no longer true with the XL rain heads and the 4-spray head.
 - The RC stunt car is in no category (only "Rynex" and "Producten").
+
+## ® for Lynex and SlimHome (25 Nov)
+
+The owner confirmed both are registered trademarks. ® was added in the same places where Besjaar® and Rynex® already have it (brand-level mentions only; product titles, alt texts, menu links, collection names and articles have no ® for any brand and were left alone).
+
+**Live now (store data, Dutch + de/en/fr/es, translations re-registered, not outdated):**
+- Collection Lynex: description (first mention), SEO title, SEO description.
+- Collection SlimHome: description (first mention), SEO title, SEO description.
+- Page "Over ons": brand list in the intro and the Lynex® / SlimHome® headings.
+
+**Saved in the live theme, not yet published** (theme commit `81a1043`, "Add ® to Lynex and SlimHome in brand blocks and brand lines"):
+- `templates/index.json`: brand blocks b3/b4, hero brand line, story text, story checklist, benefits titles b3/b4.
+- `templates/list-collections.json`: brand blocks b3/b4.
+- `templates/page.about.json`: hero text, story text, story checklist, brand blocks b3/b4.
+- `sections/footer-group.json`: footer brand text.
+- Not changed on purpose: "Bekijk Lynex/SlimHome" button labels and the homepage showcase sentence (no ® for any brand there); `window.SlimHome` in the theme code is a JavaScript name.
+
+**After publishing:** the theme's de/en/fr/es texts for those 16 settings still show Lynex and SlimHome without ® until they are re-registered with ® against the new Dutch text.
