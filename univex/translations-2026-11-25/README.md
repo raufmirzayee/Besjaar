@@ -79,11 +79,10 @@ The owner confirmed both are registered trademarks. ® was added in the same pla
 - Collection SlimHome: description (first mention), SEO title, SEO description.
 - Page "Over ons": brand list in the intro and the Lynex® / SlimHome® headings.
 
-**Saved in the live theme, not yet published** (theme commit `81a1043`, "Add ® to Lynex and SlimHome in brand blocks and brand lines"):
-- `templates/index.json`: brand blocks b3/b4, hero brand line, story text, story checklist, benefits titles b3/b4.
+**Theme, published 25 Nov** (live theme "Univex B.V – Black Friday (kleurkeuze)"), with de/en/fr/es translations re-registered:
+- `sections/footer-group.json`: footer brand text.
 - `templates/list-collections.json`: brand blocks b3/b4.
 - `templates/page.about.json`: hero text, story text, story checklist, brand blocks b3/b4.
-- `sections/footer-group.json`: footer brand text.
-- Not changed on purpose: "Bekijk Lynex/SlimHome" button labels and the homepage showcase sentence (no ® for any brand there); `window.SlimHome` in the theme code is a JavaScript name.
 
-**After publishing:** the theme's de/en/fr/es texts for those 16 settings still show Lynex and SlimHome without ® until they are re-registered with ® against the new Dutch text.
+**Homepage (`templates/index.json`) not changed:** publishing it was refused three times with "changed_on_shopify" (the publishing tool's record of that file is out of sync with Shopify, although the content is identical). The change was taken out again so nothing waits. The only visible spots are the two brand blocks in the "Vier eigen merken, één webshop" section; the other mentions are in hidden sections. Fix by hand: Online Store → Themes → Customize → Home page → that section → Lynex block name "Lynex®", SlimHome block name "SlimHome®" → Save. Their de/en/fr/es translations then need re-registering.
+
