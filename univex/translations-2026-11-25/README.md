@@ -50,3 +50,22 @@ The terms are Shopify's US template, in every language: customers see the `[LINK
 ## Rollback
 
 `changes.json` has `before` for each entry. For entries with `before: null` (new translations), remove them with `translationsRemove` (resourceId, key, locale). For the others, register `before` again with `translationsRegister` against the current digest of the Dutch text.
+
+## Theme check for the new products (25 Nov)
+
+Live theme "Univex B.V – Black Friday (kleurkeuze)". The theme code needs no change for the new products: everything product-specific comes from store data, which was checked and fixed.
+
+| What the theme uses | Finding | Fix |
+|---|---|---|
+| Colour / version buttons (`snippets/color-siblings.liquid`), fed by product metafields `custom.kleuropties`, `custom.kleur`, `custom.uitvoering` | Already linked correctly for the new products (4 filter heads chrome/black × with/without hose, XL rain heads, hoses, Airstyler white/blue). But the 19 button labels ("Chroom", "Zwart", "Mat zwart", "Wit", "Blauw", "Met slang", "Zonder slang") had no translations, so /de, /en, /fr, /es showed Dutch buttons | Translated in 4 languages; identical Dutch values got identical translations, so the matching between products keeps working |
+| Specifications table (`custom.specificaties`) and FAQ (`custom.faq`) on the product page | Dutch only on all 10 new products and the 2 draft slide rails; the glass kettle's were outdated | 26 texts translated in 4 languages (104), same "Label: Value" / "Question \| Answer" format |
+| "Lowest price in 30 days" line (`custom.lowest_price_30_days`) | Empty on every product, old and new, so the line never shows | Not changed (not caused by the new products) |
+| URL list for blog links (`snippets/univex-localize-links.liquid`) | No article links to the new products | No change needed |
+| Homepage (categories, bestsellers, showcase, spotlight) | Collection-based or a curated list; new products appear in their collections | No change needed |
+
+Verified on /de/products/besjaar-duschkopf-mit-filter (mobile): "Farbe: Chrom" with Chrom / Schwarz, "Ausführung" with Mit Schlauch / Ohne Schlauch, German FAQ.
+
+Not changed, for the owner:
+- 5 products added in October have no specifications or FAQ: RC stunt car, Lynex Thermal Brush, LED grow light, USB-C adapter, grounded world plug.
+- The (disabled) homepage comparison table says all Besjaar shower heads are 13 cm wide; no longer true with the XL rain heads and the 4-spray head.
+- The RC stunt car is in no category (only "Rynex" and "Producten").
