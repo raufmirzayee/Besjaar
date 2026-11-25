@@ -33,11 +33,19 @@ Every change, with the Dutch source, the old value and the new value, is in `cha
 - Left untranslated on purpose: brand names, discount codes, `/collections/all`, theme links (Shopify localizes them), image references and the `#reviews` anchor.
 - Links in translated texts that use the Dutch URL (e.g. `/de/collections/douche-badkamer`) redirect (301) to the translated URL, so they work.
 
-## Not changed: needs the owner's decision (Dutch source texts)
+## Dutch source texts (owner approved, 25 Nov)
 
-1. **Legal notice (Dutch) still says Philipsweg 39 A.** Its 4 translations already say 37 B. Settings → Policies → Legal notice.
-2. **Terms of service (Dutch) is written in English.** Dutch visitors see English terms; de/fr/es have real translations.
-3. Metaobject label "Silver" is English in the Dutch source (should be "Zilver"). Its translations are correct.
+1. **Colour label "Silver" → "Zilver"**: done (`metaobjectUpdate`); its de/en/fr/es translations re-registered, not outdated.
+2. **Legal notice: Philipsweg 39 A → 37 B**: to do by hand. The Shopify connection may not edit policies (missing `write_legal_policies` scope). New text: `legal-notice.nl.html`.
+3. **Terms of service in Dutch**: to do by hand, same reason. Dutch translation of the current English text: `terms-of-service.nl.html` (same structure, same `[LINK]` placeholders and contact block as the de/fr/es versions; "je" form like the rest of the shop).
+
+How: Settings → Policies → open the policy → click the `<>` (Show HTML) button → replace everything with the file's content → Save.
+
+After saving, Shopify marks that policy's translations as outdated. They keep showing (English visitors still see the English terms), but they should be re-registered against the new Dutch text so they are no longer flagged.
+
+### Notes on the terms of service (not changed, worth a look)
+
+The terms are Shopify's US template, in every language: customers see the `[LINK]` placeholders and the "[NOTE TO MERCHANT …]" line; it says prices exclude taxes (Dutch consumer prices must include VAT); it refers to US federal and state law and courts; and its phone number (+31 6 16745062) differs from the contact page (+31 6 87616931).
 
 ## Rollback
 
