@@ -13,6 +13,10 @@ work is done through the Shopify connector (theme tools), not in this repo.
   `Besjaar – Black Friday 30% (smooth cards)`.
 - Do not publish the copy unless the user explicitly says so in the
   conversation.
+- A follow-up to a change that is still unpublished continues on that change's
+  copy, but only after checking that none of the live theme's files changed
+  since the copy was made (compare file `updatedAt` through the Admin API). If
+  live files did change, take a fresh copy of the live theme and reapply.
 
 Why: the live theme's saved working version had fallen behind the live store
 (older settings_data.json and templates, e.g. collection handles `showerhead`
